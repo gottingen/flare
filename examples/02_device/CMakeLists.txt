@@ -14,14 +14,23 @@
 # limitations under the License.
 #
 
-if(FLARE_BUILD_CUDA)
-    add_subdirectory(cuda)
-endif ()
+carbin_cc_binary(
+        NAME example_query_device_cc
+        SOURCES
+        query_device.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::flare
+)
 
-if(FLARE_BUILD_OPENMP)
-    add_subdirectory(openmp)
-endif ()
-
-if(FLARE_BUILD_SERIAL)
-    add_subdirectory(serial)
-endif ()
+carbin_cc_binary(
+        NAME example_query_device_cu
+        SOURCES
+        query_device.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        CUOPTS ${CARBIN_CU_OPTIONS}
+        DEPS
+        flare::flare
+)

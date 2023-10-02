@@ -38,4 +38,8 @@ carbin_cc_test(
 include_directories(category_files)
 include_directories(doctest)
 include_directories(core)
+set(TEST_MAIN_SRC
+        ${PROJECT_SOURCE_DIR}/tests/core/unit_test_main.cc
+)
+add_subdirectory(compile_only)
 add_subdirectory(core)

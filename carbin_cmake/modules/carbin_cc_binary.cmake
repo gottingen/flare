@@ -20,19 +20,11 @@ include(carbin_install_dirs)
 include(carbin_print)
 
 function(carbin_cc_binary)
-
-    set(list_args
-            DEPS
-            SOURCES
-            DEFINITIONS
-            COPTS
-            )
-
     cmake_parse_arguments(
             CARBIN_CC_BINARY
             "PUBLIC"
             "NAME"
-            "DEPS;SOURCES;DEFINITIONS;COPTS"
+            "DEPS;SOURCES;DEFINITIONS;COPTS;CUOPTS"
             ${ARGN}
     )
 
@@ -52,7 +44,8 @@ function(carbin_cc_binary)
 
     add_executable(${exec_case} ${CARBIN_CC_BINARY_SOURCES})
 
-    target_compile_options(${exec_case} PRIVATE ${CARBIN_CC_BINARY_COPTS})
+    target_compile_options(${exec_case} PRIVATE   $<$<COMPILE_LANGUAGE:CXX>:${CARBIN_CC_BINARY_COPTS}>)
+    target_compile_options(${exec_case} PRIVATE   $<$<COMPILE_LANGUAGE:CUDA>:${CARBIN_CC_BINARY_CUOPTS}>)
     target_link_libraries(${exec_case} PRIVATE ${CARBIN_CC_BINARY_DEPS})
 
     target_compile_definitions(${exec_case}

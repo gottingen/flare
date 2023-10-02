@@ -15,11 +15,22 @@
 #
 
 carbin_cc_binary(
-        NAME example_query_device
+        NAME example_atomics_cc
         SOURCES
-        query_device.cc
+        atomics.cc
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::flare
+)
+
+carbin_cc_binary(
+        NAME example_atomics_cu
+        SOURCES
+        atomics.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         flare::flare
 )

@@ -30,4 +30,14 @@ carbin_cc_binary(
         COPTS ${USER_CXX_FLAGS}
 )
 ]]
-add_subdirectory(1_device)
+add_subdirectory(01_hello_word)
+add_subdirectory(02_device)
+add_subdirectory(03_lambda)
+add_subdirectory(04_simple_reduce)
+add_subdirectory(05_view)
+add_subdirectory(06_memory_space)
+add_subdirectory(07_atomic)
+add_subdirectory(08_mdrange_policy)
+add_subdirectory(09_algorithm)
+add_subdirectory(10_advance_view)
+add_subdirectory(11_parallel)
