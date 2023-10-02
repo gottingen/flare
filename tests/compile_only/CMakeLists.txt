@@ -14,14 +14,26 @@
 # limitations under the License.
 #
 
-if(FLARE_BUILD_CUDA)
-    add_subdirectory(cuda)
-endif ()
+SET(COMPILE_ONLY_SOURCES
+        array_test.cc
+        create_mirror_test.cc
+        detection_idiom_test.cc
+        bit_manipulation_test.cc
+        inter_op_test.cc
+        string_manipulation_test.cc
+        version_macros_test.cc
+        view_rank_test.cc
+        view_type_traits_test.cc
+        type_list_test.cc
+        extents_datatype_conversion_test.cc
+)
 
-if(FLARE_BUILD_OPENMP)
-    add_subdirectory(openmp)
-endif ()
-
-if(FLARE_BUILD_SERIAL)
-    add_subdirectory(serial)
-endif ()
+carbin_cc_binary(
+        NAME compile_only_test
+        SOURCES
+        ${COMPILE_ONLY_SOURCES}
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::flare
+)
