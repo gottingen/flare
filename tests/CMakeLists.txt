@@ -43,3 +43,4 @@ set(TEST_MAIN_SRC
 )
 add_subdirectory(compile_only)
 add_subdirectory(core)
+add_subdirectory(simd)
