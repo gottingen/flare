@@ -14,25 +14,23 @@
 # limitations under the License.
 #
 
-#[[
 carbin_cc_binary(
-        NAME hashes_example
-        SOURCES hashes_example.cc
-        DEPS tedis::tedis ${CARBIN_DEPS_LINK}
-        COPTS ${USER_CXX_FLAGS}
+        NAME example_memory_space_cc
+        SOURCES
+        memory_space.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::flare
 )
-]]
-#[[
+
 carbin_cc_binary(
-        NAME foo_ex
-        SOURCES foo_ex.cc
-        DEPS changeme::foo ${CARBIN_DEPS_LINK}
-        COPTS ${USER_CXX_FLAGS}
+        NAME example_memory_space_cu
+        SOURCES
+        memory_space.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        CUOPTS ${CARBIN_CU_OPTIONS}
+        DEPS
+        flare::flare
 )
-]]
-add_subdirectory(01_hello_word)
-add_subdirectory(02_device)
-add_subdirectory(03_lambda)
-add_subdirectory(04_simple_reduce)
-add_subdirectory(05_view)
-add_subdirectory(06_memory_space)

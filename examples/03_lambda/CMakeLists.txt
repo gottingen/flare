@@ -15,11 +15,22 @@
 #
 
 carbin_cc_binary(
-        NAME example_query_device
+        NAME hello_world_lambda_cc
         SOURCES
-        query_device.cc
+        hello_world_lambda.cc
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::flare
+)
+
+carbin_cc_binary(
+        NAME hello_world_lambda_cu
+        SOURCES
+        hello_world_lambda.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         flare::flare
 )
