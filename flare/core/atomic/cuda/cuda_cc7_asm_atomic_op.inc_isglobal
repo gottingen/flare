@@ -1,0 +1,88 @@
+
+// Inline PTX: h u16 , r u32,  l u64, f f32, d f64
+// Ops:
+
+// Non Returning Atomic Operations
+#define __FLARE_IMPL_CUDA_ASM_ATOMIC_ADD(type,asm_type,reg_type) \
+inline __device__ void device_atomic_add(type* dest, type value, __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER, __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE) { \
+  if(__isGlobal(dest)) { \
+  asm volatile("red.add.global" __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(value) : "memory"); \
+  } else { \
+  asm volatile("red.add"        __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(value) : "memory"); \
+  } \
+}
+
+#define __FLARE_IMPL_CUDA_ASM_ATOMIC_SUB(type,asm_type,reg_type) \
+inline __device__ void device_atomic_sub(type* dest, type value, __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER, __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE) { \
+  type neg_value = -value; \
+  if(__isGlobal(dest)) { \
+  asm volatile("red.add.global" __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(neg_value) : "memory"); \
+  } else { \
+  asm volatile("red.add"        __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(neg_value) : "memory"); \
+  } \
+}
+
+#define __FLARE_IMPL_CUDA_ASM_ATOMIC_MIN(type,asm_type,reg_type) \
+inline __device__ void device_atomic_min(type* dest, type value, __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER, __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE) { \
+  if(__isGlobal(dest)) { \
+  asm volatile("red.min.global" __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(value) : "memory"); \
+  } else { \
+  asm volatile("red.min"        __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(value) : "memory"); \
+  } \
+}
+
+#define __FLARE_IMPL_CUDA_ASM_ATOMIC_MAX(type,asm_type,reg_type) \
+inline __device__ void device_atomic_max(type* dest, type value, __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER, __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE) { \
+  if(__isGlobal(dest)) { \
+  asm volatile("red.max.global" __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(value) : "memory"); \
+  } else { \
+  asm volatile("red.max"        __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(value) : "memory"); \
+  } \
+}
+
+#define __FLARE_IMPL_CUDA_ASM_ATOMIC_INC(type,asm_type,reg_type) \
+inline __device__ void device_atomic_inc(type* dest, __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER, __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE) { \
+  type limit = flare::detail::numeric_limits_max<type>::value; \
+  if(__isGlobal(dest)) { \
+  asm volatile("red.inc.global" __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(limit) : "memory"); \
+  } else { \
+  asm volatile("red.inc"        __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(limit) : "memory"); \
+  } \
+}
+
+#define __FLARE_IMPL_CUDA_ASM_ATOMIC_DEC(type,asm_type,reg_type) \
+inline __device__ void device_atomic_dec(type* dest, __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER, __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE) { \
+  type limit = flare::detail::numeric_limits_max<type>::value; \
+  if(__isGlobal(dest)) { \
+  asm volatile("red.dec.global" __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(limit) : "memory"); \
+  } else { \
+  asm volatile("red.dec"        __FLARE_IMPL_CUDA_ASM_MEMORY_ORDER_ASM __FLARE_IMPL_CUDA_ASM_MEMORY_SCOPE_ASM asm_type " [%0],%1;" :: "l"(dest),reg_type(limit) : "memory"); \
+  } \
+}
+
+// Group ops for integer types
+#define __FLARE_IMPL_CUDA_ASM_ATOMIC_INTEGER_OP(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_ADD(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_SUB(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_MIN(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_MAX(type,asm_type,reg_type)
+
+#define __FLARE_IMPL_CUDA_ASM_ATOMIC_UNSIGNED_OP(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_ADD(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_SUB(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_MIN(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_MAX(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_INC(type,asm_type,reg_type) \
+__FLARE_IMPL_CUDA_ASM_ATOMIC_DEC(type,asm_type,reg_type)
+
+// Instantiate Functions
+__FLARE_IMPL_CUDA_ASM_ATOMIC_ADD(float,".f32","f")
+__FLARE_IMPL_CUDA_ASM_ATOMIC_SUB(float,".f32","f")
+__FLARE_IMPL_CUDA_ASM_ATOMIC_ADD(double,".f64","d")
+__FLARE_IMPL_CUDA_ASM_ATOMIC_SUB(double,".f64","d")
+
+__FLARE_IMPL_CUDA_ASM_ATOMIC_UNSIGNED_OP(uint32_t,".u32","r")
+
+__FLARE_IMPL_CUDA_ASM_ATOMIC_INTEGER_OP(int64_t,".u64","l")
+__FLARE_IMPL_CUDA_ASM_ATOMIC_INTEGER_OP(int32_t,".s32","r")
+//__FLARE_IMPL_CUDA_ASM_ATOMIC_INTEGER_OP(int64_t,".s64","l")

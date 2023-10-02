@@ -1,0 +1,113 @@
+// Copyright 2023 The Elastic-AI Authors.
+// part of Elastic AI Search
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+#ifndef FLARE_CORE_CONFIG_H_
+#define FLARE_CORE_CONFIG_H_
+
+// FLARE_VERSION % 100 is the patch level
+// FLARE_VERSION / 100 % 100 is the minor version
+// FLARE_VERSION / 10000 is the major version
+#define FLARE_VERSION @FLARE_VERSION@
+#define FLARE_VERSION_MAJOR @FLARE_VERSION_MAJOR@
+#define FLARE_VERSION_MINOR @FLARE_VERSION_MINOR@
+#define FLARE_VERSION_PATCH @FLARE_VERSION_PATCH@
+
+/* Execution Spaces */
+#cmakedefine FLARE_ENABLE_SERIAL
+#cmakedefine FLARE_ENABLE_OPENMP
+#cmakedefine FLARE_ENABLE_THREADS
+#cmakedefine FLARE_ENABLE_CUDA
+#cmakedefine FLARE_ENABLE_MEMKIND
+#cmakedefine FLARE_ENABLE_LIBRT
+
+/* General Settings */
+#cmakedefine FLARE_ENABLE_CXX17
+#cmakedefine FLARE_ENABLE_CXX20
+#cmakedefine FLARE_ENABLE_CXX23
+
+#cmakedefine FLARE_ENABLE_IMPL_CUDA_MALLOC_ASYNC
+#cmakedefine FLARE_ENABLE_DEBUG
+#cmakedefine FLARE_ENABLE_DEBUG_DUALVIEW_MODIFY_CHECK
+#cmakedefine FLARE_ENABLE_DEBUG_BOUNDS_CHECK
+#cmakedefine FLARE_ENABLE_TUNING
+#cmakedefine FLARE_ENABLE_DEPRECATION_WARNINGS
+#cmakedefine FLARE_ENABLE_LARGE_MEM_TESTS
+#cmakedefine FLARE_ENABLE_COMPLEX_ALIGN
+#cmakedefine FLARE_ENABLE_AGGRESSIVE_VECTORIZATION
+
+/* TPL Settings */
+#cmakedefine FLARE_ENABLE_HWLOC
+#cmakedefine FLARE_USE_LIBRT
+#cmakedefine FLARE_ENABLE_HBWSPACE
+#cmakedefine FLARE_ENABLE_LIBDL
+#cmakedefine FLARE_ENABLE_LIBQUADMATH
+#cmakedefine FLARE_IMPL_CUDA_CLANG_WORKAROUND
+
+#cmakedefine FLARE_ARCH_SSE42
+#cmakedefine FLARE_ARCH_ARMV80
+#cmakedefine FLARE_ARCH_ARMV8_THUNDERX
+#cmakedefine FLARE_ARCH_ARMV81
+#cmakedefine FLARE_ARCH_ARMV8_THUNDERX2
+#cmakedefine FLARE_ARCH_A64FX
+#cmakedefine FLARE_ARCH_AVX
+#cmakedefine FLARE_ARCH_AVX2
+#cmakedefine FLARE_ARCH_AVX512XEON
+#cmakedefine FLARE_ARCH_KNC
+#cmakedefine FLARE_ARCH_AVX512MIC
+#cmakedefine FLARE_ARCH_POWER7
+#cmakedefine FLARE_ARCH_POWER8
+#cmakedefine FLARE_ARCH_POWER9
+#cmakedefine FLARE_ARCH_KEPLER
+#cmakedefine FLARE_ARCH_KEPLER30
+#cmakedefine FLARE_ARCH_KEPLER32
+#cmakedefine FLARE_ARCH_KEPLER35
+#cmakedefine FLARE_ARCH_KEPLER37
+#cmakedefine FLARE_ARCH_MAXWELL
+#cmakedefine FLARE_ARCH_MAXWELL50
+#cmakedefine FLARE_ARCH_MAXWELL52
+#cmakedefine FLARE_ARCH_MAXWELL53
+#cmakedefine FLARE_ARCH_PASCAL
+#cmakedefine FLARE_ARCH_PASCAL60
+#cmakedefine FLARE_ARCH_PASCAL61
+#cmakedefine FLARE_ARCH_VOLTA
+#cmakedefine FLARE_ARCH_VOLTA70
+#cmakedefine FLARE_ARCH_VOLTA72
+#cmakedefine FLARE_ARCH_TURING75
+#cmakedefine FLARE_ARCH_AMPERE
+#cmakedefine FLARE_ARCH_AMPERE80
+#cmakedefine FLARE_ARCH_AMPERE86
+#cmakedefine FLARE_ARCH_ADA89
+#cmakedefine FLARE_ARCH_HOPPER
+#cmakedefine FLARE_ARCH_HOPPER90
+#cmakedefine FLARE_ARCH_AMD_ZEN
+#cmakedefine FLARE_ARCH_AMD_ZEN2
+#cmakedefine FLARE_ARCH_AMD_ZEN3
+#cmakedefine FLARE_ARCH_AMD_GFX906
+#cmakedefine FLARE_ARCH_AMD_GFX908
+#cmakedefine FLARE_ARCH_AMD_GFX90A
+#cmakedefine FLARE_ARCH_AMD_GFX942
+#cmakedefine FLARE_ARCH_AMD_GFX1030
+#cmakedefine FLARE_ARCH_AMD_GFX1100
+#cmakedefine FLARE_ARCH_AMD_GPU
+#cmakedefine FLARE_ARCH_VEGA // deprecated
+#cmakedefine FLARE_ARCH_VEGA906 // deprecated
+#cmakedefine FLARE_ARCH_VEGA908 // deprecated
+#cmakedefine FLARE_ARCH_VEGA90A // deprecated
+#cmakedefine FLARE_ARCH_NAVI // deprecated
+#cmakedefine FLARE_ARCH_NAVI1030 // deprecated
+#cmakedefine FLARE_ARCH_NAVI1100 // deprecated
+
+#cmakedefine FLARE_IMPL_32BIT
+#endif  // FLARE_CORE_CONFIG_H_

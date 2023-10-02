@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+carbin
+cmake-build-debug
+build
+.idea
+.vscode
+extern
+__pycache__
+*.whl
