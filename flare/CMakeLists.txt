@@ -65,7 +65,6 @@ if(FLARE_BUILD_CUDA)
             ${PROJECT_SOURCE_DIR}/flare/core/common/error.cu
     )
     include_directories(${CUDA_INCLUDE_DIRS})
-    include(cuda_select_arch)
 endif ()
 
 
@@ -91,5 +90,3 @@ carbin_cc_library(
         PUBLIC
         CUDA
 )
-
-carbin_detect_and_set_cuda_architectures(flare_STATIC)

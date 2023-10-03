@@ -58,8 +58,7 @@ include(carbin_module)
 #
 # your cmake directory ${PROJECT_SOURCE_DIR}/cmake, do things here
 #################################################################
-include(user_deps)
-include(user_cxx_config)
+include(user_module)
 
 add_subdirectory(flare)
 ####################################################################

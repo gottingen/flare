@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-find_package(CUDA 10.2)
+find_package(CUDA 11.6)
 
 option(CARBIN_CAN_BUILD_CUDA     "Build flare with a CUDA backend"       ${CUDA_FOUND})
 if(CARBIN_CAN_BUILD_CUDA)
