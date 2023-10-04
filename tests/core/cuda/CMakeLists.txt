@@ -108,3 +108,26 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::flare
 )
+
+carbin_cc_test(
+        NAME cuda_atomic_operations_test
+        SOURCES
+        atomic_operations_complexdouble_test.cu
+        atomic_operations_complexfloat_test.cu
+        atomic_operations_double_test.cu
+        atomic_operations_float_test.cu
+        atomic_operations_int_test.cu
+        atomic_operations_longint_test.cu
+        atomic_operations_longlongint_test.cu
+        atomic_operations_shared_test.cu
+        atomic_operations_unsignedint_test.cu
+        atomic_operations_unsignedlongint_test.cu
+        atomic_test.cu
+        atomic_view_test.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        CUOPTS ${CARBIN_CU_OPTIONS}
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::flare
+)
