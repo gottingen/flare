@@ -62,16 +62,18 @@ endif()
 
 LIST(FIND FLARE_CUDA_ARCH_FLAGS sm_${_CUDA_COMPUTE_CAPABILITY} FLAG_INDEX)
 
+set(CARBIN_ARCH "")
 IF(_COMPILE_RESULT AND _RESULT EQUAL 0 AND NOT FLAG_INDEX EQUAL -1)
     MESSAGE(STATUS "Detected CUDA Compute Capability ${_CUDA_COMPUTE_CAPABILITY}")
     LIST(GET FLARE_CUDA_ARCH_LIST ${FLAG_INDEX} ARCHITECTURE)
     CHECK_CUDA_ARCH(${ARCHITECTURE} sm_${_CUDA_COMPUTE_CAPABILITY})
     message(STATUS "${ARCHITECTURE} on")
+    set(CARBIN_ARCH ${ARCHITECTURE})
     LIST(APPEND FLARE_ENABLED_ARCH_LIST ${ARCHITECTURE})
     set(CMAKE_CUDA_ARCHITECTURES ${_CUDA_COMPUTE_CAPABILITY})
 ELSE()
     MESSAGE(SEND_ERROR "CUDA enabled but no NVIDIA GPU architecture currently enabled and auto-detection failed. "
-            "Please give one -Dflare_ARCH_{..}=ON' to enable an NVIDIA GPU architecture.\n"
-            "You can yourself try to compile ${CMAKE_CURRENT_SOURCE_DIR}/cmake/compile_tests/cuda_compute_capability.cc and run the executable. "
+            "Please give one -DCARBIN_ARCH_{..}=ON' to enable an NVIDIA GPU architecture.\n"
+            "You can yourself try to compile ${PROJECT_SOURCE_DIR}/cmake/compile_tests/cuda_compute_capability.cu and run the executable. "
             "If you are cross-compiling, you should try to do this on a compute node.")
 ENDIF()
