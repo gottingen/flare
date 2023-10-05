@@ -50,7 +50,7 @@ list(REMOVE_DUPLICATES CARBIN_CXX_OPTIONS)
 carbin_print_list_label("CXX_OPTIONS:" CARBIN_CXX_OPTIONS)
 set(CARBIN_CU_OPTIONS)
 list(APPEND CARBIN_CU_OPTIONS "--use_fast_math")
-list(APPEND CARBIN_CU_OPTIONS "--fmad=true" "--verbose" "-arch=sm_86" "--extended-lambda")
+list(APPEND CARBIN_CU_OPTIONS "--fmad=true" "--extended-lambda" "--expt-relaxed-constexpr")
 carbin_print_list_label("CU_OPTIONS" CARBIN_CU_OPTIONS)
 
 set(FLARE_ENABLE_CXX17 ON)

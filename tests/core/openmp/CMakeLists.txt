@@ -56,3 +56,35 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::flare
 )
+
+carbin_cc_test(
+        NAME openmp_misc_test
+        SOURCES
+        bit_manipulation_builtins_test.cc
+        block_size_deduction_test.cc
+        checked_integer_ops_test.cc
+        common_policy_constructors_test.cc
+        common_policy_interface_test.cc
+        complex_test.cc
+        concepts_test.cc
+        crs_test.cc
+        deep_copy_alignment_test.cc
+        exec_space_partitioning_test.cc
+        execution_space_test.cc
+        functor_analysis_test.cc
+        host_shared_ptr_access_on_device_test.cc
+        host_shared_ptr_test.cc
+        init_test.cc
+        join_backward_compatibility_test.cc
+        local_deep_copy_test.cc
+        mathematical_constants_test.cc
+        mathematical_functions1_test.cc
+        mathematical_functions2_test.cc
+        mathematical_functions3_test.cc
+        mathematical_special_functions_test.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::flare
+)

@@ -131,3 +131,37 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::flare
 )
+
+carbin_cc_test(
+        NAME cuda_misc_test
+        SOURCES
+        bit_manipulation_builtins_test.cu
+        block_size_deduction_test.cu
+        checked_integer_ops_test.cu
+        common_policy_constructors_test.cu
+        common_policy_interface_test.cu
+        complex_test.cu
+        concepts_test.cu
+        crs_test.cu
+        deep_copy_alignment_test.cu
+        exec_space_partitioning_test.cu
+        execution_space_test.cu
+        functor_analysis_test.cu
+        host_shared_ptr_access_on_device_test.cu
+        host_shared_ptr_test.cu
+        init_test.cu
+        join_backward_compatibility_test.cu
+        local_deep_copy_test.cu
+        mathematical_constants_test.cu
+        mathematical_functions1_test.cu
+        mathematical_functions2_test.cu
+        mathematical_functions3_test.cu
+        mathematical_special_functions_test.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        CUOPTS ${CARBIN_CU_OPTIONS}
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::flare
+)
+
