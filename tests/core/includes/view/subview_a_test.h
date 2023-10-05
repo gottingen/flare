@@ -13,57 +13,57 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_TEST_SUBVIEW_A_HPP
-#define FLARE_TEST_SUBVIEW_A_HPP
-#include <view_subview_test.h>
+#ifndef FLARE_TEST_SUBVIEW_A_H_
+#define FLARE_TEST_SUBVIEW_A_H_
+#include <view/view_subview_test.h>
 
 namespace Test {
 
-TEST(TEST_CATEGORY, view_subview_auto_1d_left) {
+TEST_CASE("TEST_CATEGORY, view_subview_auto_1d_left") {
   TestViewSubview::test_auto_1d<flare::LayoutLeft, TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_auto_1d_right) {
+TEST_CASE("TEST_CATEGORY, view_subview_auto_1d_right") {
   TestViewSubview::test_auto_1d<flare::LayoutRight, TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_auto_1d_stride) {
+TEST_CASE("TEST_CATEGORY, view_subview_auto_1d_stride") {
   TestViewSubview::test_auto_1d<flare::LayoutStride, TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_assign_strided) {
+TEST_CASE("TEST_CATEGORY, view_subview_assign_strided") {
   TestViewSubview::test_1d_strided_assignment<TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_left_0) {
+TEST_CASE("TEST_CATEGORY, view_subview_left_0") {
   TestViewSubview::test_left_0<TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_left_1) {
+TEST_CASE("TEST_CATEGORY, view_subview_left_1") {
   TestViewSubview::test_left_1<TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_left_2) {
+TEST_CASE("TEST_CATEGORY, view_subview_left_2") {
   TestViewSubview::test_left_2<TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_left_3) {
+TEST_CASE("TEST_CATEGORY, view_subview_left_3") {
   TestViewSubview::test_left_3<TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_right_0) {
+TEST_CASE("TEST_CATEGORY, view_subview_right_0") {
   TestViewSubview::test_right_0<TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_right_1) {
+TEST_CASE("TEST_CATEGORY, view_subview_right_1") {
   TestViewSubview::test_right_1<TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_subview_right_3) {
+TEST_CASE("TEST_CATEGORY, view_subview_right_3") {
   TestViewSubview::test_right_3<TEST_EXECSPACE>();
 }
 
-TEST(TEST_CATEGORY, view_static_tests) {
+TEST_CASE("TEST_CATEGORY, view_static_tests") {
   TestViewSubview::TestSubviewStaticSizes<TEST_EXECSPACE,
                                           flare::LayoutLeft>()();
   TestViewSubview::TestSubviewStaticSizes<TEST_EXECSPACE,
@@ -72,4 +72,4 @@ TEST(TEST_CATEGORY, view_static_tests) {
 }
 
 }  // namespace Test
-#endif
+#endif  // FLARE_TEST_SUBVIEW_A_H_

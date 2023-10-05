@@ -13,15 +13,16 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_TEST_SUBVIEW_C13_HPP
-#define FLARE_TEST_SUBVIEW_C13_HPP
-#include <view_subview_test.h>
+#ifndef FLARE_TEST_SUBVIEW_13_H_
+#define FLARE_TEST_SUBVIEW_13_H_
+
+#include <view/view_subview_test.h>
 
 namespace Test {
 
-TEST(TEST_CATEGORY, view_test_unmanaged_subview_reset) {
-  TestViewSubview::test_unmanaged_subview_reset<TEST_EXECSPACE>();
-}
+    TEST_CASE("TEST_CATEGORY, view_test_unmanaged_subview_reset") {
+        TestViewSubview::test_unmanaged_subview_reset<TEST_EXECSPACE>();
+    }
 
 }  // namespace Test
-#endif
+#endif  // FLARE_TEST_SUBVIEW_13_H_

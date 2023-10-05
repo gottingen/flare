@@ -13,15 +13,16 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_TEST_SUBVIEW_C10_HPP
-#define FLARE_TEST_SUBVIEW_C10_HPP
-#include <view_subview_test.h>
+#ifndef FLARE_TEST_SUBVIEW_10_H_
+#define FLARE_TEST_SUBVIEW_10_H_
+
+#include <view/view_subview_test.h>
 
 namespace Test {
 
-TEST(TEST_CATEGORY, view_subview_3d_from_5d_right) {
-  TestViewSubview::test_3d_subview_5d_right<TEST_EXECSPACE>();
-}
+    TEST_CASE("TEST_CATEGORY, view_subview_3d_from_5d_right") {
+        TestViewSubview::test_3d_subview_5d_right<TEST_EXECSPACE>();
+    }
 
 }  // namespace Test
-#endif
+#endif  // FLARE_TEST_SUBVIEW_10_H_

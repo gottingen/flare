@@ -15,14 +15,15 @@
 
 #ifndef FLARE_TEST_SUBVIEW_C06_HPP
 #define FLARE_TEST_SUBVIEW_C06_HPP
-#include <view_subview_test.h>
+
+#include <view/view_subview_test.h>
 
 namespace Test {
 
-TEST(TEST_CATEGORY, view_subview_2d_from_3d_randomaccess) {
-  TestViewSubview::test_2d_subview_3d<
-      TEST_EXECSPACE, flare::MemoryTraits<flare::RandomAccess> >();
-}
+    TEST_CASE("TEST_CATEGORY, view_subview_2d_from_3d_randomaccess") {
+        TestViewSubview::test_2d_subview_3d<
+                TEST_EXECSPACE, flare::MemoryTraits<flare::RandomAccess> >();
+    }
 
 }  // namespace Test
 #endif

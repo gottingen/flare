@@ -146,3 +146,29 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::flare
 )
+
+carbin_cc_test(
+        NAME serial_subview_test
+        SOURCES
+        subview_01_test.cc
+        subview_02_test.cc
+        subview_03_test.cc
+        subview_04_test.cc
+        subview_05_test.cc
+        subview_06_test.cc
+        subview_07_test.cc
+        subview_08_test.cc
+        subview_09_test.cc
+        subview_10_test.cc
+        subview_11_test.cc
+        subview_12_test.cc
+        subview_13_test.cc
+        subview_14_test.cc
+        subview_a_test.cc
+        subview_b_test.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::flare
+)

@@ -15,14 +15,15 @@
 
 #ifndef FLARE_TEST_SUBVIEW_C08_HPP
 #define FLARE_TEST_SUBVIEW_C08_HPP
-#include <view_subview_test.h>
+
+#include <view/view_subview_test.h>
 
 namespace Test {
 
-TEST(TEST_CATEGORY, view_subview_3d_from_5d_left_atomic) {
-  TestViewSubview::test_3d_subview_5d_left<
-      TEST_EXECSPACE, flare::MemoryTraits<flare::Atomic> >();
-}
+    TEST_CASE("TEST_CATEGORY, view_subview_3d_from_5d_left_atomic") {
+        TestViewSubview::test_3d_subview_5d_left<
+                TEST_EXECSPACE, flare::MemoryTraits<flare::Atomic> >();
+    }
 
 }  // namespace Test
 #endif

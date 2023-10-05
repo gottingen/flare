@@ -314,12 +314,12 @@ namespace TestViewSubview {
                 typename Space::memory_space>::accessible) {
             view_static_8_type x_static_8("x_static_left_8");
 
-            ASSERT_TRUE(x_static_8.span_is_contiguous());
+            REQUIRE(x_static_8.span_is_contiguous());
 
             flare::View<int, flare::LayoutLeft, Space> x0;
             make_subview(constr, x0, x_static_8, 0, 0, 0, 0, 0, 0, 0, 0);
 
-            ASSERT_TRUE(x0.span_is_contiguous());
+            REQUIRE(x0.span_is_contiguous());
             REQUIRE_EQ(x0.span(), 1u);
             REQUIRE_EQ(&x0(), &x_static_8(0, 0, 0, 0, 0, 0, 0, 0));
 
@@ -327,7 +327,7 @@ namespace TestViewSubview {
             make_subview(constr, x1, x_static_8, flare::pair<int, int>(0, 2), 1, 2, 3,
                          0, 1, 2, 3);
 
-            ASSERT_TRUE(x1.span_is_contiguous());
+            REQUIRE(x1.span_is_contiguous());
             REQUIRE_EQ(x1.span(), 2u);
             REQUIRE_EQ(&x1(0), &x_static_8(0, 1, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&x1(1), &x_static_8(1, 1, 2, 3, 0, 1, 2, 3));
@@ -336,7 +336,7 @@ namespace TestViewSubview {
             make_subview(constr, x_deg1, x_static_8, flare::pair<int, int>(0, 0), 1, 2,
                          3, 0, 1, 2, 3);
 
-            ASSERT_TRUE(x_deg1.span_is_contiguous());
+            REQUIRE(x_deg1.span_is_contiguous());
             REQUIRE_EQ(x_deg1.span(), 0u);
             REQUIRE_EQ(x_deg1.data(), &x_static_8(0, 1, 2, 3, 0, 1, 2, 3));
 
@@ -344,7 +344,7 @@ namespace TestViewSubview {
             make_subview(constr, x_deg2, x_static_8, flare::pair<int, int>(2, 2), 2, 3,
                          4, 1, 2, 3, 4);
 
-            ASSERT_TRUE(x_deg2.span_is_contiguous());
+            REQUIRE(x_deg2.span_is_contiguous());
             REQUIRE_EQ(x_deg2.span(), 0u);
             REQUIRE_EQ(x_deg2.data(), x_static_8.data() + x_static_8.span());
 
@@ -352,7 +352,7 @@ namespace TestViewSubview {
             make_subview(constr, x2, x_static_8, flare::pair<int, int>(0, 2), 1, 2, 3,
                          flare::pair<int, int>(0, 2), 1, 2, 3);
 
-            ASSERT_TRUE(!x2.span_is_contiguous());
+            REQUIRE(!x2.span_is_contiguous());
             REQUIRE_EQ(&x2(0, 0), &x_static_8(0, 1, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&x2(1, 0), &x_static_8(1, 1, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&x2(0, 1), &x_static_8(0, 1, 2, 3, 1, 1, 2, 3));
@@ -363,7 +363,7 @@ namespace TestViewSubview {
             make_subview(constr, sx2, x_static_8, 1, flare::pair<int, int>(0, 2), 2, 3,
                          flare::pair<int, int>(0, 2), 1, 2, 3);
 
-            ASSERT_TRUE(!sx2.span_is_contiguous());
+            REQUIRE(!sx2.span_is_contiguous());
             REQUIRE_EQ(&sx2(0, 0), &x_static_8(1, 0, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&sx2(1, 0), &x_static_8(1, 1, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&sx2(0, 1), &x_static_8(1, 0, 2, 3, 1, 1, 2, 3));
@@ -380,7 +380,7 @@ namespace TestViewSubview {
                          2, flare::pair<int, int>(2, 4) /* of [5] */
             );
 
-            ASSERT_TRUE(!sx4.span_is_contiguous());
+            REQUIRE(!sx4.span_is_contiguous());
 
             for (int i0 = 0; i0 < (int) sx4.extent(0); ++i0)
                 for (int i1 = 0; i1 < (int) sx4.extent(1); ++i1)
@@ -407,19 +407,19 @@ namespace TestViewSubview {
                 typename Space::memory_space>::accessible) {
             view_type x8("x_left_8", 2, 3, 4, 5);
 
-            ASSERT_TRUE(x8.span_is_contiguous());
+            REQUIRE(x8.span_is_contiguous());
 
             flare::View<int, flare::LayoutLeft, Space> x0;
             make_subview(use_constr, x0, x8, 0, 0, 0, 0, 0, 0, 0, 0);
 
-            ASSERT_TRUE(x0.span_is_contiguous());
+            REQUIRE(x0.span_is_contiguous());
             REQUIRE_EQ(&x0(), &x8(0, 0, 0, 0, 0, 0, 0, 0));
 
             flare::View<int *, flare::LayoutLeft, Space> x1;
             make_subview(use_constr, x1, x8, flare::pair<int, int>(0, 2), 1, 2, 3, 0,
                          1, 2, 3);
 
-            ASSERT_TRUE(x1.span_is_contiguous());
+            REQUIRE(x1.span_is_contiguous());
             REQUIRE_EQ(&x1(0), &x8(0, 1, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&x1(1), &x8(1, 1, 2, 3, 0, 1, 2, 3));
 
@@ -427,7 +427,7 @@ namespace TestViewSubview {
             make_subview(use_constr, x1_deg1, x8, flare::pair<int, int>(0, 0), 1, 2, 3,
                          0, 1, 2, 3);
 
-            ASSERT_TRUE(x1_deg1.span_is_contiguous());
+            REQUIRE(x1_deg1.span_is_contiguous());
             REQUIRE_EQ(0u, x1_deg1.span());
             REQUIRE_EQ(x1_deg1.data(), &x8(0, 1, 2, 3, 0, 1, 2, 3));
 
@@ -436,14 +436,14 @@ namespace TestViewSubview {
                          1, 2, 3, 4);
 
             REQUIRE_EQ(0u, x1_deg2.span());
-            ASSERT_TRUE(x1_deg2.span_is_contiguous());
+            REQUIRE(x1_deg2.span_is_contiguous());
             REQUIRE_EQ(x1_deg2.data(), x8.data() + x8.span());
 
             flare::View<int **, flare::LayoutLeft, Space> x2;
             make_subview(use_constr, x2, x8, flare::pair<int, int>(0, 2), 1, 2, 3,
                          flare::pair<int, int>(0, 2), 1, 2, 3);
 
-            ASSERT_TRUE(!x2.span_is_contiguous());
+            REQUIRE(!x2.span_is_contiguous());
             REQUIRE_EQ(&x2(0, 0), &x8(0, 1, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&x2(1, 0), &x8(1, 1, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&x2(0, 1), &x8(0, 1, 2, 3, 1, 1, 2, 3));
@@ -459,7 +459,7 @@ namespace TestViewSubview {
             make_subview(use_constr, sx2, x8, 1, flare::pair<int, int>(0, 2), 2, 3,
                          flare::pair<int, int>(0, 2), 1, 2, 3);
 
-            ASSERT_TRUE(!sx2.span_is_contiguous());
+            REQUIRE(!sx2.span_is_contiguous());
             REQUIRE_EQ(&sx2(0, 0), &x8(1, 0, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&sx2(1, 0), &x8(1, 1, 2, 3, 0, 1, 2, 3));
             REQUIRE_EQ(&sx2(0, 1), &x8(1, 0, 2, 3, 1, 1, 2, 3));
@@ -481,7 +481,7 @@ namespace TestViewSubview {
                          2, flare::pair<int, int>(2, 4) /* of [5] */
             );
 
-            ASSERT_TRUE(!sx4.span_is_contiguous());
+            REQUIRE(!sx4.span_is_contiguous());
 
             for (int i0 = 0; i0 < (int) sx4.extent(0); ++i0)
                 for (int i1 = 0; i1 < (int) sx4.extent(1); ++i1)
@@ -507,25 +507,25 @@ namespace TestViewSubview {
                 typename Space::memory_space>::accessible) {
             view_type x4("x4", 2, 3, 4, 5);
 
-            ASSERT_TRUE(x4.span_is_contiguous());
+            REQUIRE(x4.span_is_contiguous());
 
             flare::View<int, flare::LayoutLeft, Space> x0 =
                     flare::subview(x4, 0, 0, 0, 0);
 
-            ASSERT_TRUE(x0.span_is_contiguous());
+            REQUIRE(x0.span_is_contiguous());
             REQUIRE_EQ(&x0(), &x4(0, 0, 0, 0));
 
             flare::View<int *, flare::LayoutLeft, Space> x1 =
                     flare::subview(x4, flare::pair<int, int>(0, 2), 1, 2, 3);
 
-            ASSERT_TRUE(x1.span_is_contiguous());
+            REQUIRE(x1.span_is_contiguous());
             REQUIRE_EQ(&x1(0), &x4(0, 1, 2, 3));
             REQUIRE_EQ(&x1(1), &x4(1, 1, 2, 3));
 
             flare::View<int **, flare::LayoutLeft, Space> x2 = flare::subview(
                     x4, flare::pair<int, int>(0, 2), 1, flare::pair<int, int>(1, 3), 2);
 
-            ASSERT_TRUE(!x2.span_is_contiguous());
+            REQUIRE(!x2.span_is_contiguous());
             REQUIRE_EQ(&x2(0, 0), &x4(0, 1, 1, 2));
             REQUIRE_EQ(&x2(1, 0), &x4(1, 1, 1, 2));
             REQUIRE_EQ(&x2(0, 1), &x4(0, 1, 2, 2));
@@ -535,7 +535,7 @@ namespace TestViewSubview {
             flare::View<int **, flare::LayoutStride, Space> sx2 = flare::subview(
                     x4, 1, flare::pair<int, int>(0, 2), 2, flare::pair<int, int>(1, 4));
 
-            ASSERT_TRUE(!sx2.span_is_contiguous());
+            REQUIRE(!sx2.span_is_contiguous());
             REQUIRE_EQ(&sx2(0, 0), &x4(1, 0, 2, 1));
             REQUIRE_EQ(&sx2(1, 0), &x4(1, 1, 2, 1));
             REQUIRE_EQ(&sx2(0, 1), &x4(1, 0, 2, 2));
@@ -553,7 +553,7 @@ namespace TestViewSubview {
                                    flare::pair<int, int>(2, 4) /* of [5] */
                     );
 
-            ASSERT_TRUE(!sx4.span_is_contiguous());
+            REQUIRE(!sx4.span_is_contiguous());
 
             for (int i0 = 0; i0 < (int) sx4.extent(0); ++i0)
                 for (int i1 = 0; i1 < (int) sx4.extent(1); ++i1)
@@ -573,17 +573,17 @@ namespace TestViewSubview {
                 typename Space::memory_space>::accessible) {
             view_type xm("x4", 10, 5);
 
-            ASSERT_TRUE(xm.span_is_contiguous());
+            REQUIRE(xm.span_is_contiguous());
 
             flare::View<int, flare::LayoutLeft, Space> x0 = flare::subview(xm, 5, 3);
 
-            ASSERT_TRUE(x0.span_is_contiguous());
+            REQUIRE(x0.span_is_contiguous());
             REQUIRE_EQ(&x0(), &xm(5, 3));
 
             flare::View<int *, flare::LayoutLeft, Space> x1 =
                     flare::subview(xm, flare::ALL, 3);
 
-            ASSERT_TRUE(x1.span_is_contiguous());
+            REQUIRE(x1.span_is_contiguous());
             for (int i = 0; i < int(xm.extent(0)); ++i) {
                 REQUIRE_EQ(&x1(i), &xm(i, 3));
             }
@@ -591,7 +591,7 @@ namespace TestViewSubview {
             flare::View<int **, flare::LayoutLeft, Space> x2 =
                     flare::subview(xm, flare::pair<int, int>(1, 9), flare::ALL);
 
-            ASSERT_TRUE(!x2.span_is_contiguous());
+            REQUIRE(!x2.span_is_contiguous());
             for (int j = 0; j < int(x2.extent(1)); ++j)
                 for (int i = 0; i < int(x2.extent(0)); ++i) {
                     REQUIRE_EQ(&x2(i, j), &xm(1 + i, j));
@@ -600,7 +600,7 @@ namespace TestViewSubview {
             flare::View<int **, flare::LayoutLeft, Space> x2c =
                     flare::subview(xm, flare::ALL, std::pair<int, int>(2, 4));
 
-            ASSERT_TRUE(x2c.span_is_contiguous());
+            REQUIRE(x2c.span_is_contiguous());
             for (int j = 0; j < int(x2c.extent(1)); ++j)
                 for (int i = 0; i < int(x2c.extent(0)); ++i) {
                     REQUIRE_EQ(&x2c(i, j), &xm(i, 2 + j));
@@ -789,18 +789,18 @@ namespace TestViewSubview {
                 typename Space::memory_space>::accessible) {
             view_type xm("x4", 10, 5);
 
-            ASSERT_TRUE(xm.span_is_contiguous());
+            REQUIRE(xm.span_is_contiguous());
 
             flare::View<int, flare::LayoutRight, Space> x0 =
                     flare::subview(xm, 5, 3);
 
-            ASSERT_TRUE(x0.span_is_contiguous());
+            REQUIRE(x0.span_is_contiguous());
             REQUIRE_EQ(&x0(), &xm(5, 3));
 
             flare::View<int *, flare::LayoutRight, Space> x1 =
                     flare::subview(xm, 3, flare::ALL);
 
-            ASSERT_TRUE(x1.span_is_contiguous());
+            REQUIRE(x1.span_is_contiguous());
             for (int i = 0; i < int(xm.extent(1)); ++i) {
                 REQUIRE_EQ(&x1(i), &xm(3, i));
             }
@@ -808,7 +808,7 @@ namespace TestViewSubview {
             flare::View<int **, flare::LayoutRight, Space> x2c =
                     flare::subview(xm, flare::pair<int, int>(1, 9), flare::ALL);
 
-            ASSERT_TRUE(x2c.span_is_contiguous());
+            REQUIRE(x2c.span_is_contiguous());
             for (int j = 0; j < int(x2c.extent(1)); ++j)
                 for (int i = 0; i < int(x2c.extent(0)); ++i) {
                     REQUIRE_EQ(&x2c(i, j), &xm(1 + i, j));
@@ -817,7 +817,7 @@ namespace TestViewSubview {
             flare::View<int **, flare::LayoutRight, Space> x2 =
                     flare::subview(xm, flare::ALL, std::pair<int, int>(2, 4));
 
-            ASSERT_TRUE(!x2.span_is_contiguous());
+            REQUIRE(!x2.span_is_contiguous());
             for (int j = 0; j < int(x2.extent(1)); ++j)
                 for (int i = 0; i < int(x2.extent(0)); ++i) {
                     REQUIRE_EQ(&x2(i, j), &xm(i, 2 + j));

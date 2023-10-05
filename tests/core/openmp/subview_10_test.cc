@@ -1,4 +1,4 @@
-subview_06_test.cc// Copyright 2023 The Elastic-AI Authors.
+// Copyright 2023 The Elastic-AI Authors.
 // part of Elastic AI Search
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,4 +16,4 @@ subview_06_test.cc// Copyright 2023 The Elastic-AI Authors.
 // Created by jeff on 23-10-5.
 //
 #include <openmp_category_test.h>
-#include <view/subview_06_test.h>
+#include <view/subview_10_test.h>

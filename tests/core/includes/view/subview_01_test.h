@@ -15,13 +15,14 @@
 
 #ifndef FLARE_TEST_SUBVIEW_C01_HPP
 #define FLARE_TEST_SUBVIEW_C01_HPP
-#include <view_subview_test.h>
+
+#include <view/view_subview_test.h>
 
 namespace Test {
 
-TEST(TEST_CATEGORY, view_subview_1d_assign) {
-  TestViewSubview::test_1d_assign<TEST_EXECSPACE>();
-}
+    TEST_CASE("TEST_CATEGORY, view_subview_1d_assign") {
+        TestViewSubview::test_1d_assign<TEST_EXECSPACE>();
+    }
 
 }  // namespace Test
 #endif

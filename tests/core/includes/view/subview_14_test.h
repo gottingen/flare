@@ -13,15 +13,16 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_TEST_SUBVIEW_C14_HPP
-#define FLARE_TEST_SUBVIEW_C14_HPP
-#include <view_subview_test.h>
+#ifndef FLARE_TEST_SUBVIEW_14_H_
+#define FLARE_TEST_SUBVIEW_14_H_
+
+#include <view/view_subview_test.h>
 
 namespace Test {
 
-TEST(TEST_CATEGORY, view_subview_memory_traits_construction) {
-  TestViewSubview::test_subview_memory_traits_construction();
-}
+    TEST_CASE("TEST_CATEGORY, view_subview_memory_traits_construction") {
+        TestViewSubview::test_subview_memory_traits_construction();
+    }
 
 }  // namespace Test
-#endif
+#endif  // FLARE_TEST_SUBVIEW_14_H_

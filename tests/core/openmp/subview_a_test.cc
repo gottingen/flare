@@ -15,3 +15,5 @@
 //
 // Created by jeff on 23-10-5.
 //
+#include <openmp_category_test.h>
+#include <view/subview_a_test.h>
