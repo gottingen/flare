@@ -65,16 +65,8 @@ if(FLARE_BUILD_CUDA)
             ${PROJECT_SOURCE_DIR}/flare/core/common/error.cu
     )
     include_directories(${CUDA_INCLUDE_DIRS})
-    include(cuda_select_arch)
 endif ()
 
-
-set(FLARE_ENABLE_OPENMP ${FLARE_BUILD_OPENMP})
-
-set(FLARE_ENABLE_SERIAL ${FLARE_BUILD_SERIAL})
-
-set(FLARE_ENABLE_CUDA ${FLARE_BUILD_CUDA})
-set(FLARE_ARCH_AMPERE86 ON)
 
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/flare/core/core_config.h.in ${PROJECT_BINARY_DIR}/flare/core/core_config.h @ONLY)
 message(STATUS ${CUDA_CUDA_LIBRARY})
@@ -91,5 +83,3 @@ carbin_cc_library(
         PUBLIC
         CUDA
 )
-
-carbin_detect_and_set_cuda_architectures(flare_STATIC)

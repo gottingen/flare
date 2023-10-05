@@ -34,115 +34,115 @@
 using team_member = typename flare::TeamPolicy<>::member_type;
 
 struct SomeCorrelation {
-  using value_type   = int;  // Specify value type for reduction target, sum
-  using shared_space = flare::DefaultExecutionSpace::scratch_memory_space;
-  using shared_1d_int =
-      flare::View<int*, shared_space, flare::MemoryUnmanaged>;
+    using value_type = int;  // Specify value type for reduction target, sum
+    using shared_space = flare::DefaultExecutionSpace::scratch_memory_space;
+    using shared_1d_int =
+            flare::View<int *, shared_space, flare::MemoryUnmanaged>;
 
-  flare::View<const int***, flare::LayoutRight> data;
-  flare::View<int> gsum;
+    flare::View<const int ***, flare::LayoutRight> data;
+    flare::View<int> gsum;
 
-  SomeCorrelation(flare::View<int***, flare::LayoutRight> data_in,
-                  flare::View<int> sum)
-      : data(data_in), gsum(sum) {}
+    SomeCorrelation(flare::View<int ***, flare::LayoutRight> data_in,
+                    flare::View<int> sum)
+            : data(data_in), gsum(sum) {}
 
-  FLARE_INLINE_FUNCTION
-  void operator()(const team_member& thread) const {
-    int i = thread.league_rank();
+    FLARE_INLINE_FUNCTION
+    void operator()(const team_member &thread) const {
+        int i = thread.league_rank();
 
-    // Allocate a shared array for the team.
-    shared_1d_int count(thread.team_shmem(), data.extent(1));
+        // Allocate a shared array for the team.
+        shared_1d_int count(thread.team_shmem(), data.extent(1));
 
-    // With each team run a parallel_for with its threads
-    flare::parallel_for(
-        flare::TeamThreadRange(thread, data.extent(1)),
-        [=, *this](const int& j) {
-          int tsum;
-          // Run a vector loop reduction over the inner dimension of data
-          // Count how many values are multiples of 4
-          // Every vector lane gets the same reduction value (tsum) back, it is
-          // broadcast to all vector lanes
-          flare::parallel_reduce(
-              flare::ThreadVectorRange(thread, data.extent(2)),
-              [=, *this](const int& k, int& vsum) {
-                vsum += (data(i, j, k) % 4 == 0) ? 1 : 0;
-              },
-              tsum);
+        // With each team run a parallel_for with its threads
+        flare::parallel_for(
+                flare::TeamThreadRange(thread, data.extent(1)),
+                [=, *this](const int &j) {
+                    int tsum;
+                    // Run a vector loop reduction over the inner dimension of data
+                    // Count how many values are multiples of 4
+                    // Every vector lane gets the same reduction value (tsum) back, it is
+                    // broadcast to all vector lanes
+                    flare::parallel_reduce(
+                            flare::ThreadVectorRange(thread, data.extent(2)),
+                            [=, *this](const int &k, int &vsum) {
+                                vsum += (data(i, j, k) % 4 == 0) ? 1 : 0;
+                            },
+                            tsum);
 
-          // Make sure only one vector lane adds the reduction value to the
-          // shared array, i.e. execute the next line only once PerThread
-          flare::single(flare::PerThread(thread), [=]() { count(j) = tsum; });
-        });
+                    // Make sure only one vector lane adds the reduction value to the
+                    // shared array, i.e. execute the next line only once PerThread
+                    flare::single(flare::PerThread(thread), [=]() { count(j) = tsum; });
+                });
 
-    // Wait for all threads to finish the parallel_for so that all shared memory
-    // writes are done
-    thread.team_barrier();
+        // Wait for all threads to finish the parallel_for so that all shared memory
+        // writes are done
+        thread.team_barrier();
 
-    // Check with one vector lane from each thread how many consecutive
-    // data segments have the same number of values divisible by 4
-    // The team reduction value is again broadcast to every team member (and
-    // every vector lane)
-    int team_sum = 0;
-    flare::parallel_reduce(
-        flare::TeamThreadRange(thread, data.extent(1) - 1),
-        [=](const int& j, int& thread_sum) {
-          // It is not valid to directly add to thread_sum
-          // Use a single function with broadcast instead
-          // team_sum will be used as input to the operator (i.e. it is used to
-          // initialize sum) the end value of sum will be broadcast to all
-          // vector lanes in the thread.
-          flare::single(
-              flare::PerThread(thread),
-              [=](int& sum) {
-                if (count(j) == count(j + 1)) sum++;
-              },
-              thread_sum);
-        },
-        team_sum);
+        // Check with one vector lane from each thread how many consecutive
+        // data segments have the same number of values divisible by 4
+        // The team reduction value is again broadcast to every team member (and
+        // every vector lane)
+        int team_sum = 0;
+        flare::parallel_reduce(
+                flare::TeamThreadRange(thread, data.extent(1) - 1),
+                [=](const int &j, int &thread_sum) {
+                    // It is not valid to directly add to thread_sum
+                    // Use a single function with broadcast instead
+                    // team_sum will be used as input to the operator (i.e. it is used to
+                    // initialize sum) the end value of sum will be broadcast to all
+                    // vector lanes in the thread.
+                    flare::single(
+                            flare::PerThread(thread),
+                            [=](int &sum) {
+                                if (count(j) == count(j + 1)) sum++;
+                            },
+                            thread_sum);
+                },
+                team_sum);
 
-    // Add with one thread and vectorlane of the team the team_sum to the global
-    // value
-    flare::single(flare::PerTeam(thread),
-                   [=, *this]() { flare::atomic_add(&gsum(), team_sum); });
-  }
+        // Add with one thread and vectorlane of the team the team_sum to the global
+        // value
+        flare::single(flare::PerTeam(thread),
+                      [=, *this]() { flare::atomic_add(&gsum(), team_sum); });
+    }
 
-  // The functor needs to define how much shared memory it requests given a
-  // team_size.
-  size_t team_shmem_size(int /*team_size*/) const {
-    return shared_1d_int::shmem_size(data.extent(1));
-  }
+    // The functor needs to define how much shared memory it requests given a
+    // team_size.
+    size_t team_shmem_size(int /*team_size*/) const {
+        return shared_1d_int::shmem_size(data.extent(1));
+    }
 };
 
-int main(int narg, char* args[]) {
-  flare::initialize(narg, args);
+int main(int narg, char *args[]) {
+    flare::initialize(narg, args);
 
-  {
-    // Produce some 3D random data (see Algorithms/01_random_numbers for more
-    // info)
-    flare::View<int***, flare::LayoutRight> data("Data", 512, 512, 32);
-    flare::Random_XorShift64_Pool<> rand_pool64(5374857);
-    flare::fill_random(data, rand_pool64, 100);
+    {
+        // Produce some 3D random data (see Algorithms/01_random_numbers for more
+        // info)
+        flare::View<int ***, flare::LayoutRight> data("Data", 512, 512, 32);
+        flare::Random_XorShift64_Pool<> rand_pool64(5374857);
+        flare::fill_random(data, rand_pool64, 100);
 
-    // A global value to put the result in
-    flare::View<int> gsum("Sum");
+        // A global value to put the result in
+        flare::View<int> gsum("Sum");
 
-    // Each team handles a slice of the data
-    // Set up TeamPolicy with 512 teams with maximum number of threads per team
-    // and 16 vector lanes. flare::AUTO will determine the number of threads
-    // The maximum vector length is hardware dependent but can always be smaller
-    // than the hardware allows. The vector length must be a power of 2.
+        // Each team handles a slice of the data
+        // Set up TeamPolicy with 512 teams with maximum number of threads per team
+        // and 16 vector lanes. flare::AUTO will determine the number of threads
+        // The maximum vector length is hardware dependent but can always be smaller
+        // than the hardware allows. The vector length must be a power of 2.
 
-    const flare::TeamPolicy<> policy(512, flare::AUTO, 16);
+        const flare::TeamPolicy<> policy(512, flare::AUTO, 16);
 
-    flare::parallel_for(policy, SomeCorrelation(data, gsum));
+        flare::parallel_for(policy, SomeCorrelation(data, gsum));
 
-    flare::fence();
+        flare::fence();
 
-    // Copy result value back
-    int sum = 0;
-    flare::deep_copy(sum, gsum);
-    printf("Result %i\n", sum);
-  }
+        // Copy result value back
+        int sum = 0;
+        flare::deep_copy(sum, gsum);
+        printf("Result %i\n", sum);
+    }
 
-  flare::finalize();
+    flare::finalize();
 }

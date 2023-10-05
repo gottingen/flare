@@ -71,7 +71,8 @@ endif ()
 
 if(FLARE_BUILD_CUDA)
     include(carbin_enable_cuda)
-    include(carbin_cuda)
+    #include(carbin_cuda)
+    include(carbin_cuda_arch)
 endif()
 
 set(CARBIN_SYSTEM_DYLINK)
