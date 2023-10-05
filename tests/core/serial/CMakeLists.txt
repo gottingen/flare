@@ -117,3 +117,32 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::flare
 )
+
+carbin_cc_test(
+        NAME serial_view_api_test
+        SOURCES
+        view_64bit_test.cc
+        view_api_a_test.cc
+        view_api_b_test.cc
+        view_api_c_test.cc
+        view_api_d_test.cc
+        view_api_e_test.cc
+        view_copy_a_test.cc
+        view_copy_b_test.cc
+        view_hooks_test.cc
+        #view_layout_stride_assignment_test.cc
+        view_mapping_a_test.cc
+        view_mapping_b_test.cc
+        view_mapping_subview_test.cc
+        #view_memory_access_violation_test.cc
+        view_of_class_test.cc
+        view_resize_test.cc
+        view_subview_test.cc
+        without_initializing_test.cc
+        work_graph_test.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::flare
+)
