@@ -30,15 +30,15 @@ namespace flare {
 #ifdef FLARE_ON_CUDA_DEVICE
     namespace experimental {
 
-void CudaRawMemoryAllocationFailure::append_additional_error_information(
-    std::ostream &o) const {
-  if (m_error_code != cudaSuccess) {
-    o << "  The Cuda allocation returned the error code \""
-      << cudaGetErrorName(m_error_code) << "\".";
-  }
-}
+        void CudaRawMemoryAllocationFailure::append_additional_error_information(
+                std::ostream &o) const {
+            if (m_error_code != cudaSuccess) {
+                o << "  The Cuda allocation returned the error code \""
+                  << cudaGetErrorName(m_error_code) << "\".";
+            }
+        }
 
-}  // end namespace experimental
+    }  // end namespace experimental
 #endif
 
 }  // namespace flare

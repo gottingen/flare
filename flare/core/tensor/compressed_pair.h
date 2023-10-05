@@ -22,8 +22,7 @@
 #  include "flare/core/tensor/no_unique_address.h"
 #endif
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
 // For no unique address emulation, this is the case taken when neither are empty.
 // For real `[[no_unique_address]]`, this case is always taken.
@@ -191,5 +190,4 @@ struct __compressed_pair<
 
 #endif // !defined(_MDSPAN_USE_ATTRIBUTE_NO_UNIQUE_ADDRESS)
 
-} // end namespace detail
-} // end namespace flare
+} // end namespace flare::detail

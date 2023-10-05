@@ -53,51 +53,46 @@ namespace flare {
 
 }  // namespace flare
 
-namespace flare {
-
-    namespace detail {
-
-        template<typename OtherSpace>
-        struct MemorySpaceAccess<flare::AnonymousSpace, OtherSpace> {
-            enum : bool {
-                assignable = true
-            };
-            enum : bool {
-                accessible = true
-            };
-            enum : bool {
-                deepcopy = true
-            };
+namespace flare::detail {
+    template<typename OtherSpace>
+    struct MemorySpaceAccess<flare::AnonymousSpace, OtherSpace> {
+        enum : bool {
+            assignable = true
         };
-
-        template<typename OtherSpace>
-        struct MemorySpaceAccess<OtherSpace, flare::AnonymousSpace> {
-            enum : bool {
-                assignable = true
-            };
-            enum : bool {
-                accessible = true
-            };
-            enum : bool {
-                deepcopy = true
-            };
+        enum : bool {
+            accessible = true
         };
-
-        template<>
-        struct MemorySpaceAccess<flare::AnonymousSpace, flare::AnonymousSpace> {
-            enum : bool {
-                assignable = true
-            };
-            enum : bool {
-                accessible = true
-            };
-            enum : bool {
-                deepcopy = true
-            };
+        enum : bool {
+            deepcopy = true
         };
+    };
 
-    }  // namespace detail
+    template<typename OtherSpace>
+    struct MemorySpaceAccess<OtherSpace, flare::AnonymousSpace> {
+        enum : bool {
+            assignable = true
+        };
+        enum : bool {
+            accessible = true
+        };
+        enum : bool {
+            deepcopy = true
+        };
+    };
 
-}  // namespace flare
+    template<>
+    struct MemorySpaceAccess<flare::AnonymousSpace, flare::AnonymousSpace> {
+        enum : bool {
+            assignable = true
+        };
+        enum : bool {
+            accessible = true
+        };
+        enum : bool {
+            deepcopy = true
+        };
+    };
+
+}  // namespace flare::detail
 
 #endif  // FLARE_CORE_MEMORY_ANONYMOUS_SPACE_H_

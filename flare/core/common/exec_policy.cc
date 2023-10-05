@@ -16,28 +16,27 @@
 #include <flare/core.h>
 #include <sstream>
 
+namespace flare::detail {
+    PerTeamValue::PerTeamValue(size_t arg) : value(arg) {}
+
+    PerThreadValue::PerThreadValue(size_t arg) : value(arg) {}
+}  // namespace flare::detail
 namespace flare {
-namespace detail {
-PerTeamValue::PerTeamValue(size_t arg) : value(arg) {}
+    detail::PerTeamValue PerTeam(const size_t &arg) {
+        return detail::PerTeamValue(arg);
+    }
 
-PerThreadValue::PerThreadValue(size_t arg) : value(arg) {}
-}  // namespace detail
+    detail::PerThreadValue PerThread(const size_t &arg) {
+        return detail::PerThreadValue(arg);
+    }
 
-detail::PerTeamValue PerTeam(const size_t& arg) {
-  return detail::PerTeamValue(arg);
-}
-
-detail::PerThreadValue PerThread(const size_t& arg) {
-  return detail::PerThreadValue(arg);
-}
-
-void team_policy_check_valid_storage_level_argument(int level) {
-  if (!(level == 0 || level == 1)) {
-    std::stringstream ss;
-    ss << "TeamPolicy::set_scratch_size(/*level*/ " << level
-       << ", ...) storage level argument must be 0 or 1 to be valid\n";
-    detail::throw_runtime_exception(ss.str());
-  }
-}
+    void team_policy_check_valid_storage_level_argument(int level) {
+        if (!(level == 0 || level == 1)) {
+            std::stringstream ss;
+            ss << "TeamPolicy::set_scratch_size(/*level*/ " << level
+               << ", ...) storage level argument must be 0 or 1 to be valid\n";
+            detail::throw_runtime_exception(ss.str());
+        }
+    }
 
 }  // namespace flare

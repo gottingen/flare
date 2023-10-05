@@ -19,42 +19,42 @@
 #include <flare/core/common/bit_ops.h>
 
 #include <thread>
+
 #if defined(_WIN32)
 #include <process.h>
 #include <winsock2.h>
 #include <windows.h>
 #endif
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
-void HostBarrier::impl_backoff_wait_until_equal(
-    int* ptr, const int v, const bool active_wait) noexcept {
-  unsigned count = 0u;
+    void HostBarrier::impl_backoff_wait_until_equal(
+            int *ptr, const int v, const bool active_wait) noexcept {
+        unsigned count = 0u;
 
-  while (!test_equal(ptr, v)) {
-    const int c = int_log2(++count);
-    if (!active_wait || c > log2_iterations_till_sleep) {
-      std::this_thread::sleep_for(
-          std::chrono::nanoseconds(c < 16 ? 256 * c : 4096));
-    } else if (c > log2_iterations_till_yield) {
-      std::this_thread::yield();
-    }
+        while (!test_equal(ptr, v)) {
+            const int c = int_log2(++count);
+            if (!active_wait || c > log2_iterations_till_sleep) {
+                std::this_thread::sleep_for(
+                        std::chrono::nanoseconds(c < 16 ? 256 * c : 4096));
+            } else if (c > log2_iterations_till_yield) {
+                std::this_thread::yield();
+            }
 #if defined(FLARE_ENABLE_ASM)
 #if defined(__PPC64__)
-    for (int j = 0; j < num_nops; ++j) {
-      asm volatile("nop\n");
-    }
-    asm volatile("or 27, 27, 27" ::: "memory");
+            for (int j = 0; j < num_nops; ++j) {
+              asm volatile("nop\n");
+            }
+            asm volatile("or 27, 27, 27" ::: "memory");
 #elif defined(__amd64) || defined(__amd64__) || defined(__x86_64) || \
     defined(__x86_64__)
-    for (int j = 0; j < num_nops; ++j) {
-      asm volatile("nop\n");
+            for (int j = 0; j < num_nops; ++j) {
+                asm volatile("nop\n");
+            }
+            asm volatile("pause\n":: : "memory");
+#endif
+#endif
+        }
     }
-    asm volatile("pause\n" ::: "memory");
-#endif
-#endif
-  }
-}
-}  // namespace detail
-}  // namespace flare
+
+}  // namespace flare::detail

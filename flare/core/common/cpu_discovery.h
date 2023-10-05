@@ -15,16 +15,14 @@
 #ifndef FLARE_CORE_COMMON_CPU_DISCOVERY_H_
 #define FLARE_CORE_COMMON_CPU_DISCOVERY_H_
 
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
-        int mpi_ranks_per_node();
+    int mpi_ranks_per_node();
 
-        int mpi_local_rank_on_node();
+    int mpi_local_rank_on_node();
 
-        // returns true if MPI execution environment is detected, false otherwise.
-        bool mpi_detected();
+    // returns true if MPI execution environment is detected, false otherwise.
+    bool mpi_detected();
 
-    }  // namespace detail
-}  // namespace flare
+}  // namespace flare::detail
 #endif  // FLARE_CORE_COMMON_CPU_DISCOVERY_H_

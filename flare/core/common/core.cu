@@ -34,14 +34,18 @@
 #include <cerrno>
 #include <random>
 #include <regex>
+
 #ifndef _WIN32
+
 #include <unistd.h>
+
 #else
 #include <windows.h>
 #endif
 
 namespace flare::detail {
 #ifdef FLARE_ON_CUDA_DEVICE
+
     int get_device_count() {
         return flare::Cuda::detect_device_count();
     }

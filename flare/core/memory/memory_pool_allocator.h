@@ -22,81 +22,80 @@
 
 #include <flare/core_fwd.h>
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
-template <class MemoryPool, class T>
-class MemoryPoolAllocator {
- public:
-  using memory_pool = MemoryPool;
+    template<class MemoryPool, class T>
+    class MemoryPoolAllocator {
+    public:
+        using memory_pool = MemoryPool;
 
- private:
-  memory_pool m_pool;
+    private:
+        memory_pool m_pool;
 
- public:
-  FLARE_DEFAULTED_FUNCTION
-  MemoryPoolAllocator() = default;
-  FLARE_DEFAULTED_FUNCTION
-  MemoryPoolAllocator(MemoryPoolAllocator const&) = default;
-  FLARE_DEFAULTED_FUNCTION
-  MemoryPoolAllocator(MemoryPoolAllocator&&) = default;
-  FLARE_DEFAULTED_FUNCTION
-  MemoryPoolAllocator& operator=(MemoryPoolAllocator const&) = default;
-  FLARE_DEFAULTED_FUNCTION
-  MemoryPoolAllocator& operator=(MemoryPoolAllocator&&) = default;
-  FLARE_DEFAULTED_FUNCTION
-  ~MemoryPoolAllocator() = default;
+    public:
+        FLARE_DEFAULTED_FUNCTION
+        MemoryPoolAllocator() = default;
 
-  FLARE_INLINE_FUNCTION
-  explicit MemoryPoolAllocator(memory_pool const& arg_pool)
-      : m_pool(arg_pool) {}
-  FLARE_INLINE_FUNCTION
-  explicit MemoryPoolAllocator(memory_pool&& arg_pool)
-      : m_pool(std::move(arg_pool)) {}
+        FLARE_DEFAULTED_FUNCTION
+        MemoryPoolAllocator(MemoryPoolAllocator const &) = default;
 
- public:
-  using value_type      = T;
-  using pointer         = T*;
-  using size_type       = typename MemoryPool::memory_space::size_type;
-  using difference_type = std::make_signed_t<size_type>;
+        FLARE_DEFAULTED_FUNCTION
+        MemoryPoolAllocator(MemoryPoolAllocator &&) = default;
 
-  template <class U>
-  struct rebind {
-    using other = MemoryPoolAllocator<MemoryPool, U>;
-  };
+        FLARE_DEFAULTED_FUNCTION
+        MemoryPoolAllocator &operator=(MemoryPoolAllocator const &) = default;
 
-  FLARE_INLINE_FUNCTION
-  pointer allocate(size_t n) {
-    void* rv = m_pool.allocate(n * sizeof(T));
-    if (rv == nullptr) {
-      flare::abort("flare MemoryPool allocator failed to allocate memory");
-    }
-    return reinterpret_cast<T*>(rv);
-  }
+        FLARE_DEFAULTED_FUNCTION
+        MemoryPoolAllocator &operator=(MemoryPoolAllocator &&) = default;
 
-  FLARE_INLINE_FUNCTION
-  void deallocate(T* ptr, size_t n) { m_pool.deallocate(ptr, n * sizeof(T)); }
+        FLARE_DEFAULTED_FUNCTION
+        ~MemoryPoolAllocator() = default;
 
-  FLARE_INLINE_FUNCTION
-  size_type max_size() const { return m_pool.max_block_size(); }
+        FLARE_INLINE_FUNCTION
+        explicit MemoryPoolAllocator(memory_pool const &arg_pool)
+                : m_pool(arg_pool) {}
 
-  FLARE_INLINE_FUNCTION
-  bool operator==(MemoryPoolAllocator const& other) const {
-    return m_pool == other.m_pool;
-  }
+        FLARE_INLINE_FUNCTION
+        explicit MemoryPoolAllocator(memory_pool &&arg_pool)
+                : m_pool(std::move(arg_pool)) {}
 
-  FLARE_INLINE_FUNCTION
-  bool operator!=(MemoryPoolAllocator const& other) const {
-    return !(*this == other);
-  }
-};
+    public:
+        using value_type = T;
+        using pointer = T *;
+        using size_type = typename MemoryPool::memory_space::size_type;
+        using difference_type = std::make_signed_t<size_type>;
 
-}  // end namespace detail
-}  // end namespace flare
+        template<class U>
+        struct rebind {
+            using other = MemoryPoolAllocator<MemoryPool, U>;
+        };
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+        FLARE_INLINE_FUNCTION
+        pointer allocate(size_t n) {
+            void *rv = m_pool.allocate(n * sizeof(T));
+            if (rv == nullptr) {
+                flare::abort("flare MemoryPool allocator failed to allocate memory");
+            }
+            return reinterpret_cast<T *>(rv);
+        }
+
+        FLARE_INLINE_FUNCTION
+        void deallocate(T *ptr, size_t n) { m_pool.deallocate(ptr, n * sizeof(T)); }
+
+        FLARE_INLINE_FUNCTION
+        size_type max_size() const { return m_pool.max_block_size(); }
+
+        FLARE_INLINE_FUNCTION
+        bool operator==(MemoryPoolAllocator const &other) const {
+            return m_pool == other.m_pool;
+        }
+
+        FLARE_INLINE_FUNCTION
+        bool operator!=(MemoryPoolAllocator const &other) const {
+            return !(*this == other);
+        }
+    };
+
+}  // end namespace flare::detail
 
 #endif  // FLARE_CORE_MEMORY_MEMORY_POOL_ALLOCATOR_H_

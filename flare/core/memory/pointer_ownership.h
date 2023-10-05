@@ -22,22 +22,16 @@
 
 #include <flare/core_fwd.h>
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-
 namespace flare {
 
-/// Trivial wrapper for raw pointers that express ownership.
-template <class T>
-using OwningRawPtr = T*;
+    /// Trivial wrapper for raw pointers that express ownership.
+    template<class T>
+    using OwningRawPtr = T *;
 
-/// Trivial wrapper for raw pointers that do not express ownership.
-template <class T>
-using ObservingRawPtr = T*;
+    /// Trivial wrapper for raw pointers that do not express ownership.
+    template<class T>
+    using ObservingRawPtr = T *;
 
 }  // end namespace flare
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 
 #endif  // FLARE_CORE_MEMORY_POINTER_OWNERSHIP_H_

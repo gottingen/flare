@@ -20,21 +20,17 @@
 
 // Needed for 'is_space<S>::host_mirror_space
 #include <flare/core_fwd.h>
-
 #include <flare/core/common/detection_idiom.h>
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 
 namespace flare {
 
-// Schedules for Execution Policies
+    // Schedules for Execution Policies
     struct Static {
     };
     struct Dynamic {
     };
 
-// Schedule Wrapper Type
+    // Schedule Wrapper Type
     template<class T>
     struct Schedule {
         static_assert(std::is_same<T, Static>::value ||
@@ -119,9 +115,6 @@ namespace flare {
 
 }  // namespace flare
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-
 namespace flare {
 
 #define FLARE_IMPL_IS_CONCEPT(CONCEPT)                        \
@@ -165,7 +158,7 @@ namespace flare {
 
     namespace detail {
 
-// Implementation concept:
+        // Implementation concept:
 
         FLARE_IMPL_IS_CONCEPT(thread_team_member)
 
@@ -179,45 +172,43 @@ namespace flare {
 
 }  // namespace flare
 
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
-        template<class Object>
-        class has_member_team_shmem_size {
-            template<typename T>
-            static int32_t test_for_member(decltype(&T::team_shmem_size)) {
-                return int32_t(0);
-            }
+    template<class Object>
+    class has_member_team_shmem_size {
+        template<typename T>
+        static int32_t test_for_member(decltype(&T::team_shmem_size)) {
+            return int32_t(0);
+        }
 
-            template<typename T>
-            static int64_t test_for_member(...) {
-                return int64_t(0);
-            }
+        template<typename T>
+        static int64_t test_for_member(...) {
+            return int64_t(0);
+        }
 
-        public:
-            constexpr static bool value =
-                    sizeof(test_for_member<Object>(nullptr)) == sizeof(int32_t);
-        };
+    public:
+        constexpr static bool value =
+                sizeof(test_for_member<Object>(nullptr)) == sizeof(int32_t);
+    };
 
-        template<class Object>
-        class has_member_shmem_size {
-            template<typename T>
-            static int32_t test_for_member(decltype(&T::shmem_size_me)) {
-                return int32_t(0);
-            }
+    template<class Object>
+    class has_member_shmem_size {
+        template<typename T>
+        static int32_t test_for_member(decltype(&T::shmem_size_me)) {
+            return int32_t(0);
+        }
 
-            template<typename T>
-            static int64_t test_for_member(...) {
-                return int64_t(0);
-            }
+        template<typename T>
+        static int64_t test_for_member(...) {
+            return int64_t(0);
+        }
 
-        public:
-            constexpr static bool value =
-                    sizeof(test_for_member<Object>(0)) == sizeof(int32_t);
-        };
+    public:
+        constexpr static bool value =
+                sizeof(test_for_member<Object>(0)) == sizeof(int32_t);
+    };
 
-    }  // namespace detail
-}  // namespace flare
+}  // namespace flare::detail
 //----------------------------------------------------------------------------
 
 namespace flare {
@@ -250,8 +241,6 @@ namespace flare {
 
     template<typename T>
     inline constexpr bool is_device_v = is_device<T>::value;
-
-//----------------------------------------------------------------------------
 
     template<typename T>
     struct is_space {
@@ -327,72 +316,68 @@ namespace flare {
 
 }  // namespace flare
 
-//----------------------------------------------------------------------------
-
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
 /**\brief  Access relationship between DstMemorySpace and SrcMemorySpace
  *
  *  The default case can assume accessibility for the same space.
  *  Specializations must be defined for different memory spaces.
  */
-        template<typename DstMemorySpace, typename SrcMemorySpace>
-        struct MemorySpaceAccess {
-            static_assert(flare::is_memory_space<DstMemorySpace>::value &&
-                          flare::is_memory_space<SrcMemorySpace>::value,
-                          "template arguments must be memory spaces");
+    template<typename DstMemorySpace, typename SrcMemorySpace>
+    struct MemorySpaceAccess {
+        static_assert(flare::is_memory_space<DstMemorySpace>::value &&
+                      flare::is_memory_space<SrcMemorySpace>::value,
+                      "template arguments must be memory spaces");
 
-            /**\brief  Can a View (or pointer) to memory in SrcMemorySpace
-             *         be assigned to a View (or pointer) to memory marked DstMemorySpace.
-             *
-             *  1. DstMemorySpace::execution_space == SrcMemorySpace::execution_space
-             *  2. All execution spaces that can access DstMemorySpace can also access
-             *     SrcMemorySpace.
-             */
-            enum {
-                assignable = std::is_same<DstMemorySpace, SrcMemorySpace>::value
-            };
-
-            /**\brief  For all DstExecSpace::memory_space == DstMemorySpace
-             *         DstExecSpace can access SrcMemorySpace.
-             */
-            enum {
-                accessible = assignable
-            };
-
-            /**\brief  Does a DeepCopy capability exist
-             *         to DstMemorySpace from SrcMemorySpace
-             */
-            enum {
-                deepcopy = assignable
-            };
+        /**\brief  Can a View (or pointer) to memory in SrcMemorySpace
+         *         be assigned to a View (or pointer) to memory marked DstMemorySpace.
+         *
+         *  1. DstMemorySpace::execution_space == SrcMemorySpace::execution_space
+         *  2. All execution spaces that can access DstMemorySpace can also access
+         *     SrcMemorySpace.
+         */
+        enum {
+            assignable = std::is_same<DstMemorySpace, SrcMemorySpace>::value
         };
 
-    }  // namespace detail
-}  // namespace flare
+        /**\brief  For all DstExecSpace::memory_space == DstMemorySpace
+         *         DstExecSpace can access SrcMemorySpace.
+         */
+        enum {
+            accessible = assignable
+        };
+
+        /**\brief  Does a DeepCopy capability exist
+         *         to DstMemorySpace from SrcMemorySpace
+         */
+        enum {
+            deepcopy = assignable
+        };
+    };
+
+}  // namespace flare::detail
 
 namespace flare {
 
-/**\brief  Can AccessSpace access MemorySpace ?
- *
- *   Requires:
- *     flare::is_space< AccessSpace >::value
- *     flare::is_memory_space< MemorySpace >::value
- *
- *   Can AccessSpace::execution_space access MemorySpace ?
- *     enum : bool { accessible };
- *
- *   Is View<AccessSpace::memory_space> assignable from View<MemorySpace> ?
- *     enum : bool { assignable };
- *
- *   If ! accessible then through which intercessory memory space
- *   should a be used to deep copy memory for
- *     AccessSpace::execution_space
- *   to get access.
- *   When AccessSpace::memory_space == flare::HostSpace
- *   then space is the View host mirror space.
- */
+    /**\brief  Can AccessSpace access MemorySpace ?
+     *
+     *   Requires:
+     *     flare::is_space< AccessSpace >::value
+     *     flare::is_memory_space< MemorySpace >::value
+     *
+     *   Can AccessSpace::execution_space access MemorySpace ?
+     *     enum : bool { accessible };
+     *
+     *   Is View<AccessSpace::memory_space> assignable from View<MemorySpace> ?
+     *     enum : bool { assignable };
+     *
+     *   If ! accessible then through which intercessory memory space
+     *   should a be used to deep copy memory for
+     *     AccessSpace::execution_space
+     *   to get access.
+     *   When AccessSpace::memory_space == flare::HostSpace
+     *   then space is the View host mirror space.
+     */
     template<typename AccessSpace, typename MemorySpace>
     struct SpaceAccessibility {
     private:
@@ -452,7 +437,5 @@ namespace flare {
     };
 
 }  // namespace flare
-
-//----------------------------------------------------------------------------
 
 #endif  // FLARE_CORE_COMMON_CORE_CONCEPTS_H_

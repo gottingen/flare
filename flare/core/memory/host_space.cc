@@ -29,8 +29,6 @@
 
 #endif
 
-/*--------------------------------------------------------------------------*/
-
 #include <cstddef>
 #include <cstdlib>
 #include <cstdint>
@@ -47,9 +45,6 @@
 #include <flare/core/memory/host_space.h>
 #include <flare/core/common/error.h>
 #include <flare/core/atomic.h>
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 
 namespace flare {
 
@@ -146,76 +141,72 @@ namespace flare {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
 #ifdef FLARE_ENABLE_DEBUG
-        SharedAllocationRecord<void, void>
-                SharedAllocationRecord<flare::HostSpace, void>::s_root_record;
+    SharedAllocationRecord<void, void>
+            SharedAllocationRecord<flare::HostSpace, void>::s_root_record;
 #endif
 
-        SharedAllocationRecord<flare::HostSpace, void>::~SharedAllocationRecord() {
-            m_space.deallocate(m_label.c_str(),
-                               SharedAllocationRecord<void, void>::m_alloc_ptr,
-                               SharedAllocationRecord<void, void>::m_alloc_size,
-                               (SharedAllocationRecord<void, void>::m_alloc_size -
-                                sizeof(SharedAllocationHeader)));
-        }
+    SharedAllocationRecord<flare::HostSpace, void>::~SharedAllocationRecord() {
+        m_space.deallocate(m_label.c_str(),
+                           SharedAllocationRecord<void, void>::m_alloc_ptr,
+                           SharedAllocationRecord<void, void>::m_alloc_size,
+                           (SharedAllocationRecord<void, void>::m_alloc_size -
+                            sizeof(SharedAllocationHeader)));
+    }
 
-        SharedAllocationHeader *_do_allocation(flare::HostSpace const &space,
-                                               std::string const &label,
-                                               size_t alloc_size) {
-            try {
-                return reinterpret_cast<SharedAllocationHeader *>(
-                        space.allocate(alloc_size));
-            } catch (experimental::RawMemoryAllocationFailure const &failure) {
-                if (failure.failure_mode() == experimental::RawMemoryAllocationFailure::
-                FailureMode::AllocationNotAligned) {
-                    // TODO: delete the misaligned memory
-                }
-
-                std::cerr << "flare failed to allocate memory for label \"" << label
-                          << "\".  Allocation using MemorySpace named \"" << space.name()
-                          << " failed with the following error:  ";
-                failure.print_error_message(std::cerr);
-                std::cerr.flush();
-                flare::detail::throw_runtime_exception("Memory allocation failure");
+    SharedAllocationHeader *_do_allocation(flare::HostSpace const &space,
+                                           std::string const &label,
+                                           size_t alloc_size) {
+        try {
+            return reinterpret_cast<SharedAllocationHeader *>(
+                    space.allocate(alloc_size));
+        } catch (experimental::RawMemoryAllocationFailure const &failure) {
+            if (failure.failure_mode() == experimental::RawMemoryAllocationFailure::
+            FailureMode::AllocationNotAligned) {
+                // TODO: delete the misaligned memory
             }
-            return nullptr;  // unreachable
-        }
 
-        SharedAllocationRecord<flare::HostSpace, void>::SharedAllocationRecord(
-                const flare::HostSpace &arg_space, const std::string &arg_label,
-                const size_t arg_alloc_size,
-                const SharedAllocationRecord<void, void>::function_type arg_dealloc)
-        // Pass through allocated [ SharedAllocationHeader , user_memory ]
-        // Pass through deallocation function
-                : base_t(
+            std::cerr << "flare failed to allocate memory for label \"" << label
+                      << "\".  Allocation using MemorySpace named \"" << space.name()
+                      << " failed with the following error:  ";
+            failure.print_error_message(std::cerr);
+            std::cerr.flush();
+            flare::detail::throw_runtime_exception("Memory allocation failure");
+        }
+        return nullptr;  // unreachable
+    }
+
+    SharedAllocationRecord<flare::HostSpace, void>::SharedAllocationRecord(
+            const flare::HostSpace &arg_space, const std::string &arg_label,
+            const size_t arg_alloc_size,
+            const SharedAllocationRecord<void, void>::function_type arg_dealloc)
+    // Pass through allocated [ SharedAllocationHeader , user_memory ]
+    // Pass through deallocation function
+            : base_t(
 #ifdef FLARE_ENABLE_DEBUG
-                &SharedAllocationRecord<flare::HostSpace, void>::s_root_record,
+            &SharedAllocationRecord<flare::HostSpace, void>::s_root_record,
 #endif
-                detail::checked_allocation_with_header(arg_space, arg_label,
-                                                       arg_alloc_size),
-                sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
-                arg_label),
-                  m_space(arg_space) {
-            this->base_t::_fill_host_accessible_header_info(*RecordBase::m_alloc_ptr,
-                                                            arg_label);
-        }
+            detail::checked_allocation_with_header(arg_space, arg_label,
+                                                   arg_alloc_size),
+            sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
+            arg_label),
+              m_space(arg_space) {
+        this->base_t::_fill_host_accessible_header_info(*RecordBase::m_alloc_ptr,
+                                                        arg_label);
+    }
 
-    }  // namespace detail
-}  // namespace flare
+}  // namespace flare::detail
 
 #include <flare/core/memory/shared_alloc_impl.h>
 
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
-        // To avoid additional compilation cost for something that's (mostly?) not
-        // performance sensitive, we explicity instantiate these CRTP base classes here,
-        // where we have access to the associated *_timpl.hpp header files.
-        template
-        class SharedAllocationRecordCommon<flare::HostSpace>;
+    // To avoid additional compilation cost for something that's (mostly?) not
+    // performance sensitive, we explicity instantiate these CRTP base classes here,
+    // where we have access to the associated *_timpl.hpp header files.
+    template
+    class SharedAllocationRecordCommon<flare::HostSpace>;
 
-    }  // end namespace detail
-}  // end namespace flare
+}  // end namespace flare::detail

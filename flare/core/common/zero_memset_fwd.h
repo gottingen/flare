@@ -16,13 +16,11 @@
 #ifndef FLARE_CORE_COMMON_ZERO_MEMSET_FWD_H_
 #define FLARE_CORE_COMMON_ZERO_MEMSET_FWD_H_
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
-template <typename ExecutionSpace, class ViewType>
-struct ZeroMemset;
+    template<typename ExecutionSpace, class ViewType>
+    struct ZeroMemset;
 
-}  // namespace detail
-}  // namespace flare
+}  // namespace flare::detail
 
 #endif  // FLARE_CORE_COMMON_ZERO_MEMSET_FWD_H_

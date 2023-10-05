@@ -113,151 +113,127 @@ namespace flare {
 
 //----------------------------------------------------------------------------
 
-namespace flare {
+namespace flare::detail {
 
-    namespace detail {
+    static_assert(flare::detail::MemorySpaceAccess<flare::HostSpace,
+                          flare::HostSpace>::assignable,
+                  "");
 
-        static_assert(flare::detail::MemorySpaceAccess<flare::HostSpace,
-                              flare::HostSpace>::assignable,
-                      "");
-
-        template<typename S>
-        struct HostMirror {
-        private:
-            // If input execution space can access HostSpace then keep it.
-            // Example: flare::OpenMP can access, flare::Cuda cannot
-            enum {
-                keep_exe = flare::detail::MemorySpaceAccess<
-                        typename S::execution_space::memory_space,
-                        flare::HostSpace>::accessible
-            };
-
-            // If HostSpace can access memory space then keep it.
-            // Example:  Cannot access flare::CudaSpace, can access flare::CudaUVMSpace
-            enum {
-                keep_mem =
-                flare::detail::MemorySpaceAccess<flare::HostSpace,
-                        typename S::memory_space>::accessible
-            };
-
-        public:
-            using Space = std::conditional_t<
-                    keep_exe && keep_mem, S,
-                    std::conditional_t<keep_mem,
-                            flare::Device<flare::HostSpace::execution_space,
-                                    typename S::memory_space>,
-                            flare::HostSpace>>;
+    template<typename S>
+    struct HostMirror {
+    private:
+        // If input execution space can access HostSpace then keep it.
+        // Example: flare::OpenMP can access, flare::Cuda cannot
+        enum {
+            keep_exe = flare::detail::MemorySpaceAccess<
+                    typename S::execution_space::memory_space,
+                    flare::HostSpace>::accessible
         };
 
-    }  // namespace detail
+        // If HostSpace can access memory space then keep it.
+        // Example:  Cannot access flare::CudaSpace, can access flare::CudaUVMSpace
+        enum {
+            keep_mem =
+            flare::detail::MemorySpaceAccess<flare::HostSpace,
+                    typename S::memory_space>::accessible
+        };
 
-}  // namespace flare
+    public:
+        using Space = std::conditional_t<
+                keep_exe && keep_mem, S,
+                std::conditional_t<keep_mem,
+                        flare::Device<flare::HostSpace::execution_space,
+                                typename S::memory_space>,
+                        flare::HostSpace>>;
+    };
 
-//----------------------------------------------------------------------------
+    template<>
+    class SharedAllocationRecord<flare::HostSpace, void>
+            : public SharedAllocationRecordCommon<flare::HostSpace> {
+    private:
+        friend flare::HostSpace;
 
-namespace flare {
+        friend class SharedAllocationRecordCommon<flare::HostSpace>;
 
-    namespace detail {
+        using base_t = SharedAllocationRecordCommon<flare::HostSpace>;
+        using RecordBase = SharedAllocationRecord<void, void>;
 
-        template<>
-        class SharedAllocationRecord<flare::HostSpace, void>
-                : public SharedAllocationRecordCommon<flare::HostSpace> {
-        private:
-            friend flare::HostSpace;
+        SharedAllocationRecord(const SharedAllocationRecord &) = delete;
 
-            friend class SharedAllocationRecordCommon<flare::HostSpace>;
-
-            using base_t = SharedAllocationRecordCommon<flare::HostSpace>;
-            using RecordBase = SharedAllocationRecord<void, void>;
-
-            SharedAllocationRecord(const SharedAllocationRecord &) = delete;
-
-            SharedAllocationRecord &operator=(const SharedAllocationRecord &) = delete;
+        SharedAllocationRecord &operator=(const SharedAllocationRecord &) = delete;
 
 #ifdef FLARE_ENABLE_DEBUG
-            /**\brief  Root record for tracked allocations from this HostSpace instance */
-            static RecordBase s_root_record;
+        /**\brief  Root record for tracked allocations from this HostSpace instance */
+        static RecordBase s_root_record;
 #endif
 
-            flare::HostSpace m_space;
+        flare::HostSpace m_space;
 
-        protected:
-            ~SharedAllocationRecord();
+    protected:
+        ~SharedAllocationRecord();
 
-            SharedAllocationRecord() = default;
+        SharedAllocationRecord() = default;
 
-            template<typename ExecutionSpace>
-            SharedAllocationRecord(
-                    const ExecutionSpace & /* exec_space*/, const flare::HostSpace &arg_space,
-                    const std::string &arg_label, const size_t arg_alloc_size,
-                    const RecordBase::function_type arg_dealloc = &deallocate)
-                    : base_t(
+        template<typename ExecutionSpace>
+        SharedAllocationRecord(
+                const ExecutionSpace & /* exec_space*/, const flare::HostSpace &arg_space,
+                const std::string &arg_label, const size_t arg_alloc_size,
+                const RecordBase::function_type arg_dealloc = &deallocate)
+                : base_t(
 #ifdef FLARE_ENABLE_DEBUG
-                    &SharedAllocationRecord<flare::HostSpace, void>::s_root_record,
+                &SharedAllocationRecord<flare::HostSpace, void>::s_root_record,
 #endif
-                    detail::checked_allocation_with_header(arg_space, arg_label,
-                                                         arg_alloc_size),
-                    sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
-                    arg_label),
-                      m_space(arg_space) {
-                this->base_t::_fill_host_accessible_header_info(*RecordBase::m_alloc_ptr,
-                                                                arg_label);
-            }
+                detail::checked_allocation_with_header(arg_space, arg_label,
+                                                       arg_alloc_size),
+                sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
+                arg_label),
+                  m_space(arg_space) {
+            this->base_t::_fill_host_accessible_header_info(*RecordBase::m_alloc_ptr,
+                                                            arg_label);
+        }
 
-            SharedAllocationRecord(
-                    const flare::HostSpace &arg_space, const std::string &arg_label,
-                    const size_t arg_alloc_size,
-                    const RecordBase::function_type arg_dealloc = &deallocate);
+        SharedAllocationRecord(
+                const flare::HostSpace &arg_space, const std::string &arg_label,
+                const size_t arg_alloc_size,
+                const RecordBase::function_type arg_dealloc = &deallocate);
 
-        public:
-            FLARE_INLINE_FUNCTION static SharedAllocationRecord *allocate(
-                    const flare::HostSpace &arg_space, const std::string &arg_label,
-                    const size_t arg_alloc_size) {
-                FLARE_IF_ON_HOST((return new SharedAllocationRecord(arg_space, arg_label,
-                                         arg_alloc_size);))
-                FLARE_IF_ON_DEVICE(((void) arg_space; (void) arg_label; (void) arg_alloc_size;
-                                           return nullptr;))
-            }
-        };
+    public:
+        FLARE_INLINE_FUNCTION static SharedAllocationRecord *allocate(
+                const flare::HostSpace &arg_space, const std::string &arg_label,
+                const size_t arg_alloc_size) {
+            FLARE_IF_ON_HOST((return new SharedAllocationRecord(arg_space, arg_label,
+                                     arg_alloc_size);))
+            FLARE_IF_ON_DEVICE(((void) arg_space; (void) arg_label; (void) arg_alloc_size;
+                                       return nullptr;))
+        }
+    };
 
-    }  // namespace detail
+    template<>
+    struct DeepCopy<HostSpace, HostSpace, DefaultHostExecutionSpace> {
+        DeepCopy(void *dst, const void *src, size_t n) {
+            hostspace_parallel_deepcopy(dst, src, n);
+        }
 
-}  // namespace flare
+        DeepCopy(const DefaultHostExecutionSpace &exec, void *dst, const void *src,
+                 size_t n) {
+            hostspace_parallel_deepcopy_async(exec, dst, src, n);
+        }
+    };
 
-//----------------------------------------------------------------------------
+    template<class ExecutionSpace>
+    struct DeepCopy<HostSpace, HostSpace, ExecutionSpace> {
+        DeepCopy(void *dst, const void *src, size_t n) {
+            hostspace_parallel_deepcopy(dst, src, n);
+        }
 
-namespace flare {
+        DeepCopy(const ExecutionSpace &exec, void *dst, const void *src, size_t n) {
+            exec.fence(
+                    "flare::detail::DeepCopy<HostSpace, HostSpace, "
+                    "ExecutionSpace>::DeepCopy: fence before copy");
+            hostspace_parallel_deepcopy_async(dst, src, n);
+        }
+    };
 
-    namespace detail {
-
-        template<>
-        struct DeepCopy<HostSpace, HostSpace, DefaultHostExecutionSpace> {
-            DeepCopy(void *dst, const void *src, size_t n) {
-                hostspace_parallel_deepcopy(dst, src, n);
-            }
-
-            DeepCopy(const DefaultHostExecutionSpace &exec, void *dst, const void *src,
-                     size_t n) {
-                hostspace_parallel_deepcopy_async(exec, dst, src, n);
-            }
-        };
-
-        template<class ExecutionSpace>
-        struct DeepCopy<HostSpace, HostSpace, ExecutionSpace> {
-            DeepCopy(void *dst, const void *src, size_t n) {
-                hostspace_parallel_deepcopy(dst, src, n);
-            }
-
-            DeepCopy(const ExecutionSpace &exec, void *dst, const void *src, size_t n) {
-                exec.fence(
-                        "flare::detail::DeepCopy<HostSpace, HostSpace, "
-                        "ExecutionSpace>::DeepCopy: fence before copy");
-                hostspace_parallel_deepcopy_async(dst, src, n);
-            }
-        };
-
-    }  // namespace detail
-
-}  // namespace flare
+}  // namespace flare::detail
 
 #endif  // FLARE_CORE_MEMORY_HOST_SPACE_H_
