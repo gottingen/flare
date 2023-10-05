@@ -15,5 +15,5 @@
 //
 // Created by jeff on 23-10-5.
 //
-#include "cuda_category_test.h"
+#include <cuda_category_test.h>
 #include "misc/mathematical_functions1_test.h"

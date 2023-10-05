@@ -165,3 +165,42 @@ carbin_cc_test(
         flare::flare
 )
 
+
+carbin_cc_test(
+        NAME cuda_range_test
+        SOURCES
+        mdrange_a_test.cu
+        mdrange_b_test.cu
+        mdrange_c_test.cu
+        mdrange_d_test.cu
+        mdrange_e_test.cu
+        mdrange_f_test.cu
+        mdrange_g_test.cu
+        mdrange_policy_constructors_test.cu
+        mdrange_reduce_test.cu
+        mdspan_test.cu
+        min_max_clamp_test.cu
+        numeric_traits_test.cu
+        other_test.cu
+        parallel_scan_range_policy_test.cu
+        printf_test.cu
+        quad_precision_math_test.cu
+        range_policy_constructors_test.cu
+        range_policy_require_test.cu
+        range_policy_test.cu
+        reducer_ctads_test.cu
+        reducers_a_test.cu
+        reducers_b_test.cu
+        reducers_c_test.cu
+        reducers_d_test.cu
+        reducers_e_test.cu
+        reductions_device_view_test.cu
+        reductions_test.cu
+        shared_alloc_test.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS}
+        CUOPTS ${CARBIN_CU_OPTIONS}
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::flare
+)

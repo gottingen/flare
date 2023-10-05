@@ -15,5 +15,5 @@
 //
 // Created by jeff on 23-10-4.
 //
-#include "cuda_category_test.h"
+#include <cuda_category_test.h>
 #include "atomic/atomic_operations_int_test.h"

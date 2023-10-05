@@ -14,5 +14,5 @@
 //
 //
 
-#include "cuda_category_test.h"
+#include <cuda_category_test.h>
 #include "misc/block_size_deduction_test.h"

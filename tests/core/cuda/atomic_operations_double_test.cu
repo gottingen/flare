@@ -13,5 +13,5 @@
 // limitations under the License.
 //
 
-#include "cuda_category_test.h"
+#include <cuda_category_test.h>
 #include "atomic/atomic_operations_double_test.h"

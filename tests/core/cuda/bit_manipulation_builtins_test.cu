@@ -13,5 +13,5 @@
 // limitations under the License.
 //
 
-#include "cuda_category_test.h"
+#include <cuda_category_test.h>
 #include "misc/bit_manipulation_builtins_test.h"
