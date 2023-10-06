@@ -64,7 +64,7 @@ TEST_CASE("TEST_CATEGORY, quad_precision_reductions") {
       flare::RangePolicy<flare::DefaultHostExecutionSpace>(1, n),
       FLARE_LAMBDA(int i, __float128 &v) { v *= static_cast<__float128>(i); },
       flare::Prod<__float128>(r));
-  EXPECT_FLOAT_EQ(r, tgammaq(n + 1));  // factorial(n) = tgamma(n+1)
+  REQUIRE_EQ(r, tgammaq(n + 1));  // factorial(n) = tgamma(n+1)
 }
 
 TEST_CASE("TEST_CATEGORY, quad_precision_common_math_functions") {
