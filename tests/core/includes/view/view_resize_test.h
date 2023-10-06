@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef TESTVIEWRESIZE_HPP_
-#define TESTVIEWRESIZE_HPP_
+#ifndef VIEW_RESIZE_TEST_H_
+#define VIEW_RESIZE_TEST_H_
 
 #include <doctest.h>
 #include <view/resize_test.h>
@@ -32,4 +32,4 @@ TEST_CASE("TEST_CATEGORY, view_realloc") {
 }
 
 }  // namespace Test
-#endif  // TESTVIEWRESIZE_HPP_
+#endif  // VIEW_RESIZE_TEST_H_

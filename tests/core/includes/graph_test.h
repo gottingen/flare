@@ -205,7 +205,7 @@ namespace Test {
         });
 // These fences are only necessary because of the weirdness of how CUDA
 // UVM works on pre pascal cards.
-#if defined(FLARE_ENABLE_CUDA) && \
+#if defined(FLARE_ON_CUDA_DEVICE) && \
     (defined(FLARE_ARCH_KEPLER) || defined(FLARE_ARCH_MAXWELL))
         flare::fence();
 #endif
@@ -213,7 +213,7 @@ namespace Test {
         flare::deep_copy(ex, count, 1);
 // These fences are only necessary because of the weirdness of how CUDA
 // UVM works on pre pascal cards.
-#if defined(FLARE_ENABLE_CUDA) && \
+#if defined(FLARE_ON_CUDA_DEVICE) && \
     (defined(FLARE_ARCH_KEPLER) || defined(FLARE_ARCH_MAXWELL))
         flare::fence();
 #endif

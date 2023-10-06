@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_TEST_RANGE_POLICY_H_
-#define FLARE_TEST_RANGE_POLICY_H_
+#ifndef RANGE_POLICY_TEST_H_
+#define RANGE_POLICY_TEST_H_
 #include <range/range_test.h>
-#endif  // FLARE_TEST_RANGE_POLICY_H_
+#endif  // RANGE_POLICY_TEST_H_

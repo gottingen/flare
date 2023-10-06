@@ -939,7 +939,7 @@ TEST(TEST_CATEGORY, triple_nested_parallelism) {
 // With FLARE_ENABLE_DEBUG enabled, the functor uses too many registers to run
 // with a team size of 32 on GPUs, 16 is the max possible (at least on a K80
 // GPU)
-#if defined(FLARE_ENABLE_DEBUG) && defined(FLARE_ENABLE_CUDA)
+#if defined(FLARE_ENABLE_DEBUG) && defined(FLARE_ON_CUDA_DEVICE)
   if (!std::is_same<TEST_EXECSPACE, flare::Cuda>::value)
 #endif
   {
@@ -962,7 +962,7 @@ TEST(TEST_CATEGORY, parallel_scan_with_reducers) {
   constexpr int n              = 1000000;
   constexpr int n_vector_range = 100;
 
-#if defined(FLARE_ENABLE_CUDA) && \
+#if defined(FLARE_ON_CUDA_DEVICE) && \
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
   if constexpr (std::is_same_v<TEST_EXECSPACE, flare::Cuda>) {
     GTEST_SKIP() << "All but max inclusive scan differ at index 101";

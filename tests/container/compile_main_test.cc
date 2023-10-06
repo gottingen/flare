@@ -13,17 +13,4 @@
 // limitations under the License.
 //
 
-#ifndef SUBVIEW_03_TEST_H_
-#define SUBVIEW_03_TEST_H_
-
-#include <view/view_subview_test.h>
-
-namespace Test {
-
-    TEST_CASE("TEST_CATEGORY, view_subview_1d_assign_randomaccess") {
-        TestViewSubview::test_1d_assign<
-                TEST_EXECSPACE, flare::MemoryTraits<flare::RandomAccess> >();
-    }
-
-}  // namespace Test
-#endif  // SUBVIEW_03_TEST_H_
+int main() {}

@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef TEST_NON_TRIVIAL_SCALAR_TYPES_H_
-#define TEST_NON_TRIVIAL_SCALAR_TYPES_H_
+#ifndef NON_TRIVIAL_SCALAR_TYPES_TEST_H_
+#define NON_TRIVIAL_SCALAR_TYPES_TEST_H_
 
 #include <flare/core.h>
 
@@ -286,4 +286,4 @@ struct reduction_identity<Test::point_t> {
   }
 };
 }  // namespace flare
-#endif  // TEST_NON_TRIVIAL_SCALAR_TYPES_H_
+#endif  // NON_TRIVIAL_SCALAR_TYPES_TEST_H_

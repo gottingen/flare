@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-#include <gtest/gtest.h>
+#include <doctest.h>
 #include <flare/core.h>
 
 namespace Test {

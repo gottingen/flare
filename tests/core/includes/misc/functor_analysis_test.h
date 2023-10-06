@@ -13,13 +13,11 @@
 // limitations under the License.
 //
 
-#ifndef TEST_FUNCTOR_ANALYSIS_HPP
-#define TEST_FUNCTOR_ANALYSIS_HPP
+#ifndef FUNCTOR_ANALYSIS_TEST_H_
+#define FUNCTOR_ANALYSIS_TEST_H_
 
 #include <doctest.h>
 #include <flare/core.h>
-
-/*--------------------------------------------------------------------------*/
 
 namespace Test {
 
@@ -146,6 +144,4 @@ namespace Test {
 
 }  // namespace Test
 
-/*--------------------------------------------------------------------------*/
-
-#endif /* #ifndef TEST_FUNCTOR_ANALYSIS_HPP */
+#endif  // FUNCTOR_ANALYSIS_TEST_H_

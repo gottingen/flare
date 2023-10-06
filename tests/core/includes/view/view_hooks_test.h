@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef TESTVIEWHOOKS_HPP_
-#define TESTVIEWHOOKS_HPP_
+#ifndef VIEW_HOOKS_TEST_H_
+#define VIEW_HOOKS_TEST_H_
 
 #include <doctest.h>
 #include <flare/core.h>
@@ -127,4 +127,4 @@ TEST_CASE("TEST_CATEGORY, view_hooks") {
 }
 
 }  // namespace Test
-#endif  // TESTVIEWHOOKS_HPP_
+#endif  // VIEW_HOOKS_TEST_H_

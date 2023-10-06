@@ -13,17 +13,26 @@
 // limitations under the License.
 //
 
-#ifndef SUBVIEW_03_TEST_H_
-#define SUBVIEW_03_TEST_H_
+#include <flare/core.h>
+#include <flare/dual_view.h>
 
-#include <view/view_subview_test.h>
+namespace {
 
-namespace Test {
+template <class DataType, class Arg1Type = void, class Arg2Type = void,
+          class Arg3Type = void>
+void not_supported_anymore(
+    flare::DualView<DataType, Arg1Type, Arg2Type, Arg2Type> x) {
+  static_assert(flare::is_dual_view_v<decltype(x)>);
+}
 
-    TEST_CASE("TEST_CATEGORY, view_subview_1d_assign_randomaccess") {
-        TestViewSubview::test_1d_assign<
-                TEST_EXECSPACE, flare::MemoryTraits<flare::RandomAccess> >();
-    }
+template <class DataType, class... Properties>
+void prefer_instead(flare::DualView<DataType, Properties...> x) {
+  static_assert(flare::is_dual_view_v<decltype(x)>);
+}
 
-}  // namespace Test
-#endif  // SUBVIEW_03_TEST_H_
+using KDV = flare::DualView<int*>;
+
+
+static_assert(std::is_void_v<decltype(prefer_instead(std::declval<KDV>()))>);
+
+}  // namespace

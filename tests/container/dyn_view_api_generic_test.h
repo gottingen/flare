@@ -13,17 +13,10 @@
 // limitations under the License.
 //
 
-#ifndef SUBVIEW_03_TEST_H_
-#define SUBVIEW_03_TEST_H_
-
-#include <view/view_subview_test.h>
+#include <container_dyn_view_api_test.h>
 
 namespace Test {
-
-    TEST_CASE("TEST_CATEGORY, view_subview_1d_assign_randomaccess") {
-        TestViewSubview::test_1d_assign<
-                TEST_EXECSPACE, flare::MemoryTraits<flare::RandomAccess> >();
+    TEST_CASE("TEST_CATEGORY, dyn_rank_view_api_generic") {
+        TestDynViewAPI<double, TEST_EXECSPACE>::run_tests();
     }
-
 }  // namespace Test
-#endif  // SUBVIEW_03_TEST_H_

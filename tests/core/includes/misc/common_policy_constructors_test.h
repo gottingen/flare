@@ -97,7 +97,7 @@ namespace {
 // Check that the policy size does not increase if the user does not specify the
 // occupancy (only pay for what you use).
 // Disabling since EBO was not working with VS 16.11.3 and CUDA 11.4.2
-#if !(defined(_WIN32) && defined(FLARE_ENABLE_CUDA))
+#if !(defined(_WIN32) && defined(FLARE_ON_CUDA_DEVICE))
 
     constexpr bool test_empty_base_optimization() {
         DummyPolicy<> policy;

@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_TEST_SUBVIEW_A_H_
-#define FLARE_TEST_SUBVIEW_A_H_
+#ifndef SUBVIEW_A_TEST_H_
+#define SUBVIEW_A_TEST_H_
 #include <view/view_subview_test.h>
 
 namespace Test {
@@ -72,4 +72,4 @@ TEST_CASE("TEST_CATEGORY, view_static_tests") {
 }
 
 }  // namespace Test
-#endif  // FLARE_TEST_SUBVIEW_A_H_
+#endif  // SUBVIEW_A_TEST_H_

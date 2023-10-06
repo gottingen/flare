@@ -1538,7 +1538,7 @@ namespace Test {
         static void run_test_error() {
 // FIXME_MSVC_WITH_CUDA
 // This test doesn't behave as expected on Windows with CUDA
-#if defined(_WIN32) && defined(FLARE_ENABLE_CUDA)
+#if defined(_WIN32) && defined(FLARE_ON_CUDA_DEVICE)
             if (std::is_same<typename dView1::memory_space,
                              flare::CudaUVMSpace>::value)
               return;

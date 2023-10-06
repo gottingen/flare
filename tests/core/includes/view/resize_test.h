@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef TESTRESIZE_HPP_
-#define TESTRESIZE_HPP_
+#ifndef RESIZE_TEST_H_
+#define RESIZE_TEST_H_
 
 #include <doctest.h>
 #include <flare/core.h>
@@ -371,4 +371,4 @@ namespace TestViewResize {
     }
 
 }  // namespace TestViewResize
-#endif  // TESTRESIZE_HPP_
+#endif  // RESIZE_TEST_H_

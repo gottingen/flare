@@ -1036,7 +1036,7 @@ void test_view_mapping() {
     REQUIRE_EQ(a.use_count(), 1);
     REQUIRE_EQ(b.use_count(), 0);
 
-#if !defined(FLARE_ENABLE_CUDA)
+#if !defined(FLARE_ON_CUDA_DEVICE)
     // Cannot launch host lambda when CUDA lambda is enabled.
 
     using host_exec_space =

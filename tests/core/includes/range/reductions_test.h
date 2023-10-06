@@ -13,9 +13,9 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_TEST_REDUCTIONS_H_
-#define FLARE_TEST_REDUCTIONS_H_
+#ifndef REDUCTIONS_TEST_H_
+#define REDUCTIONS_TEST_H_
 #include <flare/core/defines.h>
 #include <range/reduce_test.h>
 #include <range/cxx11_deduction_test.h>
-#endif
+#endif  // REDUCTIONS_TEST_H_

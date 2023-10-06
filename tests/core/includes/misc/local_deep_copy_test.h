@@ -920,7 +920,7 @@ namespace Test {
 
     TEST_CASE("TEST_CATEGORY, local_deepcopy_teampolicy_layoutleft") {
         using ExecSpace = TEST_EXECSPACE;
-#if defined(FLARE_ENABLE_CUDA) && \
+#if defined(FLARE_ON_CUDA_DEVICE) && \
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
         if (std::is_same_v<ExecSpace, flare::Cuda>)
           GTEST_SKIP()
@@ -953,11 +953,13 @@ namespace Test {
 //-------------------------------------------------------------------------------------------------------------
     TEST_CASE("TEST_CATEGORY, local_deepcopy_rangepolicy_layoutleft") {
         using ExecSpace = TEST_EXECSPACE;
-#if defined(FLARE_ENABLE_CUDA) && \
+#if defined(FLARE_ON_CUDA_DEVICE) && \
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
-        if (std::is_same_v<ExecSpace, flare::Cuda>)
-          GTEST_SKIP()
-              << "FIXME_NVHPC : Compiler bug affecting subviews of high rank Views";
+        if (std::is_same_v<ExecSpace, flare::Cuda>) {
+          INFO("FIXME_NVHPC : Compiler bug affecting subviews of high rank Views");
+          return;
+          }
+
 #endif
         using ViewType = flare::View<double ********, flare::LayoutLeft, ExecSpace>;
 
@@ -986,7 +988,7 @@ namespace Test {
 //-------------------------------------------------------------------------------------------------------------
     TEST_CASE("TEST_CATEGORY, local_deepcopy_teampolicy_layoutright") {
         using ExecSpace = TEST_EXECSPACE;
-#if defined(FLARE_ENABLE_CUDA) && \
+#if defined(FLARE_ON_CUDA_DEVICE) && \
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
         if (std::is_same_v<ExecSpace, flare::Cuda>)
           GTEST_SKIP()
@@ -1019,7 +1021,7 @@ namespace Test {
 //-------------------------------------------------------------------------------------------------------------
     TEST_CASE("TEST_CATEGORY, local_deepcopy_rangepolicy_layoutright") {
         using ExecSpace = TEST_EXECSPACE;
-#if defined(FLARE_ENABLE_CUDA) && \
+#if defined(FLARE_ON_CUDA_DEVICE) && \
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
         if (std::is_same_v<ExecSpace, flare::Cuda>)
           GTEST_SKIP()
