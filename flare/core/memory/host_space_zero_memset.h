@@ -22,28 +22,26 @@
 
 #include <iostream>
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
-template <class T, class... P>
-struct ZeroMemset<HostSpace::execution_space, View<T, P...>> {
-  ZeroMemset(const HostSpace::execution_space& exec, const View<T, P...>& dst,
-             typename View<T, P...>::const_value_type&) {
-    // We can't use exec.fence() directly since we don't have a full definition
-    // of HostSpace here.
-    hostspace_fence(exec);
-    using ValueType = typename View<T, P...>::value_type;
-    std::memset(dst.data(), 0, sizeof(ValueType) * dst.size());
-  }
+    template<class T, class... P>
+    struct ZeroMemset<HostSpace::execution_space, View<T, P...>> {
+        ZeroMemset(const HostSpace::execution_space &exec, const View<T, P...> &dst,
+                   typename View<T, P...>::const_value_type &) {
+            // We can't use exec.fence() directly since we don't have a full definition
+            // of HostSpace here.
+            hostspace_fence(exec);
+            using ValueType = typename View<T, P...>::value_type;
+            std::memset(dst.data(), 0, sizeof(ValueType) * dst.size());
+        }
 
-  ZeroMemset(const View<T, P...>& dst,
-             typename View<T, P...>::const_value_type&) {
-    using ValueType = typename View<T, P...>::value_type;
-    std::memset(dst.data(), 0, sizeof(ValueType) * dst.size());
-  }
-};
+        ZeroMemset(const View<T, P...> &dst,
+                   typename View<T, P...>::const_value_type &) {
+            using ValueType = typename View<T, P...>::value_type;
+            std::memset(dst.data(), 0, sizeof(ValueType) * dst.size());
+        }
+    };
 
-}  // end namespace detail
-}  // end namespace flare
+}  // end namespace flare::detail
 
 #endif  // FLARE_CORE_MEMORY_HOST_SPACE_ZERO_MEMSET_H_

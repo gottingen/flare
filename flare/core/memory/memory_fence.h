@@ -14,6 +14,7 @@
 //
 
 #include <flare/core/defines.h>
+
 #if defined(FLARE_CORE_ATOMIC_H_) && !defined(FLARE_CORE_MEMORY_MEMORY_FENCE_H_)
 #define FLARE_CORE_MEMORY_MEMORY_FENCE_H_
 namespace flare {

@@ -132,7 +132,7 @@ TEST(TEST_CATEGORY, team_scan) {
 // Temporary: This condition will progressively be reduced when parallel_scan
 // with return value will be implemented for more backends.
 #if defined(FLARE_ENABLE_SERIAL) || defined(FLARE_ENABLE_OPENMP)
-#if !defined(FLARE_ENABLE_CUDA) &&            \
+#if !defined(FLARE_ON_CUDA_DEVICE) &&            \
     !defined(FLARE_ENABLE_THREADS)
 template <class ExecutionSpace, class DataType>
 struct TestTeamScanRetVal {

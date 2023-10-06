@@ -31,8 +31,6 @@
 
 namespace flare {
 
-//----------------------------------------------------------------------------
-
     template<typename T>
     FLARE_FORCEINLINE_FUNCTION T volatile_load(T const volatile *const src_ptr) {
         typedef uint64_t FLARE_IMPL_MAY_ALIAS T64;  // NOLINT(modernize-use-using)

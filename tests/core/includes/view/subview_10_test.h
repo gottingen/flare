@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_TEST_SUBVIEW_10_H_
-#define FLARE_TEST_SUBVIEW_10_H_
+#ifndef SUBVIEW_10_TEST_H_
+#define SUBVIEW_10_TEST_H_
 
 #include <view/view_subview_test.h>
 
@@ -25,4 +25,4 @@ namespace Test {
     }
 
 }  // namespace Test
-#endif  // FLARE_TEST_SUBVIEW_10_H_
+#endif  // SUBVIEW_10_TEST_H_

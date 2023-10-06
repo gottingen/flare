@@ -18,20 +18,19 @@
 
 #include <cstdint>
 
-namespace flare {
+namespace flare::detail {
 
-namespace detail {
+    void hostspace_fence(const DefaultHostExecutionSpace &exec);
 
-void hostspace_fence(const DefaultHostExecutionSpace& exec);
+    void hostspace_parallel_deepcopy(void *dst, const void *src, ptrdiff_t n);
 
-void hostspace_parallel_deepcopy(void* dst, const void* src, ptrdiff_t n);
-// DeepCopy called with an execution space that can't access HostSpace
-void hostspace_parallel_deepcopy_async(void* dst, const void* src, ptrdiff_t n);
-void hostspace_parallel_deepcopy_async(const DefaultHostExecutionSpace& exec,
-                                       void* dst, const void* src, ptrdiff_t n);
+    // DeepCopy called with an execution space that can't access HostSpace
+    void hostspace_parallel_deepcopy_async(void *dst, const void *src, ptrdiff_t n);
 
-}  // namespace detail
+    void hostspace_parallel_deepcopy_async(const DefaultHostExecutionSpace &exec,
+                                           void *dst, const void *src, ptrdiff_t n);
 
-}  // namespace flare
+
+}  // namespace flare::detail
 
 #endif  // FLARE_CORE_MEMORY_HOST_SPACE_DEEPCOPY_H_

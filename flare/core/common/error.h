@@ -171,9 +171,6 @@ namespace flare {
 
 }  // namespace flare
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-
 #if !defined(NDEBUG) || defined(FLARE_ENFORCE_CONTRACTS) || \
     defined(FLARE_ENABLE_DEBUG)
 #define FLARE_EXPECTS(...)                                                    \

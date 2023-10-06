@@ -70,7 +70,7 @@ struct TestMathematicalConstants {
   }
 };
 
-#if defined(FLARE_ENABLE_CUDA)
+#if defined(FLARE_ON_CUDA_DEVICE)
 #define TEST_MATH_CONSTANT(TRAIT)                               \
   TEST_CASE("TEST_CATEGORY, mathematical_constants_"#TRAIT) {         \
     TestMathematicalConstants<TEST_EXECSPACE, TRAIT<float>>();  \
@@ -78,7 +78,7 @@ struct TestMathematicalConstants {
   }
 #else
 #define TEST_MATH_CONSTANT(TRAIT)                                    \
-  TEST(TEST_CATEGORY, mathematical_constants_##TRAIT) {              \
+  TEST_CASE("TEST_CATEGORY, mathematical_constants_"#TRAIT) {              \
     TestMathematicalConstants<TEST_EXECSPACE, TRAIT<float>>();       \
     TestMathematicalConstants<TEST_EXECSPACE, TRAIT<double>>();      \
     TestMathematicalConstants<TEST_EXECSPACE, TRAIT<long double>>(); \

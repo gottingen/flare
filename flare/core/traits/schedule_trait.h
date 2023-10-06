@@ -21,10 +21,7 @@
 #include <flare/core/traits/policy_trait_adaptor.h>
 #include <flare/core/traits/traits_fwd.h>
 
-namespace flare {
-
-namespace detail {
-
+namespace flare::detail {
 
 template <class T>
 struct show_extra_schedule_type_erroneously_given_to_execution_policy;
@@ -60,7 +57,7 @@ struct PolicyTraitMatcher<ScheduleTrait, Schedule<Sched>> : std::true_type {};
 
 }  // end namespace detail
 
-namespace experimental {
+namespace flare::experimental {
 
 
 template <class Policy, class ScheduleType>
@@ -70,8 +67,6 @@ constexpr auto require(Policy const& p, flare::Schedule<ScheduleType>) {
       Policy, flare::Schedule<ScheduleType>>;
   return new_policy_t{p};
 }
-
-}  // end namespace experimental
 
 }  // end namespace flare
 

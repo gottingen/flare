@@ -37,6 +37,7 @@ set(FLARE_SRC
         ${PROJECT_SOURCE_DIR}/flare/core/memory/shared_alloc.cc
         ${PROJECT_SOURCE_DIR}/flare/core/profile/profiling.cc
         ${PROJECT_SOURCE_DIR}/flare/simd/dummy.cc
+        ${PROJECT_SOURCE_DIR}/flare/containers/unordered_map_impl.cc
 
 )
 

@@ -167,7 +167,6 @@ namespace {
 }
 
 
-
 [[nodiscard]] int flare::num_threads() noexcept {
     return DefaultHostExecutionSpace().concurrency();
 }

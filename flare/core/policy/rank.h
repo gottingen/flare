@@ -21,21 +21,21 @@
 
 namespace flare {
 
-// Iteration Pattern
-template <unsigned N, Iterate OuterDir = Iterate::Default,
-          Iterate InnerDir = Iterate::Default>
-struct Rank {
-  static_assert(N != 0u, "flare Error: rank 0 undefined");
-  static_assert(N != 1u,
-                "flare Error: rank 1 is not a multi-dimensional range");
-  static_assert(N < 9u, "flare Error: Unsupported rank...");
+    // Iteration Pattern
+    template<unsigned N, Iterate OuterDir = Iterate::Default,
+            Iterate InnerDir = Iterate::Default>
+    struct Rank {
+        static_assert(N != 0u, "flare Error: rank 0 undefined");
+        static_assert(N != 1u,
+                      "flare Error: rank 1 is not a multi-dimensional range");
+        static_assert(N < 9u, "flare Error: Unsupported rank...");
 
-  using iteration_pattern = Rank<N, OuterDir, InnerDir>;
+        using iteration_pattern = Rank<N, OuterDir, InnerDir>;
 
-  static constexpr int rank                = N;
-  static constexpr Iterate outer_direction = OuterDir;
-  static constexpr Iterate inner_direction = InnerDir;
-};
+        static constexpr int rank = N;
+        static constexpr Iterate outer_direction = OuterDir;
+        static constexpr Iterate inner_direction = InnerDir;
+    };
 
 }  // end namespace flare
 

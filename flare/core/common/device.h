@@ -23,5 +23,5 @@
 
 namespace flare::detail {
     int get_device_count();
-}
+}  // namespace flare::detail
 #endif  // FLARE_CORE_DEVICE_H_

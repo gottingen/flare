@@ -19,8 +19,7 @@
 #include <type_traits>
 #include <flare/core/common/error.h>
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
 #if defined(__has_builtin)
 #if __has_builtin(__builtin_mul_overflow)
@@ -28,37 +27,36 @@ namespace detail {
 #endif
 #endif
 
-template <typename T>
-std::enable_if_t<std::is_integral_v<T>, bool> constexpr multiply_overflow(
-    T a, T b, T& res) {
-  static_assert(std::is_unsigned_v<T>,
-                "Operation not implemented for signed integers.");
+    template<typename T>
+    std::enable_if_t<std::is_integral_v<T>, bool> constexpr multiply_overflow(
+            T a, T b, T &res) {
+        static_assert(std::is_unsigned_v<T>,
+                      "Operation not implemented for signed integers.");
 
 #if defined(FLARE_IMPL_USE_MUL_OVERFLOW_BUILTIN)
-  return __builtin_mul_overflow(a, b, &res);
+        return __builtin_mul_overflow(a, b, &res);
 #else
-  auto product = a * b;
-  if ((a == 0) || (b == 0) || (a == product / b)) {
-    res = product;
-    return false;
-  } else {
-    return true;
-  }
+        auto product = a * b;
+        if ((a == 0) || (b == 0) || (a == product / b)) {
+            res = product;
+            return false;
+        } else {
+            return true;
+        }
 #endif
-}
+    }
 
 #undef FLARE_IMPL_USE_MUL_OVERFLOW_BUILTIN
 
-template <typename T>
-T multiply_overflow_abort(T a, T b) {
-  T result;
-  if (multiply_overflow(a, b, result))
-    flare::abort("Arithmetic overflow detected.");
+    template<typename T>
+    T multiply_overflow_abort(T a, T b) {
+        T result;
+        if (multiply_overflow(a, b, result))
+            flare::abort("Arithmetic overflow detected.");
 
-  return result;
-}
+        return result;
+    }
 
-}  // namespace detail
-}  // namespace flare
+}  // namespace flare::detail
 
 #endif  // FLARE_CORE_COMMON_CHECKED_INTEGER_OPS_H_

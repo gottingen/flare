@@ -51,313 +51,323 @@ namespace flare {
 /// <li> <tt> entries( entry ,            i2 , i3 , ... ); </tt> </li>
 /// <li> <tt> entries( row_map[i0] + i1 , i2 , i3 , ... ); </tt> </li>
 /// </ul>
-template <class DataType, class Arg1Type, class Arg2Type = void,
-          typename SizeType = typename ViewTraits<DataType*, Arg1Type, Arg2Type,
-                                                  void>::size_type>
-class Crs {
- protected:
-  using traits = ViewTraits<DataType*, Arg1Type, Arg2Type, void>;
+    template<class DataType, class Arg1Type, class Arg2Type = void,
+            typename SizeType = typename ViewTraits<DataType *, Arg1Type, Arg2Type,
+                    void>::size_type>
+    class Crs {
+    protected:
+        using traits = ViewTraits<DataType *, Arg1Type, Arg2Type, void>;
 
- public:
-  using data_type       = DataType;
-  using array_layout    = typename traits::array_layout;
-  using execution_space = typename traits::execution_space;
-  using memory_space    = typename traits::memory_space;
-  using device_type     = typename traits::device_type;
-  using size_type       = SizeType;
+    public:
+        using data_type = DataType;
+        using array_layout = typename traits::array_layout;
+        using execution_space = typename traits::execution_space;
+        using memory_space = typename traits::memory_space;
+        using device_type = typename traits::device_type;
+        using size_type = SizeType;
 
-  using staticcrsgraph_type = Crs<DataType, Arg1Type, Arg2Type, SizeType>;
-  using HostMirror =
-      Crs<DataType, array_layout, typename traits::host_mirror_space, SizeType>;
-  using row_map_type = View<size_type*, array_layout, device_type>;
-  using entries_type = View<DataType*, array_layout, device_type>;
+        using staticcrsgraph_type = Crs<DataType, Arg1Type, Arg2Type, SizeType>;
+        using HostMirror =
+                Crs<DataType, array_layout, typename traits::host_mirror_space, SizeType>;
+        using row_map_type = View<size_type *, array_layout, device_type>;
+        using entries_type = View<DataType *, array_layout, device_type>;
 
-  row_map_type row_map;
-  entries_type entries;
+        row_map_type row_map;
+        entries_type entries;
 
-  /*
-   * Default Constructors, operators and destructor
-   */
-  FLARE_DEFAULTED_FUNCTION Crs()           = default;
-  FLARE_DEFAULTED_FUNCTION Crs(Crs const&) = default;
-  FLARE_DEFAULTED_FUNCTION Crs(Crs&&)      = default;
-  FLARE_DEFAULTED_FUNCTION Crs& operator=(Crs const&) = default;
-  FLARE_DEFAULTED_FUNCTION Crs& operator=(Crs&&) = default;
-  FLARE_DEFAULTED_FUNCTION ~Crs()                = default;
+        /*
+         * Default Constructors, operators and destructor
+         */
+        FLARE_DEFAULTED_FUNCTION Crs() = default;
 
-  /** \brief Assign to a view of the rhs array.
-   *         If the old view is the last view
-   *         then allocated memory is deallocated.
-   */
-  template <class EntriesType, class RowMapType>
-  FLARE_INLINE_FUNCTION Crs(const RowMapType& row_map_,
-                             const EntriesType& entries_)
-      : row_map(row_map_), entries(entries_) {}
+        FLARE_DEFAULTED_FUNCTION Crs(Crs const &) = default;
 
-  /**  \brief  Return number of rows in the graph
-   */
-  FLARE_INLINE_FUNCTION
-  size_type numRows() const {
-    return (row_map.extent(0) != 0)
-               ? row_map.extent(0) - static_cast<size_type>(1)
-               : static_cast<size_type>(0);
-  }
-};
+        FLARE_DEFAULTED_FUNCTION Crs(Crs &&) = default;
 
-/*--------------------------------------------------------------------------*/
+        FLARE_DEFAULTED_FUNCTION Crs &operator=(Crs const &) = default;
 
-template <class OutCounts, class DataType, class Arg1Type, class Arg2Type,
-          class SizeType>
-void get_crs_transpose_counts(
-    OutCounts& out, Crs<DataType, Arg1Type, Arg2Type, SizeType> const& in,
-    std::string const& name = "transpose_counts");
+        FLARE_DEFAULTED_FUNCTION Crs &operator=(Crs &&) = default;
 
-template <class OutCounts, class InCrs>
-typename OutCounts::value_type get_crs_row_map_from_counts(
-    OutCounts& out, InCrs const& in, std::string const& name = "row_map");
+        FLARE_DEFAULTED_FUNCTION ~Crs() = default;
 
-template <class DataType, class Arg1Type, class Arg2Type, class SizeType>
-void transpose_crs(Crs<DataType, Arg1Type, Arg2Type, SizeType>& out,
-                   Crs<DataType, Arg1Type, Arg2Type, SizeType> const& in);
+        /** \brief Assign to a view of the rhs array.
+         *         If the old view is the last view
+         *         then allocated memory is deallocated.
+         */
+        template<class EntriesType, class RowMapType>
+        FLARE_INLINE_FUNCTION Crs(const RowMapType &row_map_,
+                                  const EntriesType &entries_)
+                : row_map(row_map_), entries(entries_) {}
+
+        /**  \brief  Return number of rows in the graph
+         */
+        FLARE_INLINE_FUNCTION
+        size_type numRows() const {
+            return (row_map.extent(0) != 0)
+                   ? row_map.extent(0) - static_cast<size_type>(1)
+                   : static_cast<size_type>(0);
+        }
+    };
+
+    template<class OutCounts, class DataType, class Arg1Type, class Arg2Type,
+            class SizeType>
+    void get_crs_transpose_counts(
+            OutCounts &out, Crs<DataType, Arg1Type, Arg2Type, SizeType> const &in,
+            std::string const &name = "transpose_counts");
+
+    template<class OutCounts, class InCrs>
+    typename OutCounts::value_type get_crs_row_map_from_counts(
+            OutCounts &out, InCrs const &in, std::string const &name = "row_map");
+
+    template<class DataType, class Arg1Type, class Arg2Type, class SizeType>
+    void transpose_crs(Crs<DataType, Arg1Type, Arg2Type, SizeType> &out,
+                       Crs<DataType, Arg1Type, Arg2Type, SizeType> const &in);
 
 }  // namespace flare
+
+namespace flare::detail {
+
+    template<class InCrs, class OutCounts>
+    class GetCrsTransposeCounts {
+    public:
+        using execution_space = typename InCrs::execution_space;
+        using self_type = GetCrsTransposeCounts<InCrs, OutCounts>;
+        using index_type = typename InCrs::size_type;
+
+    private:
+        InCrs in;
+        OutCounts out;
+
+    public:
+        FLARE_INLINE_FUNCTION
+        void operator()(index_type i) const { atomic_increment(&out[in.entries(i)]); }
+
+        GetCrsTransposeCounts(InCrs const &arg_in, OutCounts const &arg_out)
+                : in(arg_in), out(arg_out) {
+            using policy_type = RangePolicy<index_type, execution_space>;
+            using closure_type = flare::detail::ParallelFor<self_type, policy_type>;
+            const closure_type closure(*this,
+                                       policy_type(0, index_type(in.entries.size())));
+            closure.execute();
+            execution_space().fence(
+                    "flare::detail::GetCrsTransposeCounts::GetCrsTransposeCounts: fence "
+                    "after functor execution");
+        }
+    };
+
+    template<class InCounts, class OutRowMap>
+    class CrsRowMapFromCounts {
+    public:
+        using execution_space = typename InCounts::execution_space;
+        using value_type = typename OutRowMap::value_type;
+        using index_type = typename InCounts::size_type;
+        using last_value_type =
+                flare::View<value_type, typename InCounts::device_type>;
+
+    private:
+        InCounts m_in;
+        OutRowMap m_out;
+        last_value_type m_last_value;
+
+    public:
+        FLARE_INLINE_FUNCTION
+        void operator()(index_type i, value_type &update, bool final_pass) const {
+            if (i < static_cast<index_type>(m_in.size())) {
+                update += m_in(i);
+                if (final_pass) m_out(i + 1) = update;
+            } else if (final_pass) {
+                m_out(0) = 0;
+                m_last_value() = update;
+            }
+        }
+
+        FLARE_INLINE_FUNCTION
+        void init(value_type &update) const { update = 0; }
+
+        FLARE_INLINE_FUNCTION
+        void join(value_type &update, const value_type &input) const {
+            update += input;
+        }
+
+        using self_type = CrsRowMapFromCounts<InCounts, OutRowMap>;
+
+        CrsRowMapFromCounts(InCounts const &arg_in, OutRowMap const &arg_out)
+                : m_in(arg_in), m_out(arg_out), m_last_value("last_value") {}
+
+        value_type execute() {
+            using policy_type = RangePolicy<index_type, execution_space>;
+            using closure_type = flare::detail::ParallelScan<self_type, policy_type>;
+            closure_type closure(*this, policy_type(0, m_in.size() + 1));
+            closure.execute();
+            auto last_value =
+                    flare::create_mirror_view_and_copy(flare::HostSpace{}, m_last_value);
+            return last_value();
+        }
+    };
+
+    template<class InCrs, class OutCrs>
+    class FillCrsTransposeEntries {
+    public:
+        using execution_space = typename InCrs::execution_space;
+        using memory_space = typename InCrs::memory_space;
+        using value_type = typename OutCrs::entries_type::value_type;
+        using index_type = typename InCrs::size_type;
+
+    private:
+        using counters_type = View<index_type *, memory_space>;
+        InCrs in;
+        OutCrs out;
+        counters_type counters;
+
+    public:
+        FLARE_INLINE_FUNCTION
+        void operator()(index_type i) const {
+            auto begin = in.row_map(i);
+            auto end = in.row_map(i + 1);
+            for (auto j = begin; j < end; ++j) {
+                auto ti = in.entries(j);
+                auto tbegin = out.row_map(ti);
+                auto tj = atomic_fetch_add(&counters(ti), 1);
+                out.entries(tbegin + tj) = i;
+            }
+        }
+
+        using self_type = FillCrsTransposeEntries<InCrs, OutCrs>;
+
+        FillCrsTransposeEntries(InCrs const &arg_in, OutCrs const &arg_out)
+                : in(arg_in), out(arg_out), counters("counters", arg_out.numRows()) {
+            using policy_type = RangePolicy<index_type, execution_space>;
+            using closure_type = flare::detail::ParallelFor<self_type, policy_type>;
+            const closure_type closure(*this, policy_type(0, index_type(in.numRows())));
+            closure.execute();
+            execution_space().fence(
+                    "flare::detail::FillCrsTransposeEntries::FillCrsTransposeEntries: fence "
+                    "after functor execution");
+        }
+    };
+
+}  // namespace flare::detail
 
 /*--------------------------------------------------------------------------*/
 
 /*--------------------------------------------------------------------------*/
 
 namespace flare {
-namespace detail {
 
-template <class InCrs, class OutCounts>
-class GetCrsTransposeCounts {
- public:
-  using execution_space = typename InCrs::execution_space;
-  using self_type       = GetCrsTransposeCounts<InCrs, OutCounts>;
-  using index_type      = typename InCrs::size_type;
-
- private:
-  InCrs in;
-  OutCounts out;
-
- public:
-  FLARE_INLINE_FUNCTION
-  void operator()(index_type i) const { atomic_increment(&out[in.entries(i)]); }
-  GetCrsTransposeCounts(InCrs const& arg_in, OutCounts const& arg_out)
-      : in(arg_in), out(arg_out) {
-    using policy_type  = RangePolicy<index_type, execution_space>;
-    using closure_type = flare::detail::ParallelFor<self_type, policy_type>;
-    const closure_type closure(*this,
-                               policy_type(0, index_type(in.entries.size())));
-    closure.execute();
-    execution_space().fence(
-        "flare::detail::GetCrsTransposeCounts::GetCrsTransposeCounts: fence "
-        "after functor execution");
-  }
-};
-
-template <class InCounts, class OutRowMap>
-class CrsRowMapFromCounts {
- public:
-  using execution_space = typename InCounts::execution_space;
-  using value_type      = typename OutRowMap::value_type;
-  using index_type      = typename InCounts::size_type;
-  using last_value_type =
-      flare::View<value_type, typename InCounts::device_type>;
-
- private:
-  InCounts m_in;
-  OutRowMap m_out;
-  last_value_type m_last_value;
-
- public:
-  FLARE_INLINE_FUNCTION
-  void operator()(index_type i, value_type& update, bool final_pass) const {
-    if (i < static_cast<index_type>(m_in.size())) {
-      update += m_in(i);
-      if (final_pass) m_out(i + 1) = update;
-    } else if (final_pass) {
-      m_out(0)       = 0;
-      m_last_value() = update;
+    template<class OutCounts, class DataType, class Arg1Type, class Arg2Type,
+            class SizeType>
+    void get_crs_transpose_counts(
+            OutCounts &out, Crs<DataType, Arg1Type, Arg2Type, SizeType> const &in,
+            std::string const &name) {
+        using InCrs = Crs<DataType, Arg1Type, Arg2Type, SizeType>;
+        out = OutCounts(name, in.numRows());
+        flare::detail::GetCrsTransposeCounts<InCrs, OutCounts> functor(in, out);
     }
-  }
-  FLARE_INLINE_FUNCTION
-  void init(value_type& update) const { update = 0; }
-  FLARE_INLINE_FUNCTION
-  void join(value_type& update, const value_type& input) const {
-    update += input;
-  }
-  using self_type = CrsRowMapFromCounts<InCounts, OutRowMap>;
-  CrsRowMapFromCounts(InCounts const& arg_in, OutRowMap const& arg_out)
-      : m_in(arg_in), m_out(arg_out), m_last_value("last_value") {}
-  value_type execute() {
-    using policy_type  = RangePolicy<index_type, execution_space>;
-    using closure_type = flare::detail::ParallelScan<self_type, policy_type>;
-    closure_type closure(*this, policy_type(0, m_in.size() + 1));
-    closure.execute();
-    auto last_value =
-        flare::create_mirror_view_and_copy(flare::HostSpace{}, m_last_value);
-    return last_value();
-  }
-};
 
-template <class InCrs, class OutCrs>
-class FillCrsTransposeEntries {
- public:
-  using execution_space = typename InCrs::execution_space;
-  using memory_space    = typename InCrs::memory_space;
-  using value_type      = typename OutCrs::entries_type::value_type;
-  using index_type      = typename InCrs::size_type;
-
- private:
-  using counters_type = View<index_type*, memory_space>;
-  InCrs in;
-  OutCrs out;
-  counters_type counters;
-
- public:
-  FLARE_INLINE_FUNCTION
-  void operator()(index_type i) const {
-    auto begin = in.row_map(i);
-    auto end   = in.row_map(i + 1);
-    for (auto j = begin; j < end; ++j) {
-      auto ti                  = in.entries(j);
-      auto tbegin              = out.row_map(ti);
-      auto tj                  = atomic_fetch_add(&counters(ti), 1);
-      out.entries(tbegin + tj) = i;
+    template<class OutRowMap, class InCounts>
+    typename OutRowMap::value_type get_crs_row_map_from_counts(
+            OutRowMap &out, InCounts const &in, std::string const &name) {
+        out = OutRowMap(view_alloc(WithoutInitializing, name), in.size() + 1);
+        flare::detail::CrsRowMapFromCounts<InCounts, OutRowMap> functor(in, out);
+        return functor.execute();
     }
-  }
-  using self_type = FillCrsTransposeEntries<InCrs, OutCrs>;
-  FillCrsTransposeEntries(InCrs const& arg_in, OutCrs const& arg_out)
-      : in(arg_in), out(arg_out), counters("counters", arg_out.numRows()) {
-    using policy_type  = RangePolicy<index_type, execution_space>;
-    using closure_type = flare::detail::ParallelFor<self_type, policy_type>;
-    const closure_type closure(*this, policy_type(0, index_type(in.numRows())));
-    closure.execute();
-    execution_space().fence(
-        "flare::detail::FillCrsTransposeEntries::FillCrsTransposeEntries: fence "
-        "after functor execution");
-  }
-};
 
-}  // namespace detail
-}  // namespace flare
-
-/*--------------------------------------------------------------------------*/
-
-/*--------------------------------------------------------------------------*/
-
-namespace flare {
-
-template <class OutCounts, class DataType, class Arg1Type, class Arg2Type,
-          class SizeType>
-void get_crs_transpose_counts(
-    OutCounts& out, Crs<DataType, Arg1Type, Arg2Type, SizeType> const& in,
-    std::string const& name) {
-  using InCrs = Crs<DataType, Arg1Type, Arg2Type, SizeType>;
-  out         = OutCounts(name, in.numRows());
-  flare::detail::GetCrsTransposeCounts<InCrs, OutCounts> functor(in, out);
-}
-
-template <class OutRowMap, class InCounts>
-typename OutRowMap::value_type get_crs_row_map_from_counts(
-    OutRowMap& out, InCounts const& in, std::string const& name) {
-  out = OutRowMap(view_alloc(WithoutInitializing, name), in.size() + 1);
-  flare::detail::CrsRowMapFromCounts<InCounts, OutRowMap> functor(in, out);
-  return functor.execute();
-}
-
-template <class DataType, class Arg1Type, class Arg2Type, class SizeType>
-void transpose_crs(Crs<DataType, Arg1Type, Arg2Type, SizeType>& out,
-                   Crs<DataType, Arg1Type, Arg2Type, SizeType> const& in) {
-  using crs_type     = Crs<DataType, Arg1Type, Arg2Type, SizeType>;
-  using memory_space = typename crs_type::memory_space;
-  using counts_type  = View<SizeType*, memory_space>;
-  {
-    counts_type counts;
-    flare::get_crs_transpose_counts(counts, in);
-    flare::get_crs_row_map_from_counts(out.row_map, counts,
-                                        "tranpose_row_map");
-  }
-  out.entries = decltype(out.entries)("transpose_entries", in.entries.size());
-  flare::detail::FillCrsTransposeEntries<crs_type, crs_type> entries_functor(
-      in, out);
-}
-
-template <class CrsType, class Functor,
-          class ExecutionSpace = typename CrsType::execution_space>
-struct CountAndFillBase;
-
-template <class CrsType, class Functor, class ExecutionSpace>
-struct CountAndFillBase {
-  using data_type    = typename CrsType::data_type;
-  using size_type    = typename CrsType::size_type;
-  using row_map_type = typename CrsType::row_map_type;
-  using counts_type  = row_map_type;
-  CrsType m_crs;
-  Functor m_functor;
-  counts_type m_counts;
-  struct Count {};
-  FLARE_FUNCTION void operator()(Count, size_type i) const {
-    m_counts(i) = m_functor(i, nullptr);
-  }
-  struct Fill {};
-  FLARE_FUNCTION void operator()(Fill, size_type i) const {
-    auto j = m_crs.row_map(i);
-    /* we don't want to access entries(entries.size()), even if its just to get
-       its address and never use it. this can happen when row (i) is empty and
-       all rows after it are also empty. we could compare to row_map(i + 1), but
-       that is a read from global memory, whereas dimension_0() should be part
-       of the View in registers (or constant memory) */
-    data_type* fill = (j == static_cast<decltype(j)>(m_crs.entries.extent(0)))
-                          ? nullptr
-                          : (&(m_crs.entries(j)));
-    m_functor(i, fill);
-  }
-  CountAndFillBase(CrsType& crs, Functor const& f) : m_crs(crs), m_functor(f) {}
-};
-
-template <class CrsType, class Functor>
-struct CountAndFill : public CountAndFillBase<CrsType, Functor> {
-  using base_type = CountAndFillBase<CrsType, Functor>;
-  using typename base_type::Count;
-  using typename base_type::counts_type;
-  using typename base_type::data_type;
-  using typename base_type::Fill;
-  using typename base_type::size_type;
-  using entries_type = typename CrsType::entries_type;
-  using self_type    = CountAndFill<CrsType, Functor>;
-  CountAndFill(CrsType& crs, size_type nrows, Functor const& f)
-      : base_type(crs, f) {
-    using execution_space = typename CrsType::execution_space;
-    this->m_counts        = counts_type("counts", nrows);
-    {
-      using count_policy_type = RangePolicy<size_type, execution_space, Count>;
-      using count_closure_type =
-          flare::detail::ParallelFor<self_type, count_policy_type>;
-      const count_closure_type closure(*this, count_policy_type(0, nrows));
-      closure.execute();
+    template<class DataType, class Arg1Type, class Arg2Type, class SizeType>
+    void transpose_crs(Crs<DataType, Arg1Type, Arg2Type, SizeType> &out,
+                       Crs<DataType, Arg1Type, Arg2Type, SizeType> const &in) {
+        using crs_type = Crs<DataType, Arg1Type, Arg2Type, SizeType>;
+        using memory_space = typename crs_type::memory_space;
+        using counts_type = View<SizeType *, memory_space>;
+        {
+            counts_type counts;
+            flare::get_crs_transpose_counts(counts, in);
+            flare::get_crs_row_map_from_counts(out.row_map, counts,
+                                               "tranpose_row_map");
+        }
+        out.entries = decltype(out.entries)("transpose_entries", in.entries.size());
+        flare::detail::FillCrsTransposeEntries<crs_type, crs_type> entries_functor(
+                in, out);
     }
-    auto nentries  = flare::get_crs_row_map_from_counts(this->m_crs.row_map,
-                                                        this->m_counts);
-    this->m_counts = counts_type();
-    this->m_crs.entries = entries_type("entries", nentries);
-    {
-      using fill_policy_type = RangePolicy<size_type, execution_space, Fill>;
-      using fill_closure_type =
-          flare::detail::ParallelFor<self_type, fill_policy_type>;
-      const fill_closure_type closure(*this, fill_policy_type(0, nrows));
-      closure.execute();
-    }
-    crs = this->m_crs;
-  }
-};
 
-template <class CrsType, class Functor>
-void count_and_fill_crs(CrsType& crs, typename CrsType::size_type nrows,
-                        Functor const& f) {
-  flare::CountAndFill<CrsType, Functor>(crs, nrows, f);
-}
+    template<class CrsType, class Functor,
+            class ExecutionSpace = typename CrsType::execution_space>
+    struct CountAndFillBase;
+
+    template<class CrsType, class Functor, class ExecutionSpace>
+    struct CountAndFillBase {
+        using data_type = typename CrsType::data_type;
+        using size_type = typename CrsType::size_type;
+        using row_map_type = typename CrsType::row_map_type;
+        using counts_type = row_map_type;
+        CrsType m_crs;
+        Functor m_functor;
+        counts_type m_counts;
+        struct Count {
+        };
+        FLARE_FUNCTION void operator()(Count, size_type i) const {
+            m_counts(i) = m_functor(i, nullptr);
+        }
+
+        struct Fill {
+        };
+        FLARE_FUNCTION void operator()(Fill, size_type i) const {
+            auto j = m_crs.row_map(i);
+            /* we don't want to access entries(entries.size()), even if its just to get
+               its address and never use it. this can happen when row (i) is empty and
+               all rows after it are also empty. we could compare to row_map(i + 1), but
+               that is a read from global memory, whereas dimension_0() should be part
+               of the View in registers (or constant memory) */
+            data_type *fill = (j == static_cast<decltype(j)>(m_crs.entries.extent(0)))
+                              ? nullptr
+                              : (&(m_crs.entries(j)));
+            m_functor(i, fill);
+        }
+
+        CountAndFillBase(CrsType &crs, Functor const &f) : m_crs(crs), m_functor(f) {}
+    };
+
+    template<class CrsType, class Functor>
+    struct CountAndFill : public CountAndFillBase<CrsType, Functor> {
+        using base_type = CountAndFillBase<CrsType, Functor>;
+        using typename base_type::Count;
+        using typename base_type::counts_type;
+        using typename base_type::data_type;
+        using typename base_type::Fill;
+        using typename base_type::size_type;
+        using entries_type = typename CrsType::entries_type;
+        using self_type = CountAndFill<CrsType, Functor>;
+
+        CountAndFill(CrsType &crs, size_type nrows, Functor const &f)
+                : base_type(crs, f) {
+            using execution_space = typename CrsType::execution_space;
+            this->m_counts = counts_type("counts", nrows);
+            {
+                using count_policy_type = RangePolicy<size_type, execution_space, Count>;
+                using count_closure_type =
+                        flare::detail::ParallelFor<self_type, count_policy_type>;
+                const count_closure_type closure(*this, count_policy_type(0, nrows));
+                closure.execute();
+            }
+            auto nentries = flare::get_crs_row_map_from_counts(this->m_crs.row_map,
+                                                               this->m_counts);
+            this->m_counts = counts_type();
+            this->m_crs.entries = entries_type("entries", nentries);
+            {
+                using fill_policy_type = RangePolicy<size_type, execution_space, Fill>;
+                using fill_closure_type =
+                        flare::detail::ParallelFor<self_type, fill_policy_type>;
+                const fill_closure_type closure(*this, fill_policy_type(0, nrows));
+                closure.execute();
+            }
+            crs = this->m_crs;
+        }
+    };
+
+    template<class CrsType, class Functor>
+    void count_and_fill_crs(CrsType &crs, typename CrsType::size_type nrows,
+                            Functor const &f) {
+        flare::CountAndFill<CrsType, Functor>(crs, nrows, f);
+    }
 
 }  // namespace flare
 

@@ -20,22 +20,23 @@
 #include <flare/core.h>
 
 namespace Test {
-TEST_CASE("TEST_CATEGORY, init") { ; }
+    TEST_CASE("TEST_CATEGORY, init") { ; }
 
 #ifdef FLARE_ENABLE_CXX11_DISPATCH_LAMBDA
 
-template <class ExecSpace>
-void test_dispatch() {
-  const int repeat = 100;
-  for (int i = 0; i < repeat; ++i) {
-    for (int j = 0; j < repeat; ++j) {
-      flare::parallel_for(flare::RangePolicy<TEST_EXECSPACE>(0, j),
-                           FLARE_LAMBDA(int){});
+    template<class ExecSpace>
+    void test_dispatch() {
+        const int repeat = 100;
+        for (int i = 0; i < repeat; ++i) {
+            for (int j = 0; j < repeat; ++j) {
+                flare::parallel_for(flare::RangePolicy<TEST_EXECSPACE>(0, j),
+                                    FLARE_LAMBDA(int) {});
+            }
+        }
     }
-  }
-}
 
-TEST_CASE("TEST_CATEGORY, dispatch") { test_dispatch<TEST_EXECSPACE>(); }
+    TEST_CASE("TEST_CATEGORY, dispatch") { test_dispatch<TEST_EXECSPACE>(); }
+
 #endif
 
 }  // namespace Test

@@ -22,7 +22,7 @@
 
 #include <cfloat>
 
-#if defined(FLARE_ENABLE_CUDA)
+#if defined(FLARE_ON_CUDA_DEVICE)
 #else
 #define MATHEMATICAL_FUNCTIONS_HAVE_LONG_DOUBLE_OVERLOADS
 #endif
@@ -1944,7 +1944,7 @@ struct TestIsNaN {
       flare::printf("failed isnan(float)\n");
     }
     if (isnan(static_cast<KE::half_t>(2.f))
-#if !defined(FLARE_ENABLE_CUDA)
+#if !defined(FLARE_ON_CUDA_DEVICE)
         || !isnan(quiet_NaN<KE::half_t>::value) ||
         !isnan(signaling_NaN<KE::half_t>::value)
 #endif
@@ -1953,7 +1953,7 @@ struct TestIsNaN {
       FLARE_IMPL_DO_NOT_USE_PRINTF("failed isnan(KE::half_t)\n");
     }
     if (isnan(static_cast<KE::bhalf_t>(2.f))
-#if !defined(FLARE_ENABLE_CUDA)
+#if !defined(FLARE_ON_CUDA_DEVICE)
         || !isnan(quiet_NaN<KE::bhalf_t>::value) ||
         !isnan(signaling_NaN<KE::bhalf_t>::value)
 #endif

@@ -21,36 +21,35 @@
 #include <flare/core/traits/policy_trait_adaptor.h>
 #include <flare/core/traits/traits_fwd.h>
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
-struct LaunchBoundsTrait : TraitSpecificationBase<LaunchBoundsTrait> {
-  struct base_traits {
-    static constexpr bool launch_bounds_is_defaulted = true;
+    struct LaunchBoundsTrait : TraitSpecificationBase<LaunchBoundsTrait> {
+        struct base_traits {
+            static constexpr bool launch_bounds_is_defaulted = true;
 
-    using launch_bounds = LaunchBounds<>;
-    FLARE_IMPL_MSVC_NVCC_EBO_WORKAROUND
-  };
-  template <class LaunchBoundParam, class AnalyzeNextTrait>
-  struct mixin_matching_trait : AnalyzeNextTrait {
-    using base_t = AnalyzeNextTrait;
-    using base_t::base_t;
+            using launch_bounds = LaunchBounds<>;
+            FLARE_IMPL_MSVC_NVCC_EBO_WORKAROUND
+        };
+        template<class LaunchBoundParam, class AnalyzeNextTrait>
+        struct mixin_matching_trait : AnalyzeNextTrait {
+            using base_t = AnalyzeNextTrait;
+            using base_t::base_t;
 
-    static constexpr bool launch_bounds_is_defaulted = false;
+            static constexpr bool launch_bounds_is_defaulted = false;
 
-    static_assert(base_t::launch_bounds_is_defaulted,
-                  "flare Error: More than one launch_bounds given");
+            static_assert(base_t::launch_bounds_is_defaulted,
+                          "flare Error: More than one launch_bounds given");
 
-    using launch_bounds = LaunchBoundParam;
-  };
-};
+            using launch_bounds = LaunchBoundParam;
+        };
+    };
 
 
-template <unsigned int maxT, unsigned int minB>
-struct PolicyTraitMatcher<LaunchBoundsTrait, LaunchBounds<maxT, minB>>
-    : std::true_type {};
+    template<unsigned int maxT, unsigned int minB>
+    struct PolicyTraitMatcher<LaunchBoundsTrait, LaunchBounds<maxT, minB>>
+            : std::true_type {
+    };
 
-}  // end namespace detail
-}  // end namespace flare
+}  // end namespace flare::detail
 
 #endif  // FLARE_CORE_TRAITS_LAUNCH_BOUNDS_TRAIT_H_

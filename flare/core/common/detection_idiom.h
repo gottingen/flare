@@ -16,7 +16,7 @@
 #define FLARE_CORE_COMMON_DETECTION_IDIOM_H_
 
 #include <flare/core/defines.h>  // FIXME doesn't actually need it if it wasn't
-                              // for the header self-containment test
+// for the header self-containment test
 
 #include <type_traits>
 
@@ -26,61 +26,64 @@
 // I deliberately omitted detected_or which does not fit well with the rest
 // of the specification. In my opinion, it should be removed from the TS.
 
+namespace flare::detail {
+
+    // base class for nonesuch to inherit from so it is not an aggregate
+    struct nonesuch_base {
+    };
+
+    // primary template handles all types not supporting the archetypal Op
+    template<class Default, class /*AlwaysVoid*/, template<class...> class Op,
+            class... /*Args*/>
+    struct detector {
+        using value_t = std::false_type;
+        using type = Default;
+    };
+
+    // specialization recognizes and handles only types supporting Op
+    template<class Default, template<class...> class Op, class... Args>
+    struct detector<Default, std::void_t<Op<Args...>>, Op, Args...> {
+        using value_t = std::true_type;
+        using type = Op<Args...>;
+    };
+}  // namespace flare::detail
+
 namespace flare {
+    struct nonesuch : private detail::nonesuch_base {
+        ~nonesuch() = delete;
 
-namespace detail {
-// base class for nonesuch to inherit from so it is not an aggregate
-struct nonesuch_base {};
+        nonesuch(nonesuch const &) = delete;
 
-// primary template handles all types not supporting the archetypal Op
-template <class Default, class /*AlwaysVoid*/, template <class...> class Op,
-          class... /*Args*/>
-struct detector {
-  using value_t = std::false_type;
-  using type    = Default;
-};
+        void operator=(nonesuch const &) = delete;
+    };
 
-// specialization recognizes and handles only types supporting Op
-template <class Default, template <class...> class Op, class... Args>
-struct detector<Default, std::void_t<Op<Args...>>, Op, Args...> {
-  using value_t = std::true_type;
-  using type    = Op<Args...>;
-};
-}  // namespace detail
+    template<template<class...> class Op, class... Args>
+    using is_detected =
+            typename detail::detector<nonesuch, void, Op, Args...>::value_t;
 
-struct nonesuch : private detail::nonesuch_base {
-  ~nonesuch()               = delete;
-  nonesuch(nonesuch const&) = delete;
-  void operator=(nonesuch const&) = delete;
-};
+    template<template<class...> class Op, class... Args>
+    using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
 
-template <template <class...> class Op, class... Args>
-using is_detected =
-    typename detail::detector<nonesuch, void, Op, Args...>::value_t;
+    template<class Default, template<class...> class Op, class... Args>
+    using detected_or_t = typename detail::detector<Default, void, Op, Args...>::type;
 
-template <template <class...> class Op, class... Args>
-using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
+    template<class Expected, template<class...> class Op, class... Args>
+    using is_detected_exact = std::is_same<Expected, detected_t<Op, Args...>>;
 
-template <class Default, template <class...> class Op, class... Args>
-using detected_or_t = typename detail::detector<Default, void, Op, Args...>::type;
+    template<class To, template<class...> class Op, class... Args>
+    using is_detected_convertible =
+            std::is_convertible<detected_t<Op, Args...>, To>;
 
-template <class Expected, template <class...> class Op, class... Args>
-using is_detected_exact = std::is_same<Expected, detected_t<Op, Args...>>;
+    template<template<class...> class Op, class... Args>
+    inline constexpr bool is_detected_v = is_detected<Op, Args...>::value;
 
-template <class To, template <class...> class Op, class... Args>
-using is_detected_convertible =
-    std::is_convertible<detected_t<Op, Args...>, To>;
+    template<class Expected, template<class...> class Op, class... Args>
+    inline constexpr bool is_detected_exact_v =
+            is_detected_exact<Expected, Op, Args...>::value;
 
-template <template <class...> class Op, class... Args>
-inline constexpr bool is_detected_v = is_detected<Op, Args...>::value;
-
-template <class Expected, template <class...> class Op, class... Args>
-inline constexpr bool is_detected_exact_v =
-    is_detected_exact<Expected, Op, Args...>::value;
-
-template <class Expected, template <class...> class Op, class... Args>
-inline constexpr bool is_detected_convertible_v =
-    is_detected_convertible<Expected, Op, Args...>::value;
+    template<class Expected, template<class...> class Op, class... Args>
+    inline constexpr bool is_detected_convertible_v =
+            is_detected_convertible<Expected, Op, Args...>::value;
 
 }  // namespace flare
 

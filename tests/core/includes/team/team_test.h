@@ -537,7 +537,7 @@ struct TestLambdaSharedTeam {
     const int SHARED_COUNT = 1000;
     int team_size = 1;
 
-#ifdef FLARE_ENABLE_CUDA
+#ifdef FLARE_ON_CUDA_DEVICE
     if (std::is_same<ExecSpace, flare::Cuda>::value) team_size = 128;
 #endif
 

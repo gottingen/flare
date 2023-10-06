@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef TESTREALLOC_HPP_
-#define TESTREALLOC_HPP_
+#ifndef REALLOC_TEST_H_
+#define REALLOC_TEST_H_
 
 #include <doctest.h>
 #include <flare/core.h>
@@ -158,4 +158,4 @@ namespace TestViewRealloc {
     }
 
 }  // namespace TestViewRealloc
-#endif  // TESTREALLOC_HPP_
+#endif  // REALLOC_TEST_H_

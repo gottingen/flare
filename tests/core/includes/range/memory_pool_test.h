@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_UNITTEST_MEMPOOL_HPP
-#define FLARE_UNITTEST_MEMPOOL_HPP
+#ifndef MEMPOOL_TEST_H_
+#define MEMPOOL_TEST_H_
 
 #include <flare/core.h>
 
@@ -546,4 +546,4 @@ namespace Test {
 
 }  // namespace Test
 
-#endif
+#endif  // MEMPOOL_TEST_H_

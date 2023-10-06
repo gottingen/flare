@@ -750,7 +750,7 @@ struct TestBitCastFunction {
             }
         }
 
-#if defined(FLARE_ENABLE_CUDA) && \
+#if defined(FLARE_ON_CUDA_DEVICE) && \
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
         if constexpr (std::is_same_v<Space, flare::Cuda>) {
           return;

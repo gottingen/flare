@@ -28,43 +28,41 @@
 
 #include <string>
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
-// Defined in implementation file to avoid having to include iostream
-void safe_throw_allocation_with_header_failure(
-    std::string const &space_name, std::string const &label,
-    flare::experimental::RawMemoryAllocationFailure const &failure);
+    // Defined in implementation file to avoid having to include iostream
+    void safe_throw_allocation_with_header_failure(
+            std::string const &space_name, std::string const &label,
+            flare::experimental::RawMemoryAllocationFailure const &failure);
 
-template <class MemorySpace>
-SharedAllocationHeader *checked_allocation_with_header(MemorySpace const &space,
-                                                       std::string const &label,
-                                                       size_t alloc_size) {
-  try {
-    return reinterpret_cast<SharedAllocationHeader *>(space.allocate(
-        label.c_str(), alloc_size + sizeof(SharedAllocationHeader),
-        alloc_size));
-  } catch (flare::experimental::RawMemoryAllocationFailure const &failure) {
-    safe_throw_allocation_with_header_failure(space.name(), label, failure);
-  }
-  return nullptr;  // unreachable
-}
+    template<class MemorySpace>
+    SharedAllocationHeader *checked_allocation_with_header(MemorySpace const &space,
+                                                           std::string const &label,
+                                                           size_t alloc_size) {
+        try {
+            return reinterpret_cast<SharedAllocationHeader *>(space.allocate(
+                    label.c_str(), alloc_size + sizeof(SharedAllocationHeader),
+                    alloc_size));
+        } catch (flare::experimental::RawMemoryAllocationFailure const &failure) {
+            safe_throw_allocation_with_header_failure(space.name(), label, failure);
+        }
+        return nullptr;  // unreachable
+    }
 
-template <class ExecutionSpace, class MemorySpace>
-SharedAllocationHeader *checked_allocation_with_header(
-    ExecutionSpace const &exec_space, MemorySpace const &space,
-    std::string const &label, size_t alloc_size) {
-  try {
-    return reinterpret_cast<SharedAllocationHeader *>(space.allocate(
-        exec_space, label.c_str(), alloc_size + sizeof(SharedAllocationHeader),
-        alloc_size));
-  } catch (flare::experimental::RawMemoryAllocationFailure const &failure) {
-    safe_throw_allocation_with_header_failure(space.name(), label, failure);
-  }
-  return nullptr;  // unreachable
-}
+    template<class ExecutionSpace, class MemorySpace>
+    SharedAllocationHeader *checked_allocation_with_header(
+            ExecutionSpace const &exec_space, MemorySpace const &space,
+            std::string const &label, size_t alloc_size) {
+        try {
+            return reinterpret_cast<SharedAllocationHeader *>(space.allocate(
+                    exec_space, label.c_str(), alloc_size + sizeof(SharedAllocationHeader),
+                    alloc_size));
+        } catch (flare::experimental::RawMemoryAllocationFailure const &failure) {
+            safe_throw_allocation_with_header_failure(space.name(), label, failure);
+        }
+        return nullptr;  // unreachable
+    }
 
-}  // end namespace detail
-}  // end namespace flare
+}  // end namespace flare::detail
 
 #endif  // FLARE_CORE_MEMORY_MEMORY_SPACE_H_

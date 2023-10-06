@@ -313,7 +313,7 @@ TEST(TEST_CATEGORY, team_broadcast_float) {
                       float>::test_teambroadcast(16, 1.3);
 
     // FIXME_CUDA
-#ifdef FLARE_ENABLE_CUDA
+#ifdef FLARE_ON_CUDA_DEVICE
     if (!std::is_same<TEST_EXECSPACE, flare::Cuda>::value)
 #endif
       {
@@ -343,7 +343,7 @@ TEST(TEST_CATEGORY, team_broadcast_double) {
                       double>::test_teambroadcast(16, 1.3);
 
     // FIXME_CUDA
-#ifdef FLARE_ENABLE_CUDA
+#ifdef FLARE_ON_CUDA_DEVICE
     if (!std::is_same<TEST_EXECSPACE, flare::Cuda>::value)
 #endif
 

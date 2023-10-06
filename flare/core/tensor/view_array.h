@@ -18,8 +18,7 @@
 
  #include <flare/core/array.h>
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
 template <class DataType, class ArrayLayout, class V, size_t N, class P>
 struct ViewDataAnalysis<DataType, ArrayLayout, flare::Array<V, N, P>> {
@@ -68,15 +67,6 @@ struct ViewDataAnalysis<DataType, ArrayLayout, flare::Array<V, N, P>> {
       typename ViewDataType<non_const_scalar_type,
                             array_scalar_dimension>::type;
 };
-
-}  // namespace detail
-}  // namespace flare
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-
-namespace flare {
-namespace detail {
 
 /** \brief  View mapping for non-specialized data type and standard layout */
 template <class Traits>
@@ -291,8 +281,6 @@ class ViewMapping<Traits, flare::Array<>> {
         Array_N, m_stride);
   }
 
-  //----------------------------------------
-
  private:
   enum { MemorySpanMask = 8 - 1 /* Force alignment on 8 byte boundary */ };
   enum { MemorySpanSize = sizeof(scalar_type) };
@@ -490,9 +478,6 @@ class ViewMapping<
   }
 };
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-
 template <class SrcTraits, class... Args>
 class ViewMapping<
     std::enable_if_t<(
@@ -606,10 +591,6 @@ class ViewMapping<
   }
 };
 
-}  // namespace detail
-}  // namespace flare
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+}  // namespace flare::detail
 
 #endif  // FLARE_CORE_TENSOR_VIEW_ARRAY_MAPPING_H_

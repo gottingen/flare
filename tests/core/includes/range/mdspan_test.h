@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_UNITTEST_MDSPAN_HPP
-#define FLARE_UNITTEST_MDSPAN_HPP
+#ifndef MDSPAN_TEST_H_
+#define MDSPAN_TEST_H_
 
 #include <flare/core.h>
 #include <doctest.h>
@@ -54,4 +54,4 @@ namespace {
 
 }  // namespace
 
-#endif
+#endif  // MDSPAN_TEST_H_

@@ -19,15 +19,17 @@
 #include <vector>
 
 namespace flare {
-class InitializationSettings;
-namespace detail {
-int get_gpu(const flare::InitializationSettings& settings);
-// This declaration is provided for testing purposes only
-int get_ctest_gpu(int local_rank);
-// ditto
-std::vector<int> get_visible_devices(
-    flare::InitializationSettings const& settings, int device_count);
-}  // namespace detail
+    class InitializationSettings;
 }  // namespace flare
+namespace flare::detail {
+    int get_gpu(const flare::InitializationSettings &settings);
+
+    // This declaration is provided for testing purposes only
+    int get_ctest_gpu(int local_rank);
+
+    // ditto
+    std::vector<int> get_visible_devices(flare::InitializationSettings const &settings, int device_count);
+
+}  // namespace flare::detail
 
 #endif  // FLARE_CORE_COMMON_DEVICE_MANAGEMENT_H_
