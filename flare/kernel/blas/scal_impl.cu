@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-//
-// Created by jeff on 23-10-8.
-//
+
+#include <flare/kernel/blas/scal_impl.h>
+
+namespace flare::blas::detail {
+    FLARE_BLAS_SCAL_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+    FLARE_BLAS_SCAL_MV_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+}  // namespace flare::blas::detail

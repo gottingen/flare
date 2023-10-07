@@ -22,4 +22,7 @@
 #include <flare/kernel/blas/multi.h>
 #include <flare/kernel/blas/set.h>
 #include <flare/kernel/blas/sum.h>
+#include <flare/kernel/blas/swap.h>
+#include <flare/kernel/blas/scal.h>
+
 #endif  // FLARE_KERNEL_BLAS_H_
