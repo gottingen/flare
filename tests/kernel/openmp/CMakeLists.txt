@@ -13,12 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-if (FLARE_BUILD_SERIAL)
-    add_subdirectory(serial)
-endif ()
-if (FLARE_BUILD_OPENMP)
-    add_subdirectory(openmp)
-endif ()
-if (FLARE_BUILD_CUDA)
-    add_subdirectory(cuda)
-endif ()
+
+
+carbin_cc_test(
+        NAME openmp_blas_test
+        SOURCES
+        openmp_blas_test.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::blas
+)

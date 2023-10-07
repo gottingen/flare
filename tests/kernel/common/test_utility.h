@@ -409,7 +409,7 @@ namespace Test {
 // explicit epsilon specializations
 #if defined(FLARE_BHALF_T_IS_FLOAT) && !FLARE_BHALF_T_IS_FLOAT
     template <>
-    class epsilon<flare::Experimental::bhalf_t> {
+    class epsilon<flare::experimental::bhalf_t> {
      public:
         constexpr static double value = 0.0078125F;
     };
