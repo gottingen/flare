@@ -20,6 +20,7 @@
 #define FLARE_KERNEL_BLAS_AXPBY_H_
 
 #include <flare/kernel/blas/axpby_impl.h>
+#include <flare/kernel/common/helper.h>
 
 // axpby() accepts both scalar coefficients a and b, and vector
 // coefficients (apply one for each column of the input multivectors).

@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+//
+// Created by jeff on 23-10-8.
+//
 
-#ifndef FLARE_BLAS_TEST_H
-#define FLARE_BLAS_TEST_H
-
-#include "kernel/blas/blas_abs_test.h"
-#include "kernel/blas/blas_dot_test.h"
-#include "kernel/blas/blas_axpby_test.h"
-#include "kernel/blas/blas_multi_test.h"
-#include "kernel/blas/blas_sum_test.h"
-#include "kernel/blas/blas_swap_test.h"
-
-#endif  // FLARE_BLAS_TEST_H
+#include <flare/kernel/blas/sum_impl.h>
+namespace flare::blas::detail {
+    FLARE_BLAS_SUM_SPEC_INST(double, flare::LayoutLeft, flare::Serial, flare::HostSpace)
+    FLARE_BLAS_SUM_MV_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+}

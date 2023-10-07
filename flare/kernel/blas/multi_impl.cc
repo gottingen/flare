@@ -13,14 +13,9 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_BLAS_TEST_H
-#define FLARE_BLAS_TEST_H
+#include <flare/kernel/blas/multi_impl.h>
 
-#include "kernel/blas/blas_abs_test.h"
-#include "kernel/blas/blas_dot_test.h"
-#include "kernel/blas/blas_axpby_test.h"
-#include "kernel/blas/blas_multi_test.h"
-#include "kernel/blas/blas_sum_test.h"
-#include "kernel/blas/blas_swap_test.h"
-
-#endif  // FLARE_BLAS_TEST_H
+namespace flare::blas::detail {
+    FLARE_BLAS_MULT_MV_ETI_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+    FLARE_BLAS_MULT_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+}  // namespace flare::blas::detail

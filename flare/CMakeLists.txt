@@ -89,6 +89,9 @@ set(FLARE_BLAS_SRC
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/abs_impl.cc
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/dot_impl.cc
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/axpby_impl.cc
+        ${PROJECT_SOURCE_DIR}/flare/kernel/blas/multi_impl.cc
+        ${PROJECT_SOURCE_DIR}/flare/kernel/blas/sum_impl.cc
+        ${PROJECT_SOURCE_DIR}/flare/kernel/blas/swap_impl.cc
 )
 
 if(FLARE_BUILD_CUDA)
@@ -97,6 +100,9 @@ if(FLARE_BUILD_CUDA)
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/abs_impl.cu
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/dot_impl.cu
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/axpby_impl.cu
+            ${PROJECT_SOURCE_DIR}/flare/kernel/blas/multi_impl.cu
+            ${PROJECT_SOURCE_DIR}/flare/kernel/blas/sum_impl.cu
+            ${PROJECT_SOURCE_DIR}/flare/kernel/blas/swap_impl.cu
     )
     include_directories(${CUDA_INCLUDE_DIRS})
 endif ()

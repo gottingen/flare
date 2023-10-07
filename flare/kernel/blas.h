@@ -19,5 +19,7 @@
 #include <flare/kernel/blas/abs.h>
 #include <flare/kernel/blas/dot.h>
 #include <flare/kernel/blas/axpby.h>
-
+#include <flare/kernel/blas/multi.h>
+#include <flare/kernel/blas/set.h>
+#include <flare/kernel/blas/sum.h>
 #endif  // FLARE_KERNEL_BLAS_H_
