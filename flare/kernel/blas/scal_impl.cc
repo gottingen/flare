@@ -18,4 +18,8 @@
 namespace flare::blas::detail {
     FLARE_BLAS_SCAL_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
     FLARE_BLAS_SCAL_MV_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+    FLARE_BLAS_SCAL_MV_SPEC_INST(float,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+    FLARE_BLAS_SCAL_MV_SPEC_INST(int,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+    FLARE_BLAS_SCAL_MV_SPEC_INST(std::complex<float>,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+    FLARE_BLAS_SCAL_MV_SPEC_INST(std::complex<double>,flare::LayoutLeft,flare::Serial,flare::HostSpace)
 }  // namespace flare::blas::detail
