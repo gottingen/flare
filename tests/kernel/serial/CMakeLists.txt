@@ -23,5 +23,5 @@ carbin_cc_test(
         COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::blas
 )

@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+//
+// Created by jeff on 23-10-7.
+//
+#include <flare/kernel/blas/dot_impl.h>
 
-#ifndef FLARE_BLAS_TEST_H
-#define FLARE_BLAS_TEST_H
-
-#include "kernel/blas/blas_abs_test.h"
-#include "kernel/blas/blas_dot_test.h"
-#endif //FLARE_BLAS_TEST_H
+namespace flare::blas::detail {
+    FLARE_BLAS_DOT_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+    FLARE_BLAS_DOT_MV_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+}  // namespace flare::blas::detail

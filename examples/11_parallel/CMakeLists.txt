@@ -21,7 +21,7 @@ carbin_cc_binary(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        flare::flare
+        flare::core
 )
 
 carbin_cc_binary(
@@ -31,7 +31,7 @@ carbin_cc_binary(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        flare::flare
+        flare::core
 )
 
 carbin_cc_binary(
@@ -41,7 +41,7 @@ carbin_cc_binary(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        flare::flare
+        flare::core
 )
 
 carbin_cc_binary(
@@ -51,7 +51,7 @@ carbin_cc_binary(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        flare::flare
+        flare::core
 )
 
 carbin_cc_binary(
@@ -61,7 +61,7 @@ carbin_cc_binary(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        flare::flare
+        flare::core
 )
 
 carbin_cc_binary(
@@ -71,5 +71,5 @@ carbin_cc_binary(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        flare::flare
+        flare::core
 )

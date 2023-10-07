@@ -22,7 +22,7 @@ carbin_cc_test(
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -44,7 +44,7 @@ carbin_cc_test(
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -76,7 +76,7 @@ carbin_cc_test(
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 
@@ -115,7 +115,7 @@ carbin_cc_test(
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -144,7 +144,7 @@ carbin_cc_test(
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -170,5 +170,5 @@ carbin_cc_test(
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )

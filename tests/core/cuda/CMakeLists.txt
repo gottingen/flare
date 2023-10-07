@@ -24,7 +24,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -36,7 +36,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -48,7 +48,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -59,7 +59,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -70,7 +70,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -82,7 +82,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -94,7 +94,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -106,7 +106,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -129,7 +129,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -162,7 +162,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 
@@ -202,7 +202,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -232,7 +232,7 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )
 
 carbin_cc_test(
@@ -259,5 +259,5 @@ carbin_cc_test(
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         ${CUDA_CUDA_LIBRARY}
-        flare::flare
+        flare::core
 )

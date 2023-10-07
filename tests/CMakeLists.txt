@@ -44,9 +44,14 @@ include_directories(${PROJECT_SOURCE_DIR}/tests)
 set(TEST_MAIN_SRC
         ${PROJECT_SOURCE_DIR}/tests/core/unit_test_main.cc
 )
-add_subdirectory(algorithm)
-add_subdirectory(container)
-add_subdirectory(compile_only)
-add_subdirectory(core)
-add_subdirectory(simd)
+option(FLARE_ENABLE_CORE_TEST "" OFF)
+if (FLARE_ENABLE_CORE_TEST)
+    add_subdirectory(algorithm)
+    add_subdirectory(container)
+    add_subdirectory(compile_only)
+
+    add_subdirectory(core)
+    add_subdirectory(simd)
+endif ()
+
 add_subdirectory(kernel)

@@ -82,7 +82,7 @@ namespace flare::detail {
                                     scalar_1 a, scalar_2 b) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         flare::parallel_for(
-                "KokkosKernels::Common::ATimesXPlusB", my_exec_space(0, num_elements),
+                "flare::detail::ATimesXPlusB", my_exec_space(0, num_elements),
                 A_times_X_plus_B<out_array_t, in_array_t, scalar_1, scalar_2>(
                         out_arr, in_arr, a, b));
     }
@@ -100,14 +100,14 @@ namespace flare::detail {
                                 int mod_factor_) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         flare::parallel_for(
-                "KokkosKernels::Common::ModularView", my_exec_space(0, num_elements),
+                "flare::detail::ModularView", my_exec_space(0, num_elements),
                 ModularView<out_array_type, in_array_type>(out_arr, in_arr, mod_factor_));
     }
 
     template<typename from_vector, typename to_vector, typename MyExecSpace>
     void flare_copy_vector(size_t num_elements, from_vector from, to_vector to) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
-        flare::parallel_for("KokkosKernels::Common::CopyVector",
+        flare::parallel_for("flare::detail::CopyVector",
                             my_exec_space(0, num_elements),
                             CopyVectorFunctor<from_vector, to_vector>(from, to));
     }

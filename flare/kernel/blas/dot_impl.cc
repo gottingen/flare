@@ -12,4 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#include <kernel/common/arith_traits_test.h>
+//
+// Created by jeff on 23-10-7.
+//
+#include <flare/kernel/blas/dot_impl.h>
+
+namespace flare::blas::detail {
+    FLARE_BLAS_DOT_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+    FLARE_BLAS_DOT_MV_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+}  // namespace flare::blas::detail
