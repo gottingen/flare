@@ -40,6 +40,7 @@ include_directories(doctest)
 include_directories(core/includes)
 include_directories(algorithm)
 include_directories(container)
+include_directories(${PROJECT_SOURCE_DIR}/tests)
 set(TEST_MAIN_SRC
         ${PROJECT_SOURCE_DIR}/tests/core/unit_test_main.cc
 )
@@ -48,3 +49,4 @@ add_subdirectory(container)
 add_subdirectory(compile_only)
 add_subdirectory(core)
 add_subdirectory(simd)
+add_subdirectory(kernel)

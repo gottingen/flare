@@ -24,19 +24,18 @@
 #include <flare/backend/cuda/cuda_abort.h>
 #endif
 
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
-        [[noreturn]] void host_abort(const char *const);
+    [[noreturn]] void host_abort(const char *const);
 
 #if defined(FLARE_ON_CUDA_DEVICE) && defined(__CUDA_ARCH__)
 
 #if defined(FLARE_ENABLE_DEBUG_BOUNDS_CHECK)
-        // required to workaround failures in random number generator unit tests with
-        // pre-volta architectures
+    // required to workaround failures in random number generator unit tests with
+    // pre-volta architectures
 #define FLARE_IMPL_ABORT_NORETURN
 #else
-        // cuda_abort aborts when building for other platforms than macOS
+    // cuda_abort aborts when building for other platforms than macOS
 #define FLARE_IMPL_ABORT_NORETURN [[noreturn]]
 #endif
 
@@ -44,7 +43,7 @@ namespace flare {
 
 #define FLARE_IMPL_ABORT_NORETURN
 #else
-        // Host aborts
+    // Host aborts
 #define FLARE_IMPL_ABORT_NORETURN [[noreturn]]
 #endif
 
@@ -55,114 +54,108 @@ namespace flare {
 #endif
 
 #if defined(FLARE_ON_CUDA_DEVICE)
-        FLARE_IMPL_ABORT_NORETURN_DEVICE inline FLARE_IMPL_DEVICE_FUNCTION void
-        device_abort(const char *const msg) {
-            ::flare::detail::cuda_abort(msg);
-        }
+    FLARE_IMPL_ABORT_NORETURN_DEVICE inline FLARE_IMPL_DEVICE_FUNCTION void
+    device_abort(const char *const msg) {
+        ::flare::detail::cuda_abort(msg);
+    }
 #endif
 
-        [[noreturn]] void throw_runtime_exception(const std::string &msg);
+    [[noreturn]] void throw_runtime_exception(const std::string &msg);
 
-        void traceback_callstack(std::ostream &);
+    void traceback_callstack(std::ostream &);
 
-        std::string human_memory_size(size_t arg_bytes);
+    std::string human_memory_size(size_t arg_bytes);
 
-    }  // namespace detail
+}  // namespace flare::detail
 
-    namespace experimental {
+namespace flare::experimental {
 
-        class RawMemoryAllocationFailure : public std::bad_alloc {
-        public:
-            enum class FailureMode {
-                OutOfMemoryError,
-                AllocationNotAligned,
-                InvalidAllocationSize,
-                MaximumCudaUVMAllocationsExceeded,
-                Unknown
-            };
-            enum class AllocationMechanism {
-                StdMalloc,
-                CudaMalloc,
-                CudaMallocManaged,
-                CudaHostAlloc,
-            };
-
-        private:
-            size_t m_attempted_size;
-            size_t m_attempted_alignment;
-            FailureMode m_failure_mode;
-            AllocationMechanism m_mechanism;
-
-        public:
-            RawMemoryAllocationFailure(
-                    size_t arg_attempted_size, size_t arg_attempted_alignment,
-                    FailureMode arg_failure_mode = FailureMode::OutOfMemoryError,
-                    AllocationMechanism arg_mechanism =
-                    AllocationMechanism::StdMalloc) noexcept
-                    : m_attempted_size(arg_attempted_size),
-                      m_attempted_alignment(arg_attempted_alignment),
-                      m_failure_mode(arg_failure_mode),
-                      m_mechanism(arg_mechanism) {}
-
-            RawMemoryAllocationFailure() noexcept = delete;
-
-            RawMemoryAllocationFailure(RawMemoryAllocationFailure const &) noexcept =
-            default;
-
-            RawMemoryAllocationFailure(RawMemoryAllocationFailure &&) noexcept = default;
-
-            RawMemoryAllocationFailure &operator=(
-                    RawMemoryAllocationFailure const &) noexcept = default;
-
-            RawMemoryAllocationFailure &operator=(
-                    RawMemoryAllocationFailure &&) noexcept = default;
-
-            ~RawMemoryAllocationFailure() noexcept override = default;
-
-            [[nodiscard]] const char *what() const noexcept override {
-                if (m_failure_mode == FailureMode::OutOfMemoryError) {
-                    return "Memory allocation error: out of memory";
-                } else if (m_failure_mode == FailureMode::AllocationNotAligned) {
-                    return "Memory allocation error: allocation result was under-aligned";
-                }
-
-                return nullptr;  // unreachable
-            }
-
-            [[nodiscard]] size_t attempted_size() const noexcept {
-                return m_attempted_size;
-            }
-
-            [[nodiscard]] size_t attempted_alignment() const noexcept {
-                return m_attempted_alignment;
-            }
-
-            [[nodiscard]] AllocationMechanism allocation_mechanism() const noexcept {
-                return m_mechanism;
-            }
-
-            [[nodiscard]] FailureMode failure_mode() const noexcept {
-                return m_failure_mode;
-            }
-
-            void print_error_message(std::ostream &o) const;
-
-            [[nodiscard]] std::string get_error_message() const;
-
-            virtual void append_additional_error_information(std::ostream &) const {}
+    class RawMemoryAllocationFailure : public std::bad_alloc {
+    public:
+        enum class FailureMode {
+            OutOfMemoryError,
+            AllocationNotAligned,
+            InvalidAllocationSize,
+            MaximumCudaUVMAllocationsExceeded,
+            Unknown
+        };
+        enum class AllocationMechanism {
+            StdMalloc,
+            CudaMalloc,
+            CudaMallocManaged,
+            CudaHostAlloc,
         };
 
-    }  // end namespace experimental
+    private:
+        size_t m_attempted_size;
+        size_t m_attempted_alignment;
+        FailureMode m_failure_mode;
+        AllocationMechanism m_mechanism;
 
-}  // namespace flare
+    public:
+        RawMemoryAllocationFailure(
+                size_t arg_attempted_size, size_t arg_attempted_alignment,
+                FailureMode arg_failure_mode = FailureMode::OutOfMemoryError,
+                AllocationMechanism arg_mechanism =
+                AllocationMechanism::StdMalloc) noexcept
+                : m_attempted_size(arg_attempted_size),
+                  m_attempted_alignment(arg_attempted_alignment),
+                  m_failure_mode(arg_failure_mode),
+                  m_mechanism(arg_mechanism) {}
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+        RawMemoryAllocationFailure() noexcept = delete;
+
+        RawMemoryAllocationFailure(RawMemoryAllocationFailure const &) noexcept =
+        default;
+
+        RawMemoryAllocationFailure(RawMemoryAllocationFailure &&) noexcept = default;
+
+        RawMemoryAllocationFailure &operator=(
+                RawMemoryAllocationFailure const &) noexcept = default;
+
+        RawMemoryAllocationFailure &operator=(
+                RawMemoryAllocationFailure &&) noexcept = default;
+
+        ~RawMemoryAllocationFailure() noexcept override = default;
+
+        [[nodiscard]] const char *what() const noexcept override {
+            if (m_failure_mode == FailureMode::OutOfMemoryError) {
+                return "Memory allocation error: out of memory";
+            } else if (m_failure_mode == FailureMode::AllocationNotAligned) {
+                return "Memory allocation error: allocation result was under-aligned";
+            }
+
+            return nullptr;  // unreachable
+        }
+
+        [[nodiscard]] size_t attempted_size() const noexcept {
+            return m_attempted_size;
+        }
+
+        [[nodiscard]] size_t attempted_alignment() const noexcept {
+            return m_attempted_alignment;
+        }
+
+        [[nodiscard]] AllocationMechanism allocation_mechanism() const noexcept {
+            return m_mechanism;
+        }
+
+        [[nodiscard]] FailureMode failure_mode() const noexcept {
+            return m_failure_mode;
+        }
+
+        void print_error_message(std::ostream &o) const;
+
+        [[nodiscard]] std::string get_error_message() const;
+
+        virtual void append_additional_error_information(std::ostream &) const {}
+    };
+
+}  // namespace flare::experimental
 
 namespace flare {
 
-    FLARE_IMPL_ABORT_NORETURN FLARE_INLINE_FUNCTION void abort(
-            const char *const message) {
+    FLARE_IMPL_ABORT_NORETURN FLARE_INLINE_FUNCTION void abort(const char *const message) {
         FLARE_IF_ON_HOST(::flare::detail::host_abort(message);)
         FLARE_IF_ON_DEVICE(::flare::detail::device_abort(message);)
     }

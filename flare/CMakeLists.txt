@@ -38,7 +38,7 @@ set(FLARE_SRC
         ${PROJECT_SOURCE_DIR}/flare/core/profile/profiling.cc
         ${PROJECT_SOURCE_DIR}/flare/simd/dummy.cc
         ${PROJECT_SOURCE_DIR}/flare/containers/unordered_map_impl.cc
-
+        ${PROJECT_SOURCE_DIR}/flare/kernel/blas/abs_impl.cc
 )
 
 if(FLARE_BUILD_OPENMP)
@@ -64,6 +64,7 @@ if(FLARE_BUILD_CUDA)
             ${PROJECT_SOURCE_DIR}/flare/core/atomic/lock_array_cuda.cu
             ${PROJECT_SOURCE_DIR}/flare/core/common/core.cu
             ${PROJECT_SOURCE_DIR}/flare/core/common/error.cu
+            ${PROJECT_SOURCE_DIR}/flare/kernel/blas/abs_impl.cu
     )
     include_directories(${CUDA_INCLUDE_DIRS})
 endif ()
