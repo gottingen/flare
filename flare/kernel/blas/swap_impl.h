@@ -65,7 +65,7 @@ namespace flare::blas::detail {
 // flare::blas::Impl::Swap.  This is NOT for users!!!  We
 // use this macro in one or more .cpp files in this directory.
 //
-#define FLARE_BLAS_SWAP_ETI_SPEC_INST(SCALAR, LAYOUT, EXECSPACE, MEMSPACE) \
+#define FLARE_BLAS_SWAP_SPEC_INST(SCALAR, LAYOUT, EXECSPACE, MEMSPACE) \
   template struct Swap<                                                     \
       EXECSPACE,                                                            \
       flare::View<SCALAR*, LAYOUT, flare::Device<EXECSPACE, MEMSPACE>,    \

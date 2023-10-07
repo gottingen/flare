@@ -15,6 +15,6 @@
 
 #include <flare/kernel/blas/swap_impl.h>
 namespace flare::blas::detail {
-    FLARE_BLAS_SWAP_ETI_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+    FLARE_BLAS_SWAP_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
 
 }
