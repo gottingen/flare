@@ -17,5 +17,7 @@
 #define FLARE_KERNEL_BLAS_H_
 
 #include <flare/kernel/blas/abs.h>
+#include <flare/kernel/blas/dot.h>
+#include <flare/kernel/blas/axpby.h>
 
 #endif  // FLARE_KERNEL_BLAS_H_

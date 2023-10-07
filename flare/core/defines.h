@@ -507,4 +507,8 @@
 #define FLARE_IMPL_ENFORCE_EMPTY_BASE_OPTIMIZATION
 #endif
 
+#ifndef FLARE_DEBUG_LEVEL
+#define FLARE_DEBUG_LEVEL 1
+#endif
+
 #endif  // #ifndef FLARE_CORE_DEFINES_H_

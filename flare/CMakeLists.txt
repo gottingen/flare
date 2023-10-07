@@ -88,6 +88,7 @@ carbin_cc_library(
 set(FLARE_BLAS_SRC
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/abs_impl.cc
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/dot_impl.cc
+        ${PROJECT_SOURCE_DIR}/flare/kernel/blas/axpby_impl.cc
 )
 
 if(FLARE_BUILD_CUDA)
@@ -95,6 +96,7 @@ if(FLARE_BUILD_CUDA)
             ${FLARE_BLAS_SRC}
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/abs_impl.cu
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/dot_impl.cu
+            ${PROJECT_SOURCE_DIR}/flare/kernel/blas/axpby_impl.cu
     )
     include_directories(${CUDA_INCLUDE_DIRS})
 endif ()

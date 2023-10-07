@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+//
+// Created by jeff on 23-10-8.
+//
+#include <flare/kernel/blas/axpby_impl.h>
 
-#ifndef FLARE_BLAS_TEST_H
-#define FLARE_BLAS_TEST_H
-
-#include "kernel/blas/blas_abs_test.h"
-#include "kernel/blas/blas_dot_test.h"
-#include "kernel/blas/blas_axpby_test.h"
-
-#endif //FLARE_BLAS_TEST_H
+namespace flare::blas::detail {
+    FLARE_BLAS_AXPBY_MV_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+    FLARE_BLAS_AXPBY_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+}
