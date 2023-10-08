@@ -46,9 +46,9 @@ namespace flare::blas {
     /// \param X [in] input view of type XMV.
     /// \param b [in] view of type BV, scaling parameter for Y.
     /// \param Y [in/out] view of type YMV in which the results will be stored.
-    template <class execution_space, class AV, class XMV, class BV, class YMV>
-    void axpby(const execution_space& space, const AV& a, const XMV& X, const BV& b,
-               const YMV& Y) {
+    template<class execution_space, class AV, class XMV, class BV, class YMV>
+    void axpby(const execution_space &space, const AV &a, const XMV &X, const BV &b,
+               const YMV &Y) {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::axpby: execution_space must be a valid flare "
                       "execution space.");
@@ -109,9 +109,9 @@ namespace flare::blas {
                 typename flare::detail::GetUnifiedScalarViewType<BV, YMV_Internal,
                         true>::type;
 
-        AV_Internal a_internal  = a;
+        AV_Internal a_internal = a;
         XMV_Internal X_internal = X;
-        BV_Internal b_internal  = b;
+        BV_Internal b_internal = b;
         YMV_Internal Y_internal = Y;
 
         flare::blas::detail::Axpby<execution_space, AV_Internal, XMV_Internal, BV_Internal,
@@ -135,8 +135,8 @@ namespace flare::blas {
     /// \param X [in] input view of type XMV.
     /// \param b [in] view of type BV, scaling parameter for Y.
     /// \param Y [in/out] view of type YMV in which the results will be stored.
-    template <class AV, class XMV, class BV, class YMV>
-    void axpby(const AV& a, const XMV& X, const BV& b, const YMV& Y) {
+    template<class AV, class XMV, class BV, class YMV>
+    void axpby(const AV &a, const XMV &X, const BV &b, const YMV &Y) {
         axpby(typename XMV::execution_space{}, a, X, b, Y);
     }
 
@@ -154,9 +154,9 @@ namespace flare::blas {
     /// \param a [in] view of type AV, scaling parameter for X.
     /// \param X [in] input view of type XMV.
     /// \param Y [in/out] view of type YMV in which the results will be stored.
-    template <class execution_space, class AV, class XMV, class YMV>
-    void axpy(const execution_space& space, const AV& a, const XMV& X,
-              const YMV& Y) {
+    template<class execution_space, class AV, class XMV, class YMV>
+    void axpy(const execution_space &space, const AV &a, const XMV &X,
+              const YMV &Y) {
         axpby(space, a, X,
               flare::ArithTraits<typename YMV::non_const_value_type>::one(), Y);
     }
@@ -175,35 +175,35 @@ namespace flare::blas {
     /// \param a [in] view of type AV, scaling parameter for X.
     /// \param X [in] input view of type XMV.
     /// \param Y [in/out] view of type YMV in which the results will be stored.
-    template <class AV, class XMV, class YMV>
-    void axpy(const AV& a, const XMV& X, const YMV& Y) {
+    template<class AV, class XMV, class YMV>
+    void axpy(const AV &a, const XMV &X, const YMV &Y) {
         axpy(typename XMV::execution_space{}, a, X, Y);
     }
 
     ///
     /// Serial axpy on device
     ///
-    template <class scalar_type, class XMV, class YMV>
+    template<class scalar_type, class XMV, class YMV>
     FLARE_FUNCTION void serial_axpy(const scalar_type alpha, const XMV X, YMV Y) {
 #if (FLARE_DEBUG_LEVEL > 0)
         static_assert(flare::is_view<XMV>::value,
-                "flare::blas::serial_axpy: XMV is not a flare::View");
-  static_assert(flare::is_view<YMV>::value,
-                "flare::blas::serial_axpy: YMV is not a flare::View");
-  static_assert(XMV::rank == 1 || XMV::rank == 2,
-                "flare::blas::serial_axpy: XMV must have rank 1 or 2.");
-  static_assert(
-      XMV::rank == YMV::rank,
-      "flare::blas::serial_axpy: XMV and YMV must have the same rank.");
+                      "flare::blas::serial_axpy: XMV is not a flare::View");
+        static_assert(flare::is_view<YMV>::value,
+                      "flare::blas::serial_axpy: YMV is not a flare::View");
+        static_assert(XMV::rank == 1 || XMV::rank == 2,
+                      "flare::blas::serial_axpy: XMV must have rank 1 or 2.");
+        static_assert(
+                XMV::rank == YMV::rank,
+                "flare::blas::serial_axpy: XMV and YMV must have the same rank.");
 
-  if (X.extent(0) != Y.extent(0) || X.extent(1) != Y.extent(1)) {
-    flare::abort("flare::blas::serial_axpy: X and Y dimensions do not match");
-  }
+        if (X.extent(0) != Y.extent(0) || X.extent(1) != Y.extent(1)) {
+            flare::abort("flare::blas::serial_axpy: X and Y dimensions do not match");
+        }
 #endif  // FLARE_DEBUG_LEVEL
 
         return flare::blas::detail::serial_axpy_mv(X.extent(0), X.extent(1), alpha, X.data(),
-                                    Y.data(), X.stride_0(), X.stride_1(),
-                                    Y.stride_0(), Y.stride_1());
+                                                   Y.data(), X.stride_0(), X.stride_1(),
+                                                   Y.stride_0(), Y.stride_1());
     }
 
 }  // namespace flare::blas

@@ -103,7 +103,7 @@ namespace flare::blas {
         // Even though RVector is the template parameter, Dot::dot has an overload
         // that accepts RVector_Internal (with the special accumulator, if dot_type is
         // 32-bit precision). Impl::Dot needs to support both cases, and it's easier
-        // to do this with overloading than by extending the ETI to deal with two
+        // to do this with overloading than by extending to deal with two
         // different scalar types.
         flare::blas::detail::DotSpecialAccumulator<execution_space, RVector_Internal,
                 XVector_Internal, YVector_Internal>::dot(space, R,

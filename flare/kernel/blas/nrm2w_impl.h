@@ -298,7 +298,7 @@ namespace flare::blas::detail {
 // flare::blas::Impl::Nrm2w for rank == 2.  This is NOT for users!!!  We
 // use this macro in one or more .cpp files in this directory.
 //
-#define FLARE_BLAS_NRM2W_ETI_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE) \
+#define FLARE_BLAS_NRM2W_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE) \
   template struct Nrm2w<                                                       \
       EXEC_SPACE,                                                              \
       flare::View<                                                            \

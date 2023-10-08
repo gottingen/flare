@@ -29,4 +29,10 @@
 #include "kernel/blas/blas_nrm2w_test.h"
 #include "kernel/blas/blas_nrm2_squard_test.h"
 #include "kernel/blas/blas_nrm2w_squard_test.h"
+#include "kernel/blas/blas_nrminf_test.h"
+#include "kernel/blas/blas_reciprocal_test.h"
+#include "kernel/blas/blas_rot_test.h"
+#include "kernel/blas/blas_rotg_test.h"
+#include "kernel/blas/blas_rotm_test.h"
+
 #endif  // FLARE_BLAS_TEST_H

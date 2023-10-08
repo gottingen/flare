@@ -351,7 +351,7 @@ namespace flare::blas::detail {
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
       1>;
 
-#define FLARE_BLAS_MULT_MV_ETI_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE,       \
+#define FLARE_BLAS_MULT_MV_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE,       \
                                           MEM_SPACE)                        \
   template struct Mult<                                                     \
       EXEC_SPACE,                                                           \

@@ -13,19 +13,13 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_KERNEL_BLAS_H_
-#define FLARE_KERNEL_BLAS_H_
-
-#include <flare/kernel/blas/abs.h>
-#include <flare/kernel/blas/dot.h>
-#include <flare/kernel/blas/axpby.h>
-#include <flare/kernel/blas/multi.h>
-#include <flare/kernel/blas/set.h>
-#include <flare/kernel/blas/sum.h>
-#include <flare/kernel/blas/swap.h>
-#include <flare/kernel/blas/scal.h>
-#include <flare/kernel/blas/iamax.h>
-#include <flare/kernel/blas/nrm1.h>
-#include <flare/kernel/blas/rotmg.h>
-
-#endif  // FLARE_KERNEL_BLAS_H_
+#include <flare/kernel/blas/rot_impl.h>
+#include <flare/kernel/blas/rotg_impl.h>
+#include <flare/kernel/blas/rotm_impl.h>
+#include <flare/kernel/blas/rotmg_impl.h>
+namespace flare::blas::detail {
+    FLARE_BLAS_ROTMG_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+    FLARE_BLAS_ROTM_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+    FLARE_BLAS_ROTG_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+    FLARE_BLAS_ROT_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+}  // namespace flare::blas::detail

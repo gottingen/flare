@@ -16,6 +16,6 @@
 #include <flare/kernel/blas/multi_impl.h>
 
 namespace flare::blas::detail {
-    FLARE_BLAS_MULT_MV_ETI_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+    FLARE_BLAS_MULT_MV_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
     FLARE_BLAS_MULT_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
 }  // namespace flare::blas::detail

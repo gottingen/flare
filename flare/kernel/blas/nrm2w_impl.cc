@@ -16,5 +16,5 @@
 
 namespace flare::blas::detail {
     FLARE_BLAS_NRM2W_MV_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
-    FLARE_BLAS_NRM2W_ETI_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+    FLARE_BLAS_NRM2W_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
 }  // namespace flare::blas::detail
