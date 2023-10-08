@@ -13,20 +13,9 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_BLAS_TEST_H
-#define FLARE_BLAS_TEST_H
+#include <flare/kernel/blas/nrm2w_impl.h>
 
-#include "kernel/blas/blas_abs_test.h"
-#include "kernel/blas/blas_dot_test.h"
-#include "kernel/blas/blas_axpby_test.h"
-#include "kernel/blas/blas_multi_test.h"
-#include "kernel/blas/blas_sum_test.h"
-#include "kernel/blas/blas_swap_test.h"
-#include "kernel/blas/blas_scal_test.h"
-#include "kernel/blas/blas_iamax_test.h"
-#include "kernel/blas/blas_nrm1_test.h"
-#include "kernel/blas/blas_nrm2_test.h"
-#include "kernel/blas/blas_nrm2w_test.h"
-#include "kernel/blas/blas_nrm2_squard_test.h"
-#include "kernel/blas/blas_nrm2w_squard_test.h"
-#endif  // FLARE_BLAS_TEST_H
+namespace flare::blas::detail {
+    FLARE_BLAS_NRM2W_MV_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+    FLARE_BLAS_NRM2W_ETI_SPEC_INST(double,flare::LayoutLeft,flare::Cuda,flare::CudaSpace)
+}  // namespace flare::blas::detail

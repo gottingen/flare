@@ -25,5 +25,6 @@
 #include <flare/kernel/blas/swap.h>
 #include <flare/kernel/blas/scal.h>
 #include <flare/kernel/blas/iamax.h>
+#include <flare/kernel/blas/nrm1.h>
 
 #endif  // FLARE_KERNEL_BLAS_H_

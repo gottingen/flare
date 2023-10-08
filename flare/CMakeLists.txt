@@ -94,6 +94,9 @@ set(FLARE_BLAS_SRC
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/swap_impl.cc
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/scal_impl.cc
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/iamax_impl.cc
+        ${PROJECT_SOURCE_DIR}/flare/kernel/blas/nrm1_impl.cc
+        ${PROJECT_SOURCE_DIR}/flare/kernel/blas/nrm2_impl.cc
+        ${PROJECT_SOURCE_DIR}/flare/kernel/blas/nrm2w_impl.cc
 )
 
 if(FLARE_BUILD_CUDA)
@@ -107,6 +110,9 @@ if(FLARE_BUILD_CUDA)
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/swap_impl.cu
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/scal_impl.cu
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/iamax_impl.cu
+            ${PROJECT_SOURCE_DIR}/flare/kernel/blas/nrm1_impl.cu
+            ${PROJECT_SOURCE_DIR}/flare/kernel/blas/nrm2_impl.cu
+            ${PROJECT_SOURCE_DIR}/flare/kernel/blas/nrm2w_impl.cu
     )
     include_directories(${CUDA_INCLUDE_DIRS})
 endif ()
