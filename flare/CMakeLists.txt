@@ -100,6 +100,7 @@ set(FLARE_BLAS_SRC
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/nrminf_impl.cc
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/reciprocal_impl.cc
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/rot_impl.cc
+        ${PROJECT_SOURCE_DIR}/flare/kernel/blas/update_impl.cc
 )
 
 if(FLARE_BUILD_CUDA)
@@ -119,6 +120,7 @@ if(FLARE_BUILD_CUDA)
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/nrminf_impl.cu
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/reciprocal_impl.cu
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/rot_impl.cu
+            ${PROJECT_SOURCE_DIR}/flare/kernel/blas/update_impl.cu
     )
     include_directories(${CUDA_INCLUDE_DIRS})
 endif ()

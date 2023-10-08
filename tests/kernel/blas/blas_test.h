@@ -34,5 +34,6 @@
 #include "kernel/blas/blas_rot_test.h"
 #include "kernel/blas/blas_rotg_test.h"
 #include "kernel/blas/blas_rotm_test.h"
+#include "kernel/blas/blas_update_test.h"
 
 #endif  // FLARE_BLAS_TEST_H

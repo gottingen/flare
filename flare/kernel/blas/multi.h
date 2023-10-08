@@ -66,8 +66,7 @@ namespace flare::blas {
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
                 "flare::blas::mult: AV must be accessible from execution_space.");
-        static_assert(std::is_same<typename YMV::value_type,
-                              typename YMV::non_const_value_type>::value,
+        static_assert(std::is_same<typename YMV::value_type, typename YMV::non_const_value_type>::value,
                       "flare::blas::mult: Y is const.  "
                       "It must be nonconst, because it is an output argument "
                       "(we have to be able to write to its entries).");
