@@ -35,8 +35,7 @@
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
 template <class DataType>
 struct ViewArrayAnalysis;
@@ -92,19 +91,10 @@ void runtime_check_rank(const size_t rank, const size_t dyn_rank,
   }
 }
 
-} /* namespace detail */
-} /* namespace flare */
-
-// Class to provide a uniform type
-namespace flare {
-namespace detail {
 template <class ViewType, int Traits = 0>
 struct ViewUniformType;
-}
-}  // namespace flare
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+}  // namespace flare::detail
 
 namespace flare {
 

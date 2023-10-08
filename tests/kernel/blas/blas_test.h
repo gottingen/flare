@@ -23,5 +23,6 @@
 #include "kernel/blas/blas_sum_test.h"
 #include "kernel/blas/blas_swap_test.h"
 #include "kernel/blas/blas_scal_test.h"
+#include "kernel/blas/blas_iamax_test.h"
 
 #endif  // FLARE_BLAS_TEST_H

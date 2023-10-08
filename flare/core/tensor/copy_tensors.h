@@ -2634,8 +2634,8 @@ namespace flare {
         }
     }
 
-/** \brief  Deep copy a value from Host memory into a view. ExecSpace can not
- * access dst */
+    /** \brief  Deep copy a value from Host memory into a view. ExecSpace can not
+     * access dst */
     template<class ExecSpace, class DT, class... DP>
     inline void deep_copy(
             const ExecSpace &space, const View<DT, DP...> &dst,
@@ -2682,7 +2682,7 @@ namespace flare {
         }
     }
 
-/** \brief  Deep copy into a value in Host memory from a view.  */
+    /** \brief  Deep copy into a value in Host memory from a view.  */
     template<class ExecSpace, class ST, class... SP>
     inline void deep_copy(
             const ExecSpace &exec_space,

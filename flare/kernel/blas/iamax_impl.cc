@@ -12,18 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+//
+// Created by jeff on 23-10-8.
+//
+#include <flare/kernel/blas/iamax_impl.h>
 
-#ifndef FLARE_KERNEL_BLAS_H_
-#define FLARE_KERNEL_BLAS_H_
-
-#include <flare/kernel/blas/abs.h>
-#include <flare/kernel/blas/dot.h>
-#include <flare/kernel/blas/axpby.h>
-#include <flare/kernel/blas/multi.h>
-#include <flare/kernel/blas/set.h>
-#include <flare/kernel/blas/sum.h>
-#include <flare/kernel/blas/swap.h>
-#include <flare/kernel/blas/scal.h>
-#include <flare/kernel/blas/iamax.h>
-
-#endif  // FLARE_KERNEL_BLAS_H_
+namespace flare::blas::detail {
+    FLARE_BLAS_IAMAX_MV_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+    FLARE_BLAS_IAMAX_SPEC_INST(double,flare::LayoutLeft,flare::Serial,flare::HostSpace)
+}  // namespace flare::blas::detail
