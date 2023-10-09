@@ -534,7 +534,6 @@ TEST_CASE("TEST_CATEGORY, atomics") {
 #endif
 }
 
-// see https://github.com/trilinos/Trilinos/pull/11506
 struct TpetraUseCase {
   template <class Scalar>
   struct AbsMaxHelper {

@@ -332,8 +332,6 @@ namespace TestCXX11 {
 
         auto a = res_functor;
         auto b = res_lambda;
-        // use a tolerant comparison because functors and lambdas vectorize
-        // differently https://github.com/trilinos/Trilinos/issues/3233
         auto rel_err = (std::abs(b - a) / std::max(std::abs(a), std::abs(b)));
         auto tol = 1e-14;
         if (rel_err > tol) {

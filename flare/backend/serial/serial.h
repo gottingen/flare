@@ -20,6 +20,7 @@
 #define FLARE_BACKEND_SERIAL_SERIAL_H_
 
 #include <flare/core/defines.h>
+
 #if defined(FLARE_ENABLE_SERIAL)
 
 #include <cstddef>
@@ -37,175 +38,176 @@
 #include <flare/core/memory/host_shared_ptr.h>
 #include <flare/core/common/initialization_settings.h>
 
+namespace flare::detail {
+    class SerialInternal {
+    public:
+        SerialInternal() = default;
+
+        bool is_initialized();
+
+        void initialize();
+
+        void finalize();
+
+        static SerialInternal &singleton();
+
+        std::mutex m_thread_team_data_mutex;
+
+        // Resize thread team data scratch memory
+        void resize_thread_team_data(size_t pool_reduce_bytes,
+                                     size_t team_reduce_bytes,
+                                     size_t team_shared_bytes,
+                                     size_t thread_local_bytes);
+
+        HostThreadTeamData m_thread_team_data;
+        bool m_is_initialized = false;
+    };
+}  // namespace flare::detail
 namespace flare {
+    /// \class Serial
+    /// \brief flare device for non-parallel execution
+    ///
+    /// A "device" represents a parallel execution model.  It tells flare
+    /// how to parallelize the execution of kernels in a parallel_for or
+    /// parallel_reduce.  For example, the Threads device uses
+    /// C++11 threads on a CPU, the OpenMP device uses the OpenMP language
+    /// extensions, and the Cuda device uses NVIDIA's CUDA programming
+    /// model.  The Serial device executes "parallel" kernels
+    /// sequentially.  This is useful if you really do not want to use
+    /// threads, or if you want to explore different combinations of MPI
+    /// and shared-memory parallel programming models.
+    class Serial {
+    public:
+        //! \name Type declarations that all flare devices must provide.
+        //@{
 
-namespace detail {
-class SerialInternal {
- public:
-  SerialInternal() = default;
+        //! Tag this class as an execution space:
+        using execution_space = Serial;
+        //! This device's preferred memory space.
+        using memory_space = flare::HostSpace;
+        //! The size_type alias best suited for this device.
+        using size_type = memory_space::size_type;
+        //! This execution space preferred device_type
+        using device_type = flare::Device<execution_space, memory_space>;
 
-  bool is_initialized();
+        //! This device's preferred array layout.
+        using array_layout = LayoutRight;
 
-  void initialize();
+        /// \brief  Scratch memory space
+        using scratch_memory_space = ScratchMemorySpace<flare::Serial>;
 
-  void finalize();
+        //@}
 
-  static SerialInternal& singleton();
+        Serial();
 
-  std::mutex m_thread_team_data_mutex;
+        /// \brief True if and only if this method is being called in a
+        ///   thread-parallel function.
+        ///
+        /// For the Serial device, this method <i>always</i> returns false,
+        /// because parallel_for or parallel_reduce with the Serial device
+        /// always execute sequentially.
+        inline static int in_parallel() { return false; }
 
-  // Resize thread team data scratch memory
-  void resize_thread_team_data(size_t pool_reduce_bytes,
-                               size_t team_reduce_bytes,
-                               size_t team_shared_bytes,
-                               size_t thread_local_bytes);
+        /// \brief Wait until all dispatched functors complete.
+        ///
+        /// The parallel_for or parallel_reduce dispatch of a functor may
+        /// return asynchronously, before the functor completes.  This
+        /// method does not return until all dispatched functors on this
+        /// device have completed.
+        static void impl_static_fence(const std::string &name) {
+            flare::Tools::experimental::detail::profile_fence_event<flare::Serial>(
+                    name,
+                    flare::Tools::experimental::SpecialSynchronizationCases::
+                    GlobalDeviceSynchronization,
+                    []() {});  // TODO: correct device ID
+            flare::memory_fence();
+        }
 
-  HostThreadTeamData m_thread_team_data;
-  bool m_is_initialized = false;
-};
-}  // namespace detail
+        void fence(const std::string &name =
+        "flare::Serial::fence: Unnamed Instance Fence") const {
+            flare::Tools::experimental::detail::profile_fence_event<flare::Serial>(
+                    name, flare::Tools::experimental::detail::DirectFenceIDHandle{1},
+                    []() {});  // TODO: correct device ID
+            flare::memory_fence();
+        }
 
-/// \class Serial
-/// \brief flare device for non-parallel execution
-///
-/// A "device" represents a parallel execution model.  It tells flare
-/// how to parallelize the execution of kernels in a parallel_for or
-/// parallel_reduce.  For example, the Threads device uses
-/// C++11 threads on a CPU, the OpenMP device uses the OpenMP language
-/// extensions, and the Cuda device uses NVIDIA's CUDA programming
-/// model.  The Serial device executes "parallel" kernels
-/// sequentially.  This is useful if you really do not want to use
-/// threads, or if you want to explore different combinations of MPI
-/// and shared-memory parallel programming models.
-class Serial {
- public:
-  //! \name Type declarations that all flare devices must provide.
-  //@{
+        /** \brief  Return the maximum amount of concurrency.  */
+        int concurrency() const { return 1; }
 
-  //! Tag this class as an execution space:
-  using execution_space = Serial;
-  //! This device's preferred memory space.
-  using memory_space = flare::HostSpace;
-  //! The size_type alias best suited for this device.
-  using size_type = memory_space::size_type;
-  //! This execution space preferred device_type
-  using device_type = flare::Device<execution_space, memory_space>;
+        //! Print configuration information to the given output stream.
+        void print_configuration(std::ostream &os, bool verbose = false) const;
 
-  //! This device's preferred array layout.
-  using array_layout = LayoutRight;
+        static void impl_initialize(InitializationSettings const &);
 
-  /// \brief  Scratch memory space
-  using scratch_memory_space = ScratchMemorySpace<flare::Serial>;
+        static bool impl_is_initialized();
 
-  //@}
+        //! Free any resources being consumed by the device.
+        static void impl_finalize();
 
-  Serial();
+        //--------------------------------------------------------------------------
 
-  /// \brief True if and only if this method is being called in a
-  ///   thread-parallel function.
-  ///
-  /// For the Serial device, this method <i>always</i> returns false,
-  /// because parallel_for or parallel_reduce with the Serial device
-  /// always execute sequentially.
-  inline static int in_parallel() { return false; }
+        inline static int impl_thread_pool_size(int = 0) { return 1; }
 
-  /// \brief Wait until all dispatched functors complete.
-  ///
-  /// The parallel_for or parallel_reduce dispatch of a functor may
-  /// return asynchronously, before the functor completes.  This
-  /// method does not return until all dispatched functors on this
-  /// device have completed.
-  static void impl_static_fence(const std::string& name) {
-    flare::Tools::experimental::detail::profile_fence_event<flare::Serial>(
-        name,
-        flare::Tools::experimental::SpecialSynchronizationCases::
-            GlobalDeviceSynchronization,
-        []() {});  // TODO: correct device ID
-    flare::memory_fence();
-  }
+        FLARE_INLINE_FUNCTION static int impl_thread_pool_rank() { return 0; }
 
-  void fence(const std::string& name =
-                 "flare::Serial::fence: Unnamed Instance Fence") const {
-    flare::Tools::experimental::detail::profile_fence_event<flare::Serial>(
-        name, flare::Tools::experimental::detail::DirectFenceIDHandle{1},
-        []() {});  // TODO: correct device ID
-    flare::memory_fence();
-  }
+        //--------------------------------------------------------------------------
 
-  /** \brief  Return the maximum amount of concurrency.  */
-  int concurrency() const { return 1; }
+        FLARE_INLINE_FUNCTION static unsigned impl_hardware_thread_id() {
+            return impl_thread_pool_rank();
+        }
 
-  //! Print configuration information to the given output stream.
-  void print_configuration(std::ostream& os, bool verbose = false) const;
+        inline static unsigned impl_max_hardware_threads() {
+            return impl_thread_pool_size(0);
+        }
 
-  static void impl_initialize(InitializationSettings const&);
+        uint32_t impl_instance_id() const noexcept { return 1; }
 
-  static bool impl_is_initialized();
+        static const char *name();
 
-  //! Free any resources being consumed by the device.
-  static void impl_finalize();
+        detail::SerialInternal *impl_internal_space_instance() const {
+            return m_space_instance.get();
+        }
 
-  //--------------------------------------------------------------------------
+    private:
+        flare::detail::HostSharedPtr<detail::SerialInternal> m_space_instance;
 
-  inline static int impl_thread_pool_size(int = 0) { return 1; }
-  FLARE_INLINE_FUNCTION static int impl_thread_pool_rank() { return 0; }
+        friend bool operator==(Serial const &lhs, Serial const &rhs) {
+            return lhs.impl_internal_space_instance() ==
+                   rhs.impl_internal_space_instance();
+        }
 
-  //--------------------------------------------------------------------------
-
-  FLARE_INLINE_FUNCTION static unsigned impl_hardware_thread_id() {
-    return impl_thread_pool_rank();
-  }
-  inline static unsigned impl_max_hardware_threads() {
-    return impl_thread_pool_size(0);
-  }
-
-  uint32_t impl_instance_id() const noexcept { return 1; }
-
-  static const char* name();
-
-  detail::SerialInternal* impl_internal_space_instance() const {
-    return m_space_instance.get();
-  }
-
- private:
-  flare::detail::HostSharedPtr<detail::SerialInternal> m_space_instance;
-  friend bool operator==(Serial const& lhs, Serial const& rhs) {
-    return lhs.impl_internal_space_instance() ==
-           rhs.impl_internal_space_instance();
-  }
-  friend bool operator!=(Serial const& lhs, Serial const& rhs) {
-    return !(lhs == rhs);
-  }
-  //--------------------------------------------------------------------------
-};
-
-namespace Tools {
-namespace experimental {
-template <>
-struct DeviceTypeTraits<Serial> {
-  static constexpr DeviceType id = DeviceType::Serial;
-  static int device_id(const Serial&) { return 0; }
-};
-}  // namespace experimental
-}  // namespace Tools
+        friend bool operator!=(Serial const &lhs, Serial const &rhs) {
+            return !(lhs == rhs);
+        }
+    };
 }  // namespace flare
 
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
+namespace flare::Tools::experimental {
+    template<>
+    struct DeviceTypeTraits<Serial> {
+        static constexpr DeviceType id = DeviceType::Serial;
 
-namespace flare {
-namespace detail {
+        static int device_id(const Serial &) { return 0; }
+    };
+}  // namespace flare::Tools::experimental
 
-template <>
-struct MemorySpaceAccess<flare::Serial::memory_space,
-                         flare::Serial::scratch_memory_space> {
-  enum : bool { assignable = false };
-  enum : bool { accessible = true };
-  enum : bool { deepcopy = false };
-};
+namespace flare::detail {
 
-}  // namespace detail
-}  // namespace flare
+    template<>
+    struct MemorySpaceAccess<flare::Serial::memory_space,
+            flare::Serial::scratch_memory_space> {
+        enum : bool {
+            assignable = false
+        };
+        enum : bool {
+            accessible = true
+        };
+        enum : bool {
+            deepcopy = false
+        };
+    };
+
+}  // namespace flare::detail
 
 #include <flare/backend/serial/serial_parallel_range.h>
 #include <flare/backend/serial/serial_parallel_mdrange.h>

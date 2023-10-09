@@ -594,7 +594,7 @@ class DynRankView : public ViewTraits<DataType, Properties...> {
   }
 
   // This assumes a contiguous underlying memory (i.e. no padding, no
-  // striding... AND a Trilinos/Sacado scalar type )
+  // striding...)
   template <typename iType>
   FLARE_INLINE_FUNCTION std::enable_if_t<
       !std::is_same<typename drvtraits::value_type,

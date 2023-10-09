@@ -19,128 +19,129 @@
 #include <flare/core/parallel/parallel.h>
 #include <flare/core/policy/exp_mdrange_policy.h>
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
-template <class FunctorType, class... Traits>
-class ParallelFor<FunctorType, flare::MDRangePolicy<Traits...>,
-                  flare::Serial> {
- private:
-  using MDRangePolicy = flare::MDRangePolicy<Traits...>;
-  using Policy        = typename MDRangePolicy::impl_range_policy;
+    template<class FunctorType, class... Traits>
+    class ParallelFor<FunctorType, flare::MDRangePolicy<Traits...>,
+            flare::Serial> {
+    private:
+        using MDRangePolicy = flare::MDRangePolicy<Traits...>;
+        using Policy = typename MDRangePolicy::impl_range_policy;
 
-  using iterate_type = typename flare::detail::HostIterateTile<
-      MDRangePolicy, FunctorType, typename MDRangePolicy::work_tag, void>;
+        using iterate_type = typename flare::detail::HostIterateTile<
+                MDRangePolicy, FunctorType, typename MDRangePolicy::work_tag, void>;
 
-  const iterate_type m_iter;
+        const iterate_type m_iter;
 
-  void exec() const {
-    const typename Policy::member_type e = m_iter.m_rp.m_num_tiles;
-    for (typename Policy::member_type i = 0; i < e; ++i) {
-      m_iter(i);
-    }
-  }
+        void exec() const {
+            const typename Policy::member_type e = m_iter.m_rp.m_num_tiles;
+            for (typename Policy::member_type i = 0; i < e; ++i) {
+                m_iter(i);
+            }
+        }
 
- public:
-  inline void execute() const { this->exec(); }
-  template <typename Policy, typename Functor>
-  static int max_tile_size_product(const Policy&, const Functor&) {
-    /**
-     * 1024 here is just our guess for a reasonable max tile size,
-     * it isn't a hardware constraint. If people see a use for larger
-     * tile size products, we're happy to change this.
-     */
-    return 1024;
-  }
-  inline ParallelFor(const FunctorType& arg_functor,
-                     const MDRangePolicy& arg_policy)
-      : m_iter(arg_policy, arg_functor) {}
-};
+    public:
+        inline void execute() const { this->exec(); }
 
-template <class CombinedFunctorReducerType, class... Traits>
-class ParallelReduce<CombinedFunctorReducerType,
-                     flare::MDRangePolicy<Traits...>, flare::Serial> {
- private:
-  using MDRangePolicy = flare::MDRangePolicy<Traits...>;
-  using Policy        = typename MDRangePolicy::impl_range_policy;
-  using FunctorType   = typename CombinedFunctorReducerType::functor_type;
-  using ReducerType   = typename CombinedFunctorReducerType::reducer_type;
+        template<typename Policy, typename Functor>
+        static int max_tile_size_product(const Policy &, const Functor &) {
+            /**
+             * 1024 here is just our guess for a reasonable max tile size,
+             * it isn't a hardware constraint. If people see a use for larger
+             * tile size products, we're happy to change this.
+             */
+            return 1024;
+        }
 
-  using WorkTag = typename MDRangePolicy::work_tag;
+        inline ParallelFor(const FunctorType &arg_functor,
+                           const MDRangePolicy &arg_policy)
+                : m_iter(arg_policy, arg_functor) {}
+    };
 
-  using pointer_type   = typename ReducerType::pointer_type;
-  using value_type     = typename ReducerType::value_type;
-  using reference_type = typename ReducerType::reference_type;
+    template<class CombinedFunctorReducerType, class... Traits>
+    class ParallelReduce<CombinedFunctorReducerType,
+            flare::MDRangePolicy<Traits...>, flare::Serial> {
+    private:
+        using MDRangePolicy = flare::MDRangePolicy<Traits...>;
+        using Policy = typename MDRangePolicy::impl_range_policy;
+        using FunctorType = typename CombinedFunctorReducerType::functor_type;
+        using ReducerType = typename CombinedFunctorReducerType::reducer_type;
 
-  using iterate_type = typename flare::detail::HostIterateTile<
-      MDRangePolicy, CombinedFunctorReducerType, WorkTag, reference_type>;
-  const iterate_type m_iter;
-  const pointer_type m_result_ptr;
+        using WorkTag = typename MDRangePolicy::work_tag;
 
-  inline void exec(reference_type update) const {
-    const typename Policy::member_type e = m_iter.m_rp.m_num_tiles;
-    for (typename Policy::member_type i = 0; i < e; ++i) {
-      m_iter(i, update);
-    }
-  }
+        using pointer_type = typename ReducerType::pointer_type;
+        using value_type = typename ReducerType::value_type;
+        using reference_type = typename ReducerType::reference_type;
 
- public:
-  template <typename Policy, typename Functor>
-  static int max_tile_size_product(const Policy&, const Functor&) {
-    /**
-     * 1024 here is just our guess for a reasonable max tile size,
-     * it isn't a hardware constraint. If people see a use for larger
-     * tile size products, we're happy to change this.
-     */
-    return 1024;
-  }
-  inline void execute() const {
-    const ReducerType& reducer     = m_iter.m_func.get_reducer();
-    const size_t pool_reduce_size  = reducer.value_size();
-    const size_t team_reduce_size  = 0;  // Never shrinks
-    const size_t team_shared_size  = 0;  // Never shrinks
-    const size_t thread_local_size = 0;  // Never shrinks
+        using iterate_type = typename flare::detail::HostIterateTile<
+                MDRangePolicy, CombinedFunctorReducerType, WorkTag, reference_type>;
+        const iterate_type m_iter;
+        const pointer_type m_result_ptr;
 
-    auto* internal_instance =
-        m_iter.m_rp.space().impl_internal_space_instance();
-    // Need to lock resize_thread_team_data
-    std::lock_guard<std::mutex> lock(
-        internal_instance->m_thread_team_data_mutex);
-    internal_instance->resize_thread_team_data(
-        pool_reduce_size, team_reduce_size, team_shared_size,
-        thread_local_size);
+        inline void exec(reference_type update) const {
+            const typename Policy::member_type e = m_iter.m_rp.m_num_tiles;
+            for (typename Policy::member_type i = 0; i < e; ++i) {
+                m_iter(i, update);
+            }
+        }
 
-    pointer_type ptr =
-        m_result_ptr
-            ? m_result_ptr
-            : pointer_type(
-                  internal_instance->m_thread_team_data.pool_reduce_local());
+    public:
+        template<typename Policy, typename Functor>
+        static int max_tile_size_product(const Policy &, const Functor &) {
+            /**
+             * 1024 here is just our guess for a reasonable max tile size,
+             * it isn't a hardware constraint. If people see a use for larger
+             * tile size products, we're happy to change this.
+             */
+            return 1024;
+        }
 
-    reference_type update = reducer.init(ptr);
+        inline void execute() const {
+            const ReducerType &reducer = m_iter.m_func.get_reducer();
+            const size_t pool_reduce_size = reducer.value_size();
+            const size_t team_reduce_size = 0;  // Never shrinks
+            const size_t team_shared_size = 0;  // Never shrinks
+            const size_t thread_local_size = 0;  // Never shrinks
 
-    this->exec(update);
+            auto *internal_instance =
+                    m_iter.m_rp.space().impl_internal_space_instance();
+            // Need to lock resize_thread_team_data
+            std::lock_guard<std::mutex> lock(
+                    internal_instance->m_thread_team_data_mutex);
+            internal_instance->resize_thread_team_data(
+                    pool_reduce_size, team_reduce_size, team_shared_size,
+                    thread_local_size);
 
-    reducer.final(ptr);
-  }
+            pointer_type ptr =
+                    m_result_ptr
+                    ? m_result_ptr
+                    : pointer_type(
+                            internal_instance->m_thread_team_data.pool_reduce_local());
 
-  template <class ViewType>
-  ParallelReduce(const CombinedFunctorReducerType& arg_functor_reducer,
-                 const MDRangePolicy& arg_policy,
-                 const ViewType& arg_result_view)
-      : m_iter(arg_policy, arg_functor_reducer),
-        m_result_ptr(arg_result_view.data()) {
-    static_assert(flare::is_view<ViewType>::value,
-                  "flare::Serial reduce result must be a View");
+            reference_type update = reducer.init(ptr);
 
-    static_assert(
-        flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
-                                        flare::HostSpace>::accessible,
-        "flare::Serial reduce result must be a View accessible from "
-        "HostSpace");
-  }
-};
+            this->exec(update);
 
-}  // namespace detail
-}  // namespace flare
+            reducer.final(ptr);
+        }
+
+        template<class ViewType>
+        ParallelReduce(const CombinedFunctorReducerType &arg_functor_reducer,
+                       const MDRangePolicy &arg_policy,
+                       const ViewType &arg_result_view)
+                : m_iter(arg_policy, arg_functor_reducer),
+                  m_result_ptr(arg_result_view.data()) {
+            static_assert(flare::is_view<ViewType>::value,
+                          "flare::Serial reduce result must be a View");
+
+            static_assert(
+                    flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+                            flare::HostSpace>::accessible,
+                    "flare::Serial reduce result must be a View accessible from "
+                    "HostSpace");
+        }
+    };
+
+}  // namespace flare::detail
 
 #endif  // FLARE_BACKEND_SERIAL_SERIAL_PARALLEL_MDRANGE_H_

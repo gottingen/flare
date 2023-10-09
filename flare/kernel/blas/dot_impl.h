@@ -96,7 +96,9 @@ namespace flare::blas::detail {
             dot_type localResult = KAT::zero();
             size_type begin = localRank * (x.extent(0) / teamsPerDot);
             size_type end = (localRank + 1) * (x.extent(0) / teamsPerDot);
-            if (localRank == teamsPerDot - 1) end = x.extent(0);
+            if (localRank == teamsPerDot - 1) {
+                end = x.extent(0);
+            }
             flare::parallel_reduce(
                     flare::TeamThreadRange(t, begin, end),
                     [&](size_type k, dot_type &update) {
@@ -173,7 +175,7 @@ namespace flare::blas::detail {
     }
 
     // Some platforms, such as Mac Clang, seem to get poor accuracy with
-    // float and complex<float>.  Work around some Trilinos test
+    // float and complex<float>.  Work around some flare test
     // failures by using a higher-precision type for intermediate dot
     // product sums.
     //
@@ -243,15 +245,11 @@ namespace flare::blas::detail {
                 auto Y0 = getFirstColumn(Y);
                 if (numRows < static_cast<size_type>(INT_MAX)) {
                     typedef int index_type;
-                    DotFunctor<execution_space, decltype(R0), decltype(X0), decltype(Y0),
-                            index_type>
-                            f(X0, Y0);
+                    DotFunctor<execution_space, decltype(R0), decltype(X0), decltype(Y0),index_type> f(X0, Y0);
                     f.run("flare::blas::dot<1D>", space, R0);
                 } else {
                     typedef int64_t index_type;
-                    DotFunctor<execution_space, decltype(R0), decltype(X0), decltype(Y0),
-                            index_type>
-                            f(X0, Y0);
+                    DotFunctor<execution_space, decltype(R0), decltype(X0), decltype(Y0), index_type> f(X0, Y0);
                     f.run("flare::blas::dot<1D>", space, R0);
                 }
             } else {
@@ -297,8 +295,7 @@ namespace flare::blas::detail {
                       "(we have to be able to write to its entries).");
 
         using size_type = typename YV::size_type;
-        using dot_type = typename flare::detail::InnerProductSpaceTraits<
-                typename XV::non_const_value_type>::dot_type;
+        using dot_type = typename flare::detail::InnerProductSpaceTraits<typename XV::non_const_value_type>::dot_type;
         using accum_type = typename DotAccumulatingScalar<dot_type>::type;
         // This is the same View type as RV, but using the special accumulator as the
         // value type

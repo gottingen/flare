@@ -16,50 +16,45 @@
 #ifndef FLARE_BACKEND_SERIAL_SERIAL_WORK_GRAPH_POLICY_H_
 #define FLARE_BACKEND_SERIAL_SERIAL_WORK_GRAPH_POLICY_H_
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
-template <class FunctorType, class... Traits>
-class ParallelFor<FunctorType, flare::WorkGraphPolicy<Traits...>,
-                  flare::Serial> {
- private:
-  using Policy = flare::WorkGraphPolicy<Traits...>;
+    template<class FunctorType, class... Traits>
+    class ParallelFor<FunctorType, flare::WorkGraphPolicy<Traits...>, flare::Serial> {
+    private:
+        using Policy = flare::WorkGraphPolicy<Traits...>;
 
-  Policy m_policy;
-  FunctorType m_functor;
+        Policy m_policy;
+        FunctorType m_functor;
 
-  template <class TagType>
-  std::enable_if_t<std::is_void<TagType>::value> exec_one(
-      const std::int32_t w) const noexcept {
-    m_functor(w);
-  }
+        template<class TagType>
+        std::enable_if_t<std::is_void<TagType>::value> exec_one(const std::int32_t w) const noexcept {
+            m_functor(w);
+        }
 
-  template <class TagType>
-  std::enable_if_t<!std::is_void<TagType>::value> exec_one(
-      const std::int32_t w) const noexcept {
-    const TagType t{};
-    m_functor(t, w);
-  }
+        template<class TagType>
+        std::enable_if_t<!std::is_void<TagType>::value> exec_one(const std::int32_t w) const noexcept {
+            const TagType t{};
+            m_functor(t, w);
+        }
 
- public:
-  inline void execute() const noexcept {
-    // Spin until COMPLETED_TOKEN.
-    // END_TOKEN indicates no work is currently available.
+    public:
+        inline void execute() const noexcept {
+            // Spin until COMPLETED_TOKEN.
+            // END_TOKEN indicates no work is currently available.
 
-    for (std::int32_t w = Policy::END_TOKEN;
-         Policy::COMPLETED_TOKEN != (w = m_policy.pop_work());) {
-      if (Policy::END_TOKEN != w) {
-        exec_one<typename Policy::work_tag>(w);
-        m_policy.completed_work(w);
-      }
-    }
-  }
+            for (std::int32_t w = Policy::END_TOKEN;
+                 Policy::COMPLETED_TOKEN != (w = m_policy.pop_work());) {
+                if (Policy::END_TOKEN != w) {
+                    exec_one<typename Policy::work_tag>(w);
+                    m_policy.completed_work(w);
+                }
+            }
+        }
 
-  inline ParallelFor(const FunctorType& arg_functor, const Policy& arg_policy)
-      : m_policy(arg_policy), m_functor(arg_functor) {}
-};
+        inline ParallelFor(const FunctorType &arg_functor, const Policy &arg_policy)
+                : m_policy(arg_policy), m_functor(arg_functor) {}
+    };
 
-}  // namespace detail
-}  // namespace flare
+}  // namespace flare::detail
 
 #endif  // FLARE_BACKEND_SERIAL_SERIAL_WORK_GRAPH_POLICY_H_

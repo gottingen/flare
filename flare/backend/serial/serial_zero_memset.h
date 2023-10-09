@@ -22,28 +22,27 @@
 
 #include <type_traits>
 
-namespace flare {
-namespace detail {
+namespace flare::detail {
 
-// We only need to provide a specialization for Serial if there is a host
-// parallel execution space since the specialization for
-// DefaultHostExecutionSpace is defined elsewhere.
-struct DummyExecutionSpace;
-template <class T, class... P>
-struct ZeroMemset<
-    std::conditional_t<!std::is_same<Serial, DefaultHostExecutionSpace>::value,
-                       Serial, DummyExecutionSpace>,
-    View<T, P...>>
-    : public ZeroMemset<DefaultHostExecutionSpace, View<T, P...>> {
-  using Base = ZeroMemset<DefaultHostExecutionSpace, View<T, P...>>;
-  using Base::Base;
+    // We only need to provide a specialization for Serial if there is a host
+    // parallel execution space since the specialization for
+    // DefaultHostExecutionSpace is defined elsewhere.
+    struct DummyExecutionSpace;
 
-  ZeroMemset(const Serial&, const View<T, P...>& dst,
-             typename View<T, P...>::const_value_type& value)
-      : Base(dst, value) {}
-};
+    template<class T, class... P>
+    struct ZeroMemset<
+            std::conditional_t<!std::is_same<Serial, DefaultHostExecutionSpace>::value,
+                    Serial, DummyExecutionSpace>,
+            View<T, P...>>
+            : public ZeroMemset<DefaultHostExecutionSpace, View<T, P...>> {
+        using Base = ZeroMemset<DefaultHostExecutionSpace, View<T, P...>>;
+        using Base::Base;
 
-}  // namespace detail
-}  // namespace flare
+        ZeroMemset(const Serial &, const View<T, P...> &dst,
+                   typename View<T, P...>::const_value_type &value)
+                : Base(dst, value) {}
+    };
+
+}  // namespace flare::detail
 
 #endif  // FLARE_BACKEND_SERIAL_SERIAL_ZERO_MEMSET_H_

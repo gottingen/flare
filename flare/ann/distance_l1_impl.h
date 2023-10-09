@@ -13,18 +13,11 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_BACKEND_SERIAL_SERIAL_MDRANGE_POLICY_H_
-#define FLARE_BACKEND_SERIAL_SERIAL_MDRANGE_POLICY_H_
+#ifndef FLARE_ANN_DISTANCE_L1_IMPL_H_
+#define FLARE_ANN_DISTANCE_L1_IMPL_H_
 
-#include <flare/core/policy/exp_mdrange_policy.h>
+namespace flare::ann::detail {
 
-namespace flare::detail {
+}  // namespace flare::ann::detail
 
-    // Settings for TeamMDRangePolicy
-    template<typename Rank, TeamMDRangeThreadAndVector ThreadAndVector>
-    struct ThreadAndVectorNestLevel<Rank, Serial, ThreadAndVector>
-            : HostBasedNestLevel<Rank, ThreadAndVector> {
-    };
-
-}  // namespace flare::detail
-#endif  // FLARE_BACKEND_SERIAL_SERIAL_MDRANGE_POLICY_H_
+#endif  // FLARE_ANN_DISTANCE_L1_IMPL_H_

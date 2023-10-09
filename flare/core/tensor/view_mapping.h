@@ -859,8 +859,8 @@ namespace flare::detail {
         using is_mapping_plugin = std::false_type;
     };
 
-//----------------------------------------------------------------------------
-// LayoutLeft AND ( 1 >= rank OR 0 == rank_dynamic ) : no padding / striding
+    //----------------------------------------------------------------------------
+    // LayoutLeft AND ( 1 >= rank OR 0 == rank_dynamic ) : no padding / striding
     template<class Dimension>
     struct ViewOffset<
             Dimension, flare::LayoutLeft,

@@ -1308,8 +1308,8 @@ namespace flare::detail {
             void init(size_type &dst) const {
                 // The identity under max is -Inf.
                 // flare does not come with a portable way to access
-                // floating -point Inf and NaN. Trilinos does , however;
-                // see flare :: ArithTraits in the Tpetra package.
+                // floating -point Inf and NaN. flare does , however;
+                // see flare :: ArithTraits.
                 dst = min_val;
             }
         };
@@ -1366,7 +1366,7 @@ namespace flare::detail {
             void init(value_type &dst) const {
                 // The identity under max is -Inf.
                 // flare does not come with a portable way to access
-                // floating -point Inf and NaN. Trilinos does , however;
+                // floating -point Inf and NaN. flare does , however;
                 // see flare :: ArithTraits in the Tpetra package.
                 dst = min_val;
             }
