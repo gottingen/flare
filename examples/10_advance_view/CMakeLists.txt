@@ -18,7 +18,6 @@ carbin_cc_binary(
         NAME example_data_layouts_cc
         SOURCES
         data_layouts.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -28,7 +27,6 @@ carbin_cc_binary(
         NAME example_data_layouts_cu
         SOURCES
         data_layouts.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
@@ -39,7 +37,6 @@ carbin_cc_binary(
         NAME example_memory_traits_cc
         SOURCES
         memory_traits.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -49,7 +46,6 @@ carbin_cc_binary(
         NAME example_memory_traits_cu
         SOURCES
         memory_traits.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
@@ -60,7 +56,6 @@ carbin_cc_binary(
         NAME example_subviews_cc
         SOURCES
         subviews.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -70,7 +65,6 @@ carbin_cc_binary(
         NAME example_subviews_cu
         SOURCES
         subviews.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
@@ -81,7 +75,6 @@ carbin_cc_binary(
         NAME example_dual_view_cc
         SOURCES
         dual_view.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -91,7 +84,6 @@ carbin_cc_binary(
         NAME example_dual_view_cu
         SOURCES
         dual_view.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS

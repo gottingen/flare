@@ -18,7 +18,6 @@ carbin_cc_binary(
         NAME example_memory_space_cc
         SOURCES
         memory_space.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -28,7 +27,6 @@ carbin_cc_binary(
         NAME example_memory_space_cu
         SOURCES
         memory_space.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS

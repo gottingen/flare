@@ -18,7 +18,6 @@ carbin_cc_binary(
         NAME example_simple_reduce_cc
         SOURCES
         simple_reduce.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -28,7 +27,6 @@ carbin_cc_binary(
         NAME example_simple_reduce_cu
         SOURCES
         simple_reduce.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
@@ -39,7 +37,6 @@ carbin_cc_binary(
         NAME example_simple_reduce_lambda_cc
         SOURCES
         simple_reduce_lambda.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -49,7 +46,6 @@ carbin_cc_binary(
         NAME example_simple_reduce_lambda_cu
         SOURCES
         simple_reduce_lambda.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS

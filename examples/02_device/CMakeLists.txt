@@ -18,7 +18,6 @@ carbin_cc_binary(
         NAME example_query_device_cc
         SOURCES
         query_device.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -28,7 +27,6 @@ carbin_cc_binary(
         NAME example_query_device_cu
         SOURCES
         query_device.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS

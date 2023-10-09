@@ -18,7 +18,6 @@ carbin_cc_binary(
         NAME example_hello_world_cc
         SOURCES
         hello_world.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -28,7 +27,6 @@ carbin_cc_binary(
         NAME example_hello_world_cu
         SOURCES
         hello_world.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS

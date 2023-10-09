@@ -36,8 +36,8 @@ set(FLARE_CORE_SRC
         ${PROJECT_SOURCE_DIR}/flare/core/memory/memory_space.cc
         ${PROJECT_SOURCE_DIR}/flare/core/memory/shared_alloc.cc
         ${PROJECT_SOURCE_DIR}/flare/core/profile/profiling.cc
-        ${PROJECT_SOURCE_DIR}/flare/simd/dummy.cc
         ${PROJECT_SOURCE_DIR}/flare/containers/unordered_map_impl.cc
+        ${PROJECT_SOURCE_DIR}/flare/simd/fake.cc
 )
 
 if(FLARE_BUILD_OPENMP)

@@ -18,7 +18,6 @@ carbin_cc_binary(
         NAME example_mdrangepolicy_cc
         SOURCES
         mdrangepolicy.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -28,7 +27,6 @@ carbin_cc_binary(
         NAME example_mdrangepolicy_cu
         SOURCES
         mdrangepolicy.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS

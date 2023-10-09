@@ -237,7 +237,7 @@
 #endif
 #endif
 
-//----------------------------------------------------------------------------
+//------------------------------------------------------`----------------------
 // Cray compiler macros
 
 #if defined(FLARE_COMPILER_CRAYC)
@@ -509,6 +509,44 @@
 
 #ifndef FLARE_DEBUG_LEVEL
 #define FLARE_DEBUG_LEVEL 1
+#endif
+
+#if defined(__has_cpp_attribute)
+// if this check passes, then the compiler supports feature test macros
+#if __has_cpp_attribute(nodiscard) >= 201603L
+// if this check passes, then the compiler supports [[nodiscard]] without a message
+#define FLARE_NO_DISCARD [[nodiscard]]
+#endif
+#endif
+
+#if !defined(FLARE_NO_DISCARD) && __cplusplus >= 201703L
+// this means that the previous tests failed, but we are using C++17 or higher
+#define FLARE_NO_DISCARD [[nodiscard]]
+#endif
+
+#if !defined(FLARE_NO_DISCARD) && (defined(__GNUC__) || defined(__clang__))
+// this means that the previous checks failed, but we are using GCC or Clang
+#define FLARE_NO_DISCARD __attribute__((warn_unused_result))
+#endif
+
+#if !defined(FLARE_NO_DISCARD)
+// this means that all the previous checks failed, so we fallback to doing nothing
+#define FLARE_NO_DISCARD
+#endif
+
+#ifdef __cpp_if_constexpr
+// this means that the compiler supports the `if constexpr` construct
+#define FLARE_IF_CONSTEXPR if constexpr
+#endif
+
+#if !defined(FLARE_IF_CONSTEXPR) && __cplusplus >= 201703L
+// this means that the previous test failed, but we are using C++17 or higher
+#define FLARE_IF_CONSTEXPR if constexpr
+#endif
+
+#if !defined(FLARE_IF_CONSTEXPR)
+// this means that all the previous checks failed, so we fallback to a normal `if`
+#define FLARE_IF_CONSTEXPR if
 #endif
 
 #endif  // #ifndef FLARE_CORE_DEFINES_H_

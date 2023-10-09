@@ -36,7 +36,7 @@ carbin_cc_test(
 )
 ]]
 include_directories(category_files)
-include_directories(doctest)
+include_directories(${PROJECT_SOURCE_DIR}/tests/doctest)
 include_directories(core/includes)
 include_directories(algorithm)
 include_directories(container)
@@ -44,14 +44,16 @@ include_directories(${PROJECT_SOURCE_DIR}/tests)
 set(TEST_MAIN_SRC
         ${PROJECT_SOURCE_DIR}/tests/core/unit_test_main.cc
 )
-option(FLARE_ENABLE_CORE_TEST "" OFF)
+
 if (FLARE_ENABLE_CORE_TEST)
     add_subdirectory(algorithm)
     add_subdirectory(container)
     add_subdirectory(compile_only)
-
     add_subdirectory(core)
-    add_subdirectory(simd)
 endif ()
 
-add_subdirectory(kernel)
+if (FLARE_ENABLE_KERNEL_TEST)
+    add_subdirectory(kernel)
+endif ()
+
+add_subdirectory(simd)

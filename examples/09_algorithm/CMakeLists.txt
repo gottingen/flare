@@ -18,7 +18,6 @@ carbin_cc_binary(
         NAME example_random_numbers_cc
         SOURCES
         random_numbers.cc
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
@@ -28,7 +27,6 @@ carbin_cc_binary(
         NAME example_random_numbers_cu
         SOURCES
         random_numbers.cu
-        ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
