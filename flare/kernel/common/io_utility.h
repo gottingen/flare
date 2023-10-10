@@ -30,7 +30,7 @@
 #include <type_traits>
 #include <flare/core.h>
 #include <flare/random.h>
-#include <flare/kernel/common/arith_traits.h>
+#include <flare/core/arith_traits.h>
 #include <flare/kernel/common/simple_utility.h>
 #include <sys/stat.h>
 

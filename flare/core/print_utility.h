@@ -16,8 +16,8 @@
 // Created by jeff on 23-10-7.
 //
 
-#ifndef FLARE_KERNEL_COMMON_PRINT_UTILITY_H_
-#define FLARE_KERNEL_COMMON_PRINT_UTILITY_H_
+#ifndef FLARE_CORE_PRINT_UTILITY_H_
+#define FLARE_CORE_PRINT_UTILITY_H_
 
 #include <flare/core.h>
 #include <ostream>
@@ -130,4 +130,4 @@ namespace flare::detail {
 }  // namespace flare::detail
 
 
-#endif  // FLARE_KERNEL_COMMON_PRINT_UTILITY_H_
+#endif  // FLARE_CORE_PRINT_UTILITY_H_

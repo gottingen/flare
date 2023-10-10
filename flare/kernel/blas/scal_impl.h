@@ -20,7 +20,7 @@
 #define FLARE_KERNEL_BLAS_SCAL_IMPL_H_
 
 #include <flare/core.h>
-#include <flare/kernel/common/arith_traits.h>
+#include <flare/core/arith_traits.h>
 #include <flare/kernel/common/helper.h>
 
 #ifndef FLARE_BLAS_OPTIMIZATION_LEVEL_SCAL

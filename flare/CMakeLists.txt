@@ -38,6 +38,7 @@ set(FLARE_CORE_SRC
         ${PROJECT_SOURCE_DIR}/flare/core/profile/profiling.cc
         ${PROJECT_SOURCE_DIR}/flare/containers/unordered_map_impl.cc
         ${PROJECT_SOURCE_DIR}/flare/simd/fake.cc
+        ${PROJECT_SOURCE_DIR}/flare/ann/distance_l1_impl.cc
 )
 
 if(FLARE_BUILD_OPENMP)

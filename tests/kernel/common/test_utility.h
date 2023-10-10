@@ -21,8 +21,8 @@
 #include <flare/random.h>
 #include <doctest.h>
 #include <random>
-#include <flare/kernel/common/arith_traits.h>
-#include <flare/kernel/common/exec_space_utils.h>
+#include <flare/core/arith_traits.h>
+#include <flare/core/exec_space_utils.h>
 #include <flare/kernel/common/io_utility.h>
 #include <flare/kernel/common/utility.h>
 

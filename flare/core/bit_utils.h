@@ -14,8 +14,8 @@
 //
 
 
-#ifndef FLARE_KERNEL_COMMON_BIT_UTILS_H_
-#define FLARE_KERNEL_COMMON_BIT_UTILS_H_
+#ifndef FLARE_CORE_BIT_UTILS_H_
+#define FLARE_CORE_BIT_UTILS_H_
 
 #include <flare/core/defines.h>
 
@@ -262,4 +262,4 @@ int least_set_bit( long long i ){
 
 }  // namespace flare::detail
 
-#endif  // FLARE_KERNEL_COMMON_BIT_UTILS_H_
+#endif  // FLARE_CORE_BIT_UTILS_H_

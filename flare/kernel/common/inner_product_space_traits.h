@@ -16,7 +16,7 @@
 #ifndef FLARE_KERNEL_COMMON_INNER_PRODUCT_SPACE_TRAITS_H_
 #define FLARE_KERNEL_COMMON_INNER_PRODUCT_SPACE_TRAITS_H_
 
-#include <flare/kernel/common/arith_traits.h>
+#include <flare/core/arith_traits.h>
 
 namespace flare::detail {
 

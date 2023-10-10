@@ -19,7 +19,7 @@
 
 #include <flare/core.h>
 #include <flare/core/numeric_traits.h>
-#include <flare/kernel/common/arith_traits.h>
+#include <flare/core/arith_traits.h>
 
 #define FLARE_MACRO_MIN(x, y) ((x) < (y) ? (x) : (y))
 #define FLARE_MACRO_MAX(x, y) ((x) < (y) ? (y) : (x))

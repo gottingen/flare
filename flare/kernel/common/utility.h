@@ -20,9 +20,9 @@
 #define FLARE_CORE_COMMON_UTILITY_H_
 
 #include <flare/kernel/common/simple_utility.h>
-#include <flare/kernel/common/exec_space_utils.h>
+#include <flare/core/exec_space_utils.h>
 #include <flare/kernel/common/vector_utility.h>
-#include <flare/kernel/common/print_utility.h>
+#include <flare/core/print_utility.h>
 #include <flare/unordered_map.h>
 
 namespace flare::detail {

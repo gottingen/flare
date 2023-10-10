@@ -18,7 +18,7 @@
 #include <flare/core.h>
 #include <flare/kernel/blas/utility.h>
 #include <flare/kernel/common/helper.h>
-#include <flare/kernel/common/arith_traits.h>
+#include <flare/core/arith_traits.h>
 #include <flare/kernel/common/inner_product_space_traits.h>
 
 namespace flare::blas::detail {
@@ -125,8 +125,7 @@ namespace flare::blas::detail {
     // Main version: the result view is accessible from execution space, so it can
     // be computed in-place
     template <class execution_space, class RV, class XV, class size_type>
-    void MV_Nrm1_Invoke(
-            const execution_space& space, const RV& r, const XV& x,
+    void MV_Nrm1_Invoke(const execution_space& space, const RV& r, const XV& x,
             typename std::enable_if<flare::SpaceAccessibility<
                     execution_space, typename RV::memory_space>::accessible>::type* =
             nullptr) {
@@ -153,8 +152,7 @@ namespace flare::blas::detail {
     // Version for when a temporary result view is needed (implemented in terms of
     // the other version)
     template <class execution_space, class RV, class XV, class size_type>
-    void MV_Nrm1_Invoke(
-            const execution_space& space, const RV& r, const XV& x,
+    void MV_Nrm1_Invoke(const execution_space& space, const RV& r, const XV& x,
             typename std::enable_if<!flare::SpaceAccessibility<
                     execution_space, typename RV::memory_space>::accessible>::type* =
             nullptr) {

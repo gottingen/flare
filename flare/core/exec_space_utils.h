@@ -16,8 +16,8 @@
 // Created by jeff on 23-10-6.
 //
 
-#ifndef FLARE_KERNEL_COMMON_EXEC_SPACE_UTILS_H_
-#define FLARE_KERNEL_COMMON_EXEC_SPACE_UTILS_H_
+#ifndef FLARE_CORE_EXEC_SPACE_UTILS_H_
+#define FLARE_CORE_EXEC_SPACE_UTILS_H_
 
 #include <flare/core.h>
 
@@ -279,4 +279,4 @@ exec_space = Exec_THREADS;
 
 }  // namespace flare::detail
 
-#endif  // FLARE_KERNEL_COMMON_EXEC_SPACE_UTILS_H_
+#endif  // FLARE_CORE_EXEC_SPACE_UTILS_H_

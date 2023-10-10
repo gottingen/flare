@@ -22,7 +22,7 @@
 #include <flare/core.h>
 #include <flare/kernel/common/inner_product_space_traits.h>
 #include <flare/kernel/blas/utility.h>
-#include <flare/kernel/common/arith_traits.h>
+#include <flare/core/arith_traits.h>
 #include <flare/kernel/common/helper.h>
 
 namespace flare::blas::detail {

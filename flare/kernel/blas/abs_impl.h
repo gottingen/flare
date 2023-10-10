@@ -20,7 +20,7 @@
 #define FLARE_KERNEL_BLAS_ABS_IMPL_H_
 
 #include <flare/core.h>
-#include <flare/kernel/common/arith_traits.h>
+#include <flare/core/arith_traits.h>
 
 namespace flare::blas::detail {
 

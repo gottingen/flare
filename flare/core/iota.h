@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_KERNEL_COMMON_IOTA_H_
-#define FLARE_KERNEL_COMMON_IOTA_H_
+#ifndef FLARE_CORE_IOTA_H_
+#define FLARE_CORE_IOTA_H_
 
 #include <type_traits>
 #include <cstddef>
@@ -136,4 +136,4 @@ namespace flare::detail {
 
 }  // namespace flare::detail
 
-#endif  // FLARE_KERNEL_COMMON_IOTA_H_
+#endif  // FLARE_CORE_IOTA_H_

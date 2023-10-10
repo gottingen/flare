@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_KERNEL_COMMON_ARITH_TRAITS_H_
-#define FLARE_KERNEL_COMMON_ARITH_TRAITS_H_
+#ifndef FLARE_CORE_ARITH_TRAITS_H_
+#define FLARE_CORE_ARITH_TRAITS_H_
 
 #include <flare/core/defines.h>
 #include <flare/core/complex.h>
@@ -1936,4 +1936,4 @@ namespace flare::details {
 
 }  // namespace flare::details
 
-#endif  // FLARE_KERNEL_COMMON_ARITH_TRAITS_H_
+#endif  // FLARE_CORE_ARITH_TRAITS_H_
