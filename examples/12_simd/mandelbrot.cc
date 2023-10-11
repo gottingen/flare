@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include "pico_bench.h"
+#include <flare/bench.h>
 
 #include <flare/simd/simd.h>
 
@@ -296,7 +296,7 @@ int main()
 
     std::vector<int, flare::simd::aligned_allocator<int, flare::simd::default_arch::alignment()>> buf(width * height);
 
-    auto bencher = pico_bench::Benchmarker<milliseconds> { 64, seconds { 10 } };
+    auto bencher = flare::Benchmarker { 64, seconds { 10 } };
 
     std::cout << "starting benchmarks (results in 'ms')... " << '\n';
 

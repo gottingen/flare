@@ -75,6 +75,61 @@ namespace flare::ann {
         return distance_l1(typename XVector::execution_space{}, x, y);
     }
 
+    /// \brief Return the L1 distance of the two vectors x and y.
+    ///
+    /// \tparam execution_space the flare execution space where the kernel
+    ///         will be executed.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
+    ///
+    /// \param space [in] an execution space instance that may specify
+    ///                   in which stream/queue the kernel will be executed.
+    /// \param x [in] Input 1-D View.
+    /// \param y [in] Input 1-D View.
+    ///
+    /// \return The distance l1 result; a single value.
+
+    template<class execution_space, class XVector,
+            typename std::enable_if<flare::is_execution_space_v<execution_space>,
+                    int>::type = 0>
+    typename flare::detail::InnerProductSpaceTraits<
+            typename XVector::non_const_value_type>::dot_type
+    batch_distance_l1(const execution_space &space, const XVector &x, const XVector &y) {
+        static_assert(
+                flare::is_execution_space<execution_space>::value,
+                "flare::ann::distance_l1: execution_space must be a flare::execution_space.");
+        static_assert(flare::is_view<XVector>::value,
+                      "flare::ann::distance_l1: XVector must be a flare::View.");
+        static_assert(XVector::rank == 1,
+                      "flare::ann::distance_l1: "
+                      "Both Vector inputs must have rank 1.");
+        using mag_type = typename flare::detail::InnerProductSpaceTraits<
+                typename XVector::non_const_value_type>::mag_type;
+
+        using XVector_Internal = flare::View<
+                typename XVector::const_value_type *,
+                typename flare::detail::GetUnifiedLayout<XVector>::array_layout,
+                typename XVector::device_type, flare::MemoryTraits<flare::Unmanaged> >;
+
+        using RVector_Internal =
+                flare::View<mag_type, default_layout, flare::HostSpace,
+                        flare::MemoryTraits<flare::Unmanaged> >;
+
+        mag_type result;
+        RVector_Internal R = RVector_Internal(&result);
+        XVector_Internal X = x;
+
+        flare::ann::detail::BatchDistanceL1<execution_space, RVector_Internal, XVector_Internal>::distance(space, R, x, y);
+        space.fence();
+        return result;
+    }
+
+    template<class XVector>
+    typename flare::detail::InnerProductSpaceTraits<
+            typename XVector::non_const_value_type>::mag_type
+    batch_distance_l1(const XVector &x, const XVector &y) {
+        return batch_distance_l1(typename XVector::execution_space{}, x, y);
+    }
+
 }  // namespace flare::ann
 
 #endif  // FLARE_ANN_DISTANCE_L1_H_

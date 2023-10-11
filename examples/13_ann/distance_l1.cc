@@ -19,6 +19,8 @@
 #include <flare/core.h>
 #include <cstdio>
 #include <flare/ann/distance_l1.h>
+#include <flare/bench.h>
+#include <chrono>
 
 // A flare::View is an array of zero or more dimensions.  The number
 // of dimensions is specified at compile time, as part of the type of
@@ -30,7 +32,7 @@
 //
 // The first dimension of the View is the dimension over which it is
 // efficient for flare to parallelize.
-using view_type = flare::View<double *>;
+using view_type = flare::View<double *, flare::Serial>;
 
 // parallel_for functor that fills the View given to its constructor.
 // The View must already have been allocated.
@@ -79,12 +81,10 @@ struct InitView2 {
 int main(int argc, char* argv[]) {
     flare::initialize(argc, argv);
     {
-        const int N = 128;
+        const int N = 512;
 
         // Allocate the View.  The first dimension is a run-time parameter
-        // N.  We set N = 10 here.  The second dimension is a compile-time
-        // parameter, 3.  We don't specify it here because we already set it
-        // by declaring the type of the View.
+        // N.  We set N = 128 here.
         //
         // Views get initialized to zero by default.  This happens in
         // parallel, using the View's memory space's default execution
@@ -101,9 +101,20 @@ int main(int argc, char* argv[]) {
 
         flare::parallel_for(N, InitView1(a));
         flare::parallel_for(N, InitView2(b));
-        double dis = 0;
-        dis = flare::ann::distance_l1<view_type>(a,b);
+        double dis = flare::ann::distance_l1<view_type>(a,b);
         printf("Result: %f\n", dis);
+        double dis1 = flare::ann::batch_distance_l1<view_type>(a,b);
+        printf("Result: %f\n", dis1);
+        auto bencher = flare::Benchmarker<>{ 64, std::chrono::seconds { 10 } };
+        auto stats_nor = bencher([&]()
+                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l1<view_type>(a,b); });
+        std::cout << '\n'
+                  << "nor " << stats_nor << '\n';
+        auto stats_batch = bencher([&]()
+                                 { for(auto i =0; i <  100000; i++) flare::ann::batch_distance_l1<view_type>(a,b); });
+
+        std::cout << '\n'
+                  << flare::simd::default_arch::name()<<" batch " << stats_batch << '\n';
     }  // use this scope to ensure the lifetime of "A" ends before finalize
     flare::finalize();
 }
