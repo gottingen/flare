@@ -16,7 +16,6 @@
 #ifndef FLARE_ANN_DISTANCE_L1_H_
 #define FLARE_ANN_DISTANCE_L1_H_
 
-#include <flare/ann/distance_traits.h>
 #include <flare/ann/distance_l1_impl.h>
 
 namespace flare::ann {
@@ -37,7 +36,7 @@ namespace flare::ann {
     template<class XVector, class execution_space,
             typename std::enable_if<flare::is_execution_space_v<execution_space>,
                     int>::type = 0>
-    typename DistanceTraits<XVector, execution_space>::mag_type
+    typename simd_traits<XVector, execution_space>::mag_type
     distance_l1(const execution_space &space, const XVector &x, const XVector &y, bool batch = true) {
         static_assert(
                 flare::is_execution_space<execution_space>::value,
@@ -47,7 +46,7 @@ namespace flare::ann {
         static_assert(XVector::rank == 1,
                       "flare::ann::distance_l1: "
                       "Both Vector inputs must have rank 1.");
-        using mag_type = typename DistanceTraits<XVector, execution_space>::mag_type;
+        using mag_type = typename simd_traits<XVector, execution_space>::mag_type;
 
         using XVector_Internal = flare::View<
                 typename XVector::const_value_type *,
@@ -59,7 +58,7 @@ namespace flare::ann {
                         flare::MemoryTraits<flare::Unmanaged> >;
         mag_type result;
         RVector_Internal R = RVector_Internal(&result);
-        if (DistanceTraits<XVector, execution_space>::is_batch_available && batch) {
+        if (simd_traits<XVector, execution_space>::is_batch_available && batch) {
             flare::ann::detail::DistanceL1<execution_space, RVector_Internal, XVector_Internal>::batch_distance(space, R, x,
                                                                                                           y);
         } else {
@@ -71,7 +70,7 @@ namespace flare::ann {
     }
 
     template<class XVector>
-    typename DistanceTraits<XVector>::mag_type distance_l1(const XVector &x, const XVector &y, bool batch = true) {
+    typename simd_traits<XVector>::mag_type distance_l1(const XVector &x, const XVector &y, bool batch = true) {
         return distance_l1(typename XVector::execution_space{}, x, y, batch);
     }
 

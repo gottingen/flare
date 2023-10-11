@@ -129,7 +129,7 @@ namespace flare::ann::detail {
     ///   View) X, and store the result in the 0-D View r.
     template<typename execution_space, typename RV, typename XV, typename SizeType>
     void DistanceL1BatchInvoke(const execution_space &space, const RV &r, const XV &X, const XV &Y) {
-        using DT = DistanceTraits<XV, execution_space>;
+        using DT = simd_traits<XV, execution_space>;
         const SizeType numRows = static_cast<SizeType>(X.extent(0));
         SizeType numBatch = numRows / DT::batch_size;
         const SizeType nMod = numRows % DT::batch_size;

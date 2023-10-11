@@ -20,7 +20,7 @@ option(BUILD_SHARED_LIBRARY "carbin set build shared library or not" OFF)
 
 option(VERBOSE_CARBIN_BUILD "print carbin detail information" OFF)
 
-option(VERBOSE_CMAKE_BUILD "verbose cmake make debug" ON)
+option(VERBOSE_CMAKE_BUILD "verbose cmake make debug" OFF)
 
 option(CONDA_ENV_ENABLE "" OFF)
 

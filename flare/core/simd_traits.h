@@ -16,28 +16,29 @@
 #ifndef FLARE_ANN_DISTANCE_TRAITS_H_
 #define FLARE_ANN_DISTANCE_TRAITS_H_
 
-#include <flare/core.h>
+#include <flare/core/common/concepts.h>
+#include <flare/core/tensor/view.h>
 #if !defined(FLARE_ON_CUDA_DEVICE)
 #include <flare/simd/simd.h>
 #endif
 
-namespace flare::ann {
+namespace flare {
 
     template<typename XVector, typename execution_space = typename XVector::execution_space>
-    class DistanceTraits {
+    class simd_traits {
     public:
         using value_type = typename XVector::value_type;
         using mag_type =   typename XVector::non_const_value_type;
         using memory_space = typename XVector::memory_space;
 
         static_assert(flare::is_execution_space_v<execution_space>,
-                      "flare::ann::DistanceTraits<1-D>: execution_space is not a Execute space.");
+                      "flare::ann::simd_traits<1-D>: execution_space is not a Execute space.");
 
         static_assert(flare::is_view<XVector>::value,
                       "flare::ann::"
-                      "DistanceTraits<1-D>: XVector is not a flare::View.");
+                      "simd_traits<1-D>: XVector is not a flare::View.");
 
-        static_assert(XVector::rank == 1, "flare::ann::DistanceTraits<1-D>: XVector is not rank 1.");
+        static_assert(XVector::rank == 1, "flare::ann::simd_traits<1-D>: XVector is not rank 1.");
 
         static constexpr bool is_batch_available = std::is_same_v<flare::HostSpace, memory_space>;
 #if !defined(FLARE_ON_CUDA_DEVICE)
@@ -49,5 +50,5 @@ namespace flare::ann {
 #endif
     };
 
-}  // namespace flare::ann
+}  // namespace flare
 #endif  // FLARE_ANN_DISTANCE_TRAITS_H_

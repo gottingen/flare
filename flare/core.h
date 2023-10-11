@@ -98,6 +98,7 @@
 #include <flare/timer.h>
 #include <flare/core/policy/tuners.h>
 #include <flare/core/complex.h>
+#include <flare/core/simd_traits.h>
 #include <flare/core/tensor/copy_tensors.h>
 #include <flare/core/common/team_mdpolicy.h>
 #include <flare/core/common/initialization_settings.h>
