@@ -16,12 +16,24 @@
 
 
 carbin_cc_test(
-        NAME serial_blas_test
+        NAME serial_abs_test
         SOURCES
-        serial_blas_test.cc
+        serial_abs_test.cc
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
         DEPS
         ${CUDA_CUDA_LIBRARY}
         flare::blas
 )
+
+carbin_cc_test(
+        NAME serial_axpby_test
+        SOURCES
+        serial_axpby_test.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::blas
+)
+

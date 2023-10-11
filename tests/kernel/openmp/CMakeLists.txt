@@ -16,12 +16,24 @@
 
 
 carbin_cc_test(
-        NAME openmp_blas_test
+        NAME openmp_abs_test
         SOURCES
-        openmp_blas_test.cc
+        openmp_abs_test.cc
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
         DEPS
         ${CUDA_CUDA_LIBRARY}
         flare::blas
 )
+
+carbin_cc_test(
+        NAME openmp_axpby_test
+        SOURCES
+        openmp_axpby_test.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::blas
+)
+
