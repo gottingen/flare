@@ -21,7 +21,7 @@
 
 #include <flare/core.h>
 #include <flare/core/arith_traits.h>
-#include <flare/kernel/common/helper.h>
+#include <flare/core/layout_utility.h>
 
 #ifndef FLARE_BLAS_OPTIMIZATION_LEVEL_SCAL
 #define FLARE_BLAS_OPTIMIZATION_LEVEL_SCAL 2

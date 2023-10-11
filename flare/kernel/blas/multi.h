@@ -17,7 +17,7 @@
 #ifndef FLARE_KERNEL_BLAS_MULTI_H_
 #define FLARE_KERNEL_BLAS_MULTI_H_
 #include <flare/kernel/blas/multi_impl.h>
-#include <flare/kernel/common/helper.h>
+#include <flare/core/layout_utility.h>
 
 namespace flare::blas {
 

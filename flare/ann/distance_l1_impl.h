@@ -17,11 +17,9 @@
 #define FLARE_ANN_DISTANCE_L1_IMPL_H_
 
 #include <flare/core.h>
-#include <flare/kernel/blas/utility.h>
-#include <flare/kernel/common/helper.h>
 #include <flare/core/arith_traits.h>
-#include <flare/kernel/common/inner_product_space_traits.h>
 #include <flare/simd/simd.h>
+#include <flare/core/layout_utility.h>
 
 namespace flare::ann::detail {
 
@@ -29,23 +27,23 @@ namespace flare::ann::detail {
     // distance l1
     //
 
-    /// \brief 1-norm functor for single vectors.
+    /// \brief 1-distance functor for single vectors.
     ///
     /// \tparam RV 0-D output View
     /// \tparam XV 1-D input View
     /// \tparam SizeType Index type.  Use int (32 bits) if possible.
-    template <typename RV, typename XV, class SizeType = typename XV::size_type>
+    template<typename RV, typename XV, class SizeType = typename XV::size_type>
     struct DistanceL1Functor {
-        using size_type   = SizeType;
+        using size_type = SizeType;
         using xvalue_type = typename XV::non_const_value_type;
-        using XAT         = flare::ArithTraits<xvalue_type>;
-        using value_type  = typename XAT::mag_type;
-        using MAT         = flare::ArithTraits<value_type>;
+        using XAT = flare::ArithTraits<xvalue_type>;
+        using value_type = typename XAT::mag_type;
+        using MAT = flare::ArithTraits<value_type>;
 
         typename XV::const_type m_x;
         typename XV::const_type m_y;
 
-        DistanceL1Functor(const XV& x, const XV& y) : m_x(x), m_y(y) {
+        DistanceL1Functor(const XV &x, const XV &y) : m_x(x), m_y(y) {
             static_assert(flare::is_view<RV>::value,
                           "flare::ann::detail::DistanceL1Functor: "
                           "R is not a flare::View.");
@@ -65,9 +63,8 @@ namespace flare::ann::detail {
         }
 
         FLARE_INLINE_FUNCTION
-        void operator()(const size_type& i, value_type& sum) const {
-            xvalue_type val = m_x(i) - m_y(i);
-            sum += MAT::abs(XAT::real(val)) + MAT::abs(XAT::imag(val));
+        void operator()(const size_type &i, value_type &sum) const {
+            sum += flare::abs(m_x(i) - m_y(i));
         }
     };
 
@@ -76,18 +73,19 @@ namespace flare::ann::detail {
     /// \tparam RV 0-D output View
     /// \tparam XV 1-D input View
     /// \tparam SizeType Index type.  Use int (32 bits) if possible.
-    template <typename RV, typename XV, class SizeType = typename XV::size_type>
-    struct DistanceL1BatchFunctor {
-        using size_type   = SizeType;
-        using xvalue_type = typename XV::non_const_value_type;
-        using XAT         = flare::ArithTraits<xvalue_type>;
-        using value_type  = typename XAT::mag_type;
-        using MAT         = flare::ArithTraits<value_type>;
+    template<typename DT, typename RV, typename XV, class SizeType = typename XV::size_type>
+    struct BatchDistanceL1Functor {
+        using size_type = SizeType;
+        using xvalue_type = typename DT::mag_type;
+        using batch_type = typename DT::batch_type;
+        using XAT = flare::ArithTraits<xvalue_type>;
+        using value_type = typename XAT::mag_type;
 
         typename XV::const_type m_x;
         typename XV::const_type m_y;
+        SizeType m_len;
 
-        DistanceL1BatchFunctor(const XV& x, const XV& y) : m_x(x), m_y(y) {
+        BatchDistanceL1Functor(const XV &x, const XV &y) : m_x(x), m_y(y), m_len(m_x.extent(0)) {
             static_assert(flare::is_view<RV>::value,
                           "flare::ann::detail::DistanceL1Functor: "
                           "R is not a flare::View.");
@@ -107,19 +105,18 @@ namespace flare::ann::detail {
         }
 
         FLARE_INLINE_FUNCTION
-        void operator()(const size_type& i, value_type& sum) const {
-            auto inx = flare::simd::batch<typename XV::value_type>::size * i;
-            using vv_type = typename XV::non_const_value_type;
-            auto a = flare::simd::batch<vv_type, flare::simd::default_arch>::load_aligned(m_x.data() + inx);
-            auto b = flare::simd::batch<vv_type, flare::simd::default_arch>::load_aligned(m_y.data() + inx);
+        void operator()(const size_type &i, value_type &sum) const {
+            auto inx = DT::batch_size * i;
+            auto a = batch_type::load_aligned(m_x.data() + inx);
+            auto b = batch_type::load_aligned(m_y.data() + inx);
             sum += flare::simd::reduce_add(flare::simd::abs(a - b));
         }
     };
 
     /// \brief Compute the distance l1 of the single vector (1-D
     ///   View) X, and store the result in the 0-D View r.
-    template <typename execution_space, typename RV, typename XV, class SizeType>
-    void DistanceL1Invoke(const execution_space& space, const RV& r, const XV& X, const XV& Y) {
+    template<typename execution_space, typename RV, typename XV, class SizeType>
+    void DistanceL1Invoke(const execution_space &space, const RV &r, const XV &X, const XV &Y) {
         const SizeType numRows = static_cast<SizeType>(X.extent(0));
         flare::RangePolicy<execution_space, SizeType> policy(space, 0, numRows);
 
@@ -130,23 +127,32 @@ namespace flare::ann::detail {
 
     /// \brief Compute the distance l1 of the single vector (1-D
     ///   View) X, and store the result in the 0-D View r.
-    template <typename execution_space, typename RV, typename XV, typename SizeType>
-    void DistanceL1BatchInvoke(const execution_space& space, const RV& r, const XV& X, const XV& Y) {
+    template<typename execution_space, typename RV, typename XV, typename SizeType>
+    void DistanceL1BatchInvoke(const execution_space &space, const RV &r, const XV &X, const XV &Y) {
+        using DT = DistanceTraits<XV, execution_space>;
         const SizeType numRows = static_cast<SizeType>(X.extent(0));
-        using vv_type = typename XV::non_const_value_type;
-        const SizeType numBatch = numRows/flare::simd::batch<vv_type, flare::simd::default_arch>::size;
-        flare::RangePolicy<execution_space, SizeType> policy(space, 0, numBatch);
-
-        typedef DistanceL1BatchFunctor<RV, XV, SizeType> functor_type;
-        functor_type op(X, Y);
-        flare::parallel_reduce("flare::ann::distance_l1", policy, op, r);
+        SizeType numBatch = numRows / DT::batch_size;
+        const SizeType nMod = numRows % DT::batch_size;
+        flare::RangePolicy<execution_space, SizeType> batch_policy(space, 0, numBatch);
+        typedef BatchDistanceL1Functor<DT, RV, XV, SizeType> batch_functor_type;
+        batch_functor_type batch_op(X, Y);
+        flare::parallel_reduce("flare::ann::batch_distance_l1", batch_policy, batch_op, r);
+        // do it for local
+        if (nMod != 0) {
+            typename RV::non_const_value_type sum = 0.0;
+            for (SizeType i = numRows - nMod; i < numRows; ++i) {
+                //sum += flare::ArithTraits<typename RV::non_const_value_type>::abs(X(i) - Y(i));
+                sum += flare::abs(X(i) - Y(i));
+            }
+            *r.data() += sum;
+        }
     }
 
-    template <typename execution_space, typename RV, typename XV>
+    template<typename execution_space, typename RV, typename XV>
     struct DistanceL1 {
         using size_type = typename XV::size_type;
 
-        static void distance(const execution_space& space, const RV& R, const XV& X, const XV& Y) {
+        static void distance(const execution_space &space, const RV &R, const XV &X, const XV &Y) {
             static_assert(flare::is_view<RV>::value,
                           "flare::ann::detail::"
                           "DistanceL1<1-D>: RV is not a flare::View.");
@@ -170,13 +176,8 @@ namespace flare::ann::detail {
             }
             flare::Profiling::popRegion();
         }
-    };
 
-    template <typename execution_space, typename RV, typename XV>
-    struct BatchDistanceL1 {
-        using size_type = typename XV::size_type;
-
-        static void distance(const execution_space& space, const RV& R, const XV& X, const XV& Y) {
+        static void batch_distance(const execution_space &space, const RV &R, const XV &X, const XV &Y) {
             static_assert(flare::is_view<RV>::value,
                           "flare::ann::detail::"
                           "BatchDistanceL1<1-D>: RV is not a flare::View.");

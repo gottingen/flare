@@ -18,7 +18,7 @@
 #define FLARE_KERNEL_BLAS_DOT_H_
 
 #include <flare/kernel/blas/dot_impl.h>
-#include <flare/kernel/common/helper.h>
+#include <flare/core/layout_utility.h>
 
 namespace flare::blas {
 

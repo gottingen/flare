@@ -27,9 +27,7 @@ namespace flare::detail {
         Exec_SERIAL,
         Exec_OMP,
         Exec_THREADS,
-        Exec_CUDA,
-        Exec_HIP,
-        Exec_SYCL
+        Exec_CUDA
     };
 
     template<typename ExecutionSpace>
@@ -43,8 +41,8 @@ namespace flare::detail {
 
 #if defined(FLARE_ENABLE_THREADS)
         if (std::is_same<flare::Threads, ExecutionSpace>::value) {
-exec_space = Exec_THREADS;
-}
+            exec_space = Exec_THREADS;
+        }
 #endif
 
 #if defined(FLARE_ENABLE_OPENMP)
@@ -188,13 +186,6 @@ exec_space = Exec_THREADS;
             case Exec_CUDA:
                 max_vector_size = 32;
                 break;
-            case Exec_HIP:
-                max_vector_size = 64;
-                break;
-            case Exec_SYCL:
-                // FIXME SYCL: same as above - 8 is a workaround
-                max_vector_size = 8;
-                break;
             default:;
         }
         switch (exec_space) {
@@ -205,8 +196,6 @@ exec_space = Exec_THREADS;
             case Exec_THREADS:
                 break;
             case Exec_CUDA:
-            case Exec_HIP:
-            case Exec_SYCL:
                 if (nr > 0) suggested_vector_size_ = nnz / double(nr) + 0.5;
                 if (suggested_vector_size_ < 3) {
                     suggested_vector_size_ = 2;
@@ -230,8 +219,7 @@ exec_space = Exec_THREADS;
 
     inline int flare_get_suggested_team_size(const int vector_size,
                                           const ExecSpaceType exec_space) {
-        if (exec_space == Exec_CUDA || exec_space == Exec_HIP ||
-            exec_space == Exec_SYCL) {
+        if (exec_space == Exec_CUDA) {
             // TODO: where this is used, tune the target value for
             // threads per block (but 256 is probably OK for CUDA and HIP)
             return 256 / vector_size;

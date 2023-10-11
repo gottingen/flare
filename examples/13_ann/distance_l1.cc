@@ -81,7 +81,7 @@ struct InitView2 {
 int main(int argc, char* argv[]) {
     flare::initialize(argc, argv);
     {
-        const int N = 512;
+        const int N = 1022;
 
         // Allocate the View.  The first dimension is a run-time parameter
         // N.  We set N = 128 here.
@@ -101,17 +101,17 @@ int main(int argc, char* argv[]) {
 
         flare::parallel_for(N, InitView1(a));
         flare::parallel_for(N, InitView2(b));
-        double dis = flare::ann::distance_l1<view_type>(a,b);
-        printf("Result: %f\n", dis);
-        double dis1 = flare::ann::batch_distance_l1<view_type>(a,b);
-        printf("Result: %f\n", dis1);
+        double dis = flare::ann::distance_l1<view_type>(a,b, false);
+        printf("Result flare::ann::distance_l1<view_type>(a,b, false): %f\n", dis);
+        double dis1 = flare::ann::distance_l1<view_type>(a,b);
+        printf("Result flare::ann::distance_l1<view_type>(a,b): %f\n", dis1);
         auto bencher = flare::Benchmarker<>{ 64, std::chrono::seconds { 10 } };
         auto stats_nor = bencher([&]()
-                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l1<view_type>(a,b); });
+                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l1<view_type>(a,b, false); });
         std::cout << '\n'
                   << "nor " << stats_nor << '\n';
         auto stats_batch = bencher([&]()
-                                 { for(auto i =0; i <  100000; i++) flare::ann::batch_distance_l1<view_type>(a,b); });
+                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l1<view_type>(a,b); });
 
         std::cout << '\n'
                   << flare::simd::default_arch::name()<<" batch " << stats_batch << '\n';

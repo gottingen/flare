@@ -20,7 +20,7 @@
 #define FLARE_KERNEL_BLAS_ABS_H_
 
 #include <flare/core.h>
-#include <flare/kernel/common/helper.h>
+#include <flare/core/layout_utility.h>
 #include <flare/kernel/blas/abs_impl.h>
 namespace flare::blas {
 

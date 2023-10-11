@@ -17,7 +17,7 @@
 #define FLARE_KERNEL_BLAS_NRM1_IMPL_H_
 #include <flare/core.h>
 #include <flare/kernel/blas/utility.h>
-#include <flare/kernel/common/helper.h>
+#include <flare/core/layout_utility.h>
 #include <flare/core/arith_traits.h>
 #include <flare/kernel/common/inner_product_space_traits.h>
 

@@ -21,7 +21,7 @@
 
 #include <flare/core.h>
 #include <flare/kernel/common/utility.h>
-#include <flare/kernel/common/helper.h>
+#include <flare/core/layout_utility.h>
 #include <flare/kernel/common/inner_product_space_traits.h>
 namespace flare::blas::detail {
 
