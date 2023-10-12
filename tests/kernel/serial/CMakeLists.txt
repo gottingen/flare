@@ -47,3 +47,14 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::blas
 )
+
+carbin_cc_test(
+        NAME serial_nrm1_test
+        SOURCES
+        serial_nrm1_test.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::blas
+)

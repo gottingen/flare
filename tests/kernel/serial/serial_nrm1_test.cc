@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-//
-// Created by jeff on 23-10-7.
-//
 
-#include "openmp_test.h"
-#include "kernel/blas/blas_test.h"
+#include "serial_test.h"
+#include "kernel/blas/blas_iamax_test.h"

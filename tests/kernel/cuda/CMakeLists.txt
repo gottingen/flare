@@ -48,3 +48,27 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::blas
 )
+
+carbin_cc_test(
+        NAME cuda_iamax_test
+        SOURCES
+        cuda_iamax_test.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
+        CUOPTS ${CARBIN_CU_OPTIONS}
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::blas
+)
+
+carbin_cc_test(
+        NAME cuda_nrm1_test
+        SOURCES
+        cuda_nrm1_test.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
+        CUOPTS ${CARBIN_CU_OPTIONS}
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::blas
+)
