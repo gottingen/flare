@@ -37,3 +37,13 @@ carbin_cc_test(
         flare::blas
 )
 
+carbin_cc_test(
+        NAME openmp_dot_test
+        SOURCES
+        openmp_dot_test.cc
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::blas
+)

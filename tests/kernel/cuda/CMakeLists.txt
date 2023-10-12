@@ -37,4 +37,14 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::blas
 )
-
+carbin_cc_test(
+        NAME cuda_dot_test
+        SOURCES
+        cuda_dot_test.cu
+        ${TEST_MAIN_SRC}
+        COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
+        CUOPTS ${CARBIN_CU_OPTIONS}
+        DEPS
+        ${CUDA_CUDA_LIBRARY}
+        flare::blas
+)
