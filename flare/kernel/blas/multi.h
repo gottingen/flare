@@ -27,9 +27,9 @@ namespace flare::blas {
     /// This function is non-blocking and thread-safe
     ///
     /// \tparam execution_type a flare execution space type.
-    /// \tparam YMV Type of the first vector Y; a 1-D or 2-D flare::View.
-    /// \tparam AV  Type of the second vector A; a 1-D flare::View.
-    /// \tparam XMV Type of the third vector X; a 1-D or 2-D flare::View.
+    /// \tparam YMV Type of the first vector Y; a 1-D or 2-D flare::Tensor.
+    /// \tparam AV  Type of the second vector A; a 1-D flare::Tensor.
+    /// \tparam XMV Type of the third vector X; a 1-D or 2-D flare::Tensor.
     ///
     /// \param space [in] An instance of execution_space on which the kernel
     ///                   will run (it may specify an execution stream/queue).
@@ -45,23 +45,23 @@ namespace flare::blas {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::mult: execution_space must be a valid flare "
                       "execution space.");
-        static_assert(flare::is_view<YMV>::value,
+        static_assert(flare::is_tensor<YMV>::value,
                       "flare::blas::mult: "
-                      "Y is not a flare::View.");
+                      "Y is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename YMV::memory_space>::accessible,
                 "flare::blas::mult: YMV must be accessible from execution_space.");
-        static_assert(flare::is_view<AV>::value,
+        static_assert(flare::is_tensor<AV>::value,
                       "flare::blas::mult: "
-                      "A is not a flare::View.");
+                      "A is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename AV::memory_space>::accessible,
                 "flare::blas::mult: AV must be accessible from execution_space.");
-        static_assert(flare::is_view<XMV>::value,
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::mult: "
-                      "X is not a flare::View.");
+                      "X is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
@@ -96,16 +96,16 @@ namespace flare::blas {
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         XMV, YUnifiedLayout>::array_layout;
 
-        // Create unmanaged versions of the input Views.
-        typedef flare::View<typename YMV::non_const_data_type, YUnifiedLayout,
+        // Create unmanaged versions of the input Tensors.
+        typedef flare::Tensor<typename YMV::non_const_data_type, YUnifiedLayout,
                 typename YMV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >
                 YMV_Internal;
-        typedef flare::View<typename AV::const_value_type*, AUnifiedLayout,
+        typedef flare::Tensor<typename AV::const_value_type*, AUnifiedLayout,
                 typename AV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >
                 AV_Internal;
-        typedef flare::View<typename XMV::const_data_type, XUnifiedLayout,
+        typedef flare::Tensor<typename XMV::const_data_type, XUnifiedLayout,
                 typename XMV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >
                 XMV_Internal;
@@ -125,9 +125,9 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue
     /// associated with the execution space of YMV.
     ///
-    /// \tparam YMV Type of the first vector Y; a 1-D or 2-D flare::View.
-    /// \tparam AV  Type of the second vector A; a 1-D flare::View.
-    /// \tparam XMV Type of the third vector X; a 1-D or 2-D flare::View.
+    /// \tparam YMV Type of the first vector Y; a 1-D or 2-D flare::Tensor.
+    /// \tparam AV  Type of the second vector A; a 1-D flare::Tensor.
+    /// \tparam XMV Type of the third vector X; a 1-D or 2-D flare::Tensor.
     ///
     /// \param gamma [in] The scalar to apply to Y.
     /// \param Y [in/out] The Y vector.

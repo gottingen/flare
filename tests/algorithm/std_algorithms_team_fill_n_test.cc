@@ -21,17 +21,17 @@ namespace TeamFill_n {
 
 namespace KE = flare::experimental;
 
-template <class ViewType, class DistancesViewType>
+template <class TensorType, class DistancesTensorType>
 struct TestFunctorA {
-  ViewType m_view;
-  DistancesViewType m_distancesView;
+  TensorType m_tensor;
+  DistancesTensorType m_distancesTensor;
   std::size_t m_fillCount;
   int m_apiPick;
 
-  TestFunctorA(const ViewType view, const DistancesViewType distancesView,
+  TestFunctorA(const TensorType tensor, const DistancesTensorType distancesTensor,
                std::size_t fillCount, int apiPick)
-      : m_view(view),
-        m_distancesView(distancesView),
+      : m_tensor(tensor),
+        m_distancesTensor(distancesTensor),
         m_fillCount(fillCount),
         m_apiPick(apiPick) {}
 
@@ -39,20 +39,20 @@ struct TestFunctorA {
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto leagueRank = member.league_rank();
     const auto myRowIndex = leagueRank;
-    auto myRowView        = flare::subview(m_view, myRowIndex, flare::ALL());
+    auto myRowTensor        = flare::subtensor(m_tensor, myRowIndex, flare::ALL());
 
     if (m_apiPick == 0) {
       auto it =
-          KE::fill_n(member, KE::begin(myRowView), m_fillCount, leagueRank);
+          KE::fill_n(member, KE::begin(myRowTensor), m_fillCount, leagueRank);
 
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) = KE::distance(KE::begin(myRowView), it);
+        m_distancesTensor(myRowIndex) = KE::distance(KE::begin(myRowTensor), it);
       });
     } else if (m_apiPick == 1) {
-      auto it = KE::fill_n(member, myRowView, m_fillCount, leagueRank);
+      auto it = KE::fill_n(member, myRowTensor, m_fillCount, leagueRank);
 
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) = KE::distance(KE::begin(myRowView), it);
+        m_distancesTensor(myRowIndex) = KE::distance(KE::begin(myRowTensor), it);
       });
     }
   }
@@ -62,7 +62,7 @@ template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, std::size_t fillCount,
             int apiId) {
   /* description:
-     create a rank-2 view, run a team parfor with one row per team,
+     create a rank-2 tensor, run a team parfor with one row per team,
      such that n elements of each row are filled up with the league_rank value
      of the team in charge of it, while the other elements in the row
      are left unchanged
@@ -71,13 +71,13 @@ void test_A(std::size_t numTeams, std::size_t numCols, std::size_t fillCount,
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range
-  auto [dataView, cloneOfDataViewBeforeOp_h] =
-      create_random_view_and_host_clone(
+  auto [dataTensor, cloneOfDataTensorBeforeOp_h] =
+      create_random_tensor_and_host_clone(
           LayoutTag{}, numTeams, numCols,
-          flare::pair<ValueType, ValueType>{5, 523}, "dataView");
+          flare::pair<ValueType, ValueType>{5, 523}, "dataTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -89,32 +89,32 @@ void test_A(std::size_t numTeams, std::size_t numCols, std::size_t fillCount,
   // each team stores the distance of the returned iterator from the
   // beginning of the interval that team operates on and then we check
   // that these distances match the expected value
-  flare::View<std::size_t*> distancesView("distancesView", numTeams);
+  flare::Tensor<std::size_t*> distancesTensor("distancesTensor", numTeams);
 
   // use CTAD for functor
-  TestFunctorA fnc(dataView, distancesView, fillCount, apiId);
+  TestFunctorA fnc(dataTensor, distancesTensor, fillCount, apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // check
   // -----------------------------------------------
-  auto dataViewAfterOp_h = create_host_space_copy(dataView);
-  auto distancesView_h   = create_host_space_copy(distancesView);
-  for (std::size_t i = 0; i < dataView.extent(0); ++i) {
+  auto dataTensorAfterOp_h = create_host_space_copy(dataTensor);
+  auto distancesTensor_h   = create_host_space_copy(distancesTensor);
+  for (std::size_t i = 0; i < dataTensor.extent(0); ++i) {
     // check that values match what we expect
     for (std::size_t j = 0; j < fillCount; ++j) {
-      REQUIRE_EQ(dataViewAfterOp_h(i, j), ValueType(i));
+      REQUIRE_EQ(dataTensorAfterOp_h(i, j), ValueType(i));
     }
     // all other elements should be unchanged from before op
     for (std::size_t j = fillCount; j < numCols; ++j) {
-      REQUIRE_EQ(dataViewAfterOp_h(i, j), cloneOfDataViewBeforeOp_h(i, j));
+      REQUIRE_EQ(dataTensorAfterOp_h(i, j), cloneOfDataTensorBeforeOp_h(i, j));
     }
 
     // check that returned iterators are correct
     if (fillCount > 0) {
-      REQUIRE_EQ(distancesView_h(i), std::size_t(fillCount));
+      REQUIRE_EQ(distancesTensor_h(i), std::size_t(fillCount));
     } else {
-      REQUIRE_EQ(distancesView_h(i), std::size_t(0));
+      REQUIRE_EQ(distancesTensor_h(i), std::size_t(0));
     }
   }
 }

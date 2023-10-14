@@ -22,14 +22,14 @@ namespace Replace {
 
 namespace KE = flare::experimental;
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -86,67 +86,67 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewType1, class ValueType>
-void verify_data(const std::string& name, ViewType1 test_view,
+template <class TensorType1, class ValueType>
+void verify_data(const std::string& name, TensorType1 test_tensor,
                  ValueType new_value) {
-  //! always careful because views might not be deep copyable
-  auto view_dc = create_deep_copyable_compatible_clone(test_view);
-  auto view_h  = create_mirror_view_and_copy(flare::HostSpace(), view_dc);
+  //! always careful because tensors might not be deep copyable
+  auto tensor_dc = create_deep_copyable_compatible_clone(test_tensor);
+  auto tensor_h  = create_mirror_tensor_and_copy(flare::HostSpace(), tensor_dc);
 
   if (name == "empty") {
     // no op
   }
 
   else if (name == "one-element-a") {
-    REQUIRE_EQ(view_h(0), ValueType{1});
+    REQUIRE_EQ(tensor_h(0), ValueType{1});
   }
 
   else if (name == "one-element-b") {
-    REQUIRE_EQ(view_h(0), new_value);
+    REQUIRE_EQ(tensor_h(0), new_value);
   }
 
   else if (name == "two-elements-a") {
-    REQUIRE_EQ(view_h(0), ValueType{1});
-    REQUIRE_EQ(view_h(1), new_value);
+    REQUIRE_EQ(tensor_h(0), ValueType{1});
+    REQUIRE_EQ(tensor_h(1), new_value);
   }
 
   else if (name == "two-elements-b") {
-    REQUIRE_EQ(view_h(0), new_value);
-    REQUIRE_EQ(view_h(1), ValueType{-1});
+    REQUIRE_EQ(tensor_h(0), new_value);
+    REQUIRE_EQ(tensor_h(1), ValueType{-1});
   }
 
   else if (name == "small-a") {
-    for (std::size_t i = 0; i < view_h.extent(0); ++i) {
+    for (std::size_t i = 0; i < tensor_h.extent(0); ++i) {
       if (i == 0 || i == 3 || i == 5 || i == 6) {
-        REQUIRE_EQ(view_h(i), new_value);
+        REQUIRE_EQ(tensor_h(i), new_value);
       } else {
         const auto gold = ValueType{-5} + static_cast<ValueType>(i + 1);
-        REQUIRE_EQ(view_h(i), gold);
+        REQUIRE_EQ(tensor_h(i), gold);
       }
     }
   }
 
   else if (name == "small-b") {
-    for (std::size_t i = 0; i < view_h.extent(0); ++i) {
+    for (std::size_t i = 0; i < tensor_h.extent(0); ++i) {
       if (i < 4) {
-        REQUIRE_EQ(view_h(i), ValueType{-1});
+        REQUIRE_EQ(tensor_h(i), ValueType{-1});
       } else {
-        REQUIRE_EQ(view_h(i), new_value);
+        REQUIRE_EQ(tensor_h(i), new_value);
       }
     }
   }
 
   else if (name == "medium" || name == "large") {
-    for (std::size_t i = 0; i < view_h.extent(0); ++i) {
+    for (std::size_t i = 0; i < tensor_h.extent(0); ++i) {
       if (i % 2 == 0) {
-        REQUIRE_EQ(view_h(i), ValueType{-1});
+        REQUIRE_EQ(tensor_h(i), ValueType{-1});
       } else {
-        REQUIRE_EQ(view_h(i), new_value);
+        REQUIRE_EQ(tensor_h(i), new_value);
       }
     }
   }
@@ -162,39 +162,39 @@ std::string value_type_to_string(double) { return "double"; }
 template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
-  // std::cout << "replace: " << name << ", " << view_tag_to_string(Tag{}) << ",
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
+  // std::cout << "replace: " << name << ", " << tensor_tag_to_string(Tag{}) << ",
   // "
   //           << value_type_to_string(ValueType()) << std::endl;
 
   ValueType old_value{2};
   ValueType new_value{43};
-  auto view = create_view<ValueType>(Tag{}, view_ext, "replace");
+  auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "replace");
 
   {
-    fill_view(view, name);
-    KE::replace(exespace(), KE::begin(view), KE::end(view), old_value,
+    fill_tensor(tensor, name);
+    KE::replace(exespace(), KE::begin(tensor), KE::end(tensor), old_value,
                 new_value);
-    verify_data(name, view, new_value);
+    verify_data(name, tensor, new_value);
   }
 
   {
-    fill_view(view, name);
-    KE::replace("label", exespace(), KE::begin(view), KE::end(view), old_value,
+    fill_tensor(tensor, name);
+    KE::replace("label", exespace(), KE::begin(tensor), KE::end(tensor), old_value,
                 new_value);
-    verify_data(name, view, new_value);
+    verify_data(name, tensor, new_value);
   }
 
   {
-    fill_view(view, name);
-    KE::replace(exespace(), view, old_value, new_value);
-    verify_data(name, view, new_value);
+    fill_tensor(tensor, name);
+    KE::replace(exespace(), tensor, old_value, new_value);
+    verify_data(name, tensor, new_value);
   }
 
   {
-    fill_view(view, name);
-    KE::replace("label", exespace(), view, old_value, new_value);
-    verify_data(name, view, new_value);
+    fill_tensor(tensor, name);
+    KE::replace("label", exespace(), tensor, old_value, new_value);
+    verify_data(name, tensor, new_value);
   }
 
   flare::fence();

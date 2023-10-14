@@ -51,12 +51,12 @@ template <
     typename Predicate, typename ValueType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 void replace_if(const ExecutionSpace& ex,
-                const ::flare::View<DataType1, Properties1...>& view,
+                const ::flare::Tensor<DataType1, Properties1...>& tensor,
                 Predicate pred, const ValueType& new_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   namespace KE = ::flare::experimental;
-  detail::replace_if_exespace_impl("flare::replace_if_view_api", ex,
-                                 KE::begin(view), KE::end(view), pred,
+  detail::replace_if_exespace_impl("flare::replace_if_tensor_api", ex,
+                                 KE::begin(tensor), KE::end(tensor), pred,
                                  new_value);
 }
 
@@ -65,11 +65,11 @@ template <
     typename Predicate, typename ValueType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 void replace_if(const std::string& label, const ExecutionSpace& ex,
-                const ::flare::View<DataType1, Properties1...>& view,
+                const ::flare::Tensor<DataType1, Properties1...>& tensor,
                 Predicate pred, const ValueType& new_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   namespace KE = ::flare::experimental;
-  detail::replace_if_exespace_impl(label, ex, KE::begin(view), KE::end(view),
+  detail::replace_if_exespace_impl(label, ex, KE::begin(tensor), KE::end(tensor),
                                  pred, new_value);
 }
 
@@ -92,11 +92,11 @@ template <typename TeamHandleType, typename DataType1, typename... Properties1,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION void replace_if(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view, Predicate pred,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor, Predicate pred,
     const ValueType& new_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   namespace KE = ::flare::experimental;
-  detail::replace_if_team_impl(teamHandle, KE::begin(view), KE::end(view), pred,
+  detail::replace_if_team_impl(teamHandle, KE::begin(tensor), KE::end(tensor), pred,
                              new_value);
 }
 

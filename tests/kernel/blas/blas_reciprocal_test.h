@@ -23,10 +23,10 @@
 #include <kernel/common/test_utility.h>
 
 namespace Test {
-    template<class ViewTypeA, class ViewTypeB, class Device>
+    template<class TensorTypeA, class TensorTypeB, class Device>
     void impl_test_reciprocal(int N) {
-        using ScalarA = typename ViewTypeA::value_type;
-        using ScalarB = typename ViewTypeB::value_type;
+        using ScalarA = typename TensorTypeA::value_type;
+        using ScalarB = typename TensorTypeB::value_type;
         using AT = flare::ArithTraits<ScalarA>;
         using MagnitudeA = typename AT::mag_type;
         using MagnitudeB = typename flare::ArithTraits<ScalarB>::mag_type;
@@ -35,8 +35,8 @@ namespace Test {
         const MagnitudeA one = AT::abs(AT::one());
         const MagnitudeA max_val = 10;
 
-        view_stride_adapter<ViewTypeA> x("X", N);
-        view_stride_adapter<ViewTypeB> y("Y", N);
+        tensor_stride_adapter<TensorTypeA> x("X", N);
+        tensor_stride_adapter<TensorTypeB> y("Y", N);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
@@ -44,34 +44,34 @@ namespace Test {
         {
             ScalarA randStart, randEnd;
             Test::getRandomBounds(max_val, randStart, randEnd);
-            flare::fill_random(x.d_view, rand_pool, one, randEnd);
+            flare::fill_random(x.d_tensor, rand_pool, one, randEnd);
         }
 
         flare::deep_copy(x.h_base, x.d_base);
 
-        flare::blas::reciprocal(y.d_view, x.d_view);
+        flare::blas::reciprocal(y.d_tensor, x.d_tensor);
         flare::deep_copy(y.h_base, y.d_base);
         for (int i = 0; i < N; ++i) {
-            EXPECT_NEAR_KK(y.h_view(i), ScalarB(one / x.h_view(i)), 2 * eps);
+            EXPECT_NEAR_KK(y.h_tensor(i), ScalarB(one / x.h_tensor(i)), 2 * eps);
         }
 
         // Zero out y again, and run again with const input
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
 
-        flare::blas::reciprocal(y.d_view, x.d_view_const);
+        flare::blas::reciprocal(y.d_tensor, x.d_tensor_const);
         flare::deep_copy(y.h_base, y.d_base);
         for (int i = 0; i < N; ++i) {
-            EXPECT_NEAR_KK(y.h_view(i), ScalarB(one / x.h_view(i)), 2 * eps);
+            EXPECT_NEAR_KK(y.h_tensor(i), ScalarB(one / x.h_tensor(i)), 2 * eps);
         }
     }
 
-    template<class ViewTypeA, class ViewTypeB, class Device>
+    template<class TensorTypeA, class TensorTypeB, class Device>
     void impl_test_reciprocal_mv(int N, int K) {
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
 
-        view_stride_adapter<ViewTypeA> x("X", N, K);
-        view_stride_adapter<ViewTypeB> y("Y", N, K);
+        tensor_stride_adapter<TensorTypeA> x("X", N, K);
+        tensor_stride_adapter<TensorTypeB> y("Y", N, K);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
@@ -79,34 +79,34 @@ namespace Test {
         {
             ScalarA randStart, randEnd;
             Test::getRandomBounds(10, randStart, randEnd);
-            flare::fill_random(x.d_view, rand_pool,
+            flare::fill_random(x.d_tensor, rand_pool,
                                flare::ArithTraits<ScalarA>::one(), randEnd);
         }
 
         flare::deep_copy(x.h_base, x.d_base);
 
-        flare::blas::reciprocal(y.d_view, x.d_view);
+        flare::blas::reciprocal(y.d_tensor, x.d_tensor);
 
         flare::deep_copy(y.h_base, y.d_base);
         for (int j = 0; j < K; ++j) {
             for (int i = 0; i < N; ++i) {
                 EXPECT_NEAR_KK(
-                        y.h_view(i, j),
-                        flare::ArithTraits<ScalarB>::one() / ScalarB(x.h_view(i, j)),
+                        y.h_tensor(i, j),
+                        flare::ArithTraits<ScalarB>::one() / ScalarB(x.h_tensor(i, j)),
                         2 * flare::ArithTraits<ScalarB>::epsilon());
             }
         }
 
         // Zero out y again, and run again with const input
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
 
-        flare::blas::reciprocal(y.d_view, x.d_view_const);
+        flare::blas::reciprocal(y.d_tensor, x.d_tensor_const);
         flare::deep_copy(y.h_base, y.d_base);
         for (int j = 0; j < K; j++) {
             for (int i = 0; i < N; ++i) {
                 EXPECT_NEAR_KK(
-                        y.h_view(i, j),
-                        flare::ArithTraits<ScalarB>::one() / ScalarB(x.h_view(i, j)),
+                        y.h_tensor(i, j),
+                        flare::ArithTraits<ScalarB>::one() / ScalarB(x.h_tensor(i, j)),
                         2 * flare::ArithTraits<ScalarB>::epsilon());
             }
         }
@@ -116,35 +116,35 @@ namespace Test {
 template<class ScalarA, class ScalarB, class Device>
 int test_reciprocal() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA *, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB *, flare::LayoutLeft, Device> view_type_b_ll;
-    Test::impl_test_reciprocal<view_type_a_ll, view_type_b_ll, Device>(0);
-    Test::impl_test_reciprocal<view_type_a_ll, view_type_b_ll, Device>(13);
-    Test::impl_test_reciprocal<view_type_a_ll, view_type_b_ll, Device>(1024);
-    // Test::impl_test_reciprocal<view_type_a_ll, view_type_b_ll, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB *, flare::LayoutLeft, Device> tensor_type_b_ll;
+    Test::impl_test_reciprocal<tensor_type_a_ll, tensor_type_b_ll, Device>(0);
+    Test::impl_test_reciprocal<tensor_type_a_ll, tensor_type_b_ll, Device>(13);
+    Test::impl_test_reciprocal<tensor_type_a_ll, tensor_type_b_ll, Device>(1024);
+    // Test::impl_test_reciprocal<tensor_type_a_ll, tensor_type_b_ll, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA *, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB *, flare::LayoutRight, Device> view_type_b_lr;
-    Test::impl_test_reciprocal<view_type_a_lr, view_type_b_lr, Device>(0);
-    Test::impl_test_reciprocal<view_type_a_lr, view_type_b_lr, Device>(13);
-    Test::impl_test_reciprocal<view_type_a_lr, view_type_b_lr, Device>(1024);
-    // Test::impl_test_reciprocal<view_type_a_lr, view_type_b_lr, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB *, flare::LayoutRight, Device> tensor_type_b_lr;
+    Test::impl_test_reciprocal<tensor_type_a_lr, tensor_type_b_lr, Device>(0);
+    Test::impl_test_reciprocal<tensor_type_a_lr, tensor_type_b_lr, Device>(13);
+    Test::impl_test_reciprocal<tensor_type_a_lr, tensor_type_b_lr, Device>(1024);
+    // Test::impl_test_reciprocal<tensor_type_a_lr, tensor_type_b_lr, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA *, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB *, flare::LayoutStride, Device> view_type_b_ls;
-    Test::impl_test_reciprocal<view_type_a_ls, view_type_b_ls, Device>(0);
-    Test::impl_test_reciprocal<view_type_a_ls, view_type_b_ls, Device>(13);
-    Test::impl_test_reciprocal<view_type_a_ls, view_type_b_ls, Device>(1024);
-    // Test::impl_test_reciprocal<view_type_a_ls, view_type_b_ls, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB *, flare::LayoutStride, Device> tensor_type_b_ls;
+    Test::impl_test_reciprocal<tensor_type_a_ls, tensor_type_b_ls, Device>(0);
+    Test::impl_test_reciprocal<tensor_type_a_ls, tensor_type_b_ls, Device>(13);
+    Test::impl_test_reciprocal<tensor_type_a_ls, tensor_type_b_ls, Device>(1024);
+    // Test::impl_test_reciprocal<tensor_type_a_ls, tensor_type_b_ls, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_reciprocal<view_type_a_ls, view_type_b_ll, Device>(1024);
-    Test::impl_test_reciprocal<view_type_a_ll, view_type_b_ls, Device>(1024);
+    Test::impl_test_reciprocal<tensor_type_a_ls, tensor_type_b_ll, Device>(1024);
+    Test::impl_test_reciprocal<tensor_type_a_ll, tensor_type_b_ls, Device>(1024);
 #endif
 
     return 1;
@@ -153,42 +153,42 @@ int test_reciprocal() {
 template<class ScalarA, class ScalarB, class Device>
 int test_reciprocal_mv() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA **, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB **, flare::LayoutLeft, Device> view_type_b_ll;
-    Test::impl_test_reciprocal_mv<view_type_a_ll, view_type_b_ll, Device>(0, 5);
-    Test::impl_test_reciprocal_mv<view_type_a_ll, view_type_b_ll, Device>(13, 5);
-    Test::impl_test_reciprocal_mv<view_type_a_ll, view_type_b_ll, Device>(1024,
+    typedef flare::Tensor<ScalarA **, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB **, flare::LayoutLeft, Device> tensor_type_b_ll;
+    Test::impl_test_reciprocal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(0, 5);
+    Test::impl_test_reciprocal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(13, 5);
+    Test::impl_test_reciprocal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(1024,
                                                                           5);
-    // Test::impl_test_reciprocal_mv<view_type_a_ll, view_type_b_ll,
+    // Test::impl_test_reciprocal_mv<tensor_type_a_ll, tensor_type_b_ll,
     // Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA **, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB **, flare::LayoutRight, Device> view_type_b_lr;
-    Test::impl_test_reciprocal_mv<view_type_a_lr, view_type_b_lr, Device>(0, 5);
-    Test::impl_test_reciprocal_mv<view_type_a_lr, view_type_b_lr, Device>(13, 5);
-    Test::impl_test_reciprocal_mv<view_type_a_lr, view_type_b_lr, Device>(1024,
+    typedef flare::Tensor<ScalarA **, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB **, flare::LayoutRight, Device> tensor_type_b_lr;
+    Test::impl_test_reciprocal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(0, 5);
+    Test::impl_test_reciprocal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(13, 5);
+    Test::impl_test_reciprocal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(1024,
                                                                           5);
-    // Test::impl_test_reciprocal_mv<view_type_a_lr, view_type_b_lr,
+    // Test::impl_test_reciprocal_mv<tensor_type_a_lr, tensor_type_b_lr,
     // Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA **, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB **, flare::LayoutStride, Device> view_type_b_ls;
-    Test::impl_test_reciprocal_mv<view_type_a_ls, view_type_b_ls, Device>(0, 5);
-    Test::impl_test_reciprocal_mv<view_type_a_ls, view_type_b_ls, Device>(13, 5);
-    Test::impl_test_reciprocal_mv<view_type_a_ls, view_type_b_ls, Device>(1024,
+    typedef flare::Tensor<ScalarA **, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB **, flare::LayoutStride, Device> tensor_type_b_ls;
+    Test::impl_test_reciprocal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(0, 5);
+    Test::impl_test_reciprocal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(13, 5);
+    Test::impl_test_reciprocal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(1024,
                                                                           5);
-    // Test::impl_test_reciprocal_mv<view_type_a_ls, view_type_b_ls,
+    // Test::impl_test_reciprocal_mv<tensor_type_a_ls, tensor_type_b_ls,
     // Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_reciprocal_mv<view_type_a_ls, view_type_b_ll, Device>(1024,
+    Test::impl_test_reciprocal_mv<tensor_type_a_ls, tensor_type_b_ll, Device>(1024,
                                                                           5);
-    Test::impl_test_reciprocal_mv<view_type_a_ll, view_type_b_ls, Device>(1024,
+    Test::impl_test_reciprocal_mv<tensor_type_a_ll, tensor_type_b_ls, Device>(1024,
                                                                           5);
 #endif
 

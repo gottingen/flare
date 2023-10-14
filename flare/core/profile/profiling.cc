@@ -264,8 +264,8 @@ namespace flare {
                        l.profile_event == r.profile_event &&
                        l.begin_deep_copy == r.begin_deep_copy &&
                        l.end_deep_copy == r.end_deep_copy && l.begin_fence == r.begin_fence &&
-                       l.end_fence == r.end_fence && l.sync_dual_view == r.sync_dual_view &&
-                       l.modify_dual_view == r.modify_dual_view &&
+                       l.end_fence == r.end_fence && l.sync_dual_tensor == r.sync_dual_tensor &&
+                       l.modify_dual_tensor == r.modify_dual_tensor &&
                        l.declare_metadata == r.declare_metadata &&
                        l.request_tool_settings == r.request_tool_settings &&
                        l.provide_tool_programming_interface ==
@@ -680,10 +680,10 @@ namespace flare {
                                 experimental::current_callbacks.begin_fence);
                 lookup_function(firstProfileLibrary, "flare_profile_end_fence",
                                 experimental::current_callbacks.end_fence);
-                lookup_function(firstProfileLibrary, "flare_profile_dual_view_sync",
-                                experimental::current_callbacks.sync_dual_view);
-                lookup_function(firstProfileLibrary, "flare_profile_dual_view_modify",
-                                experimental::current_callbacks.modify_dual_view);
+                lookup_function(firstProfileLibrary, "flare_profile_dual_tensor_sync",
+                                experimental::current_callbacks.sync_dual_tensor);
+                lookup_function(firstProfileLibrary, "flare_profile_dual_tensor_modify",
+                                experimental::current_callbacks.modify_dual_tensor);
 
                 lookup_function(firstProfileLibrary, "flare_profile_declare_metadata",
                                 experimental::current_callbacks.declare_metadata);
@@ -823,19 +823,19 @@ namespace flare {
 #endif
         }
 
-        void syncDualView(const std::string &label, const void *const ptr,
+        void syncDualTensor(const std::string &label, const void *const ptr,
                           bool to_device) {
             experimental::invoke_flare_profile_callback(
                     experimental::MayRequireGlobalFencing::No,
-                    experimental::current_callbacks.sync_dual_view, label.c_str(), ptr,
+                    experimental::current_callbacks.sync_dual_tensor, label.c_str(), ptr,
                     to_device);
         }
 
-        void modifyDualView(const std::string &label, const void *const ptr,
+        void modifyDualTensor(const std::string &label, const void *const ptr,
                             bool on_device) {
             experimental::invoke_flare_profile_callback(
                     experimental::MayRequireGlobalFencing::No,
-                    experimental::current_callbacks.modify_dual_view, label.c_str(), ptr,
+                    experimental::current_callbacks.modify_dual_tensor, label.c_str(), ptr,
                     on_device);
         }
 
@@ -944,12 +944,12 @@ namespace flare {
                 current_callbacks.end_fence = callback;
             }
 
-            void set_dual_view_sync_callback(dualViewSyncFunction callback) {
-                current_callbacks.sync_dual_view = callback;
+            void set_dual_tensor_sync_callback(dualTensorSyncFunction callback) {
+                current_callbacks.sync_dual_tensor = callback;
             }
 
-            void set_dual_view_modify_callback(dualViewModifyFunction callback) {
-                current_callbacks.modify_dual_view = callback;
+            void set_dual_tensor_modify_callback(dualTensorModifyFunction callback) {
+                current_callbacks.modify_dual_tensor = callback;
             }
 
             void set_declare_metadata_callback(declareMetadataFunction callback) {

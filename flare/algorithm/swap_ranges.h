@@ -32,13 +32,13 @@ IteratorType2 swap_ranges(const ExecutionSpace& ex, IteratorType1 first1,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto swap_ranges(const ExecutionSpace& ex,
-                 const ::flare::View<DataType1, Properties1...>& source,
-                 ::flare::View<DataType2, Properties2...>& dest) {
+                 const ::flare::Tensor<DataType1, Properties1...>& source,
+                 ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
   assert(source.extent(0) == dest.extent(0));
-  return detail::swap_ranges_impl("flare::swap_ranges_view_api_default", ex,
+  return detail::swap_ranges_impl("flare::swap_ranges_tensor_api_default", ex,
                                 begin(source), end(source), begin(dest));
 }
 
@@ -52,8 +52,8 @@ IteratorType2 swap_ranges(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto swap_ranges(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType1, Properties1...>& source,
-                 ::flare::View<DataType2, Properties2...>& dest) {
+                 const ::flare::Tensor<DataType1, Properties1...>& source,
+                 ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 

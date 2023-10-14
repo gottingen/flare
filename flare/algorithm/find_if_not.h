@@ -50,13 +50,13 @@ template <typename ExecutionSpace, typename DataType, typename... Properties,
           std::enable_if_t<::flare::is_execution_space<ExecutionSpace>::value,
                            int> = 0>
 auto find_if_not(const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v,
+                 const ::flare::Tensor<DataType, Properties...>& v,
                  Predicate predicate) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   namespace KE = ::flare::experimental;
   return detail::find_if_or_not_exespace_impl<false>(
-      "flare::find_if_not_view_api_default", ex, KE::begin(v), KE::end(v),
+      "flare::find_if_not_tensor_api_default", ex, KE::begin(v), KE::end(v),
       std::move(predicate));
 }
 
@@ -65,7 +65,7 @@ template <typename ExecutionSpace, typename DataType, typename... Properties,
           std::enable_if_t<::flare::is_execution_space<ExecutionSpace>::value,
                            int> = 0>
 auto find_if_not(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v,
+                 const ::flare::Tensor<DataType, Properties...>& v,
                  Predicate predicate) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
@@ -94,7 +94,7 @@ template <
     std::enable_if_t<::flare::is_team_handle<TeamHandleType>::value, int> = 0>
 FLARE_FUNCTION auto find_if_not(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType, Properties...>& v, Predicate predicate) {
+    const ::flare::Tensor<DataType, Properties...>& v, Predicate predicate) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   namespace KE = ::flare::experimental;

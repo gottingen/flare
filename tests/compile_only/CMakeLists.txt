@@ -22,8 +22,8 @@ SET(COMPILE_ONLY_SOURCES
         inter_op_test.cc
         string_manipulation_test.cc
         version_macros_test.cc
-        view_rank_test.cc
-        view_type_traits_test.cc
+        tensor_rank_test.cc
+        tensor_type_traits_test.cc
         type_list_test.cc
         extents_datatype_conversion_test.cc
 )

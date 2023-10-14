@@ -186,7 +186,7 @@ struct InnerProductSpaceTraits<qd_real> {
     }
 
     // This exists in case people call the overload of flare::blas::dot
-    // that takes an output View, and the output View has element type
+    // that takes an output Tensor, and the output Tensor has element type
     // flare::complex<float>.
     FLARE_INLINE_FUNCTION void updateDot(flare::complex<float>& sum,
                                           const flare::complex<float> x,

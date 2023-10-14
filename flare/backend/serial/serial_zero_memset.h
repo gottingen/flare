@@ -33,13 +33,13 @@ namespace flare::detail {
     struct ZeroMemset<
             std::conditional_t<!std::is_same<Serial, DefaultHostExecutionSpace>::value,
                     Serial, DummyExecutionSpace>,
-            View<T, P...>>
-            : public ZeroMemset<DefaultHostExecutionSpace, View<T, P...>> {
-        using Base = ZeroMemset<DefaultHostExecutionSpace, View<T, P...>>;
+            Tensor<T, P...>>
+            : public ZeroMemset<DefaultHostExecutionSpace, Tensor<T, P...>> {
+        using Base = ZeroMemset<DefaultHostExecutionSpace, Tensor<T, P...>>;
         using Base::Base;
 
-        ZeroMemset(const Serial &, const View<T, P...> &dst,
-                   typename View<T, P...>::const_value_type &value)
+        ZeroMemset(const Serial &, const Tensor<T, P...> &dst,
+                   typename Tensor<T, P...>::const_value_type &value)
                 : Base(dst, value) {}
     };
 

@@ -30,7 +30,7 @@ template <
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool any_of(const ExecutionSpace& ex, InputIterator first, InputIterator last,
             Predicate predicate) {
-  return detail::any_of_exespace_impl("flare::any_of_view_api_default", ex,
+  return detail::any_of_exespace_impl("flare::any_of_tensor_api_default", ex,
                                     first, last, predicate);
 }
 
@@ -47,12 +47,12 @@ template <
     typename Predicate,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool any_of(const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& v,
+            const ::flare::Tensor<DataType, Properties...>& v,
             Predicate predicate) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   namespace KE = ::flare::experimental;
-  return detail::any_of_exespace_impl("flare::any_of_view_api_default", ex,
+  return detail::any_of_exespace_impl("flare::any_of_tensor_api_default", ex,
                                     KE::cbegin(v), KE::cend(v),
                                     std::move(predicate));
 }
@@ -62,7 +62,7 @@ template <
     typename Predicate,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool any_of(const std::string& label, const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& v,
+            const ::flare::Tensor<DataType, Properties...>& v,
             Predicate predicate) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
@@ -88,7 +88,7 @@ template <typename TeamHandleType, typename DataType, typename... Properties,
           typename Predicate,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION bool any_of(const TeamHandleType& teamHandle,
-                            const ::flare::View<DataType, Properties...>& v,
+                            const ::flare::Tensor<DataType, Properties...>& v,
                             Predicate predicate) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 

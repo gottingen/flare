@@ -82,14 +82,14 @@ OutputIteratorType adjacent_difference_impl(const std::string& label,
 
   // aliases
   using value_type    = typename OutputIteratorType::value_type;
-  using aux_view_type = ::flare::View<value_type*, ExecutionSpace>;
+  using aux_tensor_type = ::flare::Tensor<value_type*, ExecutionSpace>;
   using functor_t =
       StdAdjacentDiffFunctor<InputIteratorType, OutputIteratorType, BinaryOp>;
 
   // run
   const auto num_elements =
       flare::experimental::distance(first_from, last_from);
-  aux_view_type aux_view("aux_view", num_elements);
+  aux_tensor_type aux_tensor("aux_tensor", num_elements);
   ::flare::parallel_for(label,
                          RangePolicy<ExecutionSpace>(ex, 0, num_elements),
                          functor_t(first_from, first_dest, bin_op));

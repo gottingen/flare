@@ -34,7 +34,7 @@ namespace flare {
     ///   striding of multi-indices.
     ///
     /// This is an example of a \c MemoryLayout template parameter of
-    /// View.  The memory layout describes how View maps from a
+    /// Tensor.  The memory layout describes how Tensor maps from a
     /// multi-index (i0, i1, ..., ik) to a memory location.
     ///
     /// "Layout left" indicates a mapping where the leftmost index i0
@@ -89,7 +89,7 @@ namespace flare {
     ///   lexigraphical scheme) striding of multi-indices.
     ///
     /// This is an example of a \c MemoryLayout template parameter of
-    /// View.  The memory layout describes how View maps from a
+    /// Tensor.  The memory layout describes how Tensor maps from a
     /// multi-index (i0, i1, ..., ik) to a memory location.
     ///
     /// "Right layout" indicates a mapping where the rightmost index ik
@@ -326,7 +326,7 @@ namespace flare {
 
     }  // namespace experimental
 
-    // For use with view_copy
+    // For use with tensor_copy
     template<typename... Layout>
     struct layout_iterate_type_selector {
         static const flare::Iterate outer_iteration_pattern =

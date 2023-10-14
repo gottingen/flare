@@ -573,7 +573,7 @@ namespace flare {
                                               space.impl_internal_space_instance()->cuda_pointer_get_attributes_wrapper(
                                                       &attr, ptr)));
             // I measured this and it turns out prefetching towards the host slows
-            // DualView syncs down. Probably because the latency is not too bad in the
+            // DualTensor syncs down. Probably because the latency is not too bad in the
             // first place for the pull down. If we want to change that provde
             // cudaCpuDeviceId as the device if to_device is false
             bool is_managed = attr.type == cudaMemoryTypeManaged;

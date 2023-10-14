@@ -25,10 +25,10 @@ template <class ExecSpace, class ScheduleType>
 struct TestRange {
   using value_type = int;  ///< alias required for the parallel_reduce
 
-  using view_type = flare::View<value_type *, ExecSpace>;
+  using tensor_type = flare::Tensor<value_type *, ExecSpace>;
 
-  view_type m_flags;
-  view_type result_view;
+  tensor_type m_flags;
+  tensor_type result_tensor;
 
   struct VerifyInitTag {};
   struct ResetTag {};
@@ -39,15 +39,15 @@ struct TestRange {
   int N;
   static const int offset = 13;
   TestRange(const size_t N_)
-      : m_flags(flare::view_alloc(flare::WithoutInitializing, "flags"), N_),
-        result_view(flare::view_alloc(flare::WithoutInitializing, "results"),
+      : m_flags(flare::tensor_alloc(flare::WithoutInitializing, "flags"), N_),
+        result_tensor(flare::tensor_alloc(flare::WithoutInitializing, "results"),
                     N_),
         N(N_) {
   }
 
   void test_for() {
-    typename view_type::HostMirror host_flags =
-        flare::create_mirror_view(m_flags);
+    typename tensor_type::HostMirror host_flags =
+        flare::create_mirror_tensor(m_flags);
 
     flare::parallel_for(flare::RangePolicy<ExecSpace, ScheduleType>(0, N),
                          *this);
@@ -201,9 +201,9 @@ struct TestRange {
     int const concurrency = ExecSpace().concurrency();
 
     {
-      flare::View<size_t *, ExecSpace, flare::MemoryTraits<flare::Atomic> >
+      flare::Tensor<size_t *, ExecSpace, flare::MemoryTraits<flare::Atomic> >
           count("Count", concurrency);
-      flare::View<int *, ExecSpace> a("A", N);
+      flare::Tensor<int *, ExecSpace> a("A", N);
 
       flare::parallel_for(
           policy_t(0, N), FLARE_LAMBDA(const int &i) {
@@ -239,9 +239,9 @@ struct TestRange {
     }
 
     {
-      flare::View<size_t *, ExecSpace, flare::MemoryTraits<flare::Atomic> >
+      flare::Tensor<size_t *, ExecSpace, flare::MemoryTraits<flare::Atomic> >
           count("Count", concurrency);
-      flare::View<int *, ExecSpace> a("A", N);
+      flare::Tensor<int *, ExecSpace> a("A", N);
 
       value_type sum = 0;
       flare::parallel_reduce(

@@ -22,23 +22,23 @@
 namespace flare::detail {
 
     template<class T, class... P>
-    struct ZeroMemset<flare::Cuda, View<T, P...>> {
-        ZeroMemset(const flare::Cuda &exec_space_instance, const View<T, P...> &dst,
-                   typename View<T, P...>::const_value_type &) {
+    struct ZeroMemset<flare::Cuda, Tensor<T, P...>> {
+        ZeroMemset(const flare::Cuda &exec_space_instance, const Tensor<T, P...> &dst,
+                   typename Tensor<T, P...>::const_value_type &) {
             FLARE_IMPL_CUDA_SAFE_CALL(
                     (exec_space_instance.impl_internal_space_instance()
                             ->cuda_memset_async_wrapper(
                                     dst.data(), 0,
-                                    dst.size() * sizeof(typename View<T, P...>::value_type))));
+                                    dst.size() * sizeof(typename Tensor<T, P...>::value_type))));
         }
 
-        ZeroMemset(const View<T, P...> &dst,
-                   typename View<T, P...>::const_value_type &) {
+        ZeroMemset(const Tensor<T, P...> &dst,
+                   typename Tensor<T, P...>::const_value_type &) {
             // FIXME_CUDA_MULTIPLE_DEVICES
             FLARE_IMPL_CUDA_SAFE_CALL(
                     (flare::detail::CudaInternal::singleton().cuda_memset_wrapper(
                             dst.data(), 0,
-                            dst.size() * sizeof(typename View<T, P...>::value_type))));
+                            dst.size() * sizeof(typename Tensor<T, P...>::value_type))));
         }
     };
 

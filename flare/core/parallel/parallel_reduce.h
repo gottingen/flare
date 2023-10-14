@@ -17,7 +17,7 @@
 #define FLARE_CORE_PARALLEL_PARALLEL_REDUCE_H_
 
 #include <flare/core/reduction_identity.h>
-#include <flare/core/tensor/view.h>
+#include <flare/core/tensor/tensor.h>
 #include <flare/core/common/functor_analysis.h>
 #include <flare/core/profile/tools_generic.h>
 #include <type_traits>
@@ -33,10 +33,10 @@ namespace flare {
         using value_type = std::remove_cv_t<Scalar>;
         static_assert(!std::is_pointer_v<value_type> && !std::is_array_v<value_type>);
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -44,7 +44,7 @@ namespace flare {
         Sum(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        Sum(const result_view_type &value_)
+        Sum(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -60,15 +60,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename... Properties>
-    Sum(View<Scalar, Properties...> const &)
-    ->Sum<Scalar, typename View<Scalar, Properties...>::memory_space>;
+    Sum(Tensor<Scalar, Properties...> const &)
+    ->Sum<Scalar, typename Tensor<Scalar, Properties...>::memory_space>;
 
     template<class Scalar, class Space>
     struct Prod {
@@ -78,10 +78,10 @@ namespace flare {
         using value_type = std::remove_cv_t<Scalar>;
         static_assert(!std::is_pointer_v<value_type> && !std::is_array_v<value_type>);
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -89,7 +89,7 @@ namespace flare {
         Prod(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        Prod(const result_view_type &value_)
+        Prod(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -105,15 +105,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename... Properties>
-    Prod(View<Scalar, Properties...> const &)
-    ->Prod<Scalar, typename View<Scalar, Properties...>::memory_space>;
+    Prod(Tensor<Scalar, Properties...> const &)
+    ->Prod<Scalar, typename Tensor<Scalar, Properties...>::memory_space>;
 
     template<class Scalar, class Space>
     struct Min {
@@ -123,10 +123,10 @@ namespace flare {
         using value_type = std::remove_cv_t<Scalar>;
         static_assert(!std::is_pointer_v<value_type> && !std::is_array_v<value_type>);
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -134,7 +134,7 @@ namespace flare {
         Min(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        Min(const result_view_type &value_)
+        Min(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -152,15 +152,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename... Properties>
-    Min(View<Scalar, Properties...> const &)
-    ->Min<Scalar, typename View<Scalar, Properties...>::memory_space>;
+    Min(Tensor<Scalar, Properties...> const &)
+    ->Min<Scalar, typename Tensor<Scalar, Properties...>::memory_space>;
 
     template<class Scalar, class Space>
     struct Max {
@@ -170,10 +170,10 @@ namespace flare {
         using value_type = std::remove_cv_t<Scalar>;
         static_assert(!std::is_pointer_v<value_type> && !std::is_array_v<value_type>);
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -181,7 +181,7 @@ namespace flare {
         Max(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        Max(const result_view_type &value_)
+        Max(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -200,15 +200,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename... Properties>
-    Max(View<Scalar, Properties...> const &)
-    ->Max<Scalar, typename View<Scalar, Properties...>::memory_space>;
+    Max(Tensor<Scalar, Properties...> const &)
+    ->Max<Scalar, typename Tensor<Scalar, Properties...>::memory_space>;
 
     template<class Scalar, class Space>
     struct LAnd {
@@ -218,10 +218,10 @@ namespace flare {
         using value_type = std::remove_cv_t<Scalar>;
         static_assert(!std::is_pointer_v<value_type> && !std::is_array_v<value_type>);
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -229,7 +229,7 @@ namespace flare {
         LAnd(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        LAnd(const result_view_type &value_)
+        LAnd(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         FLARE_INLINE_FUNCTION
@@ -246,15 +246,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename... Properties>
-    LAnd(View<Scalar, Properties...> const &)
-    ->LAnd<Scalar, typename View<Scalar, Properties...>::memory_space>;
+    LAnd(Tensor<Scalar, Properties...> const &)
+    ->LAnd<Scalar, typename Tensor<Scalar, Properties...>::memory_space>;
 
     template<class Scalar, class Space>
     struct LOr {
@@ -264,10 +264,10 @@ namespace flare {
         using value_type = std::remove_cv_t<Scalar>;
         static_assert(!std::is_pointer_v<value_type> && !std::is_array_v<value_type>);
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -275,7 +275,7 @@ namespace flare {
         LOr(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        LOr(const result_view_type &value_)
+        LOr(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -293,15 +293,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename... Properties>
-    LOr(View<Scalar, Properties...> const &)
-    ->LOr<Scalar, typename View<Scalar, Properties...>::memory_space>;
+    LOr(Tensor<Scalar, Properties...> const &)
+    ->LOr<Scalar, typename Tensor<Scalar, Properties...>::memory_space>;
 
     template<class Scalar, class Space>
     struct BAnd {
@@ -311,10 +311,10 @@ namespace flare {
         using value_type = std::remove_cv_t<Scalar>;
         static_assert(!std::is_pointer_v<value_type> && !std::is_array_v<value_type>);
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -322,7 +322,7 @@ namespace flare {
         BAnd(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        BAnd(const result_view_type &value_)
+        BAnd(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -340,15 +340,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename... Properties>
-    BAnd(View<Scalar, Properties...> const &)
-    ->BAnd<Scalar, typename View<Scalar, Properties...>::memory_space>;
+    BAnd(Tensor<Scalar, Properties...> const &)
+    ->BAnd<Scalar, typename Tensor<Scalar, Properties...>::memory_space>;
 
     template<class Scalar, class Space>
     struct BOr {
@@ -358,10 +358,10 @@ namespace flare {
         using value_type = std::remove_cv_t<Scalar>;
         static_assert(!std::is_pointer_v<value_type> && !std::is_array_v<value_type>);
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -369,7 +369,7 @@ namespace flare {
         BOr(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        BOr(const result_view_type &value_)
+        BOr(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -387,15 +387,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename... Properties>
-    BOr(View<Scalar, Properties...> const &)
-    ->BOr<Scalar, typename View<Scalar, Properties...>::memory_space>;
+    BOr(Tensor<Scalar, Properties...> const &)
+    ->BOr<Scalar, typename Tensor<Scalar, Properties...>::memory_space>;
 
     template<class Scalar, class Index>
     struct ValLocScalar {
@@ -416,10 +416,10 @@ namespace flare {
         using reducer = MinLoc<Scalar, Index, Space>;
         using value_type = ValLocScalar<scalar_type, index_type>;
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -427,7 +427,7 @@ namespace flare {
         MinLoc(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        MinLoc(const result_view_type &value_)
+        MinLoc(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -446,16 +446,16 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename Index, typename... Properties>
-    MinLoc(View<ValLocScalar<Scalar, Index>, Properties...> const &)
+    MinLoc(Tensor<ValLocScalar<Scalar, Index>, Properties...> const &)
     ->MinLoc<Scalar, Index,
-            typename View<ValLocScalar<Scalar, Index>,
+            typename Tensor<ValLocScalar<Scalar, Index>,
                     Properties...>::memory_space>;
 
     template<class Scalar, class Index, class Space>
@@ -471,10 +471,10 @@ namespace flare {
         using reducer = MaxLoc<Scalar, Index, Space>;
         using value_type = ValLocScalar<scalar_type, index_type>;
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -482,7 +482,7 @@ namespace flare {
         MaxLoc(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        MaxLoc(const result_view_type &value_)
+        MaxLoc(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -501,16 +501,16 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename Index, typename... Properties>
-    MaxLoc(View<ValLocScalar<Scalar, Index>, Properties...> const &)
+    MaxLoc(Tensor<ValLocScalar<Scalar, Index>, Properties...> const &)
     ->MaxLoc<Scalar, Index,
-            typename View<ValLocScalar<Scalar, Index>,
+            typename Tensor<ValLocScalar<Scalar, Index>,
                     Properties...>::memory_space>;
 
     template<class Scalar>
@@ -530,10 +530,10 @@ namespace flare {
         using reducer = MinMax<Scalar, Space>;
         using value_type = MinMaxScalar<scalar_type>;
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -541,7 +541,7 @@ namespace flare {
         MinMax(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        MinMax(const result_view_type &value_)
+        MinMax(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -565,16 +565,16 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename... Properties>
-    MinMax(View<MinMaxScalar<Scalar>, Properties...> const &)
+    MinMax(Tensor<MinMaxScalar<Scalar>, Properties...> const &)
     ->MinMax<Scalar,
-            typename View<MinMaxScalar<Scalar>, Properties...>::memory_space>;
+            typename Tensor<MinMaxScalar<Scalar>, Properties...>::memory_space>;
 
     template<class Scalar, class Index>
     struct MinMaxLocScalar {
@@ -595,10 +595,10 @@ namespace flare {
         using reducer = MinMaxLoc<Scalar, Index, Space>;
         using value_type = MinMaxLocScalar<scalar_type, index_type>;
 
-        using result_view_type = flare::View<value_type, Space>;
+        using result_tensor_type = flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -606,7 +606,7 @@ namespace flare {
         MinMaxLoc(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        MinMaxLoc(const result_view_type &value_)
+        MinMaxLoc(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -634,16 +634,16 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename Index, typename... Properties>
-    MinMaxLoc(View<MinMaxLocScalar<Scalar, Index>, Properties...> const &)
+    MinMaxLoc(Tensor<MinMaxLocScalar<Scalar, Index>, Properties...> const &)
     ->MinMaxLoc<Scalar, Index,
-            typename View<MinMaxLocScalar<Scalar, Index>,
+            typename Tensor<MinMaxLocScalar<Scalar, Index>,
                     Properties...>::memory_space>;
 
 // --------------------------------------------------
@@ -667,10 +667,10 @@ namespace flare {
         using reducer = MaxFirstLoc<Scalar, Index, Space>;
         using value_type = ::flare::ValLocScalar<scalar_type, index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -678,7 +678,7 @@ namespace flare {
         MaxFirstLoc(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        MaxFirstLoc(const result_view_type &value_)
+        MaxFirstLoc(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -701,16 +701,16 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename Index, typename... Properties>
-    MaxFirstLoc(View<ValLocScalar<Scalar, Index>, Properties...> const &)
+    MaxFirstLoc(Tensor<ValLocScalar<Scalar, Index>, Properties...> const &)
     ->MaxFirstLoc<Scalar, Index,
-            typename View<ValLocScalar<Scalar, Index>,
+            typename Tensor<ValLocScalar<Scalar, Index>,
                     Properties...>::memory_space>;
 
 //
@@ -732,10 +732,10 @@ namespace flare {
                 MaxFirstLocCustomComparator<Scalar, Index, ComparatorType, Space>;
         using value_type = ::flare::ValLocScalar<scalar_type, index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
         ComparatorType m_comp;
 
@@ -745,7 +745,7 @@ namespace flare {
                 : value(&value_), references_scalar_v(true), m_comp(comp_) {}
 
         FLARE_INLINE_FUNCTION
-        MaxFirstLocCustomComparator(const result_view_type &value_,
+        MaxFirstLocCustomComparator(const result_tensor_type &value_,
                                     ComparatorType comp_)
                 : value(value_), references_scalar_v(false), m_comp(comp_) {}
 
@@ -769,7 +769,7 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
@@ -778,9 +778,9 @@ namespace flare {
     template<typename Scalar, typename Index, typename ComparatorType,
             typename... Properties>
     MaxFirstLocCustomComparator(
-            View<ValLocScalar<Scalar, Index>, Properties...> const &, ComparatorType)
+            Tensor<ValLocScalar<Scalar, Index>, Properties...> const &, ComparatorType)
     ->MaxFirstLocCustomComparator<Scalar, Index, ComparatorType,
-            typename View<ValLocScalar<Scalar, Index>,
+            typename Tensor<ValLocScalar<Scalar, Index>,
                     Properties...>::memory_space>;
 
 //
@@ -800,10 +800,10 @@ namespace flare {
         using reducer = MinFirstLoc<Scalar, Index, Space>;
         using value_type = ::flare::ValLocScalar<scalar_type, index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -811,7 +811,7 @@ namespace flare {
         MinFirstLoc(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        MinFirstLoc(const result_view_type &value_)
+        MinFirstLoc(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -834,16 +834,16 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename Index, typename... Properties>
-    MinFirstLoc(View<ValLocScalar<Scalar, Index>, Properties...> const &)
+    MinFirstLoc(Tensor<ValLocScalar<Scalar, Index>, Properties...> const &)
     ->MinFirstLoc<Scalar, Index,
-            typename View<ValLocScalar<Scalar, Index>,
+            typename Tensor<ValLocScalar<Scalar, Index>,
                     Properties...>::memory_space>;
 
 //
@@ -865,10 +865,10 @@ namespace flare {
                 MinFirstLocCustomComparator<Scalar, Index, ComparatorType, Space>;
         using value_type = ::flare::ValLocScalar<scalar_type, index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
         ComparatorType m_comp;
 
@@ -878,7 +878,7 @@ namespace flare {
                 : value(&value_), references_scalar_v(true), m_comp(comp_) {}
 
         FLARE_INLINE_FUNCTION
-        MinFirstLocCustomComparator(const result_view_type &value_,
+        MinFirstLocCustomComparator(const result_tensor_type &value_,
                                     ComparatorType comp_)
                 : value(value_), references_scalar_v(false), m_comp(comp_) {}
 
@@ -902,7 +902,7 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
@@ -911,9 +911,9 @@ namespace flare {
     template<typename Scalar, typename Index, typename ComparatorType,
             typename... Properties>
     MinFirstLocCustomComparator(
-            View<ValLocScalar<Scalar, Index>, Properties...> const &, ComparatorType)
+            Tensor<ValLocScalar<Scalar, Index>, Properties...> const &, ComparatorType)
     ->MinFirstLocCustomComparator<Scalar, Index, ComparatorType,
-            typename View<ValLocScalar<Scalar, Index>,
+            typename Tensor<ValLocScalar<Scalar, Index>,
                     Properties...>::memory_space>;
 
 //
@@ -933,10 +933,10 @@ namespace flare {
         using reducer = MinMaxFirstLastLoc<Scalar, Index, Space>;
         using value_type = ::flare::MinMaxLocScalar<scalar_type, index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -945,7 +945,7 @@ namespace flare {
                 : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        MinMaxFirstLastLoc(const result_view_type &value_)
+        MinMaxFirstLastLoc(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -978,16 +978,16 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Scalar, typename Index, typename... Properties>
-    MinMaxFirstLastLoc(View<MinMaxLocScalar<Scalar, Index>, Properties...> const &)
+    MinMaxFirstLastLoc(Tensor<MinMaxLocScalar<Scalar, Index>, Properties...> const &)
     ->MinMaxFirstLastLoc<Scalar, Index,
-            typename View<MinMaxLocScalar<Scalar, Index>,
+            typename Tensor<MinMaxLocScalar<Scalar, Index>,
                     Properties...>::memory_space>;
 
 //
@@ -1009,10 +1009,10 @@ namespace flare {
                 MinMaxFirstLastLocCustomComparator<Scalar, Index, ComparatorType, Space>;
         using value_type = ::flare::MinMaxLocScalar<scalar_type, index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
         ComparatorType m_comp;
 
@@ -1022,7 +1022,7 @@ namespace flare {
                 : value(&value_), references_scalar_v(true), m_comp(comp_) {}
 
         FLARE_INLINE_FUNCTION
-        MinMaxFirstLastLocCustomComparator(const result_view_type &value_,
+        MinMaxFirstLastLocCustomComparator(const result_tensor_type &value_,
                                            ComparatorType comp_)
                 : value(value_), references_scalar_v(false), m_comp(comp_) {}
 
@@ -1056,7 +1056,7 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
@@ -1065,10 +1065,10 @@ namespace flare {
     template<typename Scalar, typename Index, typename ComparatorType,
             typename... Properties>
     MinMaxFirstLastLocCustomComparator(
-            View<MinMaxLocScalar<Scalar, Index>, Properties...> const &, ComparatorType)
+            Tensor<MinMaxLocScalar<Scalar, Index>, Properties...> const &, ComparatorType)
     ->MinMaxFirstLastLocCustomComparator<
             Scalar, Index, ComparatorType,
-            typename View<MinMaxLocScalar<Scalar, Index>,
+            typename Tensor<MinMaxLocScalar<Scalar, Index>,
                     Properties...>::memory_space>;
 
 //
@@ -1090,10 +1090,10 @@ namespace flare {
         using reducer = FirstLoc<Index, Space>;
         using value_type = FirstLocScalar<index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -1101,7 +1101,7 @@ namespace flare {
         FirstLoc(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        FirstLoc(const result_view_type &value_)
+        FirstLoc(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -1121,15 +1121,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Index, typename... Properties>
-    FirstLoc(View<FirstLocScalar<Index>, Properties...> const &)
-    ->FirstLoc<Index, typename View<FirstLocScalar<Index>,
+    FirstLoc(Tensor<FirstLocScalar<Index>, Properties...> const &)
+    ->FirstLoc<Index, typename Tensor<FirstLocScalar<Index>,
             Properties...>::memory_space>;
 
 //
@@ -1151,10 +1151,10 @@ namespace flare {
         using reducer = LastLoc<Index, Space>;
         using value_type = LastLocScalar<index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -1162,7 +1162,7 @@ namespace flare {
         LastLoc(value_type &value_) : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        LastLoc(const result_view_type &value_)
+        LastLoc(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -1182,16 +1182,16 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Index, typename... Properties>
-    LastLoc(View<LastLocScalar<Index>, Properties...> const &)
+    LastLoc(Tensor<LastLocScalar<Index>, Properties...> const &)
     ->LastLoc<Index,
-            typename View<LastLocScalar<Index>, Properties...>::memory_space>;
+            typename Tensor<LastLocScalar<Index>, Properties...>::memory_space>;
 
     template<class Index>
     struct StdIsPartScalar {
@@ -1212,10 +1212,10 @@ namespace flare {
         using reducer = StdIsPartitioned<Index, Space>;
         using value_type = StdIsPartScalar<index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -1224,7 +1224,7 @@ namespace flare {
                 : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        StdIsPartitioned(const result_view_type &value_)
+        StdIsPartitioned(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -1249,15 +1249,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Index, typename... Properties>
-    StdIsPartitioned(View<StdIsPartScalar<Index>, Properties...> const &)
-    ->StdIsPartitioned<Index, typename View<StdIsPartScalar<Index>,
+    StdIsPartitioned(Tensor<StdIsPartScalar<Index>, Properties...> const &)
+    ->StdIsPartitioned<Index, typename Tensor<StdIsPartScalar<Index>,
             Properties...>::memory_space>;
 
     template<class Index>
@@ -1279,10 +1279,10 @@ namespace flare {
         using reducer = StdPartitionPoint<Index, Space>;
         using value_type = StdPartPointScalar<index_type>;
 
-        using result_view_type = ::flare::View<value_type, Space>;
+        using result_tensor_type = ::flare::Tensor<value_type, Space>;
 
     private:
-        result_view_type value;
+        result_tensor_type value;
         bool references_scalar_v;
 
     public:
@@ -1291,7 +1291,7 @@ namespace flare {
                 : value(&value_), references_scalar_v(true) {}
 
         FLARE_INLINE_FUNCTION
-        StdPartitionPoint(const result_view_type &value_)
+        StdPartitionPoint(const result_tensor_type &value_)
                 : value(value_), references_scalar_v(false) {}
 
         // Required
@@ -1311,15 +1311,15 @@ namespace flare {
         value_type &reference() const { return *value.data(); }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return value; }
+        result_tensor_type tensor() const { return value; }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return references_scalar_v; }
     };
 
     template<typename Index, typename... Properties>
-    StdPartitionPoint(View<StdPartPointScalar<Index>, Properties...> const &)
-    ->StdPartitionPoint<Index, typename View<StdPartPointScalar<Index>,
+    StdPartitionPoint(Tensor<StdPartPointScalar<Index>, Properties...> const &)
+    ->StdPartitionPoint<Index, typename Tensor<StdPartPointScalar<Index>,
             Properties...>::memory_space>;
 
 }  // namespace flare
@@ -1378,7 +1378,7 @@ namespace flare {
 
         template<class ReturnType, class FunctorType>
         struct ParallelReduceReturnValue<
-                std::enable_if_t<flare::is_view<ReturnType>::value>, ReturnType,
+                std::enable_if_t<flare::is_tensor<ReturnType>::value>, ReturnType,
                 FunctorType> {
             using return_type = ReturnType;
             using reducer_type = InvalidType;
@@ -1396,13 +1396,13 @@ namespace flare {
 
         template<class ReturnType, class FunctorType>
         struct ParallelReduceReturnValue<
-                std::enable_if_t<!flare::is_view<ReturnType>::value &&
+                std::enable_if_t<!flare::is_tensor<ReturnType>::value &&
                                  (!std::is_array<ReturnType>::value &&
                                   !std::is_pointer<ReturnType>::value) &&
                                  !flare::is_reducer<ReturnType>::value>,
                 ReturnType, FunctorType> {
             using return_type =
-                    flare::View<ReturnType, flare::HostSpace, flare::MemoryUnmanaged>;
+                    flare::Tensor<ReturnType, flare::HostSpace, flare::MemoryUnmanaged>;
 
             using reducer_type = InvalidType;
 
@@ -1418,7 +1418,7 @@ namespace flare {
                 std::enable_if_t<(std::is_array<ReturnType>::value ||
                                   std::is_pointer<ReturnType>::value)>,
                 ReturnType, FunctorType> {
-            using return_type = flare::View<std::remove_const_t<ReturnType>,
+            using return_type = flare::Tensor<std::remove_const_t<ReturnType>,
                     flare::HostSpace, flare::MemoryUnmanaged>;
 
             using reducer_type = InvalidType;
@@ -1438,12 +1438,12 @@ namespace flare {
         struct ParallelReduceReturnValue<
                 std::enable_if_t<flare::is_reducer<ReturnType>::value>, ReturnType,
                 FunctorType> {
-            using return_type = typename ReturnType::result_view_type;
+            using return_type = typename ReturnType::result_tensor_type;
             using reducer_type = ReturnType;
             using value_type = typename return_type::value_type;
 
             static auto return_value(ReturnType &return_val, const FunctorType &) {
-                return return_val.view();
+                return return_val.tensor();
             }
         };
 
@@ -1548,7 +1548,7 @@ namespace flare {
    Policy, such as an integer, a RangePolicy or a TeamPolicy. \param functor A
    functor with a reduction operator, and optional init, join and final
    functions. \param return_argument A return argument which can be a scalar, a
-   View, or a ReducerStruct. This argument can be left out if the functor has a
+   Tensor, or a ReducerStruct. This argument can be left out if the functor has a
    final function.
 */
 
@@ -1572,7 +1572,7 @@ namespace flare {
         constexpr std::enable_if_t<
                 // constraints only necessary because SFINAE lacks subsumption
                 !ReducerHasTestReferenceFunction<Arg>::value &&
-                !flare::is_view<Arg>::value,
+                !flare::is_tensor<Arg>::value,
                 // return type:
                 bool>
         parallel_reduce_needs_fence(ExecutionSpace const &, Arg const &) {
@@ -1592,13 +1592,13 @@ namespace flare {
             return reducer.references_scalar();
         }
 
-        template<class ExecutionSpace, class ViewLike>
+        template<class ExecutionSpace, class TensorLike>
         constexpr std::enable_if_t<
-                // requires flare::ViewLike<ViewLike>
-                flare::is_view<ViewLike>::value,
+                // requires flare::TensorLike<TensorLike>
+                flare::is_tensor<TensorLike>::value,
                 // return type:
                 bool>
-        parallel_reduce_needs_fence(ExecutionSpace const &, ViewLike const &) {
+        parallel_reduce_needs_fence(ExecutionSpace const &, TensorLike const &) {
             return false;
         }
 
@@ -1657,14 +1657,14 @@ namespace flare {
 
     template<class PolicyType, class FunctorType, class ReturnType>
     inline std::enable_if_t<flare::is_execution_policy<PolicyType>::value &&
-                            !(flare::is_view<ReturnType>::value ||
+                            !(flare::is_tensor<ReturnType>::value ||
                               flare::is_reducer<ReturnType>::value ||
                               std::is_pointer<ReturnType>::value)>
     parallel_reduce(const std::string &label, const PolicyType &policy,
                     const FunctorType &functor, ReturnType &return_value) {
         static_assert(
                 !std::is_const<ReturnType>::value,
-                "A const reduction result type is only allowed for a View, pointer or "
+                "A const reduction result type is only allowed for a Tensor, pointer or "
                 "reducer return type!");
 
         detail::ParallelReduceAdaptor<PolicyType, FunctorType, ReturnType>::execute(
@@ -1672,20 +1672,20 @@ namespace flare {
         detail::ParallelReduceFence<typename PolicyType::execution_space, ReturnType>::
         fence(
                 policy.space(),
-                "flare::parallel_reduce: fence due to result being value, not view",
+                "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
     template<class PolicyType, class FunctorType, class ReturnType>
     inline std::enable_if_t<flare::is_execution_policy<PolicyType>::value &&
-                            !(flare::is_view<ReturnType>::value ||
+                            !(flare::is_tensor<ReturnType>::value ||
                               flare::is_reducer<ReturnType>::value ||
                               std::is_pointer<ReturnType>::value)>
     parallel_reduce(const PolicyType &policy, const FunctorType &functor,
                     ReturnType &return_value) {
         static_assert(
                 !std::is_const<ReturnType>::value,
-                "A const reduction result type is only allowed for a View, pointer or "
+                "A const reduction result type is only allowed for a Tensor, pointer or "
                 "reducer return type!");
 
         detail::ParallelReduceAdaptor<PolicyType, FunctorType, ReturnType>::execute(
@@ -1693,19 +1693,19 @@ namespace flare {
         detail::ParallelReduceFence<typename PolicyType::execution_space, ReturnType>::
         fence(
                 policy.space(),
-                "flare::parallel_reduce: fence due to result being value, not view",
+                "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
     template<class FunctorType, class ReturnType>
-    inline std::enable_if_t<!(flare::is_view<ReturnType>::value ||
+    inline std::enable_if_t<!(flare::is_tensor<ReturnType>::value ||
                               flare::is_reducer<ReturnType>::value ||
                               std::is_pointer<ReturnType>::value)>
     parallel_reduce(const size_t &policy, const FunctorType &functor,
                     ReturnType &return_value) {
         static_assert(
                 !std::is_const<ReturnType>::value,
-                "A const reduction result type is only allowed for a View, pointer or "
+                "A const reduction result type is only allowed for a Tensor, pointer or "
                 "reducer return type!");
 
         using policy_type =
@@ -1717,19 +1717,19 @@ namespace flare {
         detail::ParallelReduceFence<typename policy_type::execution_space, ReturnType>::
         fence(
                 typename policy_type::execution_space(),
-                "flare::parallel_reduce: fence due to result being value, not view",
+                "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
     template<class FunctorType, class ReturnType>
-    inline std::enable_if_t<!(flare::is_view<ReturnType>::value ||
+    inline std::enable_if_t<!(flare::is_tensor<ReturnType>::value ||
                               flare::is_reducer<ReturnType>::value ||
                               std::is_pointer<ReturnType>::value)>
     parallel_reduce(const std::string &label, const size_t &policy,
                     const FunctorType &functor, ReturnType &return_value) {
         static_assert(
                 !std::is_const<ReturnType>::value,
-                "A const reduction result type is only allowed for a View, pointer or "
+                "A const reduction result type is only allowed for a Tensor, pointer or "
                 "reducer return type!");
 
         using policy_type =
@@ -1740,15 +1740,15 @@ namespace flare {
         detail::ParallelReduceFence<typename policy_type::execution_space, ReturnType>::
         fence(
                 typename policy_type::execution_space(),
-                "flare::parallel_reduce: fence due to result being value, not view",
+                "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
-// ReturnValue as View or Reducer: take by copy to allow for inline construction
+// ReturnValue as Tensor or Reducer: take by copy to allow for inline construction
 
     template<class PolicyType, class FunctorType, class ReturnType>
     inline std::enable_if_t<flare::is_execution_policy<PolicyType>::value &&
-                            (flare::is_view<ReturnType>::value ||
+                            (flare::is_tensor<ReturnType>::value ||
                              flare::is_reducer<ReturnType>::value ||
                              std::is_pointer<ReturnType>::value)>
     parallel_reduce(const std::string &label, const PolicyType &policy,
@@ -1759,13 +1759,13 @@ namespace flare {
         detail::ParallelReduceFence<typename PolicyType::execution_space, ReturnType>::
         fence(
                 policy.space(),
-                "flare::parallel_reduce: fence due to result being value, not view",
+                "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
     template<class PolicyType, class FunctorType, class ReturnType>
     inline std::enable_if_t<flare::is_execution_policy<PolicyType>::value &&
-                            (flare::is_view<ReturnType>::value ||
+                            (flare::is_tensor<ReturnType>::value ||
                              flare::is_reducer<ReturnType>::value ||
                              std::is_pointer<ReturnType>::value)>
     parallel_reduce(const PolicyType &policy, const FunctorType &functor,
@@ -1776,12 +1776,12 @@ namespace flare {
         detail::ParallelReduceFence<typename PolicyType::execution_space, ReturnType>::
         fence(
                 policy.space(),
-                "flare::parallel_reduce: fence due to result being value, not view",
+                "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
     template<class FunctorType, class ReturnType>
-    inline std::enable_if_t<flare::is_view<ReturnType>::value ||
+    inline std::enable_if_t<flare::is_tensor<ReturnType>::value ||
                             flare::is_reducer<ReturnType>::value ||
                             std::is_pointer<ReturnType>::value>
     parallel_reduce(const size_t &policy, const FunctorType &functor,
@@ -1795,12 +1795,12 @@ namespace flare {
         detail::ParallelReduceFence<typename policy_type::execution_space, ReturnType>::
         fence(
                 typename policy_type::execution_space(),
-                "flare::parallel_reduce: fence due to result being value, not view",
+                "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
     template<class FunctorType, class ReturnType>
-    inline std::enable_if_t<flare::is_view<ReturnType>::value ||
+    inline std::enable_if_t<flare::is_tensor<ReturnType>::value ||
                             flare::is_reducer<ReturnType>::value ||
                             std::is_pointer<ReturnType>::value>
     parallel_reduce(const std::string &label, const size_t &policy,
@@ -1814,7 +1814,7 @@ namespace flare {
         detail::ParallelReduceFence<typename policy_type::execution_space, ReturnType>::
         fence(
                 typename policy_type::execution_space(),
-                "flare::parallel_reduce: fence due to result being value, not view",
+                "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
@@ -1837,13 +1837,13 @@ namespace flare {
                 FunctorAnalysis::has_final_member_function,
                 "Calling parallel_reduce without either return value or final function.");
 
-        using result_view_type =
-                flare::View<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
-        result_view_type result_view;
+        using result_tensor_type =
+                flare::Tensor<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
+        result_tensor_type result_tensor;
 
         detail::ParallelReduceAdaptor<PolicyType, FunctorType,
-                result_view_type>::execute(label, policy, functor,
-                                           result_view);
+                result_tensor_type>::execute(label, policy, functor,
+                                           result_tensor);
     }
 
     template<class PolicyType, class FunctorType>
@@ -1862,13 +1862,13 @@ namespace flare {
                 FunctorAnalysis::has_final_member_function,
                 "Calling parallel_reduce without either return value or final function.");
 
-        using result_view_type =
-                flare::View<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
-        result_view_type result_view;
+        using result_tensor_type =
+                flare::Tensor<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
+        result_tensor_type result_tensor;
 
         detail::ParallelReduceAdaptor<PolicyType, FunctorType,
-                result_view_type>::execute("", policy, functor,
-                                           result_view);
+                result_tensor_type>::execute("", policy, functor,
+                                           result_tensor);
     }
 
     template<class FunctorType>
@@ -1887,14 +1887,14 @@ namespace flare {
                 FunctorAnalysis::has_final_member_function,
                 "Calling parallel_reduce without either return value or final function.");
 
-        using result_view_type =
-                flare::View<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
-        result_view_type result_view;
+        using result_tensor_type =
+                flare::Tensor<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
+        result_tensor_type result_tensor;
 
         detail::ParallelReduceAdaptor<policy_type, FunctorType,
-                result_view_type>::execute("",
+                result_tensor_type>::execute("",
                                            policy_type(0, policy),
-                                           functor, result_view);
+                                           functor, result_tensor);
     }
 
     template<class FunctorType>
@@ -1914,14 +1914,14 @@ namespace flare {
                 FunctorAnalysis::has_final_member_function,
                 "Calling parallel_reduce without either return value or final function.");
 
-        using result_view_type =
-                flare::View<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
-        result_view_type result_view;
+        using result_tensor_type =
+                flare::Tensor<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
+        result_tensor_type result_tensor;
 
         detail::ParallelReduceAdaptor<policy_type, FunctorType,
-                result_view_type>::execute(label,
+                result_tensor_type>::execute(label,
                                            policy_type(0, policy),
-                                           functor, result_view);
+                                           functor, result_tensor);
     }
 
 }  // namespace flare

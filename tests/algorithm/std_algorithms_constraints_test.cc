@@ -29,55 +29,55 @@ TEST_CASE("std_algorithms, is_admissible_to_std_algorithms") {
   static constexpr size_t extent2 = 18;
 
   //-------------
-  // 1d views
+  // 1d tensors
   //-------------
-  using static_view_1d_t = flare::View<value_type[extent0]>;
-  static_view_1d_t static_view_1d{"std-algo-test-1d-contiguous-view-static"};
+  using static_tensor_1d_t = flare::Tensor<value_type[extent0]>;
+  static_tensor_1d_t static_tensor_1d{"std-algo-test-1d-contiguous-tensor-static"};
 
-  using dyn_view_1d_t = flare::View<value_type*>;
-  dyn_view_1d_t dynamic_view_1d{"std-algo-test-1d-contiguous-view-dynamic",
+  using dyn_tensor_1d_t = flare::Tensor<value_type*>;
+  dyn_tensor_1d_t dynamic_tensor_1d{"std-algo-test-1d-contiguous-tensor-dynamic",
                                 extent0};
 
-  using strided_view_1d_t = flare::View<value_type*, flare::LayoutStride>;
+  using strided_tensor_1d_t = flare::Tensor<value_type*, flare::LayoutStride>;
   flare::LayoutStride layout1d{extent0, 2};
-  strided_view_1d_t strided_view_1d{"std-algo-test-1d-strided-view", layout1d};
+  strided_tensor_1d_t strided_tensor_1d{"std-algo-test-1d-strided-tensor", layout1d};
   REQUIRE_EQ(layout1d.dimension[0], 13u);
   REQUIRE_EQ(layout1d.stride[0], 2u);
   // they are admissible
   KE::detail::static_assert_is_admissible_to_flare_std_algorithms(
-      static_view_1d);
+      static_tensor_1d);
   KE::detail::static_assert_is_admissible_to_flare_std_algorithms(
-      dynamic_view_1d);
+      dynamic_tensor_1d);
   KE::detail::static_assert_is_admissible_to_flare_std_algorithms(
-      strided_view_1d);
+      strided_tensor_1d);
 
   //-------------
-  // 2d views
+  // 2d tensors
   //-------------
-  using static_view_2d_t  = flare::View<value_type[extent0][extent1]>;
-  using dyn_view_2d_t     = flare::View<value_type**>;
-  using strided_view_2d_t = flare::View<value_type**, flare::LayoutStride>;
+  using static_tensor_2d_t  = flare::Tensor<value_type[extent0][extent1]>;
+  using dyn_tensor_2d_t     = flare::Tensor<value_type**>;
+  using strided_tensor_2d_t = flare::Tensor<value_type**, flare::LayoutStride>;
   // non admissible
   REQUIRE_FALSE(KE::detail::is_admissible_to_flare_std_algorithms<
-               static_view_2d_t>::value);
+               static_tensor_2d_t>::value);
   REQUIRE_FALSE(
-      KE::detail::is_admissible_to_flare_std_algorithms<dyn_view_2d_t>::value);
+      KE::detail::is_admissible_to_flare_std_algorithms<dyn_tensor_2d_t>::value);
   REQUIRE_FALSE(KE::detail::is_admissible_to_flare_std_algorithms<
-               strided_view_2d_t>::value);
+               strided_tensor_2d_t>::value);
 
   //-------------
-  // 3d views
+  // 3d tensors
   //-------------
-  using static_view_3d_t  = flare::View<value_type[extent0][extent1][extent2]>;
-  using dyn_view_3d_t     = flare::View<value_type***>;
-  using strided_view_3d_t = flare::View<value_type***, flare::LayoutStride>;
+  using static_tensor_3d_t  = flare::Tensor<value_type[extent0][extent1][extent2]>;
+  using dyn_tensor_3d_t     = flare::Tensor<value_type***>;
+  using strided_tensor_3d_t = flare::Tensor<value_type***, flare::LayoutStride>;
   // non admissible
   REQUIRE_FALSE(KE::detail::is_admissible_to_flare_std_algorithms<
-               static_view_3d_t>::value);
+               static_tensor_3d_t>::value);
   REQUIRE_FALSE(
-      KE::detail::is_admissible_to_flare_std_algorithms<dyn_view_3d_t>::value);
+      KE::detail::is_admissible_to_flare_std_algorithms<dyn_tensor_3d_t>::value);
   REQUIRE_FALSE(KE::detail::is_admissible_to_flare_std_algorithms<
-               strided_view_3d_t>::value);
+               strided_tensor_3d_t>::value);
 }
 
 }  // namespace stdalgos

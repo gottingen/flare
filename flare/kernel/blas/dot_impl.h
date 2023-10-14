@@ -25,8 +25,8 @@ namespace flare::blas::detail {
     /// \brief Functor that implements the single-vector, two-argument
     ///   version of flare::blas::dot (dot product of two vectors).
     ///
-    /// \tparam XVector Type of the first vector x; 1-D View
-    /// \tparam YVector Type of the second vector y; 1-D View
+    /// \tparam XVector Type of the first vector x; 1-D Tensor
+    /// \tparam YVector Type of the second vector y; 1-D Tensor
     /// \tparam SizeType Type of the row index used in the dot product.
     ///   For best performance, use int instead of size_t here.
     template<class execution_space, class AV, class XVector, class YVector,
@@ -112,7 +112,7 @@ namespace flare::blas::detail {
         }
     };
 
-    // Main version: the result view is accessible from execution space, so it can
+    // Main version: the result tensor is accessible from execution space, so it can
     // be computed in-place
     template<class execution_space, class RV, class XV, class YV, class size_type>
     void MV_Dot_Invoke(
@@ -156,7 +156,7 @@ namespace flare::blas::detail {
                                     r, x, y, teamsPerDot));
     }
 
-    // Version for when a temporary result view is needed (implemented in terms of
+    // Version for when a temporary result tensor is needed (implemented in terms of
     // the other version)
     template<class execution_space, class RV, class XV, class YV, class size_type>
     void MV_Dot_Invoke(
@@ -164,9 +164,9 @@ namespace flare::blas::detail {
             typename std::enable_if<!flare::SpaceAccessibility<
                     execution_space, typename RV::memory_space>::accessible>::type * =
             nullptr) {
-        flare::View<typename RV::non_const_value_type *, typename XV::memory_space>
+        flare::Tensor<typename RV::non_const_value_type *, typename XV::memory_space>
                 tempResult(
-                flare::view_alloc(flare::WithoutInitializing, "Dot_MV temp result"),
+                flare::tensor_alloc(flare::WithoutInitializing, "Dot_MV temp result"),
                 r.extent(0));
         MV_Dot_Invoke<execution_space, decltype(tempResult), XV, YV, size_type>(
                 space, tempResult, x, y);
@@ -207,24 +207,24 @@ namespace flare::blas::detail {
     // Unification layer
     template<class execution_space, class RV, class XV, class YV, int XV_Rank = XV::rank, int YV_Rank = YV::rank>
     struct Dot {
-        static_assert(flare::is_view<XV>::value,
+        static_assert(flare::is_tensor<XV>::value,
                       "flare::blas::Impl::"
-                      "Dot<2-D>: XV is not a flare::View.");
-        static_assert(flare::is_view<YV>::value,
+                      "Dot<2-D>: XV is not a flare::Tensor.");
+        static_assert(flare::is_tensor<YV>::value,
                       "flare::blas::Impl::"
-                      "Dot<2-D>: YV is not a flare::View.");
+                      "Dot<2-D>: YV is not a flare::Tensor.");
         static_assert(RV::rank == 1,
                       "flare::blas::Impl::Dot<2-D>: "
                       "RV is not rank 1.");
 
         typedef typename YV::size_type size_type;
 
-        // Helper to get the first column of a rank-1 or rank-2 view.
+        // Helper to get the first column of a rank-1 or rank-2 tensor.
         // This makes it easier to add a path for single-column dot.
         template<typename V>
         static auto getFirstColumn(
                 const V &v, typename std::enable_if<V::rank == 2>::type * = nullptr) {
-            return flare::subview(v, flare::ALL(), 0);
+            return flare::subtensor(v, flare::ALL(), 0);
         }
 
         template<typename V>
@@ -240,7 +240,7 @@ namespace flare::blas::detail {
             const size_type numRows = X.extent(0);
             const size_type numDots = std::max(X.extent(1), Y.extent(1));
             if (numDots == flare::ArithTraits<size_type>::one()) {
-                auto R0 = flare::subview(R, 0);
+                auto R0 = flare::subtensor(R, 0);
                 auto X0 = getFirstColumn(X);
                 auto Y0 = getFirstColumn(Y);
                 if (numRows < static_cast<size_type>(INT_MAX)) {
@@ -269,21 +269,21 @@ namespace flare::blas::detail {
 
     template<class execution_space, class RV, class XV, class YV>
     struct DotSpecialAccumulator {
-        static_assert(flare::is_view<XV>::value,
+        static_assert(flare::is_tensor<XV>::value,
                       "flare::blas::Impl::"
-                      "DotSpecialAccumulator: XV is not a flare::View.");
-        static_assert(flare::is_view<YV>::value,
+                      "DotSpecialAccumulator: XV is not a flare::Tensor.");
+        static_assert(flare::is_tensor<YV>::value,
                       "flare::blas::Impl::"
-                      "DotSpecialAccumulator: YV is not a flare::View.");
+                      "DotSpecialAccumulator: YV is not a flare::Tensor.");
         static_assert(static_cast<int>(XV::rank) == static_cast<int>(YV::rank),
                       "flare::blas::Impl::"
                       "DotSpecialAccumulator: X and Y have different ranks.");
         static_assert(XV::rank == 1,
                       "flare::blas::Impl::"
-                      "DotSpecialAccumulator: X and Y are not rank-1 Views.");
-        static_assert(flare::is_view<RV>::value,
+                      "DotSpecialAccumulator: X and Y are not rank-1 Tensors.");
+        static_assert(flare::is_tensor<RV>::value,
                       "flare::blas::Impl::"
-                      "DotSpecialAccumulator: RV is not a flare::View.");
+                      "DotSpecialAccumulator: RV is not a flare::Tensor.");
         static_assert(std::is_same<typename XV::non_const_value_type,
                               typename YV::non_const_value_type>::value,
                       "flare::blas::Impl::DotSpecialAccumulator: X and Y have "
@@ -297,9 +297,9 @@ namespace flare::blas::detail {
         using size_type = typename YV::size_type;
         using dot_type = typename flare::detail::InnerProductSpaceTraits<typename XV::non_const_value_type>::dot_type;
         using accum_type = typename DotAccumulatingScalar<dot_type>::type;
-        // This is the same View type as RV, but using the special accumulator as the
+        // This is the same Tensor type as RV, but using the special accumulator as the
         // value type
-        using RV_Result = flare::View<accum_type, typename RV::array_layout,
+        using RV_Result = flare::Tensor<accum_type, typename RV::array_layout,
                 typename RV::device_type,
                 flare::MemoryTraits<flare::Unmanaged>>;
 
@@ -321,22 +321,22 @@ namespace flare::blas::detail {
         }
     };
 
-    //! Full specialization of Dot for single vectors (1-D Views).
+    //! Full specialization of Dot for single vectors (1-D Tensors).
     //  The rank-1 case is currently the only one that may use a different
     //  accumulator type than <tt>InnerProductSpaceTraits::dot_type</tt>.
     template<class execution_space, class RV, class XV, class YV>
     struct Dot<execution_space, RV, XV, YV, 1, 1> {
         // Check some things about the template parameters at compile time to get nice
         // error messages, before using them under the assumption they are valid.
-        static_assert(flare::is_view<XV>::value,
+        static_assert(flare::is_tensor<XV>::value,
                       "flare::blas::Impl::"
-                      "Dot<1-D>: XV is not a flare::View.");
-        static_assert(flare::is_view<YV>::value,
+                      "Dot<1-D>: XV is not a flare::Tensor.");
+        static_assert(flare::is_tensor<YV>::value,
                       "flare::blas::Impl::"
-                      "Dot<1-D>: YV is not a flare::View.");
-        static_assert(flare::is_view<RV>::value,
+                      "Dot<1-D>: YV is not a flare::Tensor.");
+        static_assert(flare::is_tensor<RV>::value,
                       "flare::blas::Impl::"
-                      "Dot<1-D>: RV is not a flare::View.");
+                      "Dot<1-D>: RV is not a flare::Tensor.");
         static_assert(RV::rank == 0,
                       "flare::blas::Impl::Dot<1-D>: "
                       "RV is not rank 0.");
@@ -356,9 +356,9 @@ namespace flare::blas::detail {
         typedef typename RV::non_const_value_type dot_type;
         typedef typename DotAccumulatingScalar<dot_type>::type special_result_type;
 
-        // This is the same View type as RV, but using the special accumulator as the
+        // This is the same Tensor type as RV, but using the special accumulator as the
         // value type
-        typedef flare::View<special_result_type, typename RV::array_layout,
+        typedef flare::Tensor<special_result_type, typename RV::array_layout,
                 typename RV::device_type,
                 flare::MemoryTraits<flare::Unmanaged>>
                 RV_Result;
@@ -385,44 +385,44 @@ namespace flare::blas::detail {
 
 #define FLARE_BLAS_DOT_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE) \
   template struct Dot<EXEC_SPACE,                                            \
-                      flare::View<SCALAR, LAYOUT, flare::HostSpace,        \
+                      flare::Tensor<SCALAR, LAYOUT, flare::HostSpace,        \
                                    flare::MemoryTraits<flare::Unmanaged>>, \
-                      flare::View<const SCALAR*, LAYOUT,                    \
+                      flare::Tensor<const SCALAR*, LAYOUT,                    \
                                    flare::Device<EXEC_SPACE, MEM_SPACE>,    \
                                    flare::MemoryTraits<flare::Unmanaged>>, \
-                      flare::View<const SCALAR*, LAYOUT,                    \
+                      flare::Tensor<const SCALAR*, LAYOUT,                    \
                                    flare::Device<EXEC_SPACE, MEM_SPACE>,    \
                                    flare::MemoryTraits<flare::Unmanaged>>, \
                       1, 1>;                                                 \
   template struct Dot<                                                       \
       EXEC_SPACE,                                                            \
-      flare::View<SCALAR, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
+      flare::Tensor<SCALAR, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
                    flare::MemoryTraits<flare::Unmanaged>>,                 \
-      flare::View<const SCALAR*, LAYOUT,                                    \
+      flare::Tensor<const SCALAR*, LAYOUT,                                    \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                    \
                    flare::MemoryTraits<flare::Unmanaged>>,                 \
-      flare::View<const SCALAR*, LAYOUT,                                    \
+      flare::Tensor<const SCALAR*, LAYOUT,                                    \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                    \
                    flare::MemoryTraits<flare::Unmanaged>>,                 \
       1, 1>;                                                                 \
   template struct DotSpecialAccumulator<                                     \
       EXEC_SPACE,                                                            \
-      flare::View<SCALAR, LAYOUT, flare::HostSpace,                        \
+      flare::Tensor<SCALAR, LAYOUT, flare::HostSpace,                        \
                    flare::MemoryTraits<flare::Unmanaged>>,                 \
-      flare::View<const SCALAR*, LAYOUT,                                    \
+      flare::Tensor<const SCALAR*, LAYOUT,                                    \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                    \
                    flare::MemoryTraits<flare::Unmanaged>>,                 \
-      flare::View<const SCALAR*, LAYOUT,                                    \
+      flare::Tensor<const SCALAR*, LAYOUT,                                    \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                    \
                    flare::MemoryTraits<flare::Unmanaged>>>;                 \
   template struct DotSpecialAccumulator<                                     \
       EXEC_SPACE,                                                            \
-      flare::View<SCALAR, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
+      flare::Tensor<SCALAR, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
                    flare::MemoryTraits<flare::Unmanaged>>,                 \
-      flare::View<const SCALAR*, LAYOUT,                                    \
+      flare::Tensor<const SCALAR*, LAYOUT,                                    \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                    \
                    flare::MemoryTraits<flare::Unmanaged>>,                 \
-      flare::View<const SCALAR*, LAYOUT,                                    \
+      flare::Tensor<const SCALAR*, LAYOUT,                                    \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                    \
                    flare::MemoryTraits<flare::Unmanaged>>>;
 
@@ -430,40 +430,40 @@ namespace flare::blas::detail {
                                          MEM_SPACE)                  \
   template struct Dot<                                               \
       EXEC_SPACE,                                                    \
-      flare::View<SCALAR*, LAYOUT,                                  \
+      flare::Tensor<SCALAR*, LAYOUT,                                  \
                    flare::Device<flare::DefaultHostExecutionSpace, \
                                   flare::HostSpace>,                \
                    flare::MemoryTraits<flare::Unmanaged>>,         \
-      flare::View<const SCALAR**, LAYOUT,                           \
+      flare::Tensor<const SCALAR**, LAYOUT,                           \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,            \
                    flare::MemoryTraits<flare::Unmanaged>>,         \
-      flare::View<const SCALAR**, LAYOUT,                           \
+      flare::Tensor<const SCALAR**, LAYOUT,                           \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,            \
                    flare::MemoryTraits<flare::Unmanaged>>,         \
       2, 2>;                                            \
   template struct Dot<                                               \
       EXEC_SPACE,                                                    \
-      flare::View<SCALAR*, LAYOUT,                                  \
+      flare::Tensor<SCALAR*, LAYOUT,                                  \
                    flare::Device<flare::DefaultHostExecutionSpace, \
                                   flare::HostSpace>,                \
                    flare::MemoryTraits<flare::Unmanaged>>,         \
-      flare::View<const SCALAR**, LAYOUT,                           \
+      flare::Tensor<const SCALAR**, LAYOUT,                           \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,            \
                    flare::MemoryTraits<flare::Unmanaged>>,         \
-      flare::View<const SCALAR*, LAYOUT,                            \
+      flare::Tensor<const SCALAR*, LAYOUT,                            \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,            \
                    flare::MemoryTraits<flare::Unmanaged>>,         \
       2, 1>;                                            \
   template struct Dot<                                               \
       EXEC_SPACE,                                                    \
-      flare::View<SCALAR*, LAYOUT,                                  \
+      flare::Tensor<SCALAR*, LAYOUT,                                  \
                    flare::Device<flare::DefaultHostExecutionSpace, \
                                   flare::HostSpace>,                \
                    flare::MemoryTraits<flare::Unmanaged>>,         \
-      flare::View<const SCALAR*, LAYOUT,                            \
+      flare::Tensor<const SCALAR*, LAYOUT,                            \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,            \
                    flare::MemoryTraits<flare::Unmanaged>>,         \
-      flare::View<const SCALAR**, LAYOUT,                           \
+      flare::Tensor<const SCALAR**, LAYOUT,                           \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,            \
                    flare::MemoryTraits<flare::Unmanaged>>,         \
       1, 2>;

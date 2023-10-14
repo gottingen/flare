@@ -46,39 +46,39 @@ struct TestTeamMDParallelFor {
   using DataType = int64_t;
   using DimsType = int[8];
 
-  template <typename HostViewType, typename FillFunctor>
-  static void check_result_3D(HostViewType h_view,
+  template <typename HostTensorType, typename FillFunctor>
+  static void check_result_3D(HostTensorType h_tensor,
                               FillFunctor const& fillFunctor) {
-    for (size_t i = 0; i < h_view.extent(0); ++i) {
-      for (size_t j = 0; j < h_view.extent(1); ++j) {
-        for (size_t k = 0; k < h_view.extent(2); ++k) {
-          EXPECT_EQ(h_view(i, j, k), fillFunctor(i, j, k));
+    for (size_t i = 0; i < h_tensor.extent(0); ++i) {
+      for (size_t j = 0; j < h_tensor.extent(1); ++j) {
+        for (size_t k = 0; k < h_tensor.extent(2); ++k) {
+          EXPECT_EQ(h_tensor(i, j, k), fillFunctor(i, j, k));
         }
       }
     }
   }
 
-  template <typename HostViewType, typename FillFunctor>
-  static void check_result_4D(HostViewType h_view, FillFunctor& fillFunctor) {
-    for (size_t i = 0; i < h_view.extent(0); ++i) {
-      for (size_t j = 0; j < h_view.extent(1); ++j) {
-        for (size_t k = 0; k < h_view.extent(2); ++k) {
-          for (size_t l = 0; l < h_view.extent(3); ++l) {
-            EXPECT_EQ(h_view(i, j, k, l), fillFunctor(i, j, k, l));
+  template <typename HostTensorType, typename FillFunctor>
+  static void check_result_4D(HostTensorType h_tensor, FillFunctor& fillFunctor) {
+    for (size_t i = 0; i < h_tensor.extent(0); ++i) {
+      for (size_t j = 0; j < h_tensor.extent(1); ++j) {
+        for (size_t k = 0; k < h_tensor.extent(2); ++k) {
+          for (size_t l = 0; l < h_tensor.extent(3); ++l) {
+            EXPECT_EQ(h_tensor(i, j, k, l), fillFunctor(i, j, k, l));
           }
         }
       }
     }
   }
 
-  template <typename HostViewType, typename FillFunctor>
-  static void check_result_5D(HostViewType h_view, FillFunctor& fillFunctor) {
-    for (size_t i = 0; i < h_view.extent(0); ++i) {
-      for (size_t j = 0; j < h_view.extent(1); ++j) {
-        for (size_t k = 0; k < h_view.extent(2); ++k) {
-          for (size_t l = 0; l < h_view.extent(3); ++l) {
-            for (size_t m = 0; m < h_view.extent(4); ++m) {
-              EXPECT_EQ(h_view(i, j, k, l, m), fillFunctor(i, j, k, l, m));
+  template <typename HostTensorType, typename FillFunctor>
+  static void check_result_5D(HostTensorType h_tensor, FillFunctor& fillFunctor) {
+    for (size_t i = 0; i < h_tensor.extent(0); ++i) {
+      for (size_t j = 0; j < h_tensor.extent(1); ++j) {
+        for (size_t k = 0; k < h_tensor.extent(2); ++k) {
+          for (size_t l = 0; l < h_tensor.extent(3); ++l) {
+            for (size_t m = 0; m < h_tensor.extent(4); ++m) {
+              EXPECT_EQ(h_tensor(i, j, k, l, m), fillFunctor(i, j, k, l, m));
             }
           }
         }
@@ -86,15 +86,15 @@ struct TestTeamMDParallelFor {
     }
   }
 
-  template <typename HostViewType, typename FillFunctor>
-  static void check_result_6D(HostViewType h_view, FillFunctor& fillFunctor) {
-    for (size_t i = 0; i < h_view.extent(0); ++i) {
-      for (size_t j = 0; j < h_view.extent(1); ++j) {
-        for (size_t k = 0; k < h_view.extent(2); ++k) {
-          for (size_t l = 0; l < h_view.extent(3); ++l) {
-            for (size_t m = 0; m < h_view.extent(4); ++m) {
-              for (size_t n = 0; n < h_view.extent(5); ++n) {
-                EXPECT_EQ(h_view(i, j, k, l, m, n),
+  template <typename HostTensorType, typename FillFunctor>
+  static void check_result_6D(HostTensorType h_tensor, FillFunctor& fillFunctor) {
+    for (size_t i = 0; i < h_tensor.extent(0); ++i) {
+      for (size_t j = 0; j < h_tensor.extent(1); ++j) {
+        for (size_t k = 0; k < h_tensor.extent(2); ++k) {
+          for (size_t l = 0; l < h_tensor.extent(3); ++l) {
+            for (size_t m = 0; m < h_tensor.extent(4); ++m) {
+              for (size_t n = 0; n < h_tensor.extent(5); ++n) {
+                EXPECT_EQ(h_tensor(i, j, k, l, m, n),
                           fillFunctor(i, j, k, l, m, n));
               }
             }
@@ -104,16 +104,16 @@ struct TestTeamMDParallelFor {
     }
   }
 
-  template <typename HostViewType, typename FillFunctor>
-  static void check_result_7D(HostViewType h_view, FillFunctor& fillFunctor) {
-    for (size_t i = 0; i < h_view.extent(0); ++i) {
-      for (size_t j = 0; j < h_view.extent(1); ++j) {
-        for (size_t k = 0; k < h_view.extent(2); ++k) {
-          for (size_t l = 0; l < h_view.extent(3); ++l) {
-            for (size_t m = 0; m < h_view.extent(4); ++m) {
-              for (size_t n = 0; n < h_view.extent(5); ++n) {
-                for (size_t o = 0; o < h_view.extent(6); ++o) {
-                  EXPECT_EQ(h_view(i, j, k, l, m, n, o),
+  template <typename HostTensorType, typename FillFunctor>
+  static void check_result_7D(HostTensorType h_tensor, FillFunctor& fillFunctor) {
+    for (size_t i = 0; i < h_tensor.extent(0); ++i) {
+      for (size_t j = 0; j < h_tensor.extent(1); ++j) {
+        for (size_t k = 0; k < h_tensor.extent(2); ++k) {
+          for (size_t l = 0; l < h_tensor.extent(3); ++l) {
+            for (size_t m = 0; m < h_tensor.extent(4); ++m) {
+              for (size_t n = 0; n < h_tensor.extent(5); ++n) {
+                for (size_t o = 0; o < h_tensor.extent(6); ++o) {
+                  EXPECT_EQ(h_tensor(i, j, k, l, m, n, o),
                             fillFunctor(i, j, k, l, m, n, o));
                 }
               }
@@ -124,17 +124,17 @@ struct TestTeamMDParallelFor {
     }
   }
 
-  template <typename HostViewType, typename FillFunctor>
-  static void check_result_8D(HostViewType h_view, FillFunctor& fillFunctor) {
-    for (size_t i = 0; i < h_view.extent(0); ++i) {
-      for (size_t j = 0; j < h_view.extent(1); ++j) {
-        for (size_t k = 0; k < h_view.extent(2); ++k) {
-          for (size_t l = 0; l < h_view.extent(3); ++l) {
-            for (size_t m = 0; m < h_view.extent(4); ++m) {
-              for (size_t n = 0; n < h_view.extent(5); ++n) {
-                for (size_t o = 0; o < h_view.extent(6); ++o) {
-                  for (size_t p = 0; p < h_view.extent(7); ++p) {
-                    EXPECT_EQ(h_view(i, j, k, l, m, n, o, p),
+  template <typename HostTensorType, typename FillFunctor>
+  static void check_result_8D(HostTensorType h_tensor, FillFunctor& fillFunctor) {
+    for (size_t i = 0; i < h_tensor.extent(0); ++i) {
+      for (size_t j = 0; j < h_tensor.extent(1); ++j) {
+        for (size_t k = 0; k < h_tensor.extent(2); ++k) {
+          for (size_t l = 0; l < h_tensor.extent(3); ++l) {
+            for (size_t m = 0; m < h_tensor.extent(4); ++m) {
+              for (size_t n = 0; n < h_tensor.extent(5); ++n) {
+                for (size_t o = 0; o < h_tensor.extent(6); ++o) {
+                  for (size_t p = 0; p < h_tensor.extent(7); ++p) {
+                    EXPECT_EQ(h_tensor(i, j, k, l, m, n, o, p),
                               fillFunctor(i, j, k, l, m, n, o, p));
                   }
                 }
@@ -154,14 +154,14 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_3D_TeamThreadMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType***, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType***, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
     int n1         = dims[2];
 
-    ViewType v("v", leagueSize, n0, n1);
+    TensorType v("v", leagueSize, n0, n1);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1);
 
     flare::parallel_for(
@@ -178,23 +178,23 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_3D(h_view, fillFlattenedIndex);
+    check_result_3D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_4D_TeamThreadMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType****, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType****, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
     int n1         = dims[2];
     int n2         = dims[3];
 
-    ViewType v("v", leagueSize, n0, n1, n2);
+    TensorType v("v", leagueSize, n0, n1, n2);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2);
 
     flare::parallel_for(
@@ -211,16 +211,16 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_4D(h_view, fillFlattenedIndex);
+    check_result_4D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_5D_TeamThreadMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType*****, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType*****, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -228,7 +228,7 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
     int n2         = dims[3];
     int n3         = dims[4];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3);
+    TensorType v("v", leagueSize, n0, n1, n2, n3);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3);
 
     flare::parallel_for(
@@ -246,16 +246,16 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_5D(h_view, fillFlattenedIndex);
+    check_result_5D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_6D_TeamThreadMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType******, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType******, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -264,7 +264,7 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
     int n3         = dims[4];
     int n4         = dims[5];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4);
 
     flare::parallel_for(
@@ -283,16 +283,16 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
               });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_6D(h_view, fillFlattenedIndex);
+    check_result_6D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_7D_TeamThreadMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType*******, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType*******, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -302,7 +302,7 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
     int n4         = dims[5];
     int n5         = dims[6];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5);
 
     flare::parallel_for(
@@ -321,16 +321,16 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
               });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_7D(h_view, fillFlattenedIndex);
+    check_result_7D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_8D_TeamThreadMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType********, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType********, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -341,7 +341,7 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
     int n5         = dims[6];
     int n6         = dims[7];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5,
                                           n6);
 
@@ -361,22 +361,22 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
               });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_8D(h_view, fillFlattenedIndex);
+    check_result_8D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_single_direction_test(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType***, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType***, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int n0 = dims[0];
     int n1 = dims[1];
     int n2 = dims[2];
 
-    ViewType v("v", n0, n1, n2);
+    TensorType v("v", n0, n1, n2);
     FillFlattenedIndex fillFlattenedIndex(n0, n1, n2);
 
     flare::parallel_for(
@@ -391,10 +391,10 @@ struct TestTeamThreadMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_3D(h_view, fillFlattenedIndex);
+    check_result_3D(h_tensor, fillFlattenedIndex);
   }
 };
 
@@ -404,15 +404,15 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_4D_ThreadVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType****, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType****, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
     int n1         = dims[2];
     int n2         = dims[3];
 
-    ViewType v("v", leagueSize, n0, n1, n2);
+    TensorType v("v", leagueSize, n0, n1, n2);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2);
 
     flare::parallel_for(
@@ -432,16 +432,16 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_4D(h_view, fillFlattenedIndex);
+    check_result_4D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_5D_ThreadVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType*****, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType*****, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -449,7 +449,7 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
     int n2         = dims[3];
     int n3         = dims[4];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3);
+    TensorType v("v", leagueSize, n0, n1, n2, n3);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3);
 
     flare::parallel_for(
@@ -470,16 +470,16 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_5D(h_view, fillFlattenedIndex);
+    check_result_5D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_6D_ThreadVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType******, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType******, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -488,7 +488,7 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
     int n3         = dims[4];
     int n4         = dims[5];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4);
 
     flare::parallel_for(
@@ -509,16 +509,16 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_6D(h_view, fillFlattenedIndex);
+    check_result_6D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_7D_ThreadVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType*******, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType*******, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -528,7 +528,7 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
     int n4         = dims[5];
     int n5         = dims[6];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5);
 
     flare::parallel_for(
@@ -550,16 +550,16 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_7D(h_view, fillFlattenedIndex);
+    check_result_7D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_8D_ThreadVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType********, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType********, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -570,7 +570,7 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
     int n5         = dims[6];
     int n6         = dims[7];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5,
                                           n6);
 
@@ -593,10 +593,10 @@ struct TestThreadVectorMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_8D(h_view, fillFlattenedIndex);
+    check_result_8D(h_tensor, fillFlattenedIndex);
   }
 };
 
@@ -605,14 +605,14 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
   using TeamType = typename flare::TeamPolicy<ExecSpace>::member_type;
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_3D_TeamVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType***, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType***, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
     int n1         = dims[2];
 
-    ViewType v("v", leagueSize, n0, n1);
+    TensorType v("v", leagueSize, n0, n1);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1);
 
     flare::parallel_for(
@@ -629,23 +629,23 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_3D(h_view, fillFlattenedIndex);
+    check_result_3D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_4D_TeamVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType****, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType****, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
     int n1         = dims[2];
     int n2         = dims[3];
 
-    ViewType v("v", leagueSize, n0, n1, n2);
+    TensorType v("v", leagueSize, n0, n1, n2);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2);
 
     flare::parallel_for(
@@ -662,16 +662,16 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_4D(h_view, fillFlattenedIndex);
+    check_result_4D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_5D_TeamVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType*****, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType*****, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -679,7 +679,7 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
     int n2         = dims[3];
     int n3         = dims[4];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3);
+    TensorType v("v", leagueSize, n0, n1, n2, n3);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3);
 
     flare::parallel_for(
@@ -697,16 +697,16 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_5D(h_view, fillFlattenedIndex);
+    check_result_5D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_6D_TeamVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType******, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType******, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -715,7 +715,7 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
     int n3         = dims[4];
     int n4         = dims[5];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4);
 
     flare::parallel_for(
@@ -734,16 +734,16 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
               });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_6D(h_view, fillFlattenedIndex);
+    check_result_6D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_7D_TeamVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType*******, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType*******, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -753,7 +753,7 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
     int n4         = dims[5];
     int n5         = dims[6];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5);
 
     flare::parallel_for(
@@ -772,16 +772,16 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
               });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_7D(h_view, fillFlattenedIndex);
+    check_result_7D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_for_8D_TeamVectorMDRange(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType********, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType********, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -792,7 +792,7 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
     int n5         = dims[6];
     int n6         = dims[7];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5,
                                           n6);
 
@@ -812,23 +812,23 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
               });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_8D(h_view, fillFlattenedIndex);
+    check_result_8D(h_tensor, fillFlattenedIndex);
   }
 
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_double_direction_test(DimsType const& dims) {
-    using ViewType     = typename flare::View<DataType****, ExecSpace>;
-    using HostViewType = typename ViewType::HostMirror;
+    using TensorType     = typename flare::Tensor<DataType****, ExecSpace>;
+    using HostTensorType = typename TensorType::HostMirror;
 
     int n0 = dims[0];
     int n1 = dims[1];
     int n2 = dims[2];
     int n3 = dims[3];
 
-    ViewType v("v", n0, n1, n2, n3);
+    TensorType v("v", n0, n1, n2, n3);
     FillFlattenedIndex fillFlattenedIndex(n0, n1, n2, n3);
 
     flare::parallel_for(
@@ -843,10 +843,10 @@ struct TestTeamVectorMDRangeParallelFor : public TestTeamMDParallelFor {
           });
         });
 
-    HostViewType h_view = flare::create_mirror_view_and_copy(
-        typename HostViewType::traits::memory_space(), v);
+    HostTensorType h_tensor = flare::create_mirror_tensor_and_copy(
+        typename HostTensorType::traits::memory_space(), v);
 
-    check_result_4D(h_view, fillFlattenedIndex);
+    check_result_4D(h_tensor, fillFlattenedIndex);
   }
 };
 
@@ -888,13 +888,13 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_3D_TeamThreadMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType***, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType***, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
     int n1         = dims[2];
 
-    ViewType v("v", leagueSize, n0, n1);
+    TensorType v("v", leagueSize, n0, n1);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1);
 
     flare::parallel_for(
@@ -931,14 +931,14 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_4D_TeamThreadMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType****, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType****, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
     int n1         = dims[2];
     int n2         = dims[3];
 
-    ViewType v("v", leagueSize, n0, n1, n2);
+    TensorType v("v", leagueSize, n0, n1, n2);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2);
 
     flare::parallel_for(
@@ -974,7 +974,7 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_5D_TeamThreadMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType*****, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType*****, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -982,7 +982,7 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n2         = dims[3];
     int n3         = dims[4];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3);
+    TensorType v("v", leagueSize, n0, n1, n2, n3);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3);
 
     flare::parallel_for(
@@ -1021,7 +1021,7 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_6D_TeamThreadMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType******, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType******, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1030,7 +1030,7 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n3         = dims[4];
     int n4         = dims[5];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4);
 
     flare::parallel_for(
@@ -1071,7 +1071,7 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_7D_TeamThreadMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType*******, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType*******, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1081,7 +1081,7 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n4         = dims[5];
     int n5         = dims[6];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5);
     auto mdRangePolicy = flare::MDRangePolicy<ExecSpace, flare::Rank<6>>(
         {0, 0, 0, 0, 0, 0}, {leagueSize, n0, n1, n2, n3, n4});
@@ -1124,7 +1124,7 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_8D_TeamThreadMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType********, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType********, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1135,7 +1135,7 @@ struct TestTeamThreadMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n5         = dims[6];
     int n6         = dims[7];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5,
                                           n6);
     auto mdRangePolicy = flare::MDRangePolicy<ExecSpace, flare::Rank<6>>(
@@ -1186,14 +1186,14 @@ struct TestThreadVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_4D_ThreadVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType****, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType****, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
     int n1         = dims[2];
     int n2         = dims[3];
 
-    ViewType v("v", leagueSize, n0, n1, n2);
+    TensorType v("v", leagueSize, n0, n1, n2);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2);
 
     flare::parallel_for(
@@ -1240,7 +1240,7 @@ struct TestThreadVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_5D_ThreadVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType*****, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType*****, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1248,7 +1248,7 @@ struct TestThreadVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n2         = dims[3];
     int n3         = dims[4];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3);
+    TensorType v("v", leagueSize, n0, n1, n2, n3);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3);
 
     flare::parallel_for(
@@ -1297,7 +1297,7 @@ struct TestThreadVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_6D_ThreadVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType******, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType******, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1306,7 +1306,7 @@ struct TestThreadVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n3         = dims[4];
     int n4         = dims[5];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4);
 
     flare::parallel_for(
@@ -1355,7 +1355,7 @@ struct TestThreadVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_7D_ThreadVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType*******, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType*******, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1365,7 +1365,7 @@ struct TestThreadVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n4         = dims[5];
     int n5         = dims[6];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5);
     auto mdRangePolicy = flare::MDRangePolicy<ExecSpace, flare::Rank<6>>(
         {0, 0, 0, 0, 0, 0}, {leagueSize, n0, n1, n2, n3, n4});
@@ -1418,7 +1418,7 @@ struct TestThreadVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_8D_ThreadVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType********, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType********, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1429,7 +1429,7 @@ struct TestThreadVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n5         = dims[6];
     int n6         = dims[7];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5,
                                           n6);
     auto mdRangePolicy = flare::MDRangePolicy<ExecSpace, flare::Rank<6>>(
@@ -1489,14 +1489,14 @@ struct TestTeamVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_4D_TeamVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType****, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType****, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
     int n1         = dims[2];
     int n2         = dims[3];
 
-    ViewType v("v", leagueSize, n0, n1, n2);
+    TensorType v("v", leagueSize, n0, n1, n2);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2);
 
     flare::parallel_for(
@@ -1535,7 +1535,7 @@ struct TestTeamVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_5D_TeamVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType*****, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType*****, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1543,7 +1543,7 @@ struct TestTeamVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n2         = dims[3];
     int n3         = dims[4];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3);
+    TensorType v("v", leagueSize, n0, n1, n2, n3);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3);
 
     flare::parallel_for(
@@ -1585,7 +1585,7 @@ struct TestTeamVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_6D_TeamVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType******, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType******, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1594,7 +1594,7 @@ struct TestTeamVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n3         = dims[4];
     int n4         = dims[5];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4);
 
     flare::parallel_for(
@@ -1636,7 +1636,7 @@ struct TestTeamVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_7D_TeamVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType*******, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType*******, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1646,7 +1646,7 @@ struct TestTeamVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n4         = dims[5];
     int n5         = dims[6];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5);
     auto mdRangePolicy = flare::MDRangePolicy<ExecSpace, flare::Rank<6>>(
         {0, 0, 0, 0, 0, 0}, {leagueSize, n0, n1, n2, n3, n4});
@@ -1692,7 +1692,7 @@ struct TestTeamVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
   template <flare::Iterate Direction = flare::Iterate::Default>
   static void test_parallel_reduce_for_8D_TeamVectorMDRange(
       DimsType const& dims) {
-    using ViewType = typename flare::View<DataType********, ExecSpace>;
+    using TensorType = typename flare::Tensor<DataType********, ExecSpace>;
 
     int leagueSize = dims[0];
     int n0         = dims[1];
@@ -1703,7 +1703,7 @@ struct TestTeamVectorMDRangeParallelReduce : public TestTeamMDParallelReduce {
     int n5         = dims[6];
     int n6         = dims[7];
 
-    ViewType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
+    TensorType v("v", leagueSize, n0, n1, n2, n3, n4, n5, n6);
     FillFlattenedIndex fillFlattenedIndex(leagueSize, n0, n1, n2, n3, n4, n5,
                                           n6);
     auto mdRangePolicy = flare::MDRangePolicy<ExecSpace, flare::Rank<6>>(

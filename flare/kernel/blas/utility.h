@@ -175,7 +175,7 @@ namespace flare::blas::detail {
         }
     }
 
-    // Functor to apply sqrt() to each element of a 1D view.
+    // Functor to apply sqrt() to each element of a 1D tensor.
 
     template<class RV>
     struct TakeSqrtFunctor {

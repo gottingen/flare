@@ -19,9 +19,9 @@
 #include <range/memory_pool_test.h>
 #include <range/cxx11_test.h>
 
-#include <view/view_ctor_prop_embedded_dim_test.h>
+#include <tensor/tensor_ctor_prop_embedded_dim_test.h>
 // with VS 16.11.3 and CUDA 11.4.2 getting cudafe stackoverflow crash
 #if !(defined(_WIN32) && defined(FLARE_ON_CUDA_DEVICE))
-#include <view/view_layout_tiled_test.h>
+#include <tensor/tensor_layout_tiled_test.h>
 #endif
 #endif  // FLARE_TEST_OTHER_H_

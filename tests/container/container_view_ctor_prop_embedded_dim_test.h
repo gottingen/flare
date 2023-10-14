@@ -18,7 +18,7 @@
 #include <doctest.h>
 
 #include <flare/core.h>
-#include <flare/dyn_rank_view.h>
+#include <flare/dyn_rank_tensor.h>
 
 #include <type_traits>
 #include <typeinfo>
@@ -28,65 +28,65 @@ namespace Test {
     namespace {
 
         template<typename ExecSpace>
-        struct TestViewCtorProp_EmbeddedDim {
-            using ViewIntType = typename flare::View<int **, ExecSpace>;
-            using ViewDoubleType = typename flare::View<double *, ExecSpace>;
+        struct TestTensorCtorProp_EmbeddedDim {
+            using TensorIntType = typename flare::Tensor<int **, ExecSpace>;
+            using TensorDoubleType = typename flare::Tensor<double *, ExecSpace>;
 
-            using DynRankViewIntType = typename flare::DynRankView<int, ExecSpace>;
-            using DynRankViewDoubleType = typename flare::DynRankView<double, ExecSpace>;
+            using DynRankTensorIntType = typename flare::DynRankTensor<int, ExecSpace>;
+            using DynRankTensorDoubleType = typename flare::DynRankTensor<double, ExecSpace>;
 
             // Cuda 7.0 has issues with using a lambda in parallel_for to initialize the
-            // view - replace with this functor
-            template<class ViewType>
+            // tensor - replace with this functor
+            template<class TensorType>
             struct Functor {
-                ViewType v;
+                TensorType v;
 
-                Functor(const ViewType &v_) : v(v_) {}
+                Functor(const TensorType &v_) : v(v_) {}
 
                 FLARE_INLINE_FUNCTION
                 void operator()(const int i) const { v(i) = i; }
             };
 
             static void test_vcpt(const int N0, const int N1) {
-                // Create two views to test
+                // Create two tensors to test
                 {
-                    using VIT = typename TestViewCtorProp_EmbeddedDim::ViewIntType;
-                    using VDT = typename TestViewCtorProp_EmbeddedDim::ViewDoubleType;
+                    using VIT = typename TestTensorCtorProp_EmbeddedDim::TensorIntType;
+                    using VDT = typename TestTensorCtorProp_EmbeddedDim::TensorDoubleType;
 
                     VIT vi1("vi1", N0, N1);
                     VDT vd1("vd1", N0);
 
-                    // TEST: Test for common type between two views, one with type double,
-                    // other with type int Deduce common value_type and construct a view with
+                    // TEST: Test for common type between two tensors, one with type double,
+                    // other with type int Deduce common value_type and construct a tensor with
                     // that type
                     {
-                        // Two views
-                        auto view_alloc_arg = flare::common_view_alloc_prop(vi1, vd1);
-                        using CommonViewValueType =
-                                typename decltype(view_alloc_arg)::value_type;
-                        using CVT = typename flare::View<CommonViewValueType *, ExecSpace>;
+                        // Two tensors
+                        auto tensor_alloc_arg = flare::common_tensor_alloc_prop(vi1, vd1);
+                        using CommonTensorValueType =
+                                typename decltype(tensor_alloc_arg)::value_type;
+                        using CVT = typename flare::Tensor<CommonTensorValueType *, ExecSpace>;
                         using HostCVT = typename CVT::HostMirror;
 
-                        // Construct View using the common type; for case of specialization, an
-                        // 'embedded_dim' would be stored by view_alloc_arg
-                        CVT cv1(flare::view_alloc("cv1", view_alloc_arg), N0 * N1);
+                        // Construct Tensor using the common type; for case of specialization, an
+                        // 'embedded_dim' would be stored by tensor_alloc_arg
+                        CVT cv1(flare::tensor_alloc("cv1", tensor_alloc_arg), N0 * N1);
 
                         flare::parallel_for(flare::RangePolicy<ExecSpace>(0, N0 * N1),
                                             Functor<CVT>(cv1));
 
-                        HostCVT hcv1 = flare::create_mirror_view(cv1);
+                        HostCVT hcv1 = flare::create_mirror_tensor(cv1);
                         flare::deep_copy(hcv1, cv1);
 
-                        REQUIRE_EQ((std::is_same<CommonViewValueType, double>::value), true);
+                        REQUIRE_EQ((std::is_same<CommonTensorValueType, double>::value), true);
 #if 0
                         // debug output
                         for ( int i = 0; i < N0*N1; ++i ) {
                           printf(" Output check: hcv1(%d) = %lf\n ", i, hcv1(i) );
                         }
 
-                        printf( " Common value type view: %s \n", typeid( CVT() ).name() );
-                        printf( " Common value type: %s \n", typeid( CommonViewValueType() ).name() );
-                        if ( std::is_same< CommonViewValueType, double >::value == true ) {
+                        printf( " Common value type tensor: %s \n", typeid( CVT() ).name() );
+                        printf( " Common value type: %s \n", typeid( CommonTensorValueType() ).name() );
+                        if ( std::is_same< CommonTensorValueType, double >::value == true ) {
                           printf("Proper common value_type\n");
                         }
                         else {
@@ -97,78 +97,78 @@ namespace Test {
                     }
 
                     {
-                        // Single view
-                        auto view_alloc_arg = flare::common_view_alloc_prop(vi1);
-                        using CommonViewValueType =
-                                typename decltype(view_alloc_arg)::value_type;
-                        using CVT = typename flare::View<CommonViewValueType *, ExecSpace>;
+                        // Single tensor
+                        auto tensor_alloc_arg = flare::common_tensor_alloc_prop(vi1);
+                        using CommonTensorValueType =
+                                typename decltype(tensor_alloc_arg)::value_type;
+                        using CVT = typename flare::Tensor<CommonTensorValueType *, ExecSpace>;
                         using HostCVT = typename CVT::HostMirror;
 
-                        // Construct View using the common type; for case of specialization, an
-                        // 'embedded_dim' would be stored by view_alloc_arg
-                        CVT cv1(flare::view_alloc("cv1", view_alloc_arg), N0 * N1);
+                        // Construct Tensor using the common type; for case of specialization, an
+                        // 'embedded_dim' would be stored by tensor_alloc_arg
+                        CVT cv1(flare::tensor_alloc("cv1", tensor_alloc_arg), N0 * N1);
 
                         flare::parallel_for(flare::RangePolicy<ExecSpace>(0, N0 * N1),
                                             Functor<CVT>(cv1));
 
-                        HostCVT hcv1 = flare::create_mirror_view(cv1);
+                        HostCVT hcv1 = flare::create_mirror_tensor(cv1);
                         flare::deep_copy(hcv1, cv1);
 
-                        REQUIRE_EQ((std::is_same<CommonViewValueType, int>::value), true);
+                        REQUIRE_EQ((std::is_same<CommonTensorValueType, int>::value), true);
                     }
                 }
 
-                // Create two dynamic rank views to test
+                // Create two dynamic rank tensors to test
                 {
-                    using VIT = typename TestViewCtorProp_EmbeddedDim::DynRankViewIntType;
-                    using VDT = typename TestViewCtorProp_EmbeddedDim::DynRankViewDoubleType;
+                    using VIT = typename TestTensorCtorProp_EmbeddedDim::DynRankTensorIntType;
+                    using VDT = typename TestTensorCtorProp_EmbeddedDim::DynRankTensorDoubleType;
 
                     VIT vi1("vi1", N0, N1);
                     VDT vd1("vd1", N0);
 
-                    // TEST: Test for common type between two views, one with type double,
-                    // other with type int Deduce common value_type and construct a view with
+                    // TEST: Test for common type between two tensors, one with type double,
+                    // other with type int Deduce common value_type and construct a tensor with
                     // that type
                     {
-                        // Two views
-                        auto view_alloc_arg = flare::common_view_alloc_prop(vi1, vd1);
-                        using CommonViewValueType =
-                                typename decltype(view_alloc_arg)::value_type;
-                        using CVT = typename flare::View<CommonViewValueType *, ExecSpace>;
+                        // Two tensors
+                        auto tensor_alloc_arg = flare::common_tensor_alloc_prop(vi1, vd1);
+                        using CommonTensorValueType =
+                                typename decltype(tensor_alloc_arg)::value_type;
+                        using CVT = typename flare::Tensor<CommonTensorValueType *, ExecSpace>;
                         using HostCVT = typename CVT::HostMirror;
 
-                        // Construct View using the common type; for case of specialization, an
-                        // 'embedded_dim' would be stored by view_alloc_arg
-                        CVT cv1(flare::view_alloc("cv1", view_alloc_arg), N0 * N1);
+                        // Construct Tensor using the common type; for case of specialization, an
+                        // 'embedded_dim' would be stored by tensor_alloc_arg
+                        CVT cv1(flare::tensor_alloc("cv1", tensor_alloc_arg), N0 * N1);
 
                         flare::parallel_for(flare::RangePolicy<ExecSpace>(0, N0 * N1),
                                             Functor<CVT>(cv1));
 
-                        HostCVT hcv1 = flare::create_mirror_view(cv1);
+                        HostCVT hcv1 = flare::create_mirror_tensor(cv1);
                         flare::deep_copy(hcv1, cv1);
 
-                        REQUIRE_EQ((std::is_same<CommonViewValueType, double>::value), true);
+                        REQUIRE_EQ((std::is_same<CommonTensorValueType, double>::value), true);
                     }
 
                     {
-                        // Single views
-                        auto view_alloc_arg = flare::common_view_alloc_prop(vi1);
-                        using CommonViewValueType =
-                                typename decltype(view_alloc_arg)::value_type;
-                        using CVT = typename flare::View<CommonViewValueType *, ExecSpace>;
+                        // Single tensors
+                        auto tensor_alloc_arg = flare::common_tensor_alloc_prop(vi1);
+                        using CommonTensorValueType =
+                                typename decltype(tensor_alloc_arg)::value_type;
+                        using CVT = typename flare::Tensor<CommonTensorValueType *, ExecSpace>;
                         using HostCVT = typename CVT::HostMirror;
 
-                        // Construct View using the common type; for case of specialization, an
-                        // 'embedded_dim' would be stored by view_alloc_arg
-                        CVT cv1(flare::view_alloc("cv1", view_alloc_arg), N0 * N1);
+                        // Construct Tensor using the common type; for case of specialization, an
+                        // 'embedded_dim' would be stored by tensor_alloc_arg
+                        CVT cv1(flare::tensor_alloc("cv1", tensor_alloc_arg), N0 * N1);
 
                         flare::parallel_for(flare::RangePolicy<ExecSpace>(0, N0 * N1),
                                             Functor<CVT>(cv1));
 
-                        HostCVT hcv1 = flare::create_mirror_view(cv1);
+                        HostCVT hcv1 = flare::create_mirror_tensor(cv1);
                         flare::deep_copy(hcv1, cv1);
 
-                        REQUIRE_EQ((std::is_same<CommonViewValueType, int>::value), true);
+                        REQUIRE_EQ((std::is_same<CommonTensorValueType, int>::value), true);
                     }
                 }
 
@@ -178,7 +178,7 @@ namespace Test {
 
     }  // namespace
 
-    TEST_CASE("TEST_CATEGORY, viewctorprop_embedded_dim") {
-        TestViewCtorProp_EmbeddedDim<TEST_EXECSPACE>::test_vcpt(2, 3);
+    TEST_CASE("TEST_CATEGORY, tensor_ctorprop_embedded_dim") {
+        TestTensorCtorProp_EmbeddedDim<TEST_EXECSPACE>::test_vcpt(2, 3);
     }
 }  // namespace Test

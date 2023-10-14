@@ -21,36 +21,36 @@ namespace TeamShiftRight {
 
 namespace KE = flare::experimental;
 
-template <class ViewType, class DistancesViewType>
-struct TestFunctorA {  ViewType m_view;
-  DistancesViewType m_distancesView;
+template <class TensorType, class DistancesTensorType>
+struct TestFunctorA {  TensorType m_tensor;
+  DistancesTensorType m_distancesTensor;
   std::size_t m_shift;
   int m_apiPick;
 
-  TestFunctorA(const ViewType view, const DistancesViewType distancesView,
+  TestFunctorA(const TensorType tensor, const DistancesTensorType distancesTensor,
                std::size_t shift, int apiPick)
-      : m_view(view),
-        m_distancesView(distancesView),
+      : m_tensor(tensor),
+        m_distancesTensor(distancesTensor),
         m_shift(shift),
         m_apiPick(apiPick) {}
 
   template <class MemberType>
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
-    auto myRowView        = flare::subview(m_view, myRowIndex, flare::ALL());
+    auto myRowTensor        = flare::subtensor(m_tensor, myRowIndex, flare::ALL());
 
     if (m_apiPick == 0) {
-      auto it = KE::shift_right(member, KE::begin(myRowView),
-                                KE::end(myRowView), m_shift);
+      auto it = KE::shift_right(member, KE::begin(myRowTensor),
+                                KE::end(myRowTensor), m_shift);
 
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) = KE::distance(KE::begin(myRowView), it);
+        m_distancesTensor(myRowIndex) = KE::distance(KE::begin(myRowTensor), it);
       });
     } else if (m_apiPick == 1) {
-      auto it = KE::shift_right(member, myRowView, m_shift);
+      auto it = KE::shift_right(member, myRowTensor, m_shift);
 
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) = KE::distance(KE::begin(myRowView), it);
+        m_distancesTensor(myRowIndex) = KE::distance(KE::begin(myRowTensor), it);
       });
     }
   }
@@ -79,20 +79,20 @@ template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, std::size_t shift,
             int apiId) {
   /* description:
-     randomly fill a rank-2 view and do a team-level KE::shift_right
+     randomly fill a rank-2 tensor and do a team-level KE::shift_right
      using shift as the shift count.
    */
 
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range
-  auto [dataView, cloneOfDataViewBeforeOp_h] =
-      create_random_view_and_host_clone(
+  auto [dataTensor, cloneOfDataTensorBeforeOp_h] =
+      create_random_tensor_and_host_clone(
           LayoutTag{}, numTeams, numCols,
-          flare::pair<ValueType, ValueType>{11, 523}, "dataView");
+          flare::pair<ValueType, ValueType>{11, 523}, "dataTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -103,27 +103,27 @@ void test_A(std::size_t numTeams, std::size_t numCols, std::size_t shift,
   // each team stores the distance of the returned iterator from the
   // beginning of the interval that team operates on and then we check
   // that these distances match the expectation
-  flare::View<std::size_t*> distancesView("distancesView", numTeams);
+  flare::Tensor<std::size_t*> distancesTensor("distancesTensor", numTeams);
 
   // use CTAD for functor
-  TestFunctorA fnc(dataView, distancesView, shift, apiId);
+  TestFunctorA fnc(dataTensor, distancesTensor, shift, apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // run std algo and check
   // -----------------------------------------------
-  // here I can use cloneOfDataViewBeforeOp_h to run std algo on
+  // here I can use cloneOfDataTensorBeforeOp_h to run std algo on
   // since that contains a valid copy of the data
-  auto distancesView_h = create_host_space_copy(distancesView);
-  for (std::size_t i = 0; i < cloneOfDataViewBeforeOp_h.extent(0); ++i) {
-    auto myRow = flare::subview(cloneOfDataViewBeforeOp_h, i, flare::ALL());
+  auto distancesTensor_h = create_host_space_copy(distancesTensor);
+  for (std::size_t i = 0; i < cloneOfDataTensorBeforeOp_h.extent(0); ++i) {
+    auto myRow = flare::subtensor(cloneOfDataTensorBeforeOp_h, i, flare::ALL());
     auto it    = my_std_shift_right(KE::begin(myRow), KE::end(myRow), shift);
     const std::size_t stdDistance = KE::distance(KE::begin(myRow), it);
-    REQUIRE_EQ(stdDistance, distancesView_h(i));
+    REQUIRE_EQ(stdDistance, distancesTensor_h(i));
   }
 
-  auto dataViewAfterOp_h = create_host_space_copy(dataView);
-  expect_equal_host_views(cloneOfDataViewBeforeOp_h, dataViewAfterOp_h);
+  auto dataTensorAfterOp_h = create_host_space_copy(dataTensor);
+  expect_equal_host_tensors(cloneOfDataTensorBeforeOp_h, dataTensorAfterOp_h);
 }
 
 template <class Tag, class ValueType>

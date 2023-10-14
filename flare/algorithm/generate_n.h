@@ -40,22 +40,22 @@ IteratorType generate_n(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType, class... Properties, class Size,
           class Generator>
 auto generate_n(const ExecutionSpace& ex,
-                const ::flare::View<DataType, Properties...>& view, Size count,
+                const ::flare::Tensor<DataType, Properties...>& tensor, Size count,
                 Generator g) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
-  return detail::generate_n_impl("flare::generate_n_view_api_default", ex,
-                               begin(view), count, std::move(g));
+  return detail::generate_n_impl("flare::generate_n_tensor_api_default", ex,
+                               begin(tensor), count, std::move(g));
 }
 
 template <class ExecutionSpace, class DataType, class... Properties, class Size,
           class Generator>
 auto generate_n(const std::string& label, const ExecutionSpace& ex,
-                const ::flare::View<DataType, Properties...>& view, Size count,
+                const ::flare::Tensor<DataType, Properties...>& tensor, Size count,
                 Generator g) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
-  return detail::generate_n_impl(label, ex, begin(view), count, std::move(g));
+  return detail::generate_n_impl(label, ex, begin(tensor), count, std::move(g));
 }
 
 }  // namespace experimental

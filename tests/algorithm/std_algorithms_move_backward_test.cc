@@ -25,14 +25,14 @@ namespace KE = flare::experimental;
 
 template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info, int apiId) {
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
 
-  auto v = create_view<ValueType>(Tag{}, view_ext, "v");
+  auto v = create_tensor<ValueType>(Tag{}, tensor_ext, "v");
 
   // v might not be deep copyable so to modify it on the host
   // need to do all this
-  auto v_dc   = create_deep_copyable_compatible_view_with_same_extent(v);
-  auto v_dc_h = create_mirror_view(flare::HostSpace(), v_dc);
+  auto v_dc   = create_deep_copyable_compatible_tensor_with_same_extent(v);
+  auto v_dc_h = create_mirror_tensor(flare::HostSpace(), v_dc);
   flare::Random_XorShift64_Pool<flare::DefaultHostExecutionSpace> pool(12371);
   flare::fill_random(v_dc_h, pool, 0, 523);
   // copy to v_dc and then to v
@@ -44,9 +44,9 @@ void run_single_scenario(const InfoType& scenario_info, int apiId) {
   // since the algorithm will modify v
   auto gold = create_host_space_copy(v);
 
-  // create another view that is bigger than v
+  // create another tensor that is bigger than v
   // because we need it to test the move_backward
-  auto v2 = create_view<ValueType>(Tag{}, view_ext + 5, "v2");
+  auto v2 = create_tensor<ValueType>(Tag{}, tensor_ext + 5, "v2");
 
   if (apiId == 0) {
     auto rit =

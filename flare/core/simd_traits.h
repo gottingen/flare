@@ -17,7 +17,7 @@
 #define FLARE_ANN_DISTANCE_TRAITS_H_
 
 #include <flare/core/common/concepts.h>
-#include <flare/core/tensor/view.h>
+#include <flare/core/tensor/tensor.h>
 #if !defined(FLARE_ON_CUDA_DEVICE)
 #include <flare/simd/simd.h>
 #endif
@@ -34,9 +34,9 @@ namespace flare {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::ann::simd_traits<1-D>: execution_space is not a Execute space.");
 
-        static_assert(flare::is_view<XVector>::value,
+        static_assert(flare::is_tensor<XVector>::value,
                       "flare::ann::"
-                      "simd_traits<1-D>: XVector is not a flare::View.");
+                      "simd_traits<1-D>: XVector is not a flare::Tensor.");
 
         static_assert(XVector::rank == 1, "flare::ann::simd_traits<1-D>: XVector is not rank 1.");
 

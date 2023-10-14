@@ -47,14 +47,14 @@ struct UnifDist<double> {
   double operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -67,9 +67,9 @@ void fill_view(ViewType dest_view, const std::string& name) {
     }
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
 template <class ForwardIterator>
@@ -93,24 +93,24 @@ ForwardIterator my_std_shift_left(
   return std::move(m, last, first);
 }
 
-template <class ViewType, class ResultIt, class ViewHostType>
-void verify_data(ResultIt result_it, ViewType view, ViewHostType data_view_host,
+template <class TensorType, class ResultIt, class TensorHostType>
+void verify_data(ResultIt result_it, TensorType tensor, TensorHostType data_tensor_host,
                  std::size_t shift_value) {
-  auto std_rit = my_std_shift_left(KE::begin(data_view_host),
-                                   KE::end(data_view_host), shift_value);
+  auto std_rit = my_std_shift_left(KE::begin(data_tensor_host),
+                                   KE::end(data_tensor_host), shift_value);
 
   // make sure results match
-  const auto my_diff  = result_it - KE::begin(view);
-  const auto std_diff = std_rit - KE::begin(data_view_host);
+  const auto my_diff  = result_it - KE::begin(tensor);
+  const auto std_diff = std_rit - KE::begin(data_tensor_host);
   REQUIRE_EQ(my_diff, std_diff);
 
-  // check views match
-  auto view_h = create_host_space_copy(view);
+  // check tensors match
+  auto tensor_h = create_host_space_copy(tensor);
   for (std::size_t i = 0; i < (std::size_t)my_diff; ++i) {
-    REQUIRE_EQ(view_h(i), data_view_host[i]);
+    REQUIRE_EQ(tensor_h(i), data_tensor_host[i]);
     // std::cout << "i= " << i << " "
-    // 	      << "mine: " << view_h(i) << " "
-    // 	      << "std: " << data_view_host(i)
+    // 	      << "mine: " << tensor_h(i) << " "
+    // 	      << "std: " << data_tensor_host(i)
     // 	      << '\n';
   }
 }
@@ -122,7 +122,7 @@ template <class Tag, class ValueType>
 void print_scenario_details(const std::string& name, std::size_t shift_value) {
   std::cout << "shift_left: "
             << " by " << shift_value << ", " << name << ", "
-            << view_tag_to_string(Tag{}) << ", "
+            << tensor_tag_to_string(Tag{}) << ", "
             << value_type_to_string(ValueType()) << std::endl;
 }
 
@@ -130,45 +130,45 @@ template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info,
                          std::size_t shift_value) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // print_scenario_details<Tag, ValueType>(name, shift_value);
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "shift_left_data_view");
-    fill_view(view, name);
-    // create host copy BEFORE shift_left or view will be modified
-    auto view_h = create_host_space_copy(view);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "shift_left_data_tensor");
+    fill_tensor(tensor, name);
+    // create host copy BEFORE shift_left or tensor will be modified
+    auto tensor_h = create_host_space_copy(tensor);
     auto rit =
-        KE::shift_left(exespace(), KE::begin(view), KE::end(view), shift_value);
-    verify_data(rit, view, view_h, shift_value);
+        KE::shift_left(exespace(), KE::begin(tensor), KE::end(tensor), shift_value);
+    verify_data(rit, tensor, tensor_h, shift_value);
   }
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "shift_left_data_view");
-    fill_view(view, name);
-    // create host copy BEFORE shift_left or view will be modified
-    auto view_h = create_host_space_copy(view);
-    auto rit    = KE::shift_left("label", exespace(), KE::begin(view),
-                              KE::end(view), shift_value);
-    verify_data(rit, view, view_h, shift_value);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "shift_left_data_tensor");
+    fill_tensor(tensor, name);
+    // create host copy BEFORE shift_left or tensor will be modified
+    auto tensor_h = create_host_space_copy(tensor);
+    auto rit    = KE::shift_left("label", exespace(), KE::begin(tensor),
+                              KE::end(tensor), shift_value);
+    verify_data(rit, tensor, tensor_h, shift_value);
   }
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "shift_left_data_view");
-    fill_view(view, name);
-    // create host copy BEFORE shift_left or view will be modified
-    auto view_h = create_host_space_copy(view);
-    auto rit    = KE::shift_left(exespace(), view, shift_value);
-    verify_data(rit, view, view_h, shift_value);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "shift_left_data_tensor");
+    fill_tensor(tensor, name);
+    // create host copy BEFORE shift_left or tensor will be modified
+    auto tensor_h = create_host_space_copy(tensor);
+    auto rit    = KE::shift_left(exespace(), tensor, shift_value);
+    verify_data(rit, tensor, tensor_h, shift_value);
   }
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "shift_left_data_view");
-    fill_view(view, name);
-    // create host copy BEFORE shift_left or view will be modified
-    auto view_h = create_host_space_copy(view);
-    auto rit    = KE::shift_left("label", exespace(), view, shift_value);
-    verify_data(rit, view, view_h, shift_value);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "shift_left_data_tensor");
+    fill_tensor(tensor, name);
+    // create host copy BEFORE shift_left or tensor will be modified
+    auto tensor_h = create_host_space_copy(tensor);
+    auto rit    = KE::shift_left("label", exespace(), tensor, shift_value);
+    verify_data(rit, tensor, tensor_h, shift_value);
   }
 
   flare::fence();
@@ -189,7 +189,7 @@ void run_all_scenarios() {
                                                         {"large", 101513}};
 
   // a shift value MUST be non-negative but it does not matter
-  // if it is larger than the view, the algorithm is supposed
+  // if it is larger than the tensor, the algorithm is supposed
   // to handle that case too
   std::vector<std::size_t> shifts = {0, 1, 2, 3, 8, 56, 101, 1003, 101501};
 

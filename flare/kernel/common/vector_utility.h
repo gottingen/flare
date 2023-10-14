@@ -26,32 +26,32 @@ namespace flare::detail {
     template<typename out_array_t, typename in_array_t, typename scalar_1,
             typename scalar_2>
     struct A_times_X_plus_B {
-        out_array_t out_view;
-        in_array_t in_view;
+        out_array_t out_tensor;
+        in_array_t in_tensor;
         const scalar_1 a;
         const scalar_2 b;
 
-        A_times_X_plus_B(out_array_t out_view_, in_array_t in_view_, scalar_1 a_,
+        A_times_X_plus_B(out_array_t out_tensor_, in_array_t in_tensor_, scalar_1 a_,
                          scalar_2 b_)
-                : out_view(out_view_), in_view(in_view_), a(a_), b(b_) {}
+                : out_tensor(out_tensor_), in_tensor(in_tensor_), a(a_), b(b_) {}
 
         FLARE_INLINE_FUNCTION
-        void operator()(const size_t ii) const { out_view(ii) = in_view(ii) * a + b; }
+        void operator()(const size_t ii) const { out_tensor(ii) = in_tensor(ii) * a + b; }
     };
 
     template<typename out_array_type, typename in_array_type>
-    struct ModularView {
+    struct ModularTensor {
         typedef typename in_array_type::value_type vt;
-        out_array_type out_view;
-        in_array_type in_view;
+        out_array_type out_tensor;
+        in_array_type in_tensor;
         const int modular_constant;
 
-        ModularView(out_array_type out_view_, in_array_type in_view_, int mod_factor_)
-                : out_view(out_view_), in_view(in_view_), modular_constant(mod_factor_) {}
+        ModularTensor(out_array_type out_tensor_, in_array_type in_tensor_, int mod_factor_)
+                : out_tensor(out_tensor_), in_tensor(in_tensor_), modular_constant(mod_factor_) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const size_t ii) const {
-            out_view(ii) = in_view(ii) % modular_constant;
+            out_tensor(ii) = in_tensor(ii) % modular_constant;
         }
     };
 
@@ -67,7 +67,7 @@ namespace flare::detail {
     };
 
     /**
-     * \brief given a input view in_arr, sets the corresponding index of out_arr by
+     * \brief given a input tensor in_arr, sets the corresponding index of out_arr by
      * out_arr(ii) = in_arr(ii) * a + b;
      * \param num_elements: number of elements in input and output arrays.
      * \param out_arr: output arr, can be same as input array.
@@ -95,13 +95,13 @@ namespace flare::detail {
      * applied.
      */
     template<typename out_array_type, typename in_array_type, typename MyExecSpace>
-    inline void flare_modular_view(typename in_array_type::value_type num_elements,
+    inline void flare_modular_tensor(typename in_array_type::value_type num_elements,
                                 out_array_type out_arr, in_array_type in_arr,
                                 int mod_factor_) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         flare::parallel_for(
-                "flare::detail::ModularView", my_exec_space(0, num_elements),
-                ModularView<out_array_type, in_array_type>(out_arr, in_arr, mod_factor_));
+                "flare::detail::ModularTensor", my_exec_space(0, num_elements),
+                ModularTensor<out_array_type, in_array_type>(out_arr, in_arr, mod_factor_));
     }
 
     template<typename from_vector, typename to_vector, typename MyExecSpace>

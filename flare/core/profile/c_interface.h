@@ -92,10 +92,10 @@ typedef void (*flare_profiling_begin_fence_function)(const char*, const uint32_t
 typedef void (*flare_profiling_end_fence_function)(uint64_t);
 
 // NOLINTNEXTLINE(modernize-use-using): C compatibility
-typedef void (*flare_profiling_dual_view_sync_function)(const char*,
+typedef void (*flare_profiling_dual_tensor_sync_function)(const char*,
                                                       const void* const, bool);
 // NOLINTNEXTLINE(modernize-use-using): C compatibility
-typedef void (*flare_profiling_dual_view_modify_function)(const char*,
+typedef void (*flare_profiling_dual_tensor_modify_function)(const char*,
                                                         const void* const,
                                                         bool);
 
@@ -244,8 +244,8 @@ struct flare_profiling_event_set {
   flare_profiling_end_deep_copy_function end_deep_copy;
   flare_profiling_begin_fence_function begin_fence;
   flare_profiling_end_fence_function end_fence;
-  flare_profiling_dual_view_sync_function sync_dual_view;
-  flare_profiling_dual_view_modify_function modify_dual_view;
+  flare_profiling_dual_tensor_sync_function sync_dual_tensor;
+  flare_profiling_dual_tensor_modify_function modify_dual_tensor;
   flare_profiling_declare_metadata_function declare_metadata;
   flare_tools_provide_tool_programming_interface_function
       provide_tool_programming_interface;

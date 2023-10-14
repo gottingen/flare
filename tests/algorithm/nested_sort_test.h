@@ -35,13 +35,13 @@ namespace Test {
         };
 
 // Functor to test sort_team: each team responsible for sorting one array
-        template<typename ExecSpace, typename KeyViewType, typename OffsetViewType>
+        template<typename ExecSpace, typename KeyTensorType, typename OffsetTensorType>
         struct TeamSortFunctor {
             using TeamMem = typename flare::TeamPolicy<ExecSpace>::member_type;
-            using SizeType = typename KeyViewType::size_type;
-            using KeyType = typename KeyViewType::non_const_value_type;
+            using SizeType = typename KeyTensorType::size_type;
+            using KeyType = typename KeyTensorType::non_const_value_type;
 
-            TeamSortFunctor(const KeyViewType &keys_, const OffsetViewType &offsets_,
+            TeamSortFunctor(const KeyTensorType &keys_, const OffsetTensorType &offsets_,
                             bool sortDescending_)
                     : keys(keys_), offsets(offsets_), sortDescending(sortDescending_) {}
 
@@ -51,28 +51,28 @@ namespace Test {
                 SizeType end = offsets(i + 1);
                 if (sortDescending)
                     flare::experimental::sort_team(
-                            t, flare::subview(keys, flare::make_pair(begin, end)),
+                            t, flare::subtensor(keys, flare::make_pair(begin, end)),
                             GreaterThan<KeyType>());
                 else
                     flare::experimental::sort_team(
-                            t, flare::subview(keys, flare::make_pair(begin, end)));
+                            t, flare::subtensor(keys, flare::make_pair(begin, end)));
             }
 
-            KeyViewType keys;
-            OffsetViewType offsets;
+            KeyTensorType keys;
+            OffsetTensorType offsets;
             bool sortDescending;
         };
 
 // Functor to test sort_by_key_team: each team responsible for sorting one array
-        template<typename ExecSpace, typename KeyViewType, typename ValueViewType,
-                typename OffsetViewType>
+        template<typename ExecSpace, typename KeyTensorType, typename ValueTensorType,
+                typename OffsetTensorType>
         struct TeamSortByKeyFunctor {
             using TeamMem = typename flare::TeamPolicy<ExecSpace>::member_type;
-            using SizeType = typename KeyViewType::size_type;
-            using KeyType = typename KeyViewType::non_const_value_type;
+            using SizeType = typename KeyTensorType::size_type;
+            using KeyType = typename KeyTensorType::non_const_value_type;
 
-            TeamSortByKeyFunctor(const KeyViewType &keys_, const ValueViewType &values_,
-                                 const OffsetViewType &offsets_, bool sortDescending_)
+            TeamSortByKeyFunctor(const KeyTensorType &keys_, const ValueTensorType &values_,
+                                 const OffsetTensorType &offsets_, bool sortDescending_)
                     : keys(keys_),
                       values(values_),
                       offsets(offsets_),
@@ -84,31 +84,31 @@ namespace Test {
                 SizeType end = offsets(i + 1);
                 if (sortDescending) {
                     flare::experimental::sort_by_key_team(
-                            t, flare::subview(keys, flare::make_pair(begin, end)),
-                            flare::subview(values, flare::make_pair(begin, end)),
+                            t, flare::subtensor(keys, flare::make_pair(begin, end)),
+                            flare::subtensor(values, flare::make_pair(begin, end)),
                             GreaterThan<KeyType>());
                 } else {
                     flare::experimental::sort_by_key_team(
-                            t, flare::subview(keys, flare::make_pair(begin, end)),
-                            flare::subview(values, flare::make_pair(begin, end)));
+                            t, flare::subtensor(keys, flare::make_pair(begin, end)),
+                            flare::subtensor(values, flare::make_pair(begin, end)));
                 }
             }
 
-            KeyViewType keys;
-            ValueViewType values;
-            OffsetViewType offsets;
+            KeyTensorType keys;
+            ValueTensorType values;
+            OffsetTensorType offsets;
             bool sortDescending;
         };
 
 // Functor to test sort_thread: each thread (multiple vector lanes) responsible
 // for sorting one array
-        template<typename ExecSpace, typename KeyViewType, typename OffsetViewType>
+        template<typename ExecSpace, typename KeyTensorType, typename OffsetTensorType>
         struct ThreadSortFunctor {
             using TeamMem = typename flare::TeamPolicy<ExecSpace>::member_type;
-            using SizeType = typename KeyViewType::size_type;
-            using KeyType = typename KeyViewType::non_const_value_type;
+            using SizeType = typename KeyTensorType::size_type;
+            using KeyType = typename KeyTensorType::non_const_value_type;
 
-            ThreadSortFunctor(const KeyViewType &keys_, const OffsetViewType &offsets_,
+            ThreadSortFunctor(const KeyTensorType &keys_, const OffsetTensorType &offsets_,
                               bool sortDescending_)
                     : keys(keys_), offsets(offsets_), sortDescending(sortDescending_) {}
 
@@ -121,29 +121,29 @@ namespace Test {
                     SizeType end = offsets(i + 1);
                     if (sortDescending)
                         flare::experimental::sort_thread(
-                                t, flare::subview(keys, flare::make_pair(begin, end)),
+                                t, flare::subtensor(keys, flare::make_pair(begin, end)),
                                 GreaterThan<KeyType>());
                     else
                         flare::experimental::sort_thread(
-                                t, flare::subview(keys, flare::make_pair(begin, end)));
+                                t, flare::subtensor(keys, flare::make_pair(begin, end)));
                 }
             }
 
-            KeyViewType keys;
-            OffsetViewType offsets;
+            KeyTensorType keys;
+            OffsetTensorType offsets;
             bool sortDescending;
         };
 
 // Functor to test sort_by_key_thread
-        template<typename ExecSpace, typename KeyViewType, typename ValueViewType,
-                typename OffsetViewType>
+        template<typename ExecSpace, typename KeyTensorType, typename ValueTensorType,
+                typename OffsetTensorType>
         struct ThreadSortByKeyFunctor {
             using TeamMem = typename flare::TeamPolicy<ExecSpace>::member_type;
-            using SizeType = typename KeyViewType::size_type;
-            using KeyType = typename KeyViewType::non_const_value_type;
+            using SizeType = typename KeyTensorType::size_type;
+            using KeyType = typename KeyTensorType::non_const_value_type;
 
-            ThreadSortByKeyFunctor(const KeyViewType &keys_, const ValueViewType &values_,
-                                   const OffsetViewType &offsets_, bool sortDescending_)
+            ThreadSortByKeyFunctor(const KeyTensorType &keys_, const ValueTensorType &values_,
+                                   const OffsetTensorType &offsets_, bool sortDescending_)
                     : keys(keys_),
                       values(values_),
                       offsets(offsets_),
@@ -158,32 +158,32 @@ namespace Test {
                     SizeType end = offsets(i + 1);
                     if (sortDescending) {
                         flare::experimental::sort_by_key_thread(
-                                t, flare::subview(keys, flare::make_pair(begin, end)),
-                                flare::subview(values, flare::make_pair(begin, end)),
+                                t, flare::subtensor(keys, flare::make_pair(begin, end)),
+                                flare::subtensor(values, flare::make_pair(begin, end)),
                                 GreaterThan<KeyType>());
                     } else {
                         flare::experimental::sort_by_key_thread(
-                                t, flare::subview(keys, flare::make_pair(begin, end)),
-                                flare::subview(values, flare::make_pair(begin, end)));
+                                t, flare::subtensor(keys, flare::make_pair(begin, end)),
+                                flare::subtensor(values, flare::make_pair(begin, end)));
                     }
                 }
             }
 
-            KeyViewType keys;
-            ValueViewType values;
-            OffsetViewType offsets;
+            KeyTensorType keys;
+            ValueTensorType values;
+            OffsetTensorType offsets;
             bool sortDescending;
         };
 
-// Generate the offsets view for a set of n packed arrays, each with uniform
+// Generate the offsets tensor for a set of n packed arrays, each with uniform
 // random length in [0,k]. Array i will occupy the indices [offsets(i),
 // offsets(i+1)), like a row in a CRS graph. Returns the total length of all the
 // arrays.
-        template<typename OffsetViewType>
+        template<typename OffsetTensorType>
         size_t randomPackedArrayOffsets(unsigned n, unsigned k,
-                                        OffsetViewType &offsets) {
-            offsets = OffsetViewType("Offsets", n + 1);
-            auto offsetsHost = flare::create_mirror_view(flare::HostSpace(), offsets);
+                                        OffsetTensorType &offsets) {
+            offsets = OffsetTensorType("Offsets", n + 1);
+            auto offsetsHost = flare::create_mirror_tensor(flare::HostSpace(), offsets);
             std::mt19937 gen;
             std::uniform_int_distribution<> distrib(0, k);
             // This will leave offsetsHost(n) == 0.
@@ -200,12 +200,12 @@ namespace Test {
             return offsetsHost(n);
         }
 
-        template<typename ValueViewType>
-        ValueViewType uniformRandomViewFill(size_t totalLength,
-                                            typename ValueViewType::value_type minVal,
-                                            typename ValueViewType::value_type maxVal) {
-            ValueViewType vals("vals", totalLength);
-            flare::Random_XorShift64_Pool<typename ValueViewType::execution_space> g(
+        template<typename ValueTensorType>
+        ValueTensorType uniformRandomTensorFill(size_t totalLength,
+                                            typename ValueTensorType::value_type minVal,
+                                            typename ValueTensorType::value_type maxVal) {
+            ValueTensorType vals("vals", totalLength);
+            flare::Random_XorShift64_Pool<typename ValueTensorType::execution_space> g(
                     1931);
             flare::fill_random(vals, g, minVal, maxVal);
             return vals;
@@ -214,20 +214,20 @@ namespace Test {
         template<class ExecutionSpace, typename KeyType>
         void test_nested_sort_impl(unsigned narray, unsigned n, bool useTeams,
                                    bool customCompare, KeyType minKey, KeyType maxKey) {
-            using KeyViewType = flare::View<KeyType *, ExecutionSpace>;
-            using OffsetViewType = flare::View<unsigned *, ExecutionSpace>;
+            using KeyTensorType = flare::Tensor<KeyType *, ExecutionSpace>;
+            using OffsetTensorType = flare::Tensor<unsigned *, ExecutionSpace>;
             using TeamPol = flare::TeamPolicy<ExecutionSpace>;
-            OffsetViewType offsets;
+            OffsetTensorType offsets;
             size_t totalLength = randomPackedArrayOffsets(narray, n, offsets);
-            KeyViewType keys =
-                    uniformRandomViewFill<KeyViewType>(totalLength, minKey, maxKey);
+            KeyTensorType keys =
+                    uniformRandomTensorFill<KeyTensorType>(totalLength, minKey, maxKey);
             // note: doing create_mirror because we always want this to be a separate
             // copy, even if keys is already host-accessible. keysHost becomes the correct
             // result to compare against.
             auto keysHost = flare::create_mirror(flare::HostSpace(), keys);
             flare::deep_copy(keysHost, keys);
             auto offsetsHost =
-                    flare::create_mirror_view_and_copy(flare::HostSpace(), offsets);
+                    flare::create_mirror_tensor_and_copy(flare::HostSpace(), offsets);
             // Sort the same arrays on host to compare against
             for (unsigned i = 0; i < narray; i++) {
                 KeyType *begin = keysHost.data() + offsetsHost(i);
@@ -242,10 +242,10 @@ namespace Test {
                 int vectorLen = std::min<int>(4, TeamPol::vector_length_max());
                 TeamPol policy(narray, flare::AUTO(), vectorLen);
                 flare::parallel_for(
-                        policy, TeamSortFunctor<ExecutionSpace, KeyViewType, OffsetViewType>(
+                        policy, TeamSortFunctor<ExecutionSpace, KeyTensorType, OffsetTensorType>(
                                 keys, offsets, customCompare));
             } else {
-                ThreadSortFunctor<ExecutionSpace, KeyViewType, OffsetViewType> functor(
+                ThreadSortFunctor<ExecutionSpace, KeyTensorType, OffsetTensorType> functor(
                         keys, offsets, customCompare);
                 int vectorLen = std::min<int>(4, TeamPol::vector_length_max());
                 TeamPol dummy(1, flare::AUTO(), vectorLen);
@@ -254,7 +254,7 @@ namespace Test {
                 int numTeams = (narray + teamSize - 1) / teamSize;
                 flare::parallel_for(TeamPol(numTeams, teamSize, vectorLen), functor);
             }
-            auto keysOut = flare::create_mirror_view_and_copy(flare::HostSpace(), keys);
+            auto keysOut = flare::create_mirror_tensor_and_copy(flare::HostSpace(), keys);
             std::string testLabel = useTeams ? "sort_team" : "sort_thread";
             for (unsigned i = 0; i < keys.extent(0); i++) {
                 REQUIRE_EQ(keysOut(i), keysHost(i));
@@ -266,16 +266,16 @@ namespace Test {
                                           bool customCompare, KeyType minKey,
                                           KeyType maxKey, ValueType minVal,
                                           ValueType maxVal) {
-            using KeyViewType = flare::View<KeyType *, ExecutionSpace>;
-            using ValueViewType = flare::View<ValueType *, ExecutionSpace>;
-            using OffsetViewType = flare::View<unsigned *, ExecutionSpace>;
+            using KeyTensorType = flare::Tensor<KeyType *, ExecutionSpace>;
+            using ValueTensorType = flare::Tensor<ValueType *, ExecutionSpace>;
+            using OffsetTensorType = flare::Tensor<unsigned *, ExecutionSpace>;
             using TeamPol = flare::TeamPolicy<ExecutionSpace>;
-            OffsetViewType offsets;
+            OffsetTensorType offsets;
             size_t totalLength = randomPackedArrayOffsets(narray, n, offsets);
-            KeyViewType keys =
-                    uniformRandomViewFill<KeyViewType>(totalLength, minKey, maxKey);
-            ValueViewType values =
-                    uniformRandomViewFill<ValueViewType>(totalLength, minVal, maxVal);
+            KeyTensorType keys =
+                    uniformRandomTensorFill<KeyTensorType>(totalLength, minKey, maxKey);
+            ValueTensorType values =
+                    uniformRandomTensorFill<ValueTensorType>(totalLength, minVal, maxVal);
             // note: doing create_mirror because we always want this to be a separate
             // copy, even if keys/vals are already host-accessible. keysHost and valsHost
             // becomes the correct result to compare against.
@@ -284,7 +284,7 @@ namespace Test {
             flare::deep_copy(keysHost, keys);
             flare::deep_copy(valuesHost, values);
             auto offsetsHost =
-                    flare::create_mirror_view_and_copy(flare::HostSpace(), offsets);
+                    flare::create_mirror_tensor_and_copy(flare::HostSpace(), offsets);
             // Sort the same arrays on host to compare against
             for (unsigned i = 0; i < narray; i++) {
                 // std:: doesn't have a sort_by_key, so sort a vector of key-value pairs
@@ -302,7 +302,7 @@ namespace Test {
                     std::sort(keysAndValues.begin(), keysAndValues.end(),
                               [](const KV &a, const KV &b) { return a.first < b.first; });
                 }
-                // Copy back from pairs to views
+                // Copy back from pairs to tensors
                 for (unsigned j = 0; j < keysAndValues.size(); j++) {
                     keysHost(offsetsHost(i) + j) = keysAndValues[j].first;
                     valuesHost(offsetsHost(i) + j) = keysAndValues[j].second;
@@ -312,12 +312,12 @@ namespace Test {
                 int vectorLen = std::min<int>(4, TeamPol::vector_length_max());
                 TeamPol policy(narray, flare::AUTO(), vectorLen);
                 flare::parallel_for(
-                        policy, TeamSortByKeyFunctor<ExecutionSpace, KeyViewType, ValueViewType,
-                                OffsetViewType>(keys, values, offsets,
+                        policy, TeamSortByKeyFunctor<ExecutionSpace, KeyTensorType, ValueTensorType,
+                                OffsetTensorType>(keys, values, offsets,
                                                 customCompare));
             } else {
-                ThreadSortByKeyFunctor<ExecutionSpace, KeyViewType, ValueViewType,
-                        OffsetViewType>
+                ThreadSortByKeyFunctor<ExecutionSpace, KeyTensorType, ValueTensorType,
+                        OffsetTensorType>
                         functor(keys, values, offsets, customCompare);
                 int vectorLen = std::min<int>(4, TeamPol::vector_length_max());
                 TeamPol dummy(1, flare::AUTO(), vectorLen);
@@ -326,9 +326,9 @@ namespace Test {
                 int numTeams = (narray + teamSize - 1) / teamSize;
                 flare::parallel_for(TeamPol(numTeams, teamSize, vectorLen), functor);
             }
-            auto keysOut = flare::create_mirror_view_and_copy(flare::HostSpace(), keys);
+            auto keysOut = flare::create_mirror_tensor_and_copy(flare::HostSpace(), keys);
             auto valuesOut =
-                    flare::create_mirror_view_and_copy(flare::HostSpace(), values);
+                    flare::create_mirror_tensor_and_copy(flare::HostSpace(), values);
             std::string testLabel = useTeams ? "sort_by_key_team" : "sort_by_key_thread";
             // First, compare keys since they will always match exactly
             for (unsigned i = 0; i < keys.extent(0); i++) {
@@ -400,7 +400,7 @@ namespace Test {
         using ExecutionSpace = TEST_EXECSPACE;
 
         // Second/third template arguments are key and value respectively.
-        // In sort_by_key_X functions, a key view and a value view are both permuted
+        // In sort_by_key_X functions, a key tensor and a value tensor are both permuted
         // to make the keys sorted. This means that the value type doesn't need to be
         // ordered, unlike key
         NestedSortImpl::test_nested_sort_by_key<ExecutionSpace, unsigned, unsigned>(

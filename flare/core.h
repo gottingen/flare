@@ -72,7 +72,7 @@
 #include <flare/backend/cuda/cuda_parallel_team.h>
 #include <flare/backend/cuda/cuda_kernel_launch.h>
 #include <flare/backend/cuda/cuda_instance.h>
-#include <flare/backend/cuda/cuda_view.h>
+#include <flare/backend/cuda/cuda_tensor.h>
 #include <flare/backend/cuda/cuda_team.h>
 #include <flare/backend/cuda/cuda_mdrange_policy.h>
 #include <flare/backend/cuda/cuda_unique_token.h>
@@ -91,7 +91,7 @@
 #include <flare/core/bit_manipulation.h>
 #include <flare/core/memory/memory_pool.h>
 #include <flare/core/array.h>
-#include <flare/core/tensor/view.h>
+#include <flare/core/tensor/tensor.h>
 #include <flare/core/tensor/vectorization.h>
 #include <flare/core/atomic.h>
 #include <flare/core/memory/hwloc.h>

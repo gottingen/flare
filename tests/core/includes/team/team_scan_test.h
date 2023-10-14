@@ -28,10 +28,10 @@ struct TestTeamScan {
   using value_type      = DataType;
   using policy_type     = flare::TeamPolicy<execution_space>;
   using member_type     = typename policy_type::member_type;
-  using view_type       = flare::View<value_type**, execution_space>;
+  using tensor_type       = flare::Tensor<value_type**, execution_space>;
 
-  view_type a_d;
-  view_type a_r;
+  tensor_type a_d;
+  tensor_type a_r;
   int32_t M = 0;
   int32_t N = 0;
 
@@ -61,8 +61,8 @@ struct TestTeamScan {
 
     M   = _M;
     N   = _N;
-    a_d = view_type("a_d", M, N);
-    a_r = view_type("a_r", M, N);
+    a_d = tensor_type("a_d", M, N);
+    a_r = tensor_type("a_r", M, N);
 
     // Set team size explicitly to check whether non-power-of-two team sizes can
     // be used.
@@ -73,8 +73,8 @@ struct TestTeamScan {
     else
       flare::parallel_for(policy_type(M, 1), *this);
 
-    auto a_i = flare::create_mirror_view(a_d);
-    auto a_o = flare::create_mirror_view(a_r);
+    auto a_i = flare::create_mirror_tensor(a_d);
+    auto a_o = flare::create_mirror_tensor(a_r);
     flare::deep_copy(a_i, a_d);
     flare::deep_copy(a_o, a_r);
 
@@ -140,12 +140,12 @@ struct TestTeamScanRetVal {
   using value_type      = DataType;
   using policy_type     = flare::TeamPolicy<execution_space>;
   using member_type     = typename policy_type::member_type;
-  using view_1d_type    = flare::View<value_type*, execution_space>;
-  using view_2d_type    = flare::View<value_type**, execution_space>;
+  using tensor_1d_type    = flare::Tensor<value_type*, execution_space>;
+  using tensor_2d_type    = flare::Tensor<value_type**, execution_space>;
 
-  view_2d_type a_d;
-  view_2d_type a_r;
-  view_1d_type a_s;
+  tensor_2d_type a_d;
+  tensor_2d_type a_r;
+  tensor_1d_type a_s;
   int32_t M = 0;
   int32_t N = 0;
 
@@ -181,17 +181,17 @@ struct TestTeamScanRetVal {
 
     M   = _M;
     N   = _N;
-    a_d = view_2d_type("a_d", M, N);
-    a_r = view_2d_type("a_r", M, N);
-    a_s = view_1d_type("a_s", M);
+    a_d = tensor_2d_type("a_d", M, N);
+    a_r = tensor_2d_type("a_r", M, N);
+    a_s = tensor_1d_type("a_s", M);
 
     // Execute calculations
     flare::parallel_for(policy_type(M, flare::AUTO), *this);
 
     flare::fence();
-    auto a_i  = flare::create_mirror_view(a_d);
-    auto a_o  = flare::create_mirror_view(a_r);
-    auto a_os = flare::create_mirror_view(a_s);
+    auto a_i  = flare::create_mirror_tensor(a_d);
+    auto a_o  = flare::create_mirror_tensor(a_r);
+    auto a_os = flare::create_mirror_tensor(a_s);
     flare::deep_copy(a_i, a_d);
     flare::deep_copy(a_o, a_r);
     flare::deep_copy(a_os, a_s);

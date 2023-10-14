@@ -56,15 +56,15 @@ template <
     typename DataType2, typename... Properties2, typename ValueType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto replace_copy(const ExecutionSpace& ex,
-                  const ::flare::View<DataType1, Properties1...>& view_from,
-                  const ::flare::View<DataType2, Properties2...>& view_dest,
+                  const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                  const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                   const ValueType& old_value, const ValueType& new_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   namespace KE = ::flare::experimental;
   return detail::replace_copy_exespace_impl(
-      "flare::replace_copy_view_api", ex, KE::cbegin(view_from),
-      KE::cend(view_from), KE::begin(view_dest), old_value, new_value);
+      "flare::replace_copy_tensor_api", ex, KE::cbegin(tensor_from),
+      KE::cend(tensor_from), KE::begin(tensor_dest), old_value, new_value);
 }
 
 template <
@@ -72,15 +72,15 @@ template <
     typename DataType2, typename... Properties2, typename ValueType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto replace_copy(const std::string& label, const ExecutionSpace& ex,
-                  const ::flare::View<DataType1, Properties1...>& view_from,
-                  const ::flare::View<DataType2, Properties2...>& view_dest,
+                  const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                  const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                   const ValueType& old_value, const ValueType& new_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   namespace KE = ::flare::experimental;
   return detail::replace_copy_exespace_impl(
-      label, ex, KE::cbegin(view_from), KE::cend(view_from),
-      KE::begin(view_dest), old_value, new_value);
+      label, ex, KE::cbegin(tensor_from), KE::cend(tensor_from),
+      KE::begin(tensor_dest), old_value, new_value);
 }
 
 //
@@ -106,14 +106,14 @@ template <typename TeamHandleType, typename DataType1, typename... Properties1,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto replace_copy(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view_from,
-    const ::flare::View<DataType2, Properties2...>& view_dest,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
     const ValueType& old_value, const ValueType& new_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   namespace KE = ::flare::experimental;
-  return detail::replace_copy_team_impl(teamHandle, KE::cbegin(view_from),
-                                      KE::cend(view_from), KE::begin(view_dest),
+  return detail::replace_copy_team_impl(teamHandle, KE::cbegin(tensor_from),
+                                      KE::cend(tensor_from), KE::begin(tensor_dest),
                                       old_value, new_value);
 }
 

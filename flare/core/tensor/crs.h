@@ -16,47 +16,47 @@
 #ifndef FLARE_CORE_TENSOR_CRS_H_
 #define FLARE_CORE_TENSOR_CRS_H_
 
-#include <flare/core/tensor/view.h>
+#include <flare/core/tensor/tensor.h>
 #include <flare/core/tensor/copy_tensors.h>
 
 namespace flare {
 
-/// \class Crs
-/// \brief Compressed row storage array.
-///
-/// \tparam DataType The type of stored entries.  If a Crs is
-///   used as the graph of a sparse matrix, then this is usually an
-///   integer type, the type of the column indices in the sparse
-///   matrix.
-///
-/// \tparam Arg1Type The second template parameter, corresponding
-///   either to the Device type (if there are no more template
-///   parameters) or to the Layout type (if there is at least one more
-///   template parameter).
-///
-/// \tparam Arg2Type The third template parameter, which if provided
-///   corresponds to the Device type.
-///
-/// \tparam SizeType The type of row offsets.  Usually the default
-///   parameter suffices.  However, setting a nondefault value is
-///   necessary in some cases, for example, if you want to have a
-///   sparse matrices with dimensions (and therefore column indices)
-///   that fit in \c int, but want to store more than <tt>INT_MAX</tt>
-///   entries in the sparse matrix.
-///
-/// A row has a range of entries:
-/// <ul>
-/// <li> <tt> row_map[i0] <= entry < row_map[i0+1] </tt> </li>
-/// <li> <tt> 0 <= i1 < row_map[i0+1] - row_map[i0] </tt> </li>
-/// <li> <tt> entries( entry ,            i2 , i3 , ... ); </tt> </li>
-/// <li> <tt> entries( row_map[i0] + i1 , i2 , i3 , ... ); </tt> </li>
-/// </ul>
+    /// \class Crs
+    /// \brief Compressed row storage array.
+    ///
+    /// \tparam DataType The type of stored entries.  If a Crs is
+    ///   used as the graph of a sparse matrix, then this is usually an
+    ///   integer type, the type of the column indices in the sparse
+    ///   matrix.
+    ///
+    /// \tparam Arg1Type The second template parameter, corresponding
+    ///   either to the Device type (if there are no more template
+    ///   parameters) or to the Layout type (if there is at least one more
+    ///   template parameter).
+    ///
+    /// \tparam Arg2Type The third template parameter, which if provided
+    ///   corresponds to the Device type.
+    ///
+    /// \tparam SizeType The type of row offsets.  Usually the default
+    ///   parameter suffices.  However, setting a nondefault value is
+    ///   necessary in some cases, for example, if you want to have a
+    ///   sparse matrices with dimensions (and therefore column indices)
+    ///   that fit in \c int, but want to store more than <tt>INT_MAX</tt>
+    ///   entries in the sparse matrix.
+    ///
+    /// A row has a range of entries:
+    /// <ul>
+    /// <li> <tt> row_map[i0] <= entry < row_map[i0+1] </tt> </li>
+    /// <li> <tt> 0 <= i1 < row_map[i0+1] - row_map[i0] </tt> </li>
+    /// <li> <tt> entries( entry ,            i2 , i3 , ... ); </tt> </li>
+    /// <li> <tt> entries( row_map[i0] + i1 , i2 , i3 , ... ); </tt> </li>
+    /// </ul>
     template<class DataType, class Arg1Type, class Arg2Type = void,
-            typename SizeType = typename ViewTraits<DataType *, Arg1Type, Arg2Type,
+            typename SizeType = typename TensorTraits<DataType *, Arg1Type, Arg2Type,
                     void>::size_type>
     class Crs {
     protected:
-        using traits = ViewTraits<DataType *, Arg1Type, Arg2Type, void>;
+        using traits = TensorTraits<DataType *, Arg1Type, Arg2Type, void>;
 
     public:
         using data_type = DataType;
@@ -69,8 +69,8 @@ namespace flare {
         using staticcrsgraph_type = Crs<DataType, Arg1Type, Arg2Type, SizeType>;
         using HostMirror =
                 Crs<DataType, array_layout, typename traits::host_mirror_space, SizeType>;
-        using row_map_type = View<size_type *, array_layout, device_type>;
-        using entries_type = View<DataType *, array_layout, device_type>;
+        using row_map_type = Tensor<size_type *, array_layout, device_type>;
+        using entries_type = Tensor<DataType *, array_layout, device_type>;
 
         row_map_type row_map;
         entries_type entries;
@@ -90,8 +90,8 @@ namespace flare {
 
         FLARE_DEFAULTED_FUNCTION ~Crs() = default;
 
-        /** \brief Assign to a view of the rhs array.
-         *         If the old view is the last view
+        /** \brief Assign to a tensor of the rhs array.
+         *         If the old tensor is the last tensor
          *         then allocated memory is deallocated.
          */
         template<class EntriesType, class RowMapType>
@@ -162,7 +162,7 @@ namespace flare::detail {
         using value_type = typename OutRowMap::value_type;
         using index_type = typename InCounts::size_type;
         using last_value_type =
-                flare::View<value_type, typename InCounts::device_type>;
+                flare::Tensor<value_type, typename InCounts::device_type>;
 
     private:
         InCounts m_in;
@@ -200,7 +200,7 @@ namespace flare::detail {
             closure_type closure(*this, policy_type(0, m_in.size() + 1));
             closure.execute();
             auto last_value =
-                    flare::create_mirror_view_and_copy(flare::HostSpace{}, m_last_value);
+                    flare::create_mirror_tensor_and_copy(flare::HostSpace{}, m_last_value);
             return last_value();
         }
     };
@@ -214,7 +214,7 @@ namespace flare::detail {
         using index_type = typename InCrs::size_type;
 
     private:
-        using counters_type = View<index_type *, memory_space>;
+        using counters_type = Tensor<index_type *, memory_space>;
         InCrs in;
         OutCrs out;
         counters_type counters;
@@ -267,7 +267,7 @@ namespace flare {
     template<class OutRowMap, class InCounts>
     typename OutRowMap::value_type get_crs_row_map_from_counts(
             OutRowMap &out, InCounts const &in, std::string const &name) {
-        out = OutRowMap(view_alloc(WithoutInitializing, name), in.size() + 1);
+        out = OutRowMap(tensor_alloc(WithoutInitializing, name), in.size() + 1);
         flare::detail::CrsRowMapFromCounts<InCounts, OutRowMap> functor(in, out);
         return functor.execute();
     }
@@ -277,7 +277,7 @@ namespace flare {
                        Crs<DataType, Arg1Type, Arg2Type, SizeType> const &in) {
         using crs_type = Crs<DataType, Arg1Type, Arg2Type, SizeType>;
         using memory_space = typename crs_type::memory_space;
-        using counts_type = View<SizeType *, memory_space>;
+        using counts_type = Tensor<SizeType *, memory_space>;
         {
             counts_type counts;
             flare::get_crs_transpose_counts(counts, in);
@@ -316,7 +316,7 @@ namespace flare {
                its address and never use it. this can happen when row (i) is empty and
                all rows after it are also empty. we could compare to row_map(i + 1), but
                that is a read from global memory, whereas dimension_0() should be part
-               of the View in registers (or constant memory) */
+               of the Tensor in registers (or constant memory) */
             data_type *fill = (j == static_cast<decltype(j)>(m_crs.entries.extent(0)))
                               ? nullptr
                               : (&(m_crs.entries(j)));

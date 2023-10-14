@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_DYNAMIC_VIEW_TEST_H_
-#define FLARE_DYNAMIC_VIEW_TEST_H_
+#ifndef FLARE_DYNAMIC_TENSOR_TEST_H_
+#define FLARE_DYNAMIC_TENSOR_TEST_H_
 
 #include <doctest.h>
 #include <iostream>
@@ -22,33 +22,33 @@
 #include <cstdio>
 #include <flare/core.h>
 
-#include <flare/dynamic_view.h>
+#include <flare/dynamic_tensor.h>
 #include <flare/timer.h>
 
 namespace Test {
 
     template<typename Scalar, class Space>
-    struct TestDynamicView {
+    struct TestDynamicTensor {
         using execution_space = typename Space::execution_space;
         using memory_space = typename Space::memory_space;
 
-        using view_type = flare::experimental::DynamicView<Scalar *, Space>;
+        using tensor_type = flare::experimental::DynamicTensor<Scalar *, Space>;
 
         using value_type = double;
 
         static void run(unsigned arg_total_size) {
-            // Test: Create DynamicView, initialize size (via resize), run through
+            // Test: Create DynamicTensor, initialize size (via resize), run through
             // parallel_for to set values, check values (via parallel_reduce); resize
             // values and repeat
             //   Case 1: min_chunk_size is a power of 2
             {
                 {
-                    view_type d1;
+                    tensor_type d1;
                     REQUIRE_FALSE(d1.is_allocated());
 
-                    d1 = view_type("d1", 1024, arg_total_size);
-                    view_type d2(d1);
-                    view_type d3("d3", 1024, arg_total_size);
+                    d1 = tensor_type("d1", 1024, arg_total_size);
+                    tensor_type d2(d1);
+                    tensor_type d3("d3", 1024, arg_total_size);
 
                     REQUIRE_FALSE(d1.is_allocated());
                     REQUIRE_FALSE(d2.is_allocated());
@@ -63,7 +63,7 @@ namespace Test {
                     REQUIRE(d2.is_allocated());
                     REQUIRE(d3.is_allocated());
                 }
-                view_type da("da", 1024, arg_total_size);
+                tensor_type da("da", 1024, arg_total_size);
                 REQUIRE_EQ(da.size(), 0u);
                 // Init
                 unsigned da_size = arg_total_size / 8;
@@ -110,12 +110,12 @@ namespace Test {
 #endif
             }  // end scope
 
-            // Test: Create DynamicView, initialize size (via resize), run through
+            // Test: Create DynamicTensor, initialize size (via resize), run through
             // parallel_for to set values, check values (via parallel_reduce); resize
             // values and repeat
             //   Case 2: min_chunk_size is NOT a power of 2
             {
-                view_type da("da", 1023, arg_total_size);
+                tensor_type da("da", 1023, arg_total_size);
                 REQUIRE_EQ(da.size(), 0u);
                 // Init
                 unsigned da_size = arg_total_size / 8;
@@ -162,12 +162,12 @@ namespace Test {
 #endif
             }  // end scope
 
-            // Test: Create DynamicView, initialize size (via resize), run through
+            // Test: Create DynamicTensor, initialize size (via resize), run through
             // parallel_for to set values, check values (via parallel_reduce); resize
             // values and repeat
             //   Case 3: resize reduces the size
             {
-                view_type da("da", 1023, arg_total_size);
+                tensor_type da("da", 1023, arg_total_size);
                 REQUIRE_EQ(da.size(), 0u);
                 // Init
                 unsigned da_size = arg_total_size / 2;
@@ -213,62 +213,62 @@ namespace Test {
             }  // end scope
 
             // Test: Reproducer to demonstrate compile-time error of deep_copy
-            // of DynamicView to/from on-host View.
+            // of DynamicTensor to/from on-host Tensor.
             //   Case 4:
             {
-                using device_view_type = flare::View<Scalar *, Space>;
-                using host_view_type = typename flare::View<Scalar *, Space>::HostMirror;
+                using device_tensor_type = flare::Tensor<Scalar *, Space>;
+                using host_tensor_type = typename flare::Tensor<Scalar *, Space>::HostMirror;
 
-                view_type device_dynamic_view("on-device DynamicView", 1024,
+                tensor_type device_dynamic_tensor("on-device DynamicTensor", 1024,
                                               arg_total_size);
-                device_view_type device_view("on-device View", arg_total_size);
-                host_view_type host_view("on-host View", arg_total_size);
+                device_tensor_type device_tensor("on-device Tensor", arg_total_size);
+                host_tensor_type host_tensor("on-host Tensor", arg_total_size);
 
                 unsigned da_size = arg_total_size / 8;
-                device_dynamic_view.resize_serial(da_size);
+                device_dynamic_tensor.resize_serial(da_size);
 
-                // Use parallel_for to populate device_dynamic_view and verify values
+                // Use parallel_for to populate device_dynamic_tensor and verify values
 #if defined(FLARE_ENABLE_CXX11_DISPATCH_LAMBDA)
                 flare::parallel_for(
                         flare::RangePolicy<execution_space>(0, da_size),
-                        FLARE_LAMBDA(const int i) { device_dynamic_view(i) = Scalar(i); });
+                        FLARE_LAMBDA(const int i) { device_dynamic_tensor(i) = Scalar(i); });
 
                 value_type result_sum = 0.0;
                 flare::parallel_reduce(
                         flare::RangePolicy<execution_space>(0, da_size),
                         FLARE_LAMBDA(const int i, value_type &partial_sum) {
-                            partial_sum += (value_type) device_dynamic_view(i);
+                            partial_sum += (value_type) device_dynamic_tensor(i);
                         },
                         result_sum);
 
                 REQUIRE_EQ(result_sum, (value_type) (da_size * (da_size - 1) / 2));
 #endif
 
-                // Use an on-device View as intermediate to deep_copy the
-                // device_dynamic_view to host, zero out the device_dynamic_view,
-                // deep_copy from host back to the device_dynamic_view and verify
-                flare::deep_copy(device_view, device_dynamic_view);
-                flare::deep_copy(host_view, device_view);
-                flare::deep_copy(device_view, host_view);
+                // Use an on-device Tensor as intermediate to deep_copy the
+                // device_dynamic_tensor to host, zero out the device_dynamic_tensor,
+                // deep_copy from host back to the device_dynamic_tensor and verify
+                flare::deep_copy(device_tensor, device_dynamic_tensor);
+                flare::deep_copy(host_tensor, device_tensor);
+                flare::deep_copy(device_tensor, host_tensor);
 #if defined(FLARE_ENABLE_CXX11_DISPATCH_LAMBDA)
                 flare::parallel_for(
                         flare::RangePolicy<execution_space>(0, da_size),
-                        FLARE_LAMBDA(const int i) { device_dynamic_view(i) = Scalar(0); });
+                        FLARE_LAMBDA(const int i) { device_dynamic_tensor(i) = Scalar(0); });
 #endif
-                flare::deep_copy(device_dynamic_view, device_view);
+                flare::deep_copy(device_dynamic_tensor, device_tensor);
 #if defined(FLARE_ENABLE_CXX11_DISPATCH_LAMBDA)
                 value_type new_result_sum = 0.0;
                 flare::parallel_reduce(
                         flare::RangePolicy<execution_space>(0, da_size),
                         FLARE_LAMBDA(const int i, value_type &partial_sum) {
-                            partial_sum += (value_type) device_dynamic_view(i);
+                            partial_sum += (value_type) device_dynamic_tensor(i);
                         },
                         new_result_sum);
 
                 REQUIRE_EQ(new_result_sum, (value_type) (da_size * (da_size - 1) / 2));
 #endif
 
-                // Try to deep_copy device_dynamic_view directly to/from host.
+                // Try to deep_copy device_dynamic_tensor directly to/from host.
                 // host-to-device currently fails to compile because DP and SP are
                 // swapped in the deep_copy implementation.
                 // Once that's fixed, both deep_copy's will fail at runtime because the
@@ -276,23 +276,23 @@ namespace Test {
                 // Check if the memory spaces are different before testing the deep_copy.
                 if (!flare::SpaceAccessibility<flare::HostSpace,
                         memory_space>::accessible) {
-                    REQUIRE_THROWS_AS(flare::deep_copy(host_view, device_dynamic_view),
+                    REQUIRE_THROWS_AS(flare::deep_copy(host_tensor, device_dynamic_tensor),
                                       std::runtime_error);
-                    REQUIRE_THROWS_AS(flare::deep_copy(device_dynamic_view, host_view),
+                    REQUIRE_THROWS_AS(flare::deep_copy(device_dynamic_tensor, host_tensor),
                                       std::runtime_error);
                 }
             }
         }
     };
 
-    TEST_CASE("TEST_CATEGORY, dynamic_view") {
-        using TestDynView = TestDynamicView<double, TEST_EXECSPACE>;
+    TEST_CASE("TEST_CATEGORY, dynamic_tensor") {
+        using TestDynTensor = TestDynamicTensor<double, TEST_EXECSPACE>;
 
         for (int i = 0; i < 10; ++i) {
-            TestDynView::run(100000 + 100 * i);
+            TestDynTensor::run(100000 + 100 * i);
         }
     }
 
 }  // namespace Test
 
-#endif  // FLARE_DYNAMIC_VIEW_TEST_H_
+#endif  // FLARE_DYNAMIC_TENSOR_TEST_H_

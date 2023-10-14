@@ -29,8 +29,8 @@ namespace Test {
                          vector_view_type &Y, param_view_type &param,
                          vector_ref_type &Xref, vector_ref_type &Yref) {
         // Initialize X and Y inputs
-        typename vector_view_type::HostMirror X_h = flare::create_mirror_view(X);
-        typename vector_view_type::HostMirror Y_h = flare::create_mirror_view(Y);
+        typename vector_view_type::HostMirror X_h = flare::create_mirror_tensor(X);
+        typename vector_view_type::HostMirror Y_h = flare::create_mirror_tensor(Y);
 
         X_h(0) = 0.6;
         X_h(1) = 0.1;
@@ -45,7 +45,7 @@ namespace Test {
 
         // Initialize Xref, Yref and param (test case dependent)
         typename param_view_type::HostMirror param_h =
-                flare::create_mirror_view(param);
+                flare::create_mirror_tensor(param);
         switch (test_case) {
             case 0:
                 param_h(0) = -2.0;
@@ -127,8 +127,8 @@ namespace Test {
                        vector_ref_type &Xref, vector_ref_type &Yref) {
         using Scalar = typename vector_view_type::value_type;
 
-        typename vector_view_type::HostMirror X_h = flare::create_mirror_view(X);
-        typename vector_view_type::HostMirror Y_h = flare::create_mirror_view(Y);
+        typename vector_view_type::HostMirror X_h = flare::create_mirror_tensor(X);
+        typename vector_view_type::HostMirror Y_h = flare::create_mirror_tensor(Y);
         flare::deep_copy(X_h, X);
         flare::deep_copy(Y_h, Y);
 
@@ -145,9 +145,9 @@ namespace Test {
 
 template <class Scalar, class ExecutionSpace>
 int test_rotm() {
-    using vector_view_type = flare::View<Scalar *, ExecutionSpace>;
-    using vector_ref_type  = flare::View<Scalar *, flare::HostSpace>;
-    using param_view_type  = flare::View<Scalar[5], ExecutionSpace>;
+    using vector_view_type = flare::Tensor<Scalar *, ExecutionSpace>;
+    using vector_ref_type  = flare::Tensor<Scalar *, flare::HostSpace>;
+    using param_view_type  = flare::Tensor<Scalar[5], ExecutionSpace>;
 
     vector_view_type X("X", 4), Y("Y", 4);
     vector_ref_type Xref("Xref", 4), Yref("Yref", 4);

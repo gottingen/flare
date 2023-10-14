@@ -26,22 +26,22 @@ namespace Test {
 
     template<class ExecSpace>
     struct TestExponentialIntergral1Function {
-        using ViewType = flare::View<double *, ExecSpace>;
-        using HostViewType = flare::View<double *, flare::HostSpace>;
+        using TensorType = flare::Tensor<double *, ExecSpace>;
+        using HostTensorType = flare::Tensor<double *, flare::HostSpace>;
 
-        ViewType d_x, d_expint;
-        typename ViewType::HostMirror h_x, h_expint;
-        HostViewType h_ref;
+        TensorType d_x, d_expint;
+        typename TensorType::HostMirror h_x, h_expint;
+        HostTensorType h_ref;
 
         void testit() {
             using flare::fabs;
             using flare::experimental::infinity;
 
-            d_x = ViewType("d_x", 15);
-            d_expint = ViewType("d_expint", 15);
-            h_x = flare::create_mirror_view(d_x);
-            h_expint = flare::create_mirror_view(d_expint);
-            h_ref = HostViewType("h_ref", 15);
+            d_x = TensorType("d_x", 15);
+            d_expint = TensorType("d_expint", 15);
+            h_x = flare::create_mirror_tensor(d_x);
+            h_expint = flare::create_mirror_tensor(d_expint);
+            h_ref = HostTensorType("h_ref", 15);
 
             // Generate test inputs
             h_x(0) = -0.2;
@@ -99,37 +99,37 @@ namespace Test {
 
     template<class ExecSpace>
     struct TestComplexErrorFunction {
-        using ViewType = flare::View<flare::complex<double> *, ExecSpace>;
-        using HostViewType =
-                flare::View<flare::complex<double> *, flare::HostSpace>;
-        using DblViewType = flare::View<double *, ExecSpace>;
-        using DblHostViewType = flare::View<double *, flare::HostSpace>;
+        using TensorType = flare::Tensor<flare::complex<double> *, ExecSpace>;
+        using HostTensorType =
+                flare::Tensor<flare::complex<double> *, flare::HostSpace>;
+        using DblTensorType = flare::Tensor<double *, ExecSpace>;
+        using DblHostTensorType = flare::Tensor<double *, flare::HostSpace>;
 
-        ViewType d_z, d_erf, d_erfcx;
-        typename ViewType::HostMirror h_z, h_erf, h_erfcx;
-        HostViewType h_ref_erf, h_ref_erfcx;
+        TensorType d_z, d_erf, d_erfcx;
+        typename TensorType::HostMirror h_z, h_erf, h_erfcx;
+        HostTensorType h_ref_erf, h_ref_erfcx;
 
-        DblViewType d_x, d_erfcx_dbl;
-        typename DblViewType::HostMirror h_x, h_erfcx_dbl;
-        DblHostViewType h_ref_erfcx_dbl;
+        DblTensorType d_x, d_erfcx_dbl;
+        typename DblTensorType::HostMirror h_x, h_erfcx_dbl;
+        DblHostTensorType h_ref_erfcx_dbl;
 
         void testit() {
             using flare::experimental::infinity;
 
-            d_z = ViewType("d_z", 52);
-            d_erf = ViewType("d_erf", 52);
-            d_erfcx = ViewType("d_erfcx", 52);
-            h_z = flare::create_mirror_view(d_z);
-            h_erf = flare::create_mirror_view(d_erf);
-            h_erfcx = flare::create_mirror_view(d_erfcx);
-            h_ref_erf = HostViewType("h_ref_erf", 52);
-            h_ref_erfcx = HostViewType("h_ref_erfcx", 52);
+            d_z = TensorType("d_z", 52);
+            d_erf = TensorType("d_erf", 52);
+            d_erfcx = TensorType("d_erfcx", 52);
+            h_z = flare::create_mirror_tensor(d_z);
+            h_erf = flare::create_mirror_tensor(d_erf);
+            h_erfcx = flare::create_mirror_tensor(d_erfcx);
+            h_ref_erf = HostTensorType("h_ref_erf", 52);
+            h_ref_erfcx = HostTensorType("h_ref_erfcx", 52);
 
-            d_x = DblViewType("d_x", 6);
-            d_erfcx_dbl = DblViewType("d_erfcx_dbl", 6);
-            h_x = flare::create_mirror_view(d_x);
-            h_erfcx_dbl = flare::create_mirror_view(d_erfcx_dbl);
-            h_ref_erfcx_dbl = DblHostViewType("h_ref_erfcx_dbl", 6);
+            d_x = DblTensorType("d_x", 6);
+            d_erfcx_dbl = DblTensorType("d_erfcx_dbl", 6);
+            h_x = flare::create_mirror_tensor(d_x);
+            h_erfcx_dbl = flare::create_mirror_tensor(d_erfcx_dbl);
+            h_ref_erfcx_dbl = DblHostTensorType("h_ref_erfcx_dbl", 6);
 
             // Generate test inputs
             // abs(z)<=2
@@ -449,30 +449,30 @@ namespace Test {
 
     template<class ExecSpace>
     struct TestComplexBesselJ0Y0Function {
-        using ViewType = flare::View<flare::complex<double> *, ExecSpace>;
-        using HostViewType =
-                flare::View<flare::complex<double> *, flare::HostSpace>;
+        using TensorType = flare::Tensor<flare::complex<double> *, ExecSpace>;
+        using HostTensorType =
+                flare::Tensor<flare::complex<double> *, flare::HostSpace>;
 
-        ViewType d_z, d_cbj0, d_cby0;
-        typename ViewType::HostMirror h_z, h_cbj0, h_cby0;
-        HostViewType h_ref_cbj0, h_ref_cby0;
+        TensorType d_z, d_cbj0, d_cby0;
+        typename TensorType::HostMirror h_z, h_cbj0, h_cby0;
+        HostTensorType h_ref_cbj0, h_ref_cby0;
 
-        ViewType d_z_large, d_cbj0_large, d_cby0_large;
-        typename ViewType::HostMirror h_z_large, h_cbj0_large, h_cby0_large;
-        HostViewType h_ref_cbj0_large, h_ref_cby0_large;
+        TensorType d_z_large, d_cbj0_large, d_cby0_large;
+        typename TensorType::HostMirror h_z_large, h_cbj0_large, h_cby0_large;
+        HostTensorType h_ref_cbj0_large, h_ref_cby0_large;
 
         void testit() {
             using flare::experimental::infinity;
 
             int N = 25;
-            d_z = ViewType("d_z", N);
-            d_cbj0 = ViewType("d_cbj0", N);
-            d_cby0 = ViewType("d_cby0", N);
-            h_z = flare::create_mirror_view(d_z);
-            h_cbj0 = flare::create_mirror_view(d_cbj0);
-            h_cby0 = flare::create_mirror_view(d_cby0);
-            h_ref_cbj0 = HostViewType("h_ref_cbj0", N);
-            h_ref_cby0 = HostViewType("h_ref_cby0", N);
+            d_z = TensorType("d_z", N);
+            d_cbj0 = TensorType("d_cbj0", N);
+            d_cby0 = TensorType("d_cby0", N);
+            h_z = flare::create_mirror_tensor(d_z);
+            h_cbj0 = flare::create_mirror_tensor(d_cbj0);
+            h_cby0 = flare::create_mirror_tensor(d_cby0);
+            h_ref_cbj0 = HostTensorType("h_ref_cbj0", N);
+            h_ref_cby0 = HostTensorType("h_ref_cby0", N);
 
             // Generate test inputs
             h_z(0) = flare::complex<double>(0.0, 0.0);
@@ -618,14 +618,14 @@ namespace Test {
             }
 
             ////Test large arguments
-            d_z_large = ViewType("d_z_large", 6);
-            d_cbj0_large = ViewType("d_cbj0_large", 6);
-            d_cby0_large = ViewType("d_cby0_large", 6);
-            h_z_large = flare::create_mirror_view(d_z_large);
-            h_cbj0_large = flare::create_mirror_view(d_cbj0_large);
-            h_cby0_large = flare::create_mirror_view(d_cby0_large);
-            h_ref_cbj0_large = HostViewType("h_ref_cbj0_large", 2);
-            h_ref_cby0_large = HostViewType("h_ref_cby0_large", 2);
+            d_z_large = TensorType("d_z_large", 6);
+            d_cbj0_large = TensorType("d_cbj0_large", 6);
+            d_cby0_large = TensorType("d_cby0_large", 6);
+            h_z_large = flare::create_mirror_tensor(d_z_large);
+            h_cbj0_large = flare::create_mirror_tensor(d_cbj0_large);
+            h_cby0_large = flare::create_mirror_tensor(d_cby0_large);
+            h_ref_cbj0_large = HostTensorType("h_ref_cbj0_large", 2);
+            h_ref_cby0_large = HostTensorType("h_ref_cby0_large", 2);
 
             h_z_large(0) = flare::complex<double>(10000.0, 100.0);
             h_z_large(1) = flare::complex<double>(10000.0, 100.0);
@@ -740,30 +740,30 @@ namespace Test {
 
     template<class ExecSpace>
     struct TestComplexBesselJ1Y1Function {
-        using ViewType = flare::View<flare::complex<double> *, ExecSpace>;
-        using HostViewType =
-                flare::View<flare::complex<double> *, flare::HostSpace>;
+        using TensorType = flare::Tensor<flare::complex<double> *, ExecSpace>;
+        using HostTensorType =
+                flare::Tensor<flare::complex<double> *, flare::HostSpace>;
 
-        ViewType d_z, d_cbj1, d_cby1;
-        typename ViewType::HostMirror h_z, h_cbj1, h_cby1;
-        HostViewType h_ref_cbj1, h_ref_cby1;
+        TensorType d_z, d_cbj1, d_cby1;
+        typename TensorType::HostMirror h_z, h_cbj1, h_cby1;
+        HostTensorType h_ref_cbj1, h_ref_cby1;
 
-        ViewType d_z_large, d_cbj1_large, d_cby1_large;
-        typename ViewType::HostMirror h_z_large, h_cbj1_large, h_cby1_large;
-        HostViewType h_ref_cbj1_large, h_ref_cby1_large;
+        TensorType d_z_large, d_cbj1_large, d_cby1_large;
+        typename TensorType::HostMirror h_z_large, h_cbj1_large, h_cby1_large;
+        HostTensorType h_ref_cbj1_large, h_ref_cby1_large;
 
         void testit() {
             using flare::experimental::infinity;
 
             int N = 25;
-            d_z = ViewType("d_z", N);
-            d_cbj1 = ViewType("d_cbj1", N);
-            d_cby1 = ViewType("d_cby1", N);
-            h_z = flare::create_mirror_view(d_z);
-            h_cbj1 = flare::create_mirror_view(d_cbj1);
-            h_cby1 = flare::create_mirror_view(d_cby1);
-            h_ref_cbj1 = HostViewType("h_ref_cbj1", N);
-            h_ref_cby1 = HostViewType("h_ref_cby1", N);
+            d_z = TensorType("d_z", N);
+            d_cbj1 = TensorType("d_cbj1", N);
+            d_cby1 = TensorType("d_cby1", N);
+            h_z = flare::create_mirror_tensor(d_z);
+            h_cbj1 = flare::create_mirror_tensor(d_cbj1);
+            h_cby1 = flare::create_mirror_tensor(d_cby1);
+            h_ref_cbj1 = HostTensorType("h_ref_cbj1", N);
+            h_ref_cby1 = HostTensorType("h_ref_cby1", N);
 
             // Generate test inputs
             h_z(0) = flare::complex<double>(0.0, 0.0);
@@ -909,14 +909,14 @@ namespace Test {
             }
 
             ////Test large arguments
-            d_z_large = ViewType("d_z_large", 6);
-            d_cbj1_large = ViewType("d_cbj1_large", 6);
-            d_cby1_large = ViewType("d_cby1_large", 6);
-            h_z_large = flare::create_mirror_view(d_z_large);
-            h_cbj1_large = flare::create_mirror_view(d_cbj1_large);
-            h_cby1_large = flare::create_mirror_view(d_cby1_large);
-            h_ref_cbj1_large = HostViewType("h_ref_cbj1_large", 2);
-            h_ref_cby1_large = HostViewType("h_ref_cby1_large", 2);
+            d_z_large = TensorType("d_z_large", 6);
+            d_cbj1_large = TensorType("d_cbj1_large", 6);
+            d_cby1_large = TensorType("d_cby1_large", 6);
+            h_z_large = flare::create_mirror_tensor(d_z_large);
+            h_cbj1_large = flare::create_mirror_tensor(d_cbj1_large);
+            h_cby1_large = flare::create_mirror_tensor(d_cby1_large);
+            h_ref_cbj1_large = HostTensorType("h_ref_cbj1_large", 2);
+            h_ref_cby1_large = HostTensorType("h_ref_cby1_large", 2);
 
             h_z_large(0) = flare::complex<double>(10000.0, 100.0);
             h_z_large(1) = flare::complex<double>(10000.0, 100.0);
@@ -1031,30 +1031,30 @@ namespace Test {
 
     template<class ExecSpace>
     struct TestComplexBesselI0K0Function {
-        using ViewType = flare::View<flare::complex<double> *, ExecSpace>;
-        using HostViewType =
-                flare::View<flare::complex<double> *, flare::HostSpace>;
+        using TensorType = flare::Tensor<flare::complex<double> *, ExecSpace>;
+        using HostTensorType =
+                flare::Tensor<flare::complex<double> *, flare::HostSpace>;
 
-        ViewType d_z, d_cbi0, d_cbk0;
-        typename ViewType::HostMirror h_z, h_cbi0, h_cbk0;
-        HostViewType h_ref_cbi0, h_ref_cbk0;
+        TensorType d_z, d_cbi0, d_cbk0;
+        typename TensorType::HostMirror h_z, h_cbi0, h_cbk0;
+        HostTensorType h_ref_cbi0, h_ref_cbk0;
 
-        ViewType d_z_large, d_cbi0_large, d_cbk0_large;
-        typename ViewType::HostMirror h_z_large, h_cbi0_large, h_cbk0_large;
-        HostViewType h_ref_cbi0_large, h_ref_cbk0_large;
+        TensorType d_z_large, d_cbi0_large, d_cbk0_large;
+        typename TensorType::HostMirror h_z_large, h_cbi0_large, h_cbk0_large;
+        HostTensorType h_ref_cbi0_large, h_ref_cbk0_large;
 
         void testit() {
             using flare::experimental::infinity;
 
             int N = 25;
-            d_z = ViewType("d_z", N);
-            d_cbi0 = ViewType("d_cbi0", N);
-            d_cbk0 = ViewType("d_cbk0", N);
-            h_z = flare::create_mirror_view(d_z);
-            h_cbi0 = flare::create_mirror_view(d_cbi0);
-            h_cbk0 = flare::create_mirror_view(d_cbk0);
-            h_ref_cbi0 = HostViewType("h_ref_cbi0", N);
-            h_ref_cbk0 = HostViewType("h_ref_cbk0", N);
+            d_z = TensorType("d_z", N);
+            d_cbi0 = TensorType("d_cbi0", N);
+            d_cbk0 = TensorType("d_cbk0", N);
+            h_z = flare::create_mirror_tensor(d_z);
+            h_cbi0 = flare::create_mirror_tensor(d_cbi0);
+            h_cbk0 = flare::create_mirror_tensor(d_cbk0);
+            h_ref_cbi0 = HostTensorType("h_ref_cbi0", N);
+            h_ref_cbk0 = HostTensorType("h_ref_cbk0", N);
 
             // Generate test inputs
             h_z(0) = flare::complex<double>(0.0, 0.0);
@@ -1194,11 +1194,11 @@ namespace Test {
             }
 
             ////Test large arguments
-            d_z_large = ViewType("d_z_large", 6);
-            d_cbi0_large = ViewType("d_cbi0_large", 6);
-            h_z_large = flare::create_mirror_view(d_z_large);
-            h_cbi0_large = flare::create_mirror_view(d_cbi0_large);
-            h_ref_cbi0_large = HostViewType("h_ref_cbi0_large", 2);
+            d_z_large = TensorType("d_z_large", 6);
+            d_cbi0_large = TensorType("d_cbi0_large", 6);
+            h_z_large = flare::create_mirror_tensor(d_z_large);
+            h_cbi0_large = flare::create_mirror_tensor(d_cbi0_large);
+            h_ref_cbi0_large = HostTensorType("h_ref_cbi0_large", 2);
 
             h_z_large(0) = flare::complex<double>(100.0, 10.0);
             h_z_large(1) = flare::complex<double>(100.0, 10.0);
@@ -1267,30 +1267,30 @@ namespace Test {
 
     template<class ExecSpace>
     struct TestComplexBesselI1K1Function {
-        using ViewType = flare::View<flare::complex<double> *, ExecSpace>;
-        using HostViewType =
-                flare::View<flare::complex<double> *, flare::HostSpace>;
+        using TensorType = flare::Tensor<flare::complex<double> *, ExecSpace>;
+        using HostTensorType =
+                flare::Tensor<flare::complex<double> *, flare::HostSpace>;
 
-        ViewType d_z, d_cbi1, d_cbk1;
-        typename ViewType::HostMirror h_z, h_cbi1, h_cbk1;
-        HostViewType h_ref_cbi1, h_ref_cbk1;
+        TensorType d_z, d_cbi1, d_cbk1;
+        typename TensorType::HostMirror h_z, h_cbi1, h_cbk1;
+        HostTensorType h_ref_cbi1, h_ref_cbk1;
 
-        ViewType d_z_large, d_cbi1_large, d_cbk1_large;
-        typename ViewType::HostMirror h_z_large, h_cbi1_large, h_cbk1_large;
-        HostViewType h_ref_cbi1_large, h_ref_cbk1_large;
+        TensorType d_z_large, d_cbi1_large, d_cbk1_large;
+        typename TensorType::HostMirror h_z_large, h_cbi1_large, h_cbk1_large;
+        HostTensorType h_ref_cbi1_large, h_ref_cbk1_large;
 
         void testit() {
             using flare::experimental::infinity;
 
             int N = 25;
-            d_z = ViewType("d_z", N);
-            d_cbi1 = ViewType("d_cbi1", N);
-            d_cbk1 = ViewType("d_cbk1", N);
-            h_z = flare::create_mirror_view(d_z);
-            h_cbi1 = flare::create_mirror_view(d_cbi1);
-            h_cbk1 = flare::create_mirror_view(d_cbk1);
-            h_ref_cbi1 = HostViewType("h_ref_cbi1", N);
-            h_ref_cbk1 = HostViewType("h_ref_cbk1", N);
+            d_z = TensorType("d_z", N);
+            d_cbi1 = TensorType("d_cbi1", N);
+            d_cbk1 = TensorType("d_cbk1", N);
+            h_z = flare::create_mirror_tensor(d_z);
+            h_cbi1 = flare::create_mirror_tensor(d_cbi1);
+            h_cbk1 = flare::create_mirror_tensor(d_cbk1);
+            h_ref_cbi1 = HostTensorType("h_ref_cbi1", N);
+            h_ref_cbk1 = HostTensorType("h_ref_cbk1", N);
 
             // Generate test inputs
             h_z(0) = flare::complex<double>(0.0, 0.0);
@@ -1430,11 +1430,11 @@ namespace Test {
             }
 
             ////Test large arguments
-            d_z_large = ViewType("d_z_large", 6);
-            d_cbi1_large = ViewType("d_cbi1_large", 6);
-            h_z_large = flare::create_mirror_view(d_z_large);
-            h_cbi1_large = flare::create_mirror_view(d_cbi1_large);
-            h_ref_cbi1_large = HostViewType("h_ref_cbi1_large", 2);
+            d_z_large = TensorType("d_z_large", 6);
+            d_cbi1_large = TensorType("d_cbi1_large", 6);
+            h_z_large = flare::create_mirror_tensor(d_z_large);
+            h_cbi1_large = flare::create_mirror_tensor(d_cbi1_large);
+            h_ref_cbi1_large = HostTensorType("h_ref_cbi1_large", 2);
 
             h_z_large(0) = flare::complex<double>(100.0, 10.0);
             h_z_large(1) = flare::complex<double>(100.0, 10.0);
@@ -1503,26 +1503,26 @@ namespace Test {
 
     template<class ExecSpace>
     struct TestComplexBesselH1Function {
-        using ViewType = flare::View<flare::complex<double> *, ExecSpace>;
-        using HostViewType =
-                flare::View<flare::complex<double> *, flare::HostSpace>;
+        using TensorType = flare::Tensor<flare::complex<double> *, ExecSpace>;
+        using HostTensorType =
+                flare::Tensor<flare::complex<double> *, flare::HostSpace>;
 
-        ViewType d_z, d_ch10, d_ch11;
-        typename ViewType::HostMirror h_z, h_ch10, h_ch11;
-        HostViewType h_ref_ch10, h_ref_ch11;
+        TensorType d_z, d_ch10, d_ch11;
+        typename TensorType::HostMirror h_z, h_ch10, h_ch11;
+        HostTensorType h_ref_ch10, h_ref_ch11;
 
         void testit() {
             using flare::experimental::infinity;
 
             int N = 25;
-            d_z = ViewType("d_z", N);
-            d_ch10 = ViewType("d_ch10", N);
-            d_ch11 = ViewType("d_ch11", N);
-            h_z = flare::create_mirror_view(d_z);
-            h_ch10 = flare::create_mirror_view(d_ch10);
-            h_ch11 = flare::create_mirror_view(d_ch11);
-            h_ref_ch10 = HostViewType("h_ref_ch10", N);
-            h_ref_ch11 = HostViewType("h_ref_ch11", N);
+            d_z = TensorType("d_z", N);
+            d_ch10 = TensorType("d_ch10", N);
+            d_ch11 = TensorType("d_ch11", N);
+            h_z = flare::create_mirror_tensor(d_z);
+            h_ch10 = flare::create_mirror_tensor(d_ch10);
+            h_ch11 = flare::create_mirror_tensor(d_ch11);
+            h_ref_ch10 = HostTensorType("h_ref_ch10", N);
+            h_ref_ch11 = HostTensorType("h_ref_ch11", N);
 
             // Generate test inputs
             h_z(0) = flare::complex<double>(0.0, 0.0);
@@ -1684,26 +1684,26 @@ namespace Test {
 
     template<class ExecSpace>
     struct TestComplexBesselH2Function {
-        using ViewType = flare::View<flare::complex<double> *, ExecSpace>;
-        using HostViewType =
-                flare::View<flare::complex<double> *, flare::HostSpace>;
+        using TensorType = flare::Tensor<flare::complex<double> *, ExecSpace>;
+        using HostTensorType =
+                flare::Tensor<flare::complex<double> *, flare::HostSpace>;
 
-        ViewType d_z, d_ch20, d_ch21;
-        typename ViewType::HostMirror h_z, h_ch20, h_ch21;
-        HostViewType h_ref_ch20, h_ref_ch21;
+        TensorType d_z, d_ch20, d_ch21;
+        typename TensorType::HostMirror h_z, h_ch20, h_ch21;
+        HostTensorType h_ref_ch20, h_ref_ch21;
 
         void testit() {
             using flare::experimental::infinity;
 
             int N = 25;
-            d_z = ViewType("d_z", N);
-            d_ch20 = ViewType("d_ch20", N);
-            d_ch21 = ViewType("d_ch21", N);
-            h_z = flare::create_mirror_view(d_z);
-            h_ch20 = flare::create_mirror_view(d_ch20);
-            h_ch21 = flare::create_mirror_view(d_ch21);
-            h_ref_ch20 = HostViewType("h_ref_ch20", N);
-            h_ref_ch21 = HostViewType("h_ref_ch21", N);
+            d_z = TensorType("d_z", N);
+            d_ch20 = TensorType("d_ch20", N);
+            d_ch21 = TensorType("d_ch21", N);
+            h_z = flare::create_mirror_tensor(d_z);
+            h_ch20 = flare::create_mirror_tensor(d_ch20);
+            h_ch21 = flare::create_mirror_tensor(d_ch21);
+            h_ref_ch20 = HostTensorType("h_ref_ch20", N);
+            h_ref_ch21 = HostTensorType("h_ref_ch21", N);
 
             // Generate test inputs
             h_z(0) = flare::complex<double>(0.0, 0.0);

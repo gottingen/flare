@@ -47,14 +47,14 @@ struct UnifDist<double> {
   double operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -119,29 +119,29 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewTypeFrom, class ViewTypeTest>
-void verify_data(ViewTypeFrom view_from, ViewTypeTest view_test,
+template <class TensorTypeFrom, class TensorTypeTest>
+void verify_data(TensorTypeFrom tensor_from, TensorTypeTest tensor_test,
                  std::size_t rotation_point) {
-  auto view_from_h      = create_host_space_copy(view_from);
-  auto view_test_h      = create_host_space_copy(view_test);
-  const std::size_t ext = view_test_h.extent(0);
+  auto trnsor_from_h      = create_host_space_copy(tensor_from);
+  auto tensor_test_h      = create_host_space_copy(tensor_test);
+  const std::size_t ext = tensor_test_h.extent(0);
 
-  using value_type = typename ViewTypeTest::value_type;
+  using value_type = typename TensorTypeTest::value_type;
   std::vector<value_type> std_gold_h(ext);
-  auto first_n = KE::cbegin(view_from_h) + rotation_point;
-  std::rotate_copy(KE::cbegin(view_from_h), first_n, KE::cend(view_from_h),
+  auto first_n = KE::cbegin(trnsor_from_h) + rotation_point;
+  std::rotate_copy(KE::cbegin(trnsor_from_h), first_n, KE::cend(trnsor_from_h),
                    std_gold_h.begin());
 
   for (std::size_t i = 0; i < ext; ++i) {
-    REQUIRE_EQ(view_test_h(i), std_gold_h[i]);
+    REQUIRE_EQ(tensor_test_h(i), std_gold_h[i]);
     // std::cout << "i= " << i << " "
-    // 	      << "from: " << view_from_h(i) << " "
-    // 	      << "mine: " << view_test_h(i) << " "
+    // 	      << "from: " << trnsor_from_h(i) << " "
+    // 	      << "mine: " << tensor_test_h(i) << " "
     // 	      << "std: " << std_gold_h[i]
     // 	      << '\n';
   }
@@ -155,7 +155,7 @@ void print_scenario_details(const std::string& name,
                             std::size_t rotation_point) {
   std::cout << "rotate_copy: "
             << " at " << rotation_point << ", " << name << ", "
-            << view_tag_to_string(Tag{}) << ", "
+            << tensor_tag_to_string(Tag{}) << ", "
             << value_type_to_string(ValueType()) << std::endl;
 }
 
@@ -163,48 +163,48 @@ template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info,
                          std::size_t rotation_point) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // print_scenario_details<Tag, ValueType>(name, rotation_point);
 
-  auto view_from = create_view<ValueType>(Tag{}, view_ext, "rotate_copy_from");
-  fill_view(view_from, name);
+  auto tensor_from = create_tensor<ValueType>(Tag{}, tensor_ext, "rotate_copy_from");
+  fill_tensor(tensor_from, name);
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "rotate_copy_dest");
-    auto n_it = KE::cbegin(view_from) + rotation_point;
-    auto rit  = KE::rotate_copy(exespace(), KE::cbegin(view_from), n_it,
-                               KE::cend(view_from), KE::begin(view_dest));
-    verify_data(view_from, view_dest, rotation_point);
-    REQUIRE_EQ(rit, (KE::begin(view_dest) + view_ext));
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "rotate_copy_dest");
+    auto n_it = KE::cbegin(tensor_from) + rotation_point;
+    auto rit  = KE::rotate_copy(exespace(), KE::cbegin(tensor_from), n_it,
+                               KE::cend(tensor_from), KE::begin(tensor_dest));
+    verify_data(tensor_from, tensor_dest, rotation_point);
+    REQUIRE_EQ(rit, (KE::begin(tensor_dest) + tensor_ext));
   }
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "rotate_copy_dest");
-    auto n_it = KE::cbegin(view_from) + rotation_point;
-    auto rit = KE::rotate_copy("label", exespace(), KE::cbegin(view_from), n_it,
-                               KE::cend(view_from), KE::begin(view_dest));
-    verify_data(view_from, view_dest, rotation_point);
-    REQUIRE_EQ(rit, (KE::begin(view_dest) + view_ext));
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "rotate_copy_dest");
+    auto n_it = KE::cbegin(tensor_from) + rotation_point;
+    auto rit = KE::rotate_copy("label", exespace(), KE::cbegin(tensor_from), n_it,
+                               KE::cend(tensor_from), KE::begin(tensor_dest));
+    verify_data(tensor_from, tensor_dest, rotation_point);
+    REQUIRE_EQ(rit, (KE::begin(tensor_dest) + tensor_ext));
   }
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "rotate_copy_dest");
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "rotate_copy_dest");
     auto rit =
-        KE::rotate_copy(exespace(), view_from, rotation_point, view_dest);
-    verify_data(view_from, view_dest, rotation_point);
-    REQUIRE_EQ(rit, (KE::begin(view_dest) + view_ext));
+        KE::rotate_copy(exespace(), tensor_from, rotation_point, tensor_dest);
+    verify_data(tensor_from, tensor_dest, rotation_point);
+    REQUIRE_EQ(rit, (KE::begin(tensor_dest) + tensor_ext));
   }
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "rotate_copy_dest");
-    auto rit = KE::rotate_copy("label", exespace(), view_from, rotation_point,
-                               view_dest);
-    verify_data(view_from, view_dest, rotation_point);
-    REQUIRE_EQ(rit, (KE::begin(view_dest) + view_ext));
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "rotate_copy_dest");
+    auto rit = KE::rotate_copy("label", exespace(), tensor_from, rotation_point,
+                               tensor_dest);
+    verify_data(tensor_from, tensor_dest, rotation_point);
+    REQUIRE_EQ(rit, (KE::begin(tensor_dest) + tensor_ext));
   }
 
   flare::fence();
@@ -222,10 +222,10 @@ void run_all_scenarios() {
 
   for (const auto& it : scenarios) {
     for (const auto& it2 : rotation_points) {
-      // for each view scenario, we rotate at multiple points
-      // but only if the view has an extent that is >= rotation point
-      const auto view_ext = it.second;
-      if (view_ext >= it2) {
+      // for each tensor scenario, we rotate at multiple points
+      // but only if the tensor has an extent that is >= rotation point
+      const auto tensor_ext = it.second;
+      if (tensor_ext >= it2) {
         run_single_scenario<Tag, ValueType>(it, it2);
       }
     }

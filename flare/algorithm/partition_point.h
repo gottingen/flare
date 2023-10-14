@@ -40,7 +40,7 @@ IteratorType partition_point(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class UnaryPredicate, class DataType,
           class... Properties>
 auto partition_point(const std::string& label, const ExecutionSpace& ex,
-                     const ::flare::View<DataType, Properties...>& v,
+                     const ::flare::Tensor<DataType, Properties...>& v,
                      UnaryPredicate p) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
   return detail::partition_point_impl(label, ex, begin(v), end(v), std::move(p));
@@ -49,10 +49,10 @@ auto partition_point(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class UnaryPredicate, class DataType,
           class... Properties>
 auto partition_point(const ExecutionSpace& ex,
-                     const ::flare::View<DataType, Properties...>& v,
+                     const ::flare::Tensor<DataType, Properties...>& v,
                      UnaryPredicate p) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
-  return detail::partition_point_impl("flare::partition_point_view_api_default",
+  return detail::partition_point_impl("flare::partition_point_tensor_api_default",
                                     ex, begin(v), end(v), std::move(p));
 }
 

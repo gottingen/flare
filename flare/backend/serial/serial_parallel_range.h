@@ -119,19 +119,19 @@ namespace flare::detail {
             m_functor_reducer.get_reducer().final(ptr);
         }
 
-        template<class ViewType>
+        template<class TensorType>
         ParallelReduce(const CombinedFunctorReducerType &arg_functor_reducer,
-                       const Policy &arg_policy, const ViewType &arg_result_view)
+                       const Policy &arg_policy, const TensorType &arg_result_tensor)
                 : m_functor_reducer(arg_functor_reducer),
                   m_policy(arg_policy),
-                  m_result_ptr(arg_result_view.data()) {
-            static_assert(flare::is_view<ViewType>::value,
-                          "flare::Serial reduce result must be a View");
+                  m_result_ptr(arg_result_tensor.data()) {
+            static_assert(flare::is_tensor<TensorType>::value,
+                          "flare::Serial reduce result must be a Tensor");
 
             static_assert(
-                    flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+                    flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                             flare::HostSpace>::accessible,
-                    "flare::Serial reduce result must be a View accessible from "
+                    "flare::Serial reduce result must be a Tensor accessible from "
                     "HostSpace");
         }
     };
@@ -268,16 +268,16 @@ namespace flare::detail {
             *m_result_ptr = update;
         }
 
-        template<class ViewType,
-                class Enable = std::enable_if_t<flare::is_view<ViewType>::value>>
+        template<class TensorType,
+                class Enable = std::enable_if_t<flare::is_tensor<TensorType>::value>>
         ParallelScanWithTotal(const FunctorType &arg_functor,
                               const Policy &arg_policy,
-                              const ViewType &arg_result_view)
+                              const TensorType &arg_result_tensor)
                 : m_functor_reducer(arg_functor, typename Analysis::Reducer{arg_functor}),
                   m_policy(arg_policy),
-                  m_result_ptr(arg_result_view.data()) {
+                  m_result_ptr(arg_result_tensor.data()) {
             static_assert(
-                    flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+                    flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                             flare::HostSpace>::accessible,
                     "flare::Serial parallel_scan result must be host-accessible!");
         }

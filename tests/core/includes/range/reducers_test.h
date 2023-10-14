@@ -39,21 +39,21 @@ struct ReducerTag {};
 template <class Scalar, class ExecSpace = flare::DefaultExecutionSpace>
 struct TestReducers {
   struct SumFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int& i, Scalar& value) const { value += values(i); }
   };
 
   struct ProdFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int& i, Scalar& value) const { value *= values(i); }
   };
 
   struct MinFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int& i, Scalar& value) const {
@@ -62,7 +62,7 @@ struct TestReducers {
   };
 
   struct MaxFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int& i, Scalar& value) const {
@@ -71,7 +71,7 @@ struct TestReducers {
   };
 
   struct MinLocFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(
@@ -85,7 +85,7 @@ struct TestReducers {
   };
 
   struct MinLocFunctor2D {
-    flare::View<const Scalar**, ExecSpace> values;
+    flare::Tensor<const Scalar**, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(
@@ -99,7 +99,7 @@ struct TestReducers {
   };
 
   struct MaxLocFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(
@@ -113,7 +113,7 @@ struct TestReducers {
   };
 
   struct MaxLocFunctor2D {
-    flare::View<const Scalar**, ExecSpace> values;
+    flare::Tensor<const Scalar**, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(
@@ -127,7 +127,7 @@ struct TestReducers {
   };
 
   struct MinMaxLocFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(
@@ -146,7 +146,7 @@ struct TestReducers {
   };
 
   struct MinMaxLocFunctor2D {
-    flare::View<const Scalar**, ExecSpace> values;
+    flare::Tensor<const Scalar**, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(
@@ -165,7 +165,7 @@ struct TestReducers {
   };
 
   struct BAndFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int& i, Scalar& value) const {
@@ -174,7 +174,7 @@ struct TestReducers {
   };
 
   struct BOrFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int& i, Scalar& value) const {
@@ -183,7 +183,7 @@ struct TestReducers {
   };
 
   struct LAndFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int& i, Scalar& value) const {
@@ -192,7 +192,7 @@ struct TestReducers {
   };
 
   struct LOrFunctor {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int& i, Scalar& value) const {
@@ -201,7 +201,7 @@ struct TestReducers {
   };
 
   struct SumFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const ReducerTag, const int& i, Scalar& value) const {
@@ -210,7 +210,7 @@ struct TestReducers {
   };
 
   struct ProdFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const ReducerTag, const int& i, Scalar& value) const {
@@ -219,7 +219,7 @@ struct TestReducers {
   };
 
   struct MinFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const ReducerTag, const int& i, Scalar& value) const {
@@ -228,7 +228,7 @@ struct TestReducers {
   };
 
   struct MaxFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const ReducerTag, const int& i, Scalar& value) const {
@@ -237,7 +237,7 @@ struct TestReducers {
   };
 
   struct MinLocFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(
@@ -251,7 +251,7 @@ struct TestReducers {
   };
 
   struct MaxLocFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(
@@ -265,7 +265,7 @@ struct TestReducers {
   };
 
   struct MinMaxLocFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(
@@ -284,7 +284,7 @@ struct TestReducers {
   };
 
   struct BAndFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const ReducerTag, const int& i, Scalar& value) const {
@@ -293,7 +293,7 @@ struct TestReducers {
   };
 
   struct BOrFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const ReducerTag, const int& i, Scalar& value) const {
@@ -302,7 +302,7 @@ struct TestReducers {
   };
 
   struct LAndFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const ReducerTag, const int& i, Scalar& value) const {
@@ -311,7 +311,7 @@ struct TestReducers {
   };
 
   struct LOrFunctorTag {
-    flare::View<const Scalar*, ExecSpace> values;
+    flare::Tensor<const Scalar*, ExecSpace> values;
 
     FLARE_INLINE_FUNCTION
     void operator()(const ReducerTag, const int& i, Scalar& value) const {
@@ -319,8 +319,8 @@ struct TestReducers {
     }
   };
   static void test_sum(int N) {
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_sum = 0;
 
     for (int i = 0; i < N; i++) {
@@ -369,53 +369,53 @@ struct TestReducers {
                               f_tag, reducer_scalar);
       REQUIRE_EQ(sum_scalar, reference_sum) ;
 
-      Scalar sum_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(sum_scalar_view, reference_sum);
+      Scalar sum_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(sum_scalar_tensor, reference_sum);
     }
 
     {
-      flare::View<Scalar, flare::HostSpace> sum_view("View");
-      sum_view() = Scalar(1);
-      flare::Sum<Scalar> reducer_view(sum_view);
+      flare::Tensor<Scalar, flare::HostSpace> sum_tensor("Tensor");
+      sum_tensor() = Scalar(1);
+      flare::Sum<Scalar> reducer_tensor(sum_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, 0), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
-      Scalar sum_view_scalar = sum_view();
-      REQUIRE_EQ(sum_view_scalar, init) ;
+      Scalar sum_tensor_scalar = sum_tensor();
+      REQUIRE_EQ(sum_tensor_scalar, init) ;
 
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
-      sum_view_scalar = sum_view();
-      REQUIRE_EQ(sum_view_scalar, reference_sum);
+      sum_tensor_scalar = sum_tensor();
+      REQUIRE_EQ(sum_tensor_scalar, reference_sum);
 
-      Scalar sum_view_view = reducer_view.reference();
-      REQUIRE_EQ(sum_view_view, reference_sum) ;
+      Scalar sum_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(sum_tensor_tensor, reference_sum) ;
     }
 
     {
-      flare::View<Scalar, typename ExecSpace::memory_space> sum_view("View");
-      flare::deep_copy(sum_view, Scalar(1));
-      flare::Sum<Scalar, typename ExecSpace::memory_space> reducer_view(
-          sum_view);
+      flare::Tensor<Scalar, typename ExecSpace::memory_space> sum_tensor("Tensor");
+      flare::deep_copy(sum_tensor, Scalar(1));
+      flare::Sum<Scalar, typename ExecSpace::memory_space> reducer_tensor(
+          sum_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, 0), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
-      Scalar sum_view_scalar;
-      flare::deep_copy(sum_view_scalar, sum_view);
-      REQUIRE_EQ(sum_view_scalar, init) ;
+      Scalar sum_tensor_scalar;
+      flare::deep_copy(sum_tensor_scalar, sum_tensor);
+      REQUIRE_EQ(sum_tensor_scalar, init) ;
 
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
-      flare::deep_copy(sum_view_scalar, sum_view);
-      REQUIRE_EQ(sum_view_scalar, reference_sum);
+      flare::deep_copy(sum_tensor_scalar, sum_tensor);
+      REQUIRE_EQ(sum_tensor_scalar, reference_sum);
     }
   }
 
   static void test_prod(int N) {
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values         = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values         = flare::create_mirror_tensor(values);
     Scalar reference_prod = 1;
 
     for (int i = 0; i < N; i++) {
@@ -446,53 +446,53 @@ struct TestReducers {
                               f_tag, reducer_scalar);
       REQUIRE_EQ(prod_scalar, reference_prod);
 
-      Scalar prod_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(prod_scalar_view, reference_prod);
+      Scalar prod_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(prod_scalar_tensor, reference_prod);
     }
 
     {
-      flare::View<Scalar, flare::HostSpace> prod_view("View");
-      prod_view() = Scalar(0);
-      flare::Prod<Scalar> reducer_view(prod_view);
+      flare::Tensor<Scalar, flare::HostSpace> prod_tensor("Tensor");
+      prod_tensor() = Scalar(0);
+      flare::Prod<Scalar> reducer_tensor(prod_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, 0), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
-      Scalar prod_view_scalar = prod_view();
-      REQUIRE_EQ(prod_view_scalar, init);
+      Scalar prod_tensor_scalar = prod_tensor();
+      REQUIRE_EQ(prod_tensor_scalar, init);
 
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
-      prod_view_scalar = prod_view();
-      REQUIRE_EQ(prod_view_scalar, reference_prod);
+      prod_tensor_scalar = prod_tensor();
+      REQUIRE_EQ(prod_tensor_scalar, reference_prod);
 
-      Scalar prod_view_view = reducer_view.reference();
-      REQUIRE_EQ(prod_view_view, reference_prod);
+      Scalar prod_tensor_tesnor = reducer_tensor.reference();
+      REQUIRE_EQ(prod_tensor_tesnor, reference_prod);
     }
 
     {
-      flare::View<Scalar, typename ExecSpace::memory_space> prod_view("View");
-      flare::deep_copy(prod_view, Scalar(0));
-      flare::Prod<Scalar, typename ExecSpace::memory_space> reducer_view(
-          prod_view);
+      flare::Tensor<Scalar, typename ExecSpace::memory_space> prod_tensor("Tensor");
+      flare::deep_copy(prod_tensor, Scalar(0));
+      flare::Prod<Scalar, typename ExecSpace::memory_space> reducer_tensor(
+          prod_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, 0), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
-      Scalar prod_view_scalar;
-      flare::deep_copy(prod_view_scalar, prod_view);
-      REQUIRE_EQ(prod_view_scalar, init);
+      Scalar prod_tensor_scalar;
+      flare::deep_copy(prod_tensor_scalar, prod_tensor);
+      REQUIRE_EQ(prod_tensor_scalar, init);
 
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
-      flare::deep_copy(prod_view_scalar, prod_view);
-      REQUIRE_EQ(prod_view_scalar, reference_prod);
+      flare::deep_copy(prod_tensor_scalar, prod_tensor);
+      REQUIRE_EQ(prod_tensor_scalar, reference_prod);
     }
   }
 
   static void test_min(int N) {
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_min = std::numeric_limits<Scalar>::max();
 
     for (int i = 0; i < N; i++) {
@@ -521,29 +521,29 @@ struct TestReducers {
                               f_tag, reducer_scalar);
       REQUIRE_EQ(min_scalar, reference_min);
 
-      Scalar min_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(min_scalar_view, reference_min);
+      Scalar min_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(min_scalar_tensor, reference_min);
     }
 
     {
-      flare::View<Scalar, flare::HostSpace> min_view("View");
-      min_view() = init;
-      flare::Min<Scalar> reducer_view(min_view);
+      flare::Tensor<Scalar, flare::HostSpace> min_tensor("Tensor");
+      min_tensor() = init;
+      flare::Min<Scalar> reducer_tensor(min_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
 
-      Scalar min_view_scalar = min_view();
-      REQUIRE_EQ(min_view_scalar, reference_min);
+      Scalar min_tensor_scalar = min_tensor();
+      REQUIRE_EQ(min_tensor_scalar, reference_min);
 
-      Scalar min_view_view = reducer_view.reference();
-      REQUIRE_EQ(min_view_view, reference_min);
+      Scalar min_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(min_tensor_tensor, reference_min);
     }
   }
 
   static void test_max(int N) {
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_max = std::numeric_limits<Scalar>::min();
 
     for (int i = 0; i < N; i++) {
@@ -572,31 +572,31 @@ struct TestReducers {
                               f_tag, reducer_scalar);
       REQUIRE_EQ(max_scalar, reference_max);
 
-      Scalar max_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(max_scalar_view, reference_max);
+      Scalar max_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(max_scalar_tensor, reference_max);
     }
 
     {
-      flare::View<Scalar, flare::HostSpace> max_view("View");
-      max_view() = init;
-      flare::Max<Scalar> reducer_view(max_view);
+      flare::Tensor<Scalar, flare::HostSpace> max_tensor("Tensor");
+      max_tensor() = init;
+      flare::Max<Scalar> reducer_tensor(max_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
 
-      Scalar max_view_scalar = max_view();
-      REQUIRE_EQ(max_view_scalar, reference_max);
+      Scalar max_tensor_scalar = max_tensor();
+      REQUIRE_EQ(max_tensor_scalar, reference_max);
 
-      Scalar max_view_view = reducer_view.reference();
-      REQUIRE_EQ(max_view_view, reference_max);
+      Scalar max_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(max_tensor_tensor, reference_max);
     }
   }
 
   static void test_minloc(int N) {
     using value_type = typename flare::MinLoc<Scalar, int>::value_type;
 
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_min = std::numeric_limits<Scalar>::max();
     int reference_loc    = -1;
 
@@ -633,25 +633,25 @@ struct TestReducers {
       REQUIRE_EQ(min_scalar.val, reference_min);
       REQUIRE_EQ(min_scalar.loc, reference_loc);
 
-      value_type min_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(min_scalar_view.val, reference_min);
-      REQUIRE_EQ(min_scalar_view.loc, reference_loc);
+      value_type min_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(min_scalar_tensor.val, reference_min);
+      REQUIRE_EQ(min_scalar_tensor.loc, reference_loc);
     }
 
     {
-      flare::View<value_type, flare::HostSpace> min_view("View");
-      flare::MinLoc<Scalar, int> reducer_view(min_view);
+      flare::Tensor<value_type, flare::HostSpace> min_tensor("Tensor");
+      flare::MinLoc<Scalar, int> reducer_tensor(min_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
 
-      value_type min_view_scalar = min_view();
-      REQUIRE_EQ(min_view_scalar.val, reference_min);
-      REQUIRE_EQ(min_view_scalar.loc, reference_loc);
+      value_type min_tensor_scalar = min_tensor();
+      REQUIRE_EQ(min_tensor_scalar.val, reference_min);
+      REQUIRE_EQ(min_tensor_scalar.loc, reference_loc);
 
-      value_type min_view_view = reducer_view.reference();
-      REQUIRE_EQ(min_view_view.val, reference_min);
-      REQUIRE_EQ(min_view_view.loc, reference_loc);
+      value_type min_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(min_tensor_tensor.val, reference_min);
+      REQUIRE_EQ(min_tensor_tensor.loc, reference_loc);
     }
   }
 
@@ -659,8 +659,8 @@ struct TestReducers {
     using reducer_type = flare::MinLoc<Scalar, MyPair>;
     using value_type   = typename reducer_type::value_type;
 
-    flare::View<Scalar**, ExecSpace> values("Values", N, N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar**, ExecSpace> values("Values", N, N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_min = std::numeric_limits<Scalar>::max();
     MyPair reference_loc = {{-1, -1}};
 
@@ -696,8 +696,8 @@ struct TestReducers {
   static void test_maxloc(int N) {
     using value_type = typename flare::MaxLoc<Scalar, int>::value_type;
 
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_max = std::numeric_limits<Scalar>::min();
     int reference_loc    = -1;
 
@@ -734,25 +734,25 @@ struct TestReducers {
       REQUIRE_EQ(max_scalar.val, reference_max);
       REQUIRE_EQ(max_scalar.loc, reference_loc);
 
-      value_type max_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(max_scalar_view.val, reference_max);
-      REQUIRE_EQ(max_scalar_view.loc, reference_loc);
+      value_type max_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(max_scalar_tensor.val, reference_max);
+      REQUIRE_EQ(max_scalar_tensor.loc, reference_loc);
     }
 
     {
-      flare::View<value_type, flare::HostSpace> max_view("View");
-      flare::MaxLoc<Scalar, int> reducer_view(max_view);
+      flare::Tensor<value_type, flare::HostSpace> max_tensor("Tensor");
+      flare::MaxLoc<Scalar, int> reducer_tensor(max_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
 
-      value_type max_view_scalar = max_view();
-      REQUIRE_EQ(max_view_scalar.val, reference_max);
-      REQUIRE_EQ(max_view_scalar.loc, reference_loc);
+      value_type max_tensor_scalar = max_tensor();
+      REQUIRE_EQ(max_tensor_scalar.val, reference_max);
+      REQUIRE_EQ(max_tensor_scalar.loc, reference_loc);
 
-      value_type max_view_view = reducer_view.reference();
-      REQUIRE_EQ(max_view_view.val, reference_max);
-      REQUIRE_EQ(max_view_view.loc, reference_loc);
+      value_type max_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(max_tensor_tensor.val, reference_max);
+      REQUIRE_EQ(max_tensor_tensor.loc, reference_loc);
     }
   }
 
@@ -760,8 +760,8 @@ struct TestReducers {
     using reducer_type = flare::MaxLoc<Scalar, MyPair>;
     using value_type   = typename reducer_type::value_type;
 
-    flare::View<Scalar**, ExecSpace> values("Values", N, N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar**, ExecSpace> values("Values", N, N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_max = std::numeric_limits<Scalar>::min();
     MyPair reference_loc = {{-1, -1}};
 
@@ -797,8 +797,8 @@ struct TestReducers {
   static void test_minmaxloc(int N) {
     using value_type = typename flare::MinMaxLoc<Scalar, int>::value_type;
 
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_max = std::numeric_limits<Scalar>::min();
     Scalar reference_min = std::numeric_limits<Scalar>::max();
     int reference_minloc = -1;
@@ -882,31 +882,31 @@ struct TestReducers {
 
       REQUIRE_EQ(minmax_scalar.max_loc, reference_maxloc);
 
-      value_type minmax_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(minmax_scalar_view.min_val, reference_min);
-      REQUIRE_EQ(minmax_scalar_view.min_loc, reference_minloc);
-      REQUIRE_EQ(minmax_scalar_view.max_val, reference_max);
-      REQUIRE_EQ(minmax_scalar_view.max_loc, reference_maxloc);
+      value_type minmax_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(minmax_scalar_tensor.min_val, reference_min);
+      REQUIRE_EQ(minmax_scalar_tensor.min_loc, reference_minloc);
+      REQUIRE_EQ(minmax_scalar_tensor.max_val, reference_max);
+      REQUIRE_EQ(minmax_scalar_tensor.max_loc, reference_maxloc);
     }
 
     {
-      flare::View<value_type, flare::HostSpace> minmax_view("View");
-      flare::MinMaxLoc<Scalar, int> reducer_view(minmax_view);
+      flare::Tensor<value_type, flare::HostSpace> minmax_tensor("Tensor");
+      flare::MinMaxLoc<Scalar, int> reducer_tensor(minmax_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
 
-      value_type minmax_view_scalar = minmax_view();
-      REQUIRE_EQ(minmax_view_scalar.min_val, reference_min);
-      REQUIRE_EQ(minmax_view_scalar.min_loc, reference_minloc);
-      REQUIRE_EQ(minmax_view_scalar.max_val, reference_max);
-      REQUIRE_EQ(minmax_view_scalar.max_loc, reference_maxloc);
+      value_type minmax_tensor_scalar = minmax_tensor();
+      REQUIRE_EQ(minmax_tensor_scalar.min_val, reference_min);
+      REQUIRE_EQ(minmax_tensor_scalar.min_loc, reference_minloc);
+      REQUIRE_EQ(minmax_tensor_scalar.max_val, reference_max);
+      REQUIRE_EQ(minmax_tensor_scalar.max_loc, reference_maxloc);
 
-      value_type minmax_view_view = reducer_view.reference();
-      REQUIRE_EQ(minmax_view_view.min_val, reference_min);
-      REQUIRE_EQ(minmax_view_view.min_loc, reference_minloc);
-      REQUIRE_EQ(minmax_view_view.max_val, reference_max);
-      REQUIRE_EQ(minmax_view_view.max_loc, reference_maxloc);
+      value_type minmax_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(minmax_tensor_tensor.min_val, reference_min);
+      REQUIRE_EQ(minmax_tensor_tensor.min_loc, reference_minloc);
+      REQUIRE_EQ(minmax_tensor_tensor.max_val, reference_max);
+      REQUIRE_EQ(minmax_tensor_tensor.max_loc, reference_maxloc);
     }
   }
 
@@ -914,8 +914,8 @@ struct TestReducers {
     using reducer_type = flare::MinMaxLoc<Scalar, MyPair>;
     using value_type   = typename reducer_type::value_type;
 
-    flare::View<Scalar**, ExecSpace> values("Values", N, N);
-    auto h_values           = flare::create_mirror_view(values);
+    flare::Tensor<Scalar**, ExecSpace> values("Values", N, N);
+    auto h_values           = flare::create_mirror_tensor(values);
     Scalar reference_max    = std::numeric_limits<Scalar>::min();
     Scalar reference_min    = std::numeric_limits<Scalar>::max();
     MyPair reference_minloc = {{-1, -1}};
@@ -983,8 +983,8 @@ struct TestReducers {
   }
 
   static void test_BAnd(int N) {
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values         = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values         = flare::create_mirror_tensor(values);
     Scalar reference_band = Scalar() | (~Scalar());
 
     for (int i = 0; i < N; i++) {
@@ -1012,30 +1012,30 @@ struct TestReducers {
                               f_tag, reducer_scalar);
       REQUIRE_EQ(band_scalar, reference_band);
 
-      Scalar band_scalar_view = reducer_scalar.reference();
+      Scalar band_scalar_tensor = reducer_scalar.reference();
 
-      REQUIRE_EQ(band_scalar_view, reference_band);
+      REQUIRE_EQ(band_scalar_tensor, reference_band);
     }
 
     {
-      flare::View<Scalar, flare::HostSpace> band_view("View");
-      band_view() = init;
-      flare::BAnd<Scalar> reducer_view(band_view);
+      flare::Tensor<Scalar, flare::HostSpace> band_tensor("Tensor");
+      band_tensor() = init;
+      flare::BAnd<Scalar> reducer_tensor(band_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
 
-      Scalar band_view_scalar = band_view();
-      REQUIRE_EQ(band_view_scalar, reference_band);
+      Scalar band_tensor_scalar = band_tensor();
+      REQUIRE_EQ(band_tensor_scalar, reference_band);
 
-      Scalar band_view_view = reducer_view.reference();
-      REQUIRE_EQ(band_view_view, reference_band);
+      Scalar band_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(band_tensor_tensor, reference_band);
     }
   }
 
   static void test_BOr(int N) {
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_bor = Scalar() & (~Scalar());
 
     for (int i = 0; i < N; i++) {
@@ -1063,29 +1063,29 @@ struct TestReducers {
                               f_tag, reducer_scalar);
       REQUIRE_EQ(bor_scalar, reference_bor);
 
-      Scalar bor_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(bor_scalar_view, reference_bor);
+      Scalar bor_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(bor_scalar_tensor, reference_bor);
     }
 
     {
-      flare::View<Scalar, flare::HostSpace> bor_view("View");
-      bor_view() = init;
-      flare::BOr<Scalar> reducer_view(bor_view);
+      flare::Tensor<Scalar, flare::HostSpace> bor_tensor("Tensor");
+      bor_tensor() = init;
+      flare::BOr<Scalar> reducer_tensor(bor_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
 
-      Scalar bor_view_scalar = bor_view();
-      REQUIRE_EQ(bor_view_scalar, reference_bor);
+      Scalar bor_tensor_scalar = bor_tensor();
+      REQUIRE_EQ(bor_tensor_scalar, reference_bor);
 
-      Scalar bor_view_view = reducer_view.reference();
-      REQUIRE_EQ(bor_view_view, reference_bor);
+      Scalar bor_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(bor_tensor_tensor, reference_bor);
     }
   }
 
   static void test_LAnd(int N) {
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values         = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values         = flare::create_mirror_tensor(values);
     Scalar reference_land = 1;
 
     for (int i = 0; i < N; i++) {
@@ -1113,29 +1113,29 @@ struct TestReducers {
                               f_tag, reducer_scalar);
       REQUIRE_EQ(land_scalar, reference_land);
 
-      Scalar land_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(land_scalar_view, reference_land);
+      Scalar land_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(land_scalar_tensor, reference_land);
     }
 
     {
-      flare::View<Scalar, flare::HostSpace> land_view("View");
-      land_view() = init;
-      flare::LAnd<Scalar> reducer_view(land_view);
+      flare::Tensor<Scalar, flare::HostSpace> land_tensor("Tensor");
+      land_tensor() = init;
+      flare::LAnd<Scalar> reducer_tensor(land_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
 
-      Scalar land_view_scalar = land_view();
-      REQUIRE_EQ(land_view_scalar, reference_land);
+      Scalar land_tensor_scalar = land_tensor();
+      REQUIRE_EQ(land_tensor_scalar, reference_land);
 
-      Scalar land_view_view = reducer_view.reference();
-      REQUIRE_EQ(land_view_view, reference_land);
+      Scalar land_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(land_tensor_tensor, reference_land);
     }
   }
 
   static void test_LOr(int N) {
-    flare::View<Scalar*, ExecSpace> values("Values", N);
-    auto h_values        = flare::create_mirror_view(values);
+    flare::Tensor<Scalar*, ExecSpace> values("Values", N);
+    auto h_values        = flare::create_mirror_tensor(values);
     Scalar reference_lor = 0;
 
     for (int i = 0; i < N; i++) {
@@ -1163,23 +1163,23 @@ struct TestReducers {
                               f_tag, reducer_scalar);
       REQUIRE_EQ(lor_scalar, reference_lor);
 
-      Scalar lor_scalar_view = reducer_scalar.reference();
-      REQUIRE_EQ(lor_scalar_view, reference_lor);
+      Scalar lor_scalar_tensor = reducer_scalar.reference();
+      REQUIRE_EQ(lor_scalar_tensor, reference_lor);
     }
 
     {
-      flare::View<Scalar, flare::HostSpace> lor_view("View");
-      lor_view() = init;
-      flare::LOr<Scalar> reducer_view(lor_view);
+      flare::Tensor<Scalar, flare::HostSpace> lor_tensor("Tensor");
+      lor_tensor() = init;
+      flare::LOr<Scalar> reducer_tensor(lor_tensor);
       flare::parallel_reduce(flare::RangePolicy<ExecSpace>(0, N), f,
-                              reducer_view);
+                              reducer_tensor);
       flare::fence();
 
-      Scalar lor_view_scalar = lor_view();
-      REQUIRE_EQ(lor_view_scalar, reference_lor);
+      Scalar lor_tensor_scalar = lor_tensor();
+      REQUIRE_EQ(lor_tensor_scalar, reference_lor);
 
-      Scalar lor_view_view = reducer_view.reference();
-      REQUIRE_EQ(lor_view_view, reference_lor);
+      Scalar lor_tensor_tensor = reducer_tensor.reference();
+      REQUIRE_EQ(lor_tensor_tensor, reference_lor);
     }
   }
 

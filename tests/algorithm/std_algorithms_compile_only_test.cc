@@ -103,9 +103,9 @@ struct TestStruct {
 
   using count_type      = std::size_t;
   using T               = double;
-  flare::View<T *> in1 = flare::View<T *>("in1", 10);
-  flare::View<T *> in2 = flare::View<T *>("in2", 10);
-  flare::View<T *> in3 = flare::View<T *>("in3", 10);
+  flare::Tensor<T *> in1 = flare::Tensor<T *>("in1", 10);
+  flare::Tensor<T *> in2 = flare::Tensor<T *>("in2", 10);
+  flare::Tensor<T *> in3 = flare::Tensor<T *>("in3", 10);
   flare::DefaultExecutionSpace exe_space;
   std::string const label = "trivial";
 
@@ -179,7 +179,7 @@ struct TestStruct {
                  KE::begin(in2), KE::end(in2), ARG);
 
 //
-// views only
+// tensors only
 //
 #define TEST_ALGO_MACRO_V1(ALGO)         \
   (void)KE::ALGO(exe_space, /*--*/ in1); \
@@ -194,7 +194,7 @@ struct TestStruct {
   (void)KE::ALGO(label, exe_space, in1, in2, in3);
 
 //
-// views and params
+// tensors and params
 //
 #define TEST_ALGO_MACRO_V1_VARIAD(ALGO, ...)          \
   (void)KE::ALGO(exe_space, /*--*/ in1, __VA_ARGS__); \

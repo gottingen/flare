@@ -14,23 +14,23 @@
 //
 
 #include <flare/core.h>
-#include <flare/dual_view.h>
+#include <flare/dual_tensor.h>
 
 namespace {
 
 template <class DataType, class Arg1Type = void, class Arg2Type = void,
           class Arg3Type = void>
 void not_supported_anymore(
-    flare::DualView<DataType, Arg1Type, Arg2Type, Arg2Type> x) {
-  static_assert(flare::is_dual_view_v<decltype(x)>);
+    flare::DualTensor<DataType, Arg1Type, Arg2Type, Arg2Type> x) {
+  static_assert(flare::is_dual_tensor_v<decltype(x)>);
 }
 
 template <class DataType, class... Properties>
-void prefer_instead(flare::DualView<DataType, Properties...> x) {
-  static_assert(flare::is_dual_view_v<decltype(x)>);
+void prefer_instead(flare::DualTensor<DataType, Properties...> x) {
+  static_assert(flare::is_dual_tensor_v<decltype(x)>);
 }
 
-using KDV = flare::DualView<int*>;
+using KDV = flare::DualTensor<int*>;
 
 
 static_assert(std::is_void_v<decltype(prefer_instead(std::declval<KDV>()))>);

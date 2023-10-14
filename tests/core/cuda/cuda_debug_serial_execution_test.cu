@@ -19,13 +19,13 @@
 
 namespace Test {
 
-    using ViewType = flare::View<double *>;
+    using TensorType = flare::Tensor<double *>;
 
     struct TestForFunctor {
-        ViewType a;
-        ViewType b;
+        TensorType a;
+        TensorType b;
 
-        TestForFunctor(int N) : a(ViewType("A", N)), b(ViewType("B", N)) {}
+        TestForFunctor(int N) : a(TensorType("A", N)), b(TensorType("B", N)) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(int i) const { a(i) = b(i); }
@@ -40,10 +40,10 @@ namespace Test {
     };
 
     struct TestRedFunctor {
-        ViewType a;
-        ViewType b;
+        TensorType a;
+        TensorType b;
 
-        TestRedFunctor(int N) : a(ViewType("A", N)), b(ViewType("B", N)) {}
+        TestRedFunctor(int N) : a(TensorType("A", N)), b(TensorType("B", N)) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(int i, double &val) const { val += a(i) * b(i); }
@@ -59,10 +59,10 @@ namespace Test {
     };
 
     struct TestScanFunctor {
-        ViewType a;
-        ViewType b;
+        TensorType a;
+        TensorType b;
 
-        TestScanFunctor(int N) : a(ViewType("A", N)), b(ViewType("B", N)) {}
+        TestScanFunctor(int N) : a(TensorType("A", N)), b(TensorType("B", N)) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(int i, double &val, bool final) const {

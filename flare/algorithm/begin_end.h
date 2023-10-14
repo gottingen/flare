@@ -16,7 +16,7 @@
 #ifndef FLARE_ALGORITHM_BEGIN_END_H_
 #define FLARE_ALGORITHM_BEGIN_END_H_
 
-#include <flare/core/tensor/view.h>
+#include <flare/core/tensor/tensor.h>
 #include <flare/algorithm/random_access_iterator_impl.h>
 #include <flare/algorithm/constraints_impl.h>
 
@@ -28,45 +28,45 @@ namespace experimental {
 
 template <class DataType, class... Properties>
 FLARE_INLINE_FUNCTION auto begin(
-    const flare::View<DataType, Properties...>& v) {
+    const flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   using it_t =
-      detail::RandomAccessIterator<flare::View<DataType, Properties...>>;
+      detail::RandomAccessIterator<flare::Tensor<DataType, Properties...>>;
   return it_t(v);
 }
 
 template <class DataType, class... Properties>
 FLARE_INLINE_FUNCTION auto end(
-    const flare::View<DataType, Properties...>& v) {
+    const flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   using it_t =
-      detail::RandomAccessIterator<flare::View<DataType, Properties...>>;
+      detail::RandomAccessIterator<flare::Tensor<DataType, Properties...>>;
   return it_t(v, v.extent(0));
 }
 
 template <class DataType, class... Properties>
 FLARE_INLINE_FUNCTION auto cbegin(
-    const flare::View<DataType, Properties...>& v) {
+    const flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
-  using ViewConstType =
-      typename flare::View<DataType, Properties...>::const_type;
-  const ViewConstType cv = v;
-  using it_t             = detail::RandomAccessIterator<ViewConstType>;
+  using TensorConstType =
+      typename flare::Tensor<DataType, Properties...>::const_type;
+  const TensorConstType cv = v;
+  using it_t             = detail::RandomAccessIterator<TensorConstType>;
   return it_t(cv);
 }
 
 template <class DataType, class... Properties>
 FLARE_INLINE_FUNCTION auto cend(
-    const flare::View<DataType, Properties...>& v) {
+    const flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
-  using ViewConstType =
-      typename flare::View<DataType, Properties...>::const_type;
-  const ViewConstType cv = v;
-  using it_t             = detail::RandomAccessIterator<ViewConstType>;
+  using TensorConstType =
+      typename flare::Tensor<DataType, Properties...>::const_type;
+  const TensorConstType cv = v;
+  using it_t             = detail::RandomAccessIterator<TensorConstType>;
   return it_t(cv, cv.extent(0));
 }
 

@@ -38,22 +38,22 @@ Iterator remove(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType, class... Properties,
           class ValueType>
 auto remove(const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view,
+            const ::flare::Tensor<DataType, Properties...>& tensor,
             const ValueType& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   return detail::remove_impl("flare::remove_iterator_api_default", ex,
-                           ::flare::experimental::begin(view),
-                           ::flare::experimental::end(view), value);
+                           ::flare::experimental::begin(tensor),
+                           ::flare::experimental::end(tensor), value);
 }
 
 template <class ExecutionSpace, class DataType, class... Properties,
           class ValueType>
 auto remove(const std::string& label, const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view,
+            const ::flare::Tensor<DataType, Properties...>& tensor,
             const ValueType& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::remove_impl(label, ex, ::flare::experimental::begin(view),
-                           ::flare::experimental::end(view), value);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::remove_impl(label, ex, ::flare::experimental::begin(tensor),
+                           ::flare::experimental::end(tensor), value);
 }
 
 }  // namespace experimental

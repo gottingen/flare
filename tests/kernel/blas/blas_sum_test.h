@@ -23,59 +23,59 @@
 #include <kernel/common/test_utility.h>
 
 namespace Test {
-    template<class ViewTypeA, class Device>
+    template<class TensorTypeA, class Device>
     void impl_test_sum(int N) {
-        typedef typename ViewTypeA::value_type ScalarA;
+        typedef typename TensorTypeA::value_type ScalarA;
 
-        view_stride_adapter<ViewTypeA> a("A", N);
+        tensor_stride_adapter<TensorTypeA> a("A", N);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
 
         ScalarA randStart, randEnd;
         Test::getRandomBounds(10.0, randStart, randEnd);
-        flare::fill_random(a.d_view, rand_pool, randStart, randEnd);
+        flare::fill_random(a.d_tensor, rand_pool, randStart, randEnd);
 
         flare::deep_copy(a.h_base, a.d_base);
 
         double eps = std::is_same<ScalarA, float>::value ? 2 * 1e-5 : 1e-7;
 
         ScalarA expected_result = 0;
-        for (int i = 0; i < N; i++) expected_result += a.h_view(i);
+        for (int i = 0; i < N; i++) expected_result += a.h_tensor(i);
 
-        ScalarA nonconst_result = flare::blas::sum(a.d_view);
+        ScalarA nonconst_result = flare::blas::sum(a.d_tensor);
         EXPECT_NEAR_KK(nonconst_result, expected_result, eps * expected_result);
 
-        ScalarA const_result = flare::blas::sum(a.d_view_const);
+        ScalarA const_result = flare::blas::sum(a.d_tensor_const);
         EXPECT_NEAR_KK(const_result, expected_result, eps * expected_result);
     }
 
-    template<class ViewTypeA, class Device>
+    template<class TensorTypeA, class Device>
     void impl_test_sum_mv(int N, int K) {
-        typedef typename ViewTypeA::value_type ScalarA;
+        typedef typename TensorTypeA::value_type ScalarA;
 
-        view_stride_adapter<ViewTypeA> a("A", N, K);
+        tensor_stride_adapter<TensorTypeA> a("A", N, K);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
 
         ScalarA randStart, randEnd;
         Test::getRandomBounds(10.0, randStart, randEnd);
-        flare::fill_random(a.d_view, rand_pool, randStart, randEnd);
+        flare::fill_random(a.d_tensor, rand_pool, randStart, randEnd);
 
         flare::deep_copy(a.h_base, a.d_base);
 
         ScalarA *expected_result = new ScalarA[K];
         for (int j = 0; j < K; j++) {
             expected_result[j] = ScalarA();
-            for (int i = 0; i < N; i++) expected_result[j] += a.h_view(i, j);
+            for (int i = 0; i < N; i++) expected_result[j] += a.h_tensor(i, j);
         }
 
         double eps = std::is_same<ScalarA, float>::value ? 2 * 1e-5 : 1e-7;
 
-        flare::View<ScalarA *, flare::HostSpace> r("Sum::Result", K);
+        flare::Tensor<ScalarA *, flare::HostSpace> r("Sum::Result", K);
 
-        flare::blas::sum(r, a.d_view);
+        flare::blas::sum(r, a.d_tensor);
         flare::fence();
         for (int k = 0; k < K; k++) {
             ScalarA nonconst_result = r(k);
@@ -83,7 +83,7 @@ namespace Test {
                            eps * expected_result[k]);
         }
 
-        flare::blas::sum(r, a.d_view_const);
+        flare::blas::sum(r, a.d_tensor_const);
         flare::fence();
         for (int k = 0; k < K; k++) {
             ScalarA const_result = r(k);
@@ -97,27 +97,27 @@ namespace Test {
 template<class ScalarA, class Device>
 int test_sum() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA *, flare::LayoutLeft, Device> view_type_a_ll;
-    Test::impl_test_sum<view_type_a_ll, Device>(0);
-    Test::impl_test_sum<view_type_a_ll, Device>(13);
-    Test::impl_test_sum<view_type_a_ll, Device>(1024);
-    // Test::impl_test_sum<view_type_a_ll, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutLeft, Device> tensor_type_a_ll;
+    Test::impl_test_sum<tensor_type_a_ll, Device>(0);
+    Test::impl_test_sum<tensor_type_a_ll, Device>(13);
+    Test::impl_test_sum<tensor_type_a_ll, Device>(1024);
+    // Test::impl_test_sum<tensor_type_a_ll, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA *, flare::LayoutRight, Device> view_type_a_lr;
-    Test::impl_test_sum<view_type_a_lr, Device>(0);
-    Test::impl_test_sum<view_type_a_lr, Device>(13);
-    Test::impl_test_sum<view_type_a_lr, Device>(1024);
-    // Test::impl_test_sum<view_type_a_lr, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutRight, Device> tensor_type_a_lr;
+    Test::impl_test_sum<tensor_type_a_lr, Device>(0);
+    Test::impl_test_sum<tensor_type_a_lr, Device>(13);
+    Test::impl_test_sum<tensor_type_a_lr, Device>(1024);
+    // Test::impl_test_sum<tensor_type_a_lr, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA *, flare::LayoutStride, Device> view_type_a_ls;
-    Test::impl_test_sum<view_type_a_ls, Device>(0);
-    Test::impl_test_sum<view_type_a_ls, Device>(13);
-    Test::impl_test_sum<view_type_a_ls, Device>(1024);
-    // Test::impl_test_sum<view_type_a_ls, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutStride, Device> tensor_type_a_ls;
+    Test::impl_test_sum<tensor_type_a_ls, Device>(0);
+    Test::impl_test_sum<tensor_type_a_ls, Device>(13);
+    Test::impl_test_sum<tensor_type_a_ls, Device>(1024);
+    // Test::impl_test_sum<tensor_type_a_ls, Device>(132231);
 #endif
 
     return 1;
@@ -126,30 +126,30 @@ int test_sum() {
 template<class ScalarA, class Device>
 int test_sum_mv() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA **, flare::LayoutLeft, Device> view_type_a_ll;
-    Test::impl_test_sum_mv<view_type_a_ll, Device>(0, 5);
-    Test::impl_test_sum_mv<view_type_a_ll, Device>(13, 5);
-    Test::impl_test_sum_mv<view_type_a_ll, Device>(1024, 5);
-    Test::impl_test_sum_mv<view_type_a_ll, Device>(789, 1);
-    // Test::impl_test_sum_mv<view_type_a_ll, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutLeft, Device> tensor_type_a_ll;
+    Test::impl_test_sum_mv<tensor_type_a_ll, Device>(0, 5);
+    Test::impl_test_sum_mv<tensor_type_a_ll, Device>(13, 5);
+    Test::impl_test_sum_mv<tensor_type_a_ll, Device>(1024, 5);
+    Test::impl_test_sum_mv<tensor_type_a_ll, Device>(789, 1);
+    // Test::impl_test_sum_mv<tensor_type_a_ll, Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA **, flare::LayoutRight, Device> view_type_a_lr;
-    Test::impl_test_sum_mv<view_type_a_lr, Device>(0, 5);
-    Test::impl_test_sum_mv<view_type_a_lr, Device>(13, 5);
-    Test::impl_test_sum_mv<view_type_a_lr, Device>(1024, 5);
-    Test::impl_test_sum_mv<view_type_a_lr, Device>(789, 1);
-    // Test::impl_test_sum_mv<view_type_a_lr, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutRight, Device> tensor_type_a_lr;
+    Test::impl_test_sum_mv<tensor_type_a_lr, Device>(0, 5);
+    Test::impl_test_sum_mv<tensor_type_a_lr, Device>(13, 5);
+    Test::impl_test_sum_mv<tensor_type_a_lr, Device>(1024, 5);
+    Test::impl_test_sum_mv<tensor_type_a_lr, Device>(789, 1);
+    // Test::impl_test_sum_mv<tensor_type_a_lr, Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA **, flare::LayoutStride, Device> view_type_a_ls;
-    Test::impl_test_sum_mv<view_type_a_ls, Device>(0, 5);
-    Test::impl_test_sum_mv<view_type_a_ls, Device>(13, 5);
-    Test::impl_test_sum_mv<view_type_a_ls, Device>(1024, 5);
-    Test::impl_test_sum_mv<view_type_a_ls, Device>(789, 1);
-    // Test::impl_test_sum_mv<view_type_a_ls, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutStride, Device> tensor_type_a_ls;
+    Test::impl_test_sum_mv<tensor_type_a_ls, Device>(0, 5);
+    Test::impl_test_sum_mv<tensor_type_a_ls, Device>(13, 5);
+    Test::impl_test_sum_mv<tensor_type_a_ls, Device>(1024, 5);
+    Test::impl_test_sum_mv<tensor_type_a_ls, Device>(789, 1);
+    // Test::impl_test_sum_mv<tensor_type_a_ls, Device>(132231,5);
 #endif
 
     return 1;

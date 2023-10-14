@@ -22,57 +22,57 @@
 #include <flare/bench.h>
 #include <chrono>
 
-// A flare::View is an array of zero or more dimensions.  The number
+// A flare::Tensor is an array of zero or more dimensions.  The number
 // of dimensions is specified at compile time, as part of the type of
-// the View.  This array has two dimensions.  The first one
+// the Tensor.  This array has two dimensions.  The first one
 // (represented by the asterisk) is a run-time dimension, and the
 // second (represented by [3]) is a compile-time dimension.  Thus,
-// this View type is an N x 3 array of type double, where N is
-// specified at run time in the View's constructor.
+// this Tensor type is an N x 3 array of type double, where N is
+// specified at run time in the Tensor's constructor.
 //
-// The first dimension of the View is the dimension over which it is
+// The first dimension of the Tensor is the dimension over which it is
 // efficient for flare to parallelize.
-using view_type = flare::View<double *, flare::Serial>;
+using tensor_type = flare::Tensor<double *, flare::Serial>;
 
-// parallel_for functor that fills the View given to its constructor.
-// The View must already have been allocated.
-struct InitView1 {
-    view_type a;
+// parallel_for functor that fills the Tensor given to its constructor.
+// The Tensor must already have been allocated.
+struct InitTensor1 {
+    tensor_type a;
 
-    // Views have "view semantics."  This means that they behave like
+    // Tensors have "tensor semantics."  This means that they behave like
     // pointers, not like std::vector.  Their copy constructor and
-    // operator= only do shallow copies.  Thus, you can pass View
+    // operator= only do shallow copies.  Thus, you can pass Tensor
     // objects around by "value"; they won't do a deep copy unless you
     // explicitly ask for a deep copy.
-    InitView1(view_type a_) : a(a_) {}
+    InitTensor1(tensor_type a_) : a(a_) {}
 
-    // Fill the View with some data.  The parallel_for loop will iterate
-    // over the View's first dimension N.
+    // Fill the Tensor with some data.  The parallel_for loop will iterate
+    // over the Tensor's first dimension N.
     FLARE_INLINE_FUNCTION
     void operator()(const int i) const {
-        // Acesss the View just like a Fortran array.  The layout depends
-        // on the View's memory space, so don't rely on the View's
+        // Acesss the Tensor just like a Fortran array.  The layout depends
+        // on the Tensor's memory space, so don't rely on the Tensor's
         // physical memory layout unless you know what you're doing.
         a(i) = i * 1.0;
     }
 };
 
-struct InitView2 {
-    view_type a;
+struct InitTensor2 {
+    tensor_type a;
 
-    // Views have "view semantics."  This means that they behave like
+    // Tensors have "tensor semantics."  This means that they behave like
     // pointers, not like std::vector.  Their copy constructor and
-    // operator= only do shallow copies.  Thus, you can pass View
+    // operator= only do shallow copies.  Thus, you can pass Tensor
     // objects around by "value"; they won't do a deep copy unless you
     // explicitly ask for a deep copy.
-    InitView2(view_type a_) : a(a_) {}
+    InitTensor2(tensor_type a_) : a(a_) {}
 
-    // Fill the View with some data.  The parallel_for loop will iterate
-    // over the View's first dimension N.
+    // Fill the Tensor with some data.  The parallel_for loop will iterate
+    // over the Tensor's first dimension N.
     FLARE_INLINE_FUNCTION
     void operator()(const int i) const {
-        // Acesss the View just like a Fortran array.  The layout depends
-        // on the View's memory space, so don't rely on the View's
+        // Acesss the Tensor just like a Fortran array.  The layout depends
+        // on the Tensor's memory space, so don't rely on the Tensor's
         // physical memory layout unless you know what you're doing.
         a(i) = i * 1.0 + 1.0;
     }
@@ -83,35 +83,35 @@ int main(int argc, char* argv[]) {
     {
         const int N = 1022;
 
-        // Allocate the View.  The first dimension is a run-time parameter
+        // Allocate the Tensor.  The first dimension is a run-time parameter
         // N.  We set N = 128 here.
         //
-        // Views get initialized to zero by default.  This happens in
-        // parallel, using the View's memory space's default execution
+        // Tensors get initialized to zero by default.  This happens in
+        // parallel, using the Tensor's memory space's default execution
         // space.  Parallel initialization ensures first-touch allocation.
         // There is a way to shut off default initialization.
         //
-        // You may NOT allocate a View inside of a parallel_{for, reduce,
-        // scan}.  Treat View allocation as a "thread collective."
+        // You may NOT allocate a Tensor inside of a parallel_{for, reduce,
+        // scan}.  Treat Tensor allocation as a "thread collective."
         //
         // The string "A" is just the label; it only matters for debugging.
-        // Different Views may have the same label.
-        view_type a("A", N);
-        view_type b("B", N);
+        // Different Tensors may have the same label.
+        tensor_type a("A", N);
+        tensor_type b("B", N);
 
-        flare::parallel_for(N, InitView1(a));
-        flare::parallel_for(N, InitView2(b));
-        double dis = flare::ann::distance_l1<view_type>(a,b, false);
-        printf("Result flare::ann::distance_l1<view_type>(a,b, false): %f\n", dis);
-        double dis1 = flare::ann::distance_l1<view_type>(a,b);
-        printf("Result flare::ann::distance_l1<view_type>(a,b): %f\n", dis1);
+        flare::parallel_for(N, InitTensor1(a));
+        flare::parallel_for(N, InitTensor2(b));
+        double dis = flare::ann::distance_l1<tensor_type>(a,b, false);
+        printf("Result flare::ann::distance_l1<tensor_type>(a,b, false): %f\n", dis);
+        double dis1 = flare::ann::distance_l1<tensor_type>(a,b);
+        printf("Result flare::ann::distance_l1<tensor_type>(a,b): %f\n", dis1);
         auto bencher = flare::Benchmarker<>{ 64, std::chrono::seconds { 10 } };
         auto stats_nor = bencher([&]()
-                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l1<view_type>(a,b, false); });
+                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l1<tensor_type>(a,b, false); });
         std::cout << '\n'
                   << "nor " << stats_nor << '\n';
         auto stats_batch = bencher([&]()
-                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l1<view_type>(a,b); });
+                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l1<tensor_type>(a,b); });
 
         std::cout << '\n'
                   << flare::simd::default_arch::name()<<" batch " << stats_batch << '\n';

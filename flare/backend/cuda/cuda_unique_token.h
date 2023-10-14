@@ -26,7 +26,7 @@
 namespace flare {
 
 namespace detail {
-flare::View<uint32_t*, flare::CudaSpace> cuda_global_unique_token_locks(
+flare::Tensor<uint32_t*, flare::CudaSpace> cuda_global_unique_token_locks(
     bool deallocate = false);
 }
 
@@ -38,7 +38,7 @@ namespace experimental {
 template <>
 class UniqueToken<Cuda, UniqueTokenScope::Global> {
  protected:
-  flare::View<uint32_t*, flare::CudaSpace> m_locks;
+  flare::Tensor<uint32_t*, flare::CudaSpace> m_locks;
 
  public:
   using execution_space = Cuda;
@@ -50,12 +50,12 @@ class UniqueToken<Cuda, UniqueTokenScope::Global> {
  protected:
   // These are constructors for the Instance version
   UniqueToken(size_type max_size) {
-    m_locks = flare::View<uint32_t*, flare::CudaSpace>(
+    m_locks = flare::Tensor<uint32_t*, flare::CudaSpace>(
         "flare::UniqueToken::m_locks", max_size);
   }
   UniqueToken(size_type max_size, execution_space const& exec) {
-    m_locks = flare::View<uint32_t*, flare::CudaSpace>(
-        flare::view_alloc(exec, "flare::UniqueToken::m_locks"), max_size);
+    m_locks = flare::Tensor<uint32_t*, flare::CudaSpace>(
+        flare::tensor_alloc(exec, "flare::UniqueToken::m_locks"), max_size);
   }
 
  public:

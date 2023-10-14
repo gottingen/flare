@@ -15,11 +15,11 @@
 
 #include <doctest.h>
 #include <flare/core.h>
-#include <flare/dual_view.h>
-#include <flare/dynamic_view.h>
-#include <flare/dyn_rank_view.h>
-#include <flare/offset_view.h>
-#include <flare/scatter_view.h>
+#include <flare/dual_tensor.h>
+#include <flare/dynamic_tensor.h>
+#include <flare/dyn_rank_tensor.h>
+#include <flare/offset_tensor.h>
+#include <flare/scatter_tensor.h>
 
 #include <tool/tool_testing_utilities.h>
 
@@ -37,21 +37,21 @@
 #endif
 ///@}
 
-TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_dualview") {
+TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_dualtensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels());
-    flare::DualView<int ****[1][2][3][4], TEST_EXECSPACE> bla("bla", 5, 6, 7,
+    flare::DualTensor<int ****[1][2][3][4], TEST_EXECSPACE> bla("bla", 5, 6, 7,
                                                               8);
 
     auto success = validate_absence(
             [&]() {
                 flare::resize(flare::WithoutInitializing, bla, 5, 6, 7, 9);
-                REQUIRE_EQ(bla.template view<TEST_EXECSPACE>().label(), "bla");
+                REQUIRE_EQ(bla.template tensor<TEST_EXECSPACE>().label(), "bla");
                 flare::realloc(flare::WithoutInitializing, bla, 8, 8, 8, 8);
-                REQUIRE_EQ(bla.template view<TEST_EXECSPACE>().label(), "bla");
-                flare::realloc(flare::view_alloc(flare::WithoutInitializing), bla, 5,
+                REQUIRE_EQ(bla.template tensor<TEST_EXECSPACE>().label(), "bla");
+                flare::realloc(flare::tensor_alloc(flare::WithoutInitializing), bla, 5,
                                6, 7, 8);
-                REQUIRE_EQ(bla.template view<TEST_EXECSPACE>().label(), "bla");
+                REQUIRE_EQ(bla.template tensor<TEST_EXECSPACE>().label(), "bla");
             },
             [&](BeginParallelForEvent event) {
                 if (event.descriptor().find("initialization") != std::string::npos)
@@ -67,19 +67,19 @@ TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_dualview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, resize_realloc_no_alloc_dualview") {
+TEST_CASE("TEST_CATEGORY, resize_realloc_no_alloc_dualtensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels(),
                        Config::EnableAllocs());
-    flare::DualView<int ****[1][2][3][4], TEST_EXECSPACE> bla("bla", 8, 7, 6,
+    flare::DualTensor<int ****[1][2][3][4], TEST_EXECSPACE> bla("bla", 8, 7, 6,
                                                               5);
 
     auto success = validate_absence(
             [&]() {
                 flare::resize(bla, 8, 7, 6, 5);
-                REQUIRE_EQ(bla.template view<TEST_EXECSPACE>().label(), "bla");
+                REQUIRE_EQ(bla.template tensor<TEST_EXECSPACE>().label(), "bla");
                 flare::realloc(flare::WithoutInitializing, bla, 8, 7, 6, 5);
-                REQUIRE_EQ(bla.template view<TEST_EXECSPACE>().label(), "bla");
+                REQUIRE_EQ(bla.template tensor<TEST_EXECSPACE>().label(), "bla");
             },
             [&](BeginParallelForEvent) {
                 return MatchDiagnostic{true, {"Found begin event"}};
@@ -97,28 +97,28 @@ TEST_CASE("TEST_CATEGORY, resize_realloc_no_alloc_dualview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, resize_exec_space_dualview") {
+TEST_CASE("TEST_CATEGORY, resize_exec_space_dualtensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableFences(),
                        Config::EnableKernels());
-    flare::DualView<int ****[1][2][3][4], TEST_EXECSPACE> bla("bla", 8, 7, 6,
+    flare::DualTensor<int ****[1][2][3][4], TEST_EXECSPACE> bla("bla", 8, 7, 6,
                                                               5);
 
     auto success = validate_absence(
             [&]() {
                 flare::resize(
-                        flare::view_alloc(TEST_EXECSPACE{}, flare::WithoutInitializing),
+                        flare::tensor_alloc(TEST_EXECSPACE{}, flare::WithoutInitializing),
                         bla, 5, 6, 7, 8);
-                REQUIRE_EQ(bla.template view<TEST_EXECSPACE>().label(), "bla");
+                REQUIRE_EQ(bla.template tensor<TEST_EXECSPACE>().label(), "bla");
             },
             [&](BeginFenceEvent event) {
-                if (event.descriptor().find("flare::resize(View)") !=
+                if (event.descriptor().find("flare::resize(Tensor)") !=
                     std::string::npos)
                     return MatchDiagnostic{true, {"Found begin event"}};
                 return MatchDiagnostic{false};
             },
             [&](EndFenceEvent event) {
-                if (event.descriptor().find("flare::resize(View)") !=
+                if (event.descriptor().find("flare::resize(Tensor)") !=
                     std::string::npos)
                     return MatchDiagnostic{true, {"Found end event"}};
                 return MatchDiagnostic{false};
@@ -137,18 +137,18 @@ TEST_CASE("TEST_CATEGORY, resize_exec_space_dualview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, realloc_exec_space_dualview") {
+TEST_CASE("TEST_CATEGORY, realloc_exec_space_dualtensor") {
     DOCTEST_SKIP_IF_CUDAUVM_MEMORY_SPACE
 
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableFences());
-    using view_type = flare::DualView<int *, TEST_EXECSPACE>;
-    view_type v(flare::view_alloc(TEST_EXECSPACE{}, "bla"), 8);
+    using tensor_type = flare::DualTensor<int *, TEST_EXECSPACE>;
+    tensor_type v(flare::tensor_alloc(TEST_EXECSPACE{}, "bla"), 8);
 
     auto success = validate_absence(
             [&]() {
-                flare::realloc(flare::view_alloc(TEST_EXECSPACE{}), v, 8);
-                REQUIRE_EQ(v.template view<TEST_EXECSPACE>().label(), "bla");
+                flare::realloc(flare::tensor_alloc(TEST_EXECSPACE{}), v, 8);
+                REQUIRE_EQ(v.template tensor<TEST_EXECSPACE>().label(), "bla");
             },
             [&](BeginFenceEvent event) {
                 if ((event.descriptor().find("Debug Only Check for Execution Error") !=
@@ -161,10 +161,10 @@ TEST_CASE("TEST_CATEGORY, realloc_exec_space_dualview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_dynrankview") {
+TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_dynranktensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels());
-    flare::DynRankView<int, TEST_EXECSPACE> bla("bla", 5, 6, 7, 8);
+    flare::DynRankTensor<int, TEST_EXECSPACE> bla("bla", 5, 6, 7, 8);
 
     auto success = validate_absence(
             [&]() {
@@ -172,7 +172,7 @@ TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_dynrankview") {
                 REQUIRE_EQ(bla.label(), "bla");
                 flare::realloc(flare::WithoutInitializing, bla, 8, 8, 8, 8);
                 REQUIRE_EQ(bla.label(), "bla");
-                flare::realloc(flare::view_alloc(flare::WithoutInitializing), bla, 5,
+                flare::realloc(flare::tensor_alloc(flare::WithoutInitializing), bla, 5,
                                6, 7, 8);
                 REQUIRE_EQ(bla.label(), "bla");
             },
@@ -190,27 +190,27 @@ TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_dynrankview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, resize_exec_space_dynrankview") {
+TEST_CASE("TEST_CATEGORY, resize_exec_space_dynranktensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableFences(),
                        Config::EnableKernels());
-    flare::DynRankView<int, TEST_EXECSPACE> bla("bla", 8, 7, 6, 5);
+    flare::DynRankTensor<int, TEST_EXECSPACE> bla("bla", 8, 7, 6, 5);
 
     auto success = validate_absence(
             [&]() {
                 flare::resize(
-                        flare::view_alloc(TEST_EXECSPACE{}, flare::WithoutInitializing),
+                        flare::tensor_alloc(TEST_EXECSPACE{}, flare::WithoutInitializing),
                         bla, 5, 6, 7, 8);
                 REQUIRE_EQ(bla.label(), "bla");
             },
             [&](BeginFenceEvent event) {
-                if (event.descriptor().find("flare::resize(View)") !=
+                if (event.descriptor().find("flare::resize(Tensor)") !=
                     std::string::npos)
                     return MatchDiagnostic{true, {"Found begin event"}};
                 return MatchDiagnostic{false};
             },
             [&](EndFenceEvent event) {
-                if (event.descriptor().find("flare::resize(View)") !=
+                if (event.descriptor().find("flare::resize(Tensor)") !=
                     std::string::npos)
                     return MatchDiagnostic{true, {"Found end event"}};
                 return MatchDiagnostic{false};
@@ -229,7 +229,7 @@ TEST_CASE("TEST_CATEGORY, resize_exec_space_dynrankview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, realloc_exec_space_dynrankview") {
+TEST_CASE("TEST_CATEGORY, realloc_exec_space_dynranktensor") {
     DOCTEST_SKIP_IF_CUDAUVM_MEMORY_SPACE
 
 // FIXME_THREADS The Threads backend fences every parallel_for
@@ -240,19 +240,19 @@ TEST_CASE("TEST_CATEGORY, realloc_exec_space_dynrankview") {
 
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableFences());
-    using view_type = flare::DynRankView<int, TEST_EXECSPACE>;
-    view_type outer_view, outer_view2;
+    using tensor_type = flare::DynRankTensor<int, TEST_EXECSPACE>;
+    tensor_type outer_tensor, outer_tensor2;
 
     auto success = validate_absence(
             [&]() {
-                view_type inner_view(flare::view_alloc(TEST_EXECSPACE{}, "bla"), 8);
+                tensor_type inner_tensor(flare::tensor_alloc(TEST_EXECSPACE{}, "bla"), 8);
                 // Avoid testing the destructor
-                outer_view = inner_view;
+                outer_tensor = inner_tensor;
                 flare::realloc(
-                        flare::view_alloc(flare::WithoutInitializing, TEST_EXECSPACE{}),
-                        inner_view, 10);
-                REQUIRE_EQ(inner_view.label(), "bla");
-                outer_view2 = inner_view;
+                        flare::tensor_alloc(flare::WithoutInitializing, TEST_EXECSPACE{}),
+                        inner_tensor, 10);
+                REQUIRE_EQ(inner_tensor.label(), "bla");
+                outer_tensor2 = inner_tensor;
             },
             [&](BeginFenceEvent event) {
                 if ((event.descriptor().find("Debug Only Check for Execution Error") !=
@@ -265,22 +265,22 @@ TEST_CASE("TEST_CATEGORY, realloc_exec_space_dynrankview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_scatterview") {
+TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_scattertensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels());
-    flare::experimental::ScatterView<
+    flare::experimental::ScatterTensor<
             int ****[1][2][3], typename TEST_EXECSPACE::array_layout, TEST_EXECSPACE>
             bla("bla", 4, 5, 6, 7);
 
     auto success = validate_absence(
             [&]() {
                 flare::resize(flare::WithoutInitializing, bla, 4, 5, 6, 8);
-                REQUIRE_EQ(bla.subview().label(), "bla");
+                REQUIRE_EQ(bla.subtensor().label(), "bla");
                 flare::realloc(flare::WithoutInitializing, bla, 8, 8, 8, 8);
-                REQUIRE_EQ(bla.subview().label(), "bla");
-                flare::realloc(flare::view_alloc(flare::WithoutInitializing), bla, 5,
+                REQUIRE_EQ(bla.subtensor().label(), "bla");
+                flare::realloc(flare::tensor_alloc(flare::WithoutInitializing), bla, 5,
                                6, 7, 8);
-                REQUIRE_EQ(bla.subview().label(), "bla");
+                REQUIRE_EQ(bla.subtensor().label(), "bla");
             },
             [&](BeginParallelForEvent event) {
                 if (event.descriptor().find("initialization") != std::string::npos)
@@ -296,20 +296,20 @@ TEST_CASE("TEST_CATEGORY, resize_realloc_no_init_scatterview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, resize_realloc_no_alloc_scatterview") {
+TEST_CASE("TEST_CATEGORY, resize_realloc_no_alloc_scattertensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels(),
                        Config::EnableAllocs());
-    flare::experimental::ScatterView<
+    flare::experimental::ScatterTensor<
             int ****[1][2][3], typename TEST_EXECSPACE::array_layout, TEST_EXECSPACE>
             bla("bla", 7, 6, 5, 4);
 
     auto success = validate_absence(
             [&]() {
                 flare::resize(bla, 7, 6, 5, 4);
-                REQUIRE_EQ(bla.subview().label(), "bla");
+                REQUIRE_EQ(bla.subtensor().label(), "bla");
                 flare::realloc(flare::WithoutInitializing, bla, 7, 6, 5, 4);
-                REQUIRE_EQ(bla.subview().label(), "bla");
+                REQUIRE_EQ(bla.subtensor().label(), "bla");
             },
             [&](BeginParallelForEvent) {
                 return MatchDiagnostic{true, {"Found begin event"}};
@@ -327,29 +327,29 @@ TEST_CASE("TEST_CATEGORY, resize_realloc_no_alloc_scatterview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, resize_exec_space_scatterview") {
+TEST_CASE("TEST_CATEGORY, resize_exec_space_scattertensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableFences(),
                        Config::EnableKernels());
-    flare::experimental::ScatterView<
+    flare::experimental::ScatterTensor<
             int ****[1][2][3], typename TEST_EXECSPACE::array_layout, TEST_EXECSPACE>
             bla("bla", 7, 6, 5, 4);
 
     auto success = validate_absence(
             [&]() {
                 flare::resize(
-                        flare::view_alloc(TEST_EXECSPACE{}, flare::WithoutInitializing),
+                        flare::tensor_alloc(TEST_EXECSPACE{}, flare::WithoutInitializing),
                         bla, 5, 6, 7, 8);
-                REQUIRE_EQ(bla.subview().label(), "bla");
+                REQUIRE_EQ(bla.subtensor().label(), "bla");
             },
             [&](BeginFenceEvent event) {
-                if (event.descriptor().find("flare::resize(View)") !=
+                if (event.descriptor().find("flare::resize(Tensor)") !=
                     std::string::npos)
                     return MatchDiagnostic{true, {"Found begin event"}};
                 return MatchDiagnostic{false};
             },
             [&](EndFenceEvent event) {
-                if (event.descriptor().find("flare::resize(View)") !=
+                if (event.descriptor().find("flare::resize(Tensor)") !=
                     std::string::npos)
                     return MatchDiagnostic{true, {"Found end event"}};
                 return MatchDiagnostic{false};
@@ -368,7 +368,7 @@ TEST_CASE("TEST_CATEGORY, resize_exec_space_scatterview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, realloc_exec_space_scatterview") {
+TEST_CASE("TEST_CATEGORY, realloc_exec_space_scattertensor") {
     DOCTEST_SKIP_IF_CUDAUVM_MEMORY_SPACE
 
 // FIXME_THREADS The Threads backend fences every parallel_for
@@ -379,22 +379,22 @@ TEST_CASE("TEST_CATEGORY, realloc_exec_space_scatterview") {
 
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableFences());
-    using view_type = flare::experimental::ScatterView<
+    using tensor_type = flare::experimental::ScatterTensor<
             int *, typename TEST_EXECSPACE::array_layout, TEST_EXECSPACE>;
-    view_type outer_view, outer_view2;
+    tensor_type outer_tensor, outer_tensor2;
 
     auto success = validate_absence(
             [&]() {
-                view_type inner_view(flare::view_alloc(TEST_EXECSPACE{}, "bla"), 8);
+                tensor_type inner_tensor(flare::tensor_alloc(TEST_EXECSPACE{}, "bla"), 8);
                 // Avoid testing the destructor
-                outer_view = inner_view;
+                outer_tensor = inner_tensor;
                 flare::realloc(
-                        flare::view_alloc(flare::WithoutInitializing, TEST_EXECSPACE{}),
-                        inner_view, 10);
-                REQUIRE_EQ(inner_view.subview().label(), "bla");
-                outer_view2 = inner_view;
-                flare::realloc(flare::view_alloc(TEST_EXECSPACE{}), inner_view, 10);
-                REQUIRE_EQ(inner_view.subview().label(), "bla");
+                        flare::tensor_alloc(flare::WithoutInitializing, TEST_EXECSPACE{}),
+                        inner_tensor, 10);
+                REQUIRE_EQ(inner_tensor.subtensor().label(), "bla");
+                outer_tensor2 = inner_tensor;
+                flare::realloc(flare::tensor_alloc(TEST_EXECSPACE{}), inner_tensor, 10);
+                REQUIRE_EQ(inner_tensor.subtensor().label(), "bla");
             },
             [&](BeginFenceEvent event) {
                 if ((event.descriptor().find("Debug Only Check for Execution Error") !=
@@ -407,26 +407,26 @@ TEST_CASE("TEST_CATEGORY, realloc_exec_space_scatterview") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynrankview") {
+TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynranktensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels());
-    flare::DynRankView<int, TEST_EXECSPACE> device_view("device view", 10);
-    flare::DynRankView<int, flare::HostSpace> host_view("host view", 10);
+    flare::DynRankTensor<int, TEST_EXECSPACE> device_tensor("device tensor", 10);
+    flare::DynRankTensor<int, flare::HostSpace> host_tensor("host tensor", 10);
 
     auto success = validate_absence(
             [&]() {
                 auto mirror_device =
-                        flare::create_mirror(flare::WithoutInitializing, device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device.size());
+                        flare::create_mirror(flare::WithoutInitializing, device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device.size());
                 auto mirror_host = flare::create_mirror(flare::WithoutInitializing,
-                                                        TEST_EXECSPACE{}, host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host.size());
-                auto mirror_device_view = flare::create_mirror_view(
-                        flare::WithoutInitializing, device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device_view.size());
-                auto mirror_host_view = flare::create_mirror_view(
-                        flare::WithoutInitializing, TEST_EXECSPACE{}, host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host_view.size());
+                                                        TEST_EXECSPACE{}, host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host.size());
+                auto mirror_device_tensor = flare::create_mirror_tensor(
+                        flare::WithoutInitializing, device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device_tensor.size());
+                auto mirror_host_tensor = flare::create_mirror_tensor(
+                        flare::WithoutInitializing, TEST_EXECSPACE{}, host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host_tensor.size());
             },
             [&](BeginParallelForEvent) {
                 return MatchDiagnostic{true, {"Found begin event"}};
@@ -437,31 +437,31 @@ TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynrankview") {
     REQUIRE(success);
 }
 
-TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynrankview_viewctor") {
+TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynranktensor_tensorctor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels());
-    flare::DynRankView<int, flare::DefaultExecutionSpace> device_view(
-            "device view", 10);
-    flare::DynRankView<int, flare::HostSpace> host_view("host view", 10);
+    flare::DynRankTensor<int, flare::DefaultExecutionSpace> device_tensor(
+            "device tensor", 10);
+    flare::DynRankTensor<int, flare::HostSpace> host_tensor("host tensor", 10);
 
     auto success = validate_absence(
             [&]() {
                 auto mirror_device = flare::create_mirror(
-                        flare::view_alloc(flare::WithoutInitializing), device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device.size());
+                        flare::tensor_alloc(flare::WithoutInitializing), device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device.size());
                 auto mirror_host = flare::create_mirror(
-                        flare::view_alloc(flare::WithoutInitializing,
+                        flare::tensor_alloc(flare::WithoutInitializing,
                                           flare::DefaultHostExecutionSpace{}),
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host.size());
-                auto mirror_device_view = flare::create_mirror_view(
-                        flare::view_alloc(flare::WithoutInitializing), device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device_view.size());
-                auto mirror_host_view = flare::create_mirror_view(
-                        flare::view_alloc(flare::WithoutInitializing,
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host.size());
+                auto mirror_device_tensor = flare::create_mirror_tensor(
+                        flare::tensor_alloc(flare::WithoutInitializing), device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device_tensor.size());
+                auto mirror_host_tensor = flare::create_mirror_tensor(
+                        flare::tensor_alloc(flare::WithoutInitializing,
                                           flare::DefaultExecutionSpace{}),
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host_view.size());
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host_tensor.size());
             },
             [&](BeginParallelForEvent) {
                 return MatchDiagnostic{true, {"Found begin event"}};
@@ -472,26 +472,26 @@ TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynrankview_viewctor") {
     REQUIRE(success);
 }
 
-TEST_CASE("TEST_CATEGORY, create_mirror_view_and_copy_dynrankview") {
+TEST_CASE("TEST_CATEGORY, create_mirror_tensor_and_copy_dynranktensor") {
     DOCTEST_SKIP_IF_CUDAUVM_MEMORY_SPACE
 
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels(),
                        Config::EnableFences());
 
-    flare::DynRankView<int, flare::HostSpace> host_view("host view", 10);
-    decltype(flare::create_mirror_view_and_copy(TEST_EXECSPACE{},
-                                                host_view)) device_view;
+    flare::DynRankTensor<int, flare::HostSpace> host_tensor("host tensor", 10);
+    decltype(flare::create_mirror_tensor_and_copy(TEST_EXECSPACE{},
+                                                host_tensor)) device_tensor;
 
     auto success = validate_absence(
             [&]() {
-                auto mirror_device = flare::create_mirror_view_and_copy(
-                        flare::view_alloc(TEST_EXECSPACE{},
+                auto mirror_device = flare::create_mirror_tensor_and_copy(
+                        flare::tensor_alloc(TEST_EXECSPACE{},
                                           typename TEST_EXECSPACE::memory_space{}),
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_device.size());
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_device.size());
                 // Avoid fences for deallocation when mirror_device goes out of scope.
-                device_view = mirror_device;
+                device_tensor = mirror_device;
             },
             [&](BeginParallelForEvent) {
                 return MatchDiagnostic{true, {"Found parallel_for event"}};
@@ -502,34 +502,34 @@ TEST_CASE("TEST_CATEGORY, create_mirror_view_and_copy_dynrankview") {
     REQUIRE(success);
 }
 
-TEST_CASE("TEST_CATEGORY, create_mirror_no_init_offsetview") {
+TEST_CASE("TEST_CATEGORY, create_mirror_no_init_offsettensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels());
-    flare::experimental::OffsetView<int *, TEST_EXECSPACE> device_view(
-            "device view", {0, 10});
-    flare::experimental::OffsetView<int *, flare::HostSpace> host_view(
-            "host view", {0, 10});
+    flare::experimental::OffsetTensor<int *, TEST_EXECSPACE> device_tensor(
+            "device tensor", {0, 10});
+    flare::experimental::OffsetTensor<int *, flare::HostSpace> host_tensor(
+            "host tensor", {0, 10});
 
     auto success = validate_absence(
             [&]() {
-                device_view = flare::experimental::OffsetView<int *, TEST_EXECSPACE>(
-                        flare::view_alloc(flare::WithoutInitializing, "device view"),
+                device_tensor = flare::experimental::OffsetTensor<int *, TEST_EXECSPACE>(
+                        flare::tensor_alloc(flare::WithoutInitializing, "device tensor"),
                         {0, 10});
 
                 auto mirror_device =
-                        flare::create_mirror(flare::WithoutInitializing, device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device.size());
+                        flare::create_mirror(flare::WithoutInitializing, device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device.size());
                 auto mirror_host = flare::create_mirror(
                         flare::WithoutInitializing, flare::DefaultHostExecutionSpace{},
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host.size());
-                auto mirror_device_view = flare::create_mirror_view(
-                        flare::WithoutInitializing, device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device_view.size());
-                auto mirror_host_view = flare::create_mirror_view(
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host.size());
+                auto mirror_device_tensor = flare::create_mirror_tensor(
+                        flare::WithoutInitializing, device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device_tensor.size());
+                auto mirror_host_tensor = flare::create_mirror_tensor(
                         flare::WithoutInitializing, flare::DefaultHostExecutionSpace{},
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host_view.size());
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host_tensor.size());
             },
             [&](BeginParallelForEvent) {
                 return MatchDiagnostic{true, {"Found begin event"}};
@@ -540,32 +540,32 @@ TEST_CASE("TEST_CATEGORY, create_mirror_no_init_offsetview") {
     REQUIRE(success);
 }
 
-TEST_CASE("TEST_CATEGORY, create_mirror_no_init_offsetview_view_ctor") {
+TEST_CASE("TEST_CATEGORY, create_mirror_no_init_offsettensor_tensor_ctor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels());
-    flare::experimental::OffsetView<int *, flare::DefaultExecutionSpace>
-            device_view("device view", {0, 10});
-    flare::experimental::OffsetView<int *, flare::HostSpace> host_view(
-            "host view", {0, 10});
+    flare::experimental::OffsetTensor<int *, flare::DefaultExecutionSpace>
+            device_tensor("device tensor", {0, 10});
+    flare::experimental::OffsetTensor<int *, flare::HostSpace> host_tensor(
+            "host tensor", {0, 10});
 
     auto success = validate_absence(
             [&]() {
                 auto mirror_device = flare::create_mirror(
-                        flare::view_alloc(flare::WithoutInitializing), device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device.size());
+                        flare::tensor_alloc(flare::WithoutInitializing), device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device.size());
                 auto mirror_host = flare::create_mirror(
-                        flare::view_alloc(flare::WithoutInitializing,
+                        flare::tensor_alloc(flare::WithoutInitializing,
                                           flare::DefaultHostExecutionSpace{}),
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host.size());
-                auto mirror_device_view = flare::create_mirror_view(
-                        flare::view_alloc(flare::WithoutInitializing), device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device_view.size());
-                auto mirror_host_view = flare::create_mirror_view(
-                        flare::view_alloc(flare::WithoutInitializing,
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host.size());
+                auto mirror_device_tensor = flare::create_mirror_tensor(
+                        flare::tensor_alloc(flare::WithoutInitializing), device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device_tensor.size());
+                auto mirror_host_tensor = flare::create_mirror_tensor(
+                        flare::tensor_alloc(flare::WithoutInitializing,
                                           flare::DefaultHostExecutionSpace{}),
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host_view.size());
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host_tensor.size());
             },
             [&](BeginParallelForEvent) {
                 return MatchDiagnostic{true, {"Found begin event"}};
@@ -576,29 +576,29 @@ TEST_CASE("TEST_CATEGORY, create_mirror_no_init_offsetview_view_ctor") {
     REQUIRE(success);
 }
 
-TEST_CASE("TEST_CATEGORY, create_mirror_view_and_copy_offsetview") {
+TEST_CASE("TEST_CATEGORY, create_mirror_tensor_and_copy_offsettensor") {
     DOCTEST_SKIP_IF_CUDAUVM_MEMORY_SPACE
 
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels(),
                        Config::EnableFences());
 
-    flare::experimental::OffsetView<int *, flare::HostSpace> host_view(
-            "host view", {0, 10});
-    decltype(flare::create_mirror_view_and_copy(TEST_EXECSPACE{},
-                                                host_view)) device_view;
+    flare::experimental::OffsetTensor<int *, flare::HostSpace> host_tensor(
+            "host tensor", {0, 10});
+    decltype(flare::create_mirror_tensor_and_copy(TEST_EXECSPACE{},
+                                                host_tensor)) device_tensor;
 
     auto success = validate_absence(
             [&]() {
-                auto mirror_device = flare::create_mirror_view_and_copy(
-                        flare::view_alloc(TEST_EXECSPACE{},
+                auto mirror_device = flare::create_mirror_tensor_and_copy(
+                        flare::tensor_alloc(TEST_EXECSPACE{},
                                           typename TEST_EXECSPACE::memory_space{}),
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_device.size());
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_device.size());
                 // Avoid fences for deallocation when mirror_device goes out of scope.
-                device_view = mirror_device;
-                auto mirror_device_mirror = flare::create_mirror_view_and_copy(
-                        flare::view_alloc(TEST_EXECSPACE{},
+                device_tensor = mirror_device;
+                auto mirror_device_mirror = flare::create_mirror_tensor_and_copy(
+                        flare::tensor_alloc(TEST_EXECSPACE{},
                                           typename TEST_EXECSPACE::memory_space{}),
                         mirror_device);
                 REQUIRE_EQ(mirror_device_mirror.size(), mirror_device.size());
@@ -613,30 +613,30 @@ TEST_CASE("TEST_CATEGORY, create_mirror_view_and_copy_offsetview") {
 }
 
 
-TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynamicview") {
+TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynamictensor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels());
-    flare::experimental::DynamicView<int *, TEST_EXECSPACE> device_view(
-            "device view", 2, 10);
-    device_view.resize_serial(10);
-    flare::experimental::DynamicView<int *, flare::HostSpace> host_view(
-            "host view", 2, 10);
-    host_view.resize_serial(10);
+    flare::experimental::DynamicTensor<int *, TEST_EXECSPACE> device_tensor(
+            "device tensor", 2, 10);
+    device_tensor.resize_serial(10);
+    flare::experimental::DynamicTensor<int *, flare::HostSpace> host_tensor(
+            "host tensor", 2, 10);
+    host_tensor.resize_serial(10);
 
     auto success = validate_absence(
             [&]() {
                 auto mirror_device =
-                        flare::create_mirror(flare::WithoutInitializing, device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device.size());
+                        flare::create_mirror(flare::WithoutInitializing, device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device.size());
                 auto mirror_host = flare::create_mirror(flare::WithoutInitializing,
-                                                        TEST_EXECSPACE{}, host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host.size());
-                auto mirror_device_view = flare::create_mirror_view(
-                        flare::WithoutInitializing, device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device_view.size());
-                auto mirror_host_view = flare::create_mirror_view(
-                        flare::WithoutInitializing, TEST_EXECSPACE{}, host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host_view.size());
+                                                        TEST_EXECSPACE{}, host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host.size());
+                auto mirror_device_tensor = flare::create_mirror_tensor(
+                        flare::WithoutInitializing, device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device_tensor.size());
+                auto mirror_host_tensor = flare::create_mirror_tensor(
+                        flare::WithoutInitializing, TEST_EXECSPACE{}, host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host_tensor.size());
             },
             [&](BeginParallelForEvent) {
                 return MatchDiagnostic{true, {"Found begin event"}};
@@ -647,36 +647,36 @@ TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynamicview") {
     REQUIRE(success);
 }
 
-TEST_CASE("TEST_CATEGORY, create_mirror_view_and_copy_dynamicview") {
+TEST_CASE("TEST_CATEGORY, create_mirror_tensor_and_copy_dynamictensor") {
     DOCTEST_SKIP_IF_CUDAUVM_MEMORY_SPACE
 
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels(),
                        Config::EnableFences());
 
-    flare::experimental::DynamicView<int *, flare::HostSpace> host_view(
-            "host view", 2, 10);
-    host_view.resize_serial(10);
-    decltype(flare::create_mirror_view_and_copy(TEST_EXECSPACE{},
-                                                host_view)) device_view;
+    flare::experimental::DynamicTensor<int *, flare::HostSpace> host_tensor(
+            "host tensor", 2, 10);
+    host_tensor.resize_serial(10);
+    decltype(flare::create_mirror_tensor_and_copy(TEST_EXECSPACE{},
+                                                host_tensor)) device_tensor;
 
     auto success = validate_absence(
             [&]() {
-                auto mirror_device = flare::create_mirror_view_and_copy(
-                        flare::view_alloc(TEST_EXECSPACE{},
+                auto mirror_device = flare::create_mirror_tensor_and_copy(
+                        flare::tensor_alloc(TEST_EXECSPACE{},
                                           typename TEST_EXECSPACE::memory_space{}),
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_device.size());
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_device.size());
                 // Avoid fences for deallocation when mirror_device goes out of scope.
-                device_view = mirror_device;
-                auto mirror_device_mirror = flare::create_mirror_view_and_copy(
-                        flare::view_alloc(TEST_EXECSPACE{},
+                device_tensor = mirror_device;
+                auto mirror_device_mirror = flare::create_mirror_tensor_and_copy(
+                        flare::tensor_alloc(TEST_EXECSPACE{},
                                           typename TEST_EXECSPACE::memory_space{}),
                         mirror_device);
                 REQUIRE_EQ(mirror_device_mirror.size(), mirror_device.size());
             },
             [&](BeginFenceEvent event) {
-                if (event.descriptor().find("DynamicView::resize_serial: Fence after "
+                if (event.descriptor().find("DynamicTensor::resize_serial: Fence after "
                                             "copying chunks to the device") !=
                     std::string::npos)
                     return MatchDiagnostic{false};
@@ -689,37 +689,37 @@ TEST_CASE("TEST_CATEGORY, create_mirror_view_and_copy_dynamicview") {
     REQUIRE(success);
 }
 
-TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynamicview_view_ctor") {
+TEST_CASE("TEST_CATEGORY, create_mirror_no_init_dynamictensor_tensor_ctor") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableKernels());
-    flare::experimental::DynamicView<int *, flare::DefaultExecutionSpace>
-            device_view("device view", 2, 10);
-    device_view.resize_serial(10);
-    flare::experimental::DynamicView<int *, flare::HostSpace> host_view(
-            "host view", 2, 10);
-    host_view.resize_serial(10);
+    flare::experimental::DynamicTensor<int *, flare::DefaultExecutionSpace>
+            device_tensor("device tensor", 2, 10);
+    device_tensor.resize_serial(10);
+    flare::experimental::DynamicTensor<int *, flare::HostSpace> host_tensor(
+            "host tensor", 2, 10);
+    host_tensor.resize_serial(10);
 
     auto success = validate_absence(
             [&]() {
                 auto mirror_device = flare::create_mirror(
-                        flare::view_alloc(flare::WithoutInitializing), device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device.size());
+                        flare::tensor_alloc(flare::WithoutInitializing), device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device.size());
                 auto mirror_host = flare::create_mirror(
-                        flare::view_alloc(flare::WithoutInitializing,
+                        flare::tensor_alloc(flare::WithoutInitializing,
                                           flare::DefaultExecutionSpace{}),
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host.size());
-                auto mirror_device_view = flare::create_mirror_view(
-                        flare::view_alloc(flare::WithoutInitializing), device_view);
-                REQUIRE_EQ(device_view.size(), mirror_device_view.size());
-                auto mirror_host_view = flare::create_mirror_view(
-                        flare::view_alloc(flare::WithoutInitializing,
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host.size());
+                auto mirror_device_tensor = flare::create_mirror_tensor(
+                        flare::tensor_alloc(flare::WithoutInitializing), device_tensor);
+                REQUIRE_EQ(device_tensor.size(), mirror_device_tensor.size());
+                auto mirror_host_tensor = flare::create_mirror_tensor(
+                        flare::tensor_alloc(flare::WithoutInitializing,
                                           flare::DefaultExecutionSpace{}),
-                        host_view);
-                REQUIRE_EQ(host_view.size(), mirror_host_view.size());
+                        host_tensor);
+                REQUIRE_EQ(host_tensor.size(), mirror_host_tensor.size());
             },
             [&](BeginFenceEvent event) {
-                if (event.descriptor().find("DynamicView::resize_serial: Fence after "
+                if (event.descriptor().find("DynamicTensor::resize_serial: Fence after "
                                             "copying chunks to the device") !=
                     std::string::npos)
                     return MatchDiagnostic{false};

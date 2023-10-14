@@ -18,7 +18,7 @@
 
 #include <iterator>
 #include <flare/core/defines.h>
-#include <flare/core/tensor/view.h>
+#include <flare/core/tensor/tensor.h>
 #include <flare/algorithm/constraints_impl.h>
 
 namespace flare {
@@ -29,34 +29,34 @@ template <class T>
 class RandomAccessIterator;
 
 template <class DataType, class... Args>
-class RandomAccessIterator< ::flare::View<DataType, Args...> > {
+class RandomAccessIterator< ::flare::Tensor<DataType, Args...> > {
  public:
-  using view_type     = ::flare::View<DataType, Args...>;
-  using iterator_type = RandomAccessIterator<view_type>;
+  using tensor_type     = ::flare::Tensor<DataType, Args...>;
+  using iterator_type = RandomAccessIterator<tensor_type>;
 
   using iterator_category = std::random_access_iterator_tag;
-  using value_type        = typename view_type::value_type;
+  using value_type        = typename tensor_type::value_type;
   using difference_type   = ptrdiff_t;
-  using pointer           = typename view_type::pointer_type;
-  using reference         = typename view_type::reference_type;
+  using pointer           = typename tensor_type::pointer_type;
+  using reference         = typename tensor_type::reference_type;
 
-  static_assert(view_type::rank == 1 &&
-                    (std::is_same<typename view_type::traits::array_layout,
+  static_assert(tensor_type::rank == 1 &&
+                    (std::is_same<typename tensor_type::traits::array_layout,
                                   flare::LayoutLeft>::value ||
-                     std::is_same<typename view_type::traits::array_layout,
+                     std::is_same<typename tensor_type::traits::array_layout,
                                   flare::LayoutRight>::value ||
-                     std::is_same<typename view_type::traits::array_layout,
+                     std::is_same<typename tensor_type::traits::array_layout,
                                   flare::LayoutStride>::value),
-                "RandomAccessIterator only supports 1D Views with LayoutLeft, "
+                "RandomAccessIterator only supports 1D Tensors with LayoutLeft, "
                 "LayoutRight, LayoutStride.");
 
   FLARE_DEFAULTED_FUNCTION RandomAccessIterator() = default;
 
-  explicit FLARE_FUNCTION RandomAccessIterator(const view_type view)
-      : m_view(view) {}
-  explicit FLARE_FUNCTION RandomAccessIterator(const view_type view,
+  explicit FLARE_FUNCTION RandomAccessIterator(const tensor_type tensor)
+      : m_tensor(tensor) {}
+  explicit FLARE_FUNCTION RandomAccessIterator(const tensor_type tensor,
                                                 ptrdiff_t current_index)
-      : m_view(view), m_current_index(current_index) {}
+      : m_tensor(tensor), m_current_index(current_index) {}
 
   FLARE_FUNCTION
   iterator_type& operator++() {
@@ -86,7 +86,7 @@ class RandomAccessIterator< ::flare::View<DataType, Args...> > {
 
   FLARE_FUNCTION
   reference operator[](difference_type n) const {
-    return m_view(m_current_index + n);
+    return m_tensor(m_current_index + n);
   }
 
   FLARE_FUNCTION
@@ -103,12 +103,12 @@ class RandomAccessIterator< ::flare::View<DataType, Args...> > {
 
   FLARE_FUNCTION
   iterator_type operator+(difference_type n) const {
-    return iterator_type(m_view, m_current_index + n);
+    return iterator_type(m_tensor, m_current_index + n);
   }
 
   FLARE_FUNCTION
   iterator_type operator-(difference_type n) const {
-    return iterator_type(m_view, m_current_index - n);
+    return iterator_type(m_tensor, m_current_index - n);
   }
 
   FLARE_FUNCTION
@@ -119,13 +119,13 @@ class RandomAccessIterator< ::flare::View<DataType, Args...> > {
   FLARE_FUNCTION
   bool operator==(iterator_type other) const {
     return m_current_index == other.m_current_index &&
-           m_view.data() == other.m_view.data();
+           m_tensor.data() == other.m_tensor.data();
   }
 
   FLARE_FUNCTION
   bool operator!=(iterator_type other) const {
     return m_current_index != other.m_current_index ||
-           m_view.data() != other.m_view.data();
+           m_tensor.data() != other.m_tensor.data();
   }
 
   FLARE_FUNCTION
@@ -149,10 +149,10 @@ class RandomAccessIterator< ::flare::View<DataType, Args...> > {
   }
 
   FLARE_FUNCTION
-  reference operator*() const { return m_view(m_current_index); }
+  reference operator*() const { return m_tensor(m_current_index); }
 
  private:
-  view_type m_view;
+  tensor_type m_tensor;
   ptrdiff_t m_current_index = 0;
 };
 

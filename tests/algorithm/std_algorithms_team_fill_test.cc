@@ -21,24 +21,24 @@ namespace TeamFill {
 
 namespace KE = flare::experimental;
 
-template <class ViewType>
+template <class TensorType>
 struct TestFunctorA {
-  ViewType m_view;
+  TensorType m_tensor;
   int m_apiPick;
 
-  TestFunctorA(const ViewType view, int apiPick)
-      : m_view(view), m_apiPick(apiPick) {}
+  TestFunctorA(const TensorType tensor, int apiPick)
+      : m_tensor(tensor), m_apiPick(apiPick) {}
 
   template <class MemberType>
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto leagueRank = member.league_rank();
     const auto myRowIndex = leagueRank;
-    auto myRowView        = flare::subview(m_view, myRowIndex, flare::ALL());
+    auto myRowTensor        = flare::subtensor(m_tensor, myRowIndex, flare::ALL());
 
     if (m_apiPick == 0) {
-      KE::fill(member, KE::begin(myRowView), KE::end(myRowView), leagueRank);
+      KE::fill(member, KE::begin(myRowTensor), KE::end(myRowTensor), leagueRank);
     } else if (m_apiPick == 1) {
-      KE::fill(member, myRowView, leagueRank);
+      KE::fill(member, myRowTensor, leagueRank);
     }
   }
 };
@@ -46,7 +46,7 @@ struct TestFunctorA {
 template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   /* description:
-     create a rank-2 view, randomly fill with non trivial numbers
+     create a rank-2 tensor, randomly fill with non trivial numbers
      and do a team-level KE::fill where each team fills
      with its league_rank value the row it is responsible for
    */
@@ -54,12 +54,12 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range
-  auto [dataView, _] = create_random_view_and_host_clone(
+  auto [dataTensor, _] = create_random_tensor_and_host_clone(
       LayoutTag{}, numTeams, numCols,
-      flare::pair<ValueType, ValueType>{11, 523}, "dataView");
+      flare::pair<ValueType, ValueType>{11, 523}, "dataTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -67,7 +67,7 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   using space_t = flare::DefaultExecutionSpace;
   flare::TeamPolicy<space_t> policy(numTeams, flare::AUTO());
   // use CTAD for functor
-  TestFunctorA fnc(dataView, apiId);
+  TestFunctorA fnc(dataTensor, apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
@@ -75,10 +75,10 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   // -----------------------------------------------
   // each row should be filled with the row index
   // since the league_rank of a team here coincides with row index
-  auto dataViewAfterOp_h = create_host_space_copy(dataView);
-  for (std::size_t i = 0; i < dataViewAfterOp_h.extent(0); ++i) {
-    for (std::size_t j = 0; j < dataViewAfterOp_h.extent(1); ++j) {
-      REQUIRE(dataViewAfterOp_h(i, j) == static_cast<ValueType>(i));
+  auto dataTensorAfterOp_h = create_host_space_copy(dataTensor);
+  for (std::size_t i = 0; i < dataTensorAfterOp_h.extent(0); ++i) {
+    for (std::size_t j = 0; j < dataTensorAfterOp_h.extent(1); ++j) {
+      REQUIRE(dataTensorAfterOp_h(i, j) == static_cast<ValueType>(i));
     }
   }
 }

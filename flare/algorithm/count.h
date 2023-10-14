@@ -51,11 +51,11 @@ template <
     class ExecutionSpace, class DataType, class... Properties, class T,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto count(const ExecutionSpace& ex,
-           const ::flare::View<DataType, Properties...>& v, const T& value) {
+           const ::flare::Tensor<DataType, Properties...>& v, const T& value) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   namespace KE = ::flare::experimental;
-  return detail::count_exespace_impl("flare::count_view_api_default", ex,
+  return detail::count_exespace_impl("flare::count_tensor_api_default", ex,
                                    KE::cbegin(v), KE::cend(v), value);
 }
 
@@ -63,7 +63,7 @@ template <
     class ExecutionSpace, class DataType, class... Properties, class T,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto count(const std::string& label, const ExecutionSpace& ex,
-           const ::flare::View<DataType, Properties...>& v, const T& value) {
+           const ::flare::Tensor<DataType, Properties...>& v, const T& value) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   namespace KE = ::flare::experimental;
@@ -89,7 +89,7 @@ FLARE_FUNCTION typename IteratorType::difference_type count(
 template <class TeamHandleType, class DataType, class... Properties, class T,
           std::enable_if_t<flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto count(const TeamHandleType& teamHandle,
-                           const ::flare::View<DataType, Properties...>& v,
+                           const ::flare::Tensor<DataType, Properties...>& v,
                            const T& value) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 

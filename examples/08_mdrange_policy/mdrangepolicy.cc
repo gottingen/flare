@@ -30,15 +30,15 @@
 // Example 2: Rank 3 case with additional outer/inner iterate pattern parameters
 //            and tile dims passed to the ctor
 
-// Simple functor for computing/storing the product of indices in a View v
-template <class ViewType>
+// Simple functor for computing/storing the product of indices in a Tensor v
+template <class TensorType>
 struct MDFunctor2D {
   using value_type = long;
 
-  ViewType v;
+  TensorType v;
   size_t size;
 
-  MDFunctor2D(const ViewType& v_, const size_t size_) : v(v_), size(size_) {}
+  MDFunctor2D(const TensorType& v_, const size_t size_) : v(v_), size(size_) {}
 
   // 2D case - used by parallel_for
   FLARE_INLINE_FUNCTION
@@ -55,14 +55,14 @@ struct MDFunctor2D {
   }
 };
 
-template <class ViewType>
+template <class TensorType>
 struct MDFunctor3D {
   using value_type = long;
 
-  ViewType v;
+  TensorType v;
   size_t size;
 
-  MDFunctor3D(const ViewType& v_, const size_t size_) : v(v_), size(size_) {}
+  MDFunctor3D(const TensorType& v_, const size_t size_) : v(v_), size(size_) {}
 
   // 3D case - used by parallel_for
   FLARE_INLINE_FUNCTION
@@ -86,10 +86,10 @@ int main(int argc, char* argv[]) {
   // Bound(s) for MDRangePolicy
   const int n = 100;
 
-  // ViewType aliases for Rank<2>, Rank<3> for example usage
+  // TensorType aliases for Rank<2>, Rank<3> for example usage
   using ScalarType  = double;
-  using ViewType_2D = flare::View<ScalarType**>;
-  using ViewType_3D = flare::View<ScalarType***>;
+  using TensorType_2D = flare::Tensor<ScalarType**>;
+  using TensorType_3D = flare::Tensor<ScalarType***>;
 
   /////////////////////////////////////////////////////////////////////////////
   // Explanation of MDRangePolicy usage, template parameters, constructor
@@ -147,15 +147,15 @@ int main(int argc, char* argv[]) {
     // defaulted
     MDPolicyType_2D mdpolicy_2d({{0, 0}}, {{n, n}});
 
-    // Construct a 2D view to store result of product of indices
-    ViewType_2D v2("v2", n, n);
+    // Construct a 2D tensor to store result of product of indices
+    TensorType_2D v2("v2", n, n);
 
     // Execute parallel_for with rank 2 MDRangePolicy
-    flare::parallel_for("md2d", mdpolicy_2d, MDFunctor2D<ViewType_2D>(v2, n));
+    flare::parallel_for("md2d", mdpolicy_2d, MDFunctor2D<TensorType_2D>(v2, n));
 
     // Check results with a parallel_reduce using the MDRangePolicy
     flare::parallel_reduce("md2dredux", mdpolicy_2d,
-                            MDFunctor2D<ViewType_2D>(v2, n),
+                            MDFunctor2D<TensorType_2D>(v2, n),
                             incorrect_count_2d);
 
     printf("Rank 2 MDRangePolicy incorrect count: %ld\n",
@@ -172,15 +172,15 @@ int main(int argc, char* argv[]) {
     // Construct 3D MDRangePolicy: lower, upper bounds, tile dims provided
     MDPolicyType_3D mdpolicy_3d({{0, 0, 0}}, {{n, n, n}}, {{4, 4, 4}});
 
-    // Construct a 3D view to store result of product of indices
-    ViewType_3D v3("v3", n, n, n);
+    // Construct a 3D tensor to store result of product of indices
+    TensorType_3D v3("v3", n, n, n);
 
     // Execute parallel_for with rank 3 MDRangePolicy
-    flare::parallel_for("md3d", mdpolicy_3d, MDFunctor3D<ViewType_3D>(v3, n));
+    flare::parallel_for("md3d", mdpolicy_3d, MDFunctor3D<TensorType_3D>(v3, n));
 
     // Check results with a parallel_reduce using the MDRangePolicy
     flare::parallel_reduce("md3dredux", mdpolicy_3d,
-                            MDFunctor3D<ViewType_3D>(v3, n),
+                            MDFunctor3D<TensorType_3D>(v3, n),
                             incorrect_count_3d);
 
     printf("Rank 3 MDRangePolicy incorrect count: %ld\n",

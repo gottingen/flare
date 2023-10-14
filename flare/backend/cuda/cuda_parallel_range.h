@@ -356,22 +356,22 @@ class ParallelReduce<CombinedFunctorReducerType, flare::RangePolicy<Traits...>,
     }
   }
 
-  template <class ViewType>
+  template <class TensorType>
   ParallelReduce(const CombinedFunctorReducerType& arg_functor_reducer,
-                 const Policy& arg_policy, const ViewType& arg_result)
+                 const Policy& arg_policy, const TensorType& arg_result)
       : m_functor_reducer(arg_functor_reducer),
         m_policy(arg_policy),
         m_result_ptr(arg_result.data()),
         m_result_ptr_device_accessible(
             MemorySpaceAccess<flare::CudaSpace,
-                              typename ViewType::memory_space>::accessible),
+                              typename TensorType::memory_space>::accessible),
         m_result_ptr_host_accessible(
             MemorySpaceAccess<flare::HostSpace,
-                              typename ViewType::memory_space>::accessible),
+                              typename TensorType::memory_space>::accessible),
         m_scratch_space(nullptr),
         m_scratch_flags(nullptr),
         m_unified_space(nullptr) {
-    check_reduced_view_shmem_size<WorkTag, value_type>(
+    check_reduced_tensor_shmem_size<WorkTag, value_type>(
         m_policy, m_functor_reducer.get_functor());
   }
 };
@@ -1013,19 +1013,19 @@ class ParallelScanWithTotal<FunctorType, flare::RangePolicy<Traits...>,
     }
   }
 
-  template <class ViewType>
+  template <class TensorType>
   ParallelScanWithTotal(const FunctorType& arg_functor,
                         const Policy& arg_policy,
-                        const ViewType& arg_result_view)
+                        const TensorType& arg_result_tensor)
       : m_functor_reducer(arg_functor, typename Analysis::Reducer{arg_functor}),
         m_policy(arg_policy),
         m_scratch_space(nullptr),
         m_scratch_flags(nullptr),
         m_final(false),
-        m_result_ptr(arg_result_view.data()),
+        m_result_ptr(arg_result_tensor.data()),
         m_result_ptr_device_accessible(
             MemorySpaceAccess<flare::CudaSpace,
-                              typename ViewType::memory_space>::accessible)
+                              typename TensorType::memory_space>::accessible)
 #ifdef FLARE_IMPL_DEBUG_CUDA_SERIAL_EXECUTION
         ,
         m_run_serial(flare::detail::CudaInternal::cuda_use_serial_execution())

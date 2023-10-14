@@ -29,8 +29,8 @@ namespace flare::ann::detail {
 
     /// \brief 1-distance functor for single vectors.
     ///
-    /// \tparam RV 0-D output View
-    /// \tparam XV 1-D input View
+    /// \tparam RV 0-D output Tensor
+    /// \tparam XV 1-D input Tensor
     /// \tparam SizeType Index type.  Use int (32 bits) if possible.
     template<typename RV, typename XV, class SizeType = typename XV::size_type>
     struct DistanceL1Functor {
@@ -44,12 +44,12 @@ namespace flare::ann::detail {
         typename XV::const_type m_y;
 
         DistanceL1Functor(const XV &x, const XV &y) : m_x(x), m_y(y) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::ann::detail::DistanceL1Functor: "
-                          "R is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "R is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::ann::detail::DistanceL1Functor: "
-                          "X is not a flare::View.");
+                          "X is not a flare::Tensor.");
 
             static_assert(std::is_same<typename RV::value_type,
                                   typename RV::non_const_value_type>::value,
@@ -70,8 +70,8 @@ namespace flare::ann::detail {
 
     /// \brief 1-norm functor for single vectors.
     ///
-    /// \tparam RV 0-D output View
-    /// \tparam XV 1-D input View
+    /// \tparam RV 0-D output Tensor
+    /// \tparam XV 1-D input Tensor
     /// \tparam SizeType Index type.  Use int (32 bits) if possible.
     template<typename DT, typename RV, typename XV, class SizeType = typename XV::size_type>
     struct BatchDistanceL1Functor {
@@ -86,12 +86,12 @@ namespace flare::ann::detail {
         SizeType m_len;
 
         BatchDistanceL1Functor(const XV &x, const XV &y) : m_x(x), m_y(y), m_len(m_x.extent(0)) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::ann::detail::DistanceL1Functor: "
-                          "R is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "R is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::ann::detail::DistanceL1Functor: "
-                          "X is not a flare::View.");
+                          "X is not a flare::Tensor.");
 
             static_assert(std::is_same<typename RV::value_type,
                                   typename RV::non_const_value_type>::value,
@@ -114,7 +114,7 @@ namespace flare::ann::detail {
     };
 
     /// \brief Compute the distance l1 of the single vector (1-D
-    ///   View) X, and store the result in the 0-D View r.
+    ///   Tensor) X, and store the result in the 0-D Tensor r.
     template<typename execution_space, typename RV, typename XV, class SizeType>
     void DistanceL1Invoke(const execution_space &space, const RV &r, const XV &X, const XV &Y) {
         const SizeType numRows = static_cast<SizeType>(X.extent(0));
@@ -126,7 +126,7 @@ namespace flare::ann::detail {
     }
 
     /// \brief Compute the distance l1 of the single vector (1-D
-    ///   View) X, and store the result in the 0-D View r.
+    ///   Tensor) X, and store the result in the 0-D Tensor r.
     template<typename execution_space, typename RV, typename XV, typename SizeType>
     void DistanceL1BatchInvoke(const execution_space &space, const RV &r, const XV &X, const XV &Y) {
         using DT = simd_traits<XV, execution_space>;
@@ -153,12 +153,12 @@ namespace flare::ann::detail {
         using size_type = typename XV::size_type;
 
         static void distance(const execution_space &space, const RV &R, const XV &X, const XV &Y) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::ann::detail::"
-                          "DistanceL1<1-D>: RV is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "DistanceL1<1-D>: RV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::ann::detail::"
-                          "DistanceL1<1-D>: XV is not a flare::View.");
+                          "DistanceL1<1-D>: XV is not a flare::Tensor.");
             static_assert(RV::rank == 0,
                           "flare::ann::detail::DistanceL1<1-D>: "
                           "RV is not rank 0.");
@@ -178,12 +178,12 @@ namespace flare::ann::detail {
         }
 
         static void batch_distance(const execution_space &space, const RV &R, const XV &X, const XV &Y) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::ann::detail::"
-                          "BatchDistanceL1<1-D>: RV is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "BatchDistanceL1<1-D>: RV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::ann::detail::"
-                          "DistanceL1<1-D>: XV is not a flare::View.");
+                          "DistanceL1<1-D>: XV is not a flare::Tensor.");
             static_assert(RV::rank == 0,
                           "flare::ann::detail::BatchDistanceL1<1-D>: "
                           "RV is not rank 0.");

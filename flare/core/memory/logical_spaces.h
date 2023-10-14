@@ -59,8 +59,8 @@ namespace flare {
             /// \brief Default execution space for this memory space.
             ///
             /// Every memory space has a default execution space.  This is
-            /// useful for things like initializing a View (which happens in
-            /// parallel using the View's default execution space).
+            /// useful for things like initializing a Tensor (which happens in
+            /// parallel using the Tensor's default execution space).
 
             using execution_space =
                     std::conditional_t<std::is_void<DefaultBaseExecutionSpace>::value,

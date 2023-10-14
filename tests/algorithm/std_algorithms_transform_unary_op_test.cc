@@ -25,39 +25,39 @@ namespace KE = flare::experimental;
 std::string value_type_to_string(int) { return "int"; }
 std::string value_type_to_string(double) { return "double"; }
 
-template <class ViewType>
-void fill_view(ViewType dest_view) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   for (std::size_t i = 0; i < ext; ++i) {
     v_h(i) = static_cast<value_type>(i);
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewTypeFrom, class ViewTypeTest>
-void verify_data(ViewTypeFrom view_from, ViewTypeTest view_test) {
-  using value_type = typename ViewTypeFrom::value_type;
+template <class TensorTypeFrom, class TensorTypeTest>
+void verify_data(TensorTypeFrom tensor_from, TensorTypeTest tensor_test) {
+  using value_type = typename TensorTypeFrom::value_type;
 
-  //! always careful because views might not be deep copyable
-  auto view_test_dc = create_deep_copyable_compatible_clone(view_test);
-  auto view_test_h =
-      create_mirror_view_and_copy(flare::HostSpace(), view_test_dc);
+  //! always careful because tensors might not be deep copyable
+  auto tensor_test_dc = create_deep_copyable_compatible_clone(tensor_test);
+  auto tensor_test_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), tensor_test_dc);
 
-  auto view_from_dc = create_deep_copyable_compatible_clone(view_from);
-  auto view_from_h =
-      create_mirror_view_and_copy(flare::HostSpace(), view_from_dc);
+  auto tensor_from_dc = create_deep_copyable_compatible_clone(tensor_from);
+  auto trnsor_from_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), tensor_from_dc);
 
-  for (std::size_t i = 0; i < view_test_h.extent(0); ++i) {
-    REQUIRE_EQ(view_test_h(i), view_from_h(i) + value_type(1));
+  for (std::size_t i = 0; i < tensor_test_h.extent(0); ++i) {
+    REQUIRE_EQ(tensor_test_h(i), trnsor_from_h(i) + value_type(1));
   }
 }
 
@@ -72,48 +72,48 @@ struct TransformFunctor {
 template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // std::cout << "transform_unary_op: " << name << ", "
-  //           << view_tag_to_string(Tag{}) << ", "
+  //           << tensor_tag_to_string(Tag{}) << ", "
   //           << value_type_to_string(ValueType()) << std::endl;
 
-  auto view_from =
-      create_view<ValueType>(Tag{}, view_ext, "transform_uop_from");
-  fill_view(view_from);
+  auto tensor_from =
+      create_tensor<ValueType>(Tag{}, tensor_ext, "transform_uop_from");
+  fill_tensor(tensor_from);
   TransformFunctor<ValueType> unOp;
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "transform_uop_dest");
-    auto r1 = KE::transform(exespace(), KE::begin(view_from),
-                            KE::end(view_from), KE::begin(view_dest), unOp);
-    verify_data(view_from, view_dest);
-    REQUIRE_EQ(r1, KE::end(view_dest));
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "transform_uop_dest");
+    auto r1 = KE::transform(exespace(), KE::begin(tensor_from),
+                            KE::end(tensor_from), KE::begin(tensor_dest), unOp);
+    verify_data(tensor_from, tensor_dest);
+    REQUIRE_EQ(r1, KE::end(tensor_dest));
   }
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "transform_uop_dest");
-    auto r1 = KE::transform("label", exespace(), KE::begin(view_from),
-                            KE::end(view_from), KE::begin(view_dest), unOp);
-    verify_data(view_from, view_dest);
-    REQUIRE_EQ(r1, KE::end(view_dest));
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "transform_uop_dest");
+    auto r1 = KE::transform("label", exespace(), KE::begin(tensor_from),
+                            KE::end(tensor_from), KE::begin(tensor_dest), unOp);
+    verify_data(tensor_from, tensor_dest);
+    REQUIRE_EQ(r1, KE::end(tensor_dest));
   }
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "transform_uop_dest");
-    auto r1 = KE::transform(exespace(), view_from, view_dest, unOp);
-    verify_data(view_from, view_dest);
-    REQUIRE_EQ(r1, KE::end(view_dest));
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "transform_uop_dest");
+    auto r1 = KE::transform(exespace(), tensor_from, tensor_dest, unOp);
+    verify_data(tensor_from, tensor_dest);
+    REQUIRE_EQ(r1, KE::end(tensor_dest));
   }
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "transform_uop_dest");
-    auto r1 = KE::transform("label", exespace(), view_from, view_dest, unOp);
-    verify_data(view_from, view_dest);
-    REQUIRE_EQ(r1, KE::end(view_dest));
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "transform_uop_dest");
+    auto r1 = KE::transform("label", exespace(), tensor_from, tensor_dest, unOp);
+    verify_data(tensor_from, tensor_dest);
+    REQUIRE_EQ(r1, KE::end(tensor_dest));
   }
 
   flare::fence();

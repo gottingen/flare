@@ -40,11 +40,11 @@ namespace flare::blas::detail {
 
         MV_Abs_Functor(const RMV &R, const XMV &X)
                 : numCols(X.extent(1)), R_(R), X_(X) {
-            static_assert(flare::is_view<RMV>::value,
-                          "flare::blas::detail::MV_Abs_Functor: RMV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+            static_assert(flare::is_tensor<RMV>::value,
+                          "flare::blas::detail::MV_Abs_Functor: RMV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "MV_Abs_Functor: XMV is not a flare::View.");
+                          "MV_Abs_Functor: XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 2,
                           "flare::blas::detail::"
                           "MV_Abs_Functor: RMV is not rank 2");
@@ -71,9 +71,9 @@ namespace flare::blas::detail {
         RMV R_;
 
         MV_AbsSelf_Functor(const RMV &R) : numCols(R.extent(1)), R_(R) {
-            static_assert(flare::is_view<RMV>::value,
+            static_assert(flare::is_tensor<RMV>::value,
                           "flare::blas::detail::"
-                          "MV_Abs_Functor: RMV is not a flare::View.");
+                          "MV_Abs_Functor: RMV is not a flare::Tensor.");
             static_assert(RMV::rank == 2,
                           "flare::blas::detail::"
                           "MV_Abs_Functor: RMV is not rank 2");
@@ -97,12 +97,12 @@ namespace flare::blas::detail {
         XV X_;
 
         V_Abs_Functor(const RV &R, const XV &X) : R_(R), X_(X) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::blas::detail::"
-                          "V_Abs_Functor: RV is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "V_Abs_Functor: RV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::detail::"
-                          "V_Abs_Functor: XV is not a flare::View.");
+                          "V_Abs_Functor: XV is not a flare::Tensor.");
             static_assert(RV::rank == 1,
                           "flare::blas::detail::"
                           "V_Abs_Functor: RV is not rank 1");
@@ -125,9 +125,9 @@ namespace flare::blas::detail {
         RV R_;
 
         V_AbsSelf_Functor(const RV &R) : R_(R) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::blas::detail::"
-                          "V_Abs_Functor: RV is not a flare::View.");
+                          "V_Abs_Functor: RV is not a flare::Tensor.");
             static_assert(RV::rank == 1,
                           "flare::blas::detail::"
                           "V_Abs_Functor: RV is not rank 1");
@@ -141,12 +141,12 @@ namespace flare::blas::detail {
     // computes entry-wise absolute value.
     template<class execution_space, class RMV, class XMV, class SizeType>
     void MV_Abs_Generic(const execution_space &space, const RMV &R, const XMV &X) {
-        static_assert(flare::is_view<RMV>::value,
+        static_assert(flare::is_tensor<RMV>::value,
                       "flare::blas::detail::"
-                      "MV_Abs_Generic: RMV is not a flare::View.");
-        static_assert(flare::is_view<XMV>::value,
+                      "MV_Abs_Generic: RMV is not a flare::Tensor.");
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::detail::"
-                      "MV_Abs_Generic: XMV is not a flare::View.");
+                      "MV_Abs_Generic: XMV is not a flare::Tensor.");
         static_assert(RMV::rank == 2,
                       "flare::blas::detail::"
                       "MV_Abs_Generic: RMV is not rank 2");
@@ -167,15 +167,15 @@ namespace flare::blas::detail {
         }
     }
 
-    // Variant of MV_Abs_Generic for single vectors (1-D Views) R and X.
+    // Variant of MV_Abs_Generic for single vectors (1-D Tensors) R and X.
     template<class execution_space, class RV, class XV, class SizeType>
     void V_Abs_Generic(const execution_space &space, const RV &R, const XV &X) {
-        static_assert(flare::is_view<RV>::value,
+        static_assert(flare::is_tensor<RV>::value,
                       "flare::blas::detail::"
-                      "V_Abs_Generic: RV is not a flare::View.");
-        static_assert(flare::is_view<XV>::value,
+                      "V_Abs_Generic: RV is not a flare::Tensor.");
+        static_assert(flare::is_tensor<XV>::value,
                       "flare::blas::detail::"
-                      "V_Abs_Generic: XV is not a flare::View.");
+                      "V_Abs_Generic: XV is not a flare::Tensor.");
         static_assert(RV::rank == 1,
                       "flare::blas::detail::"
                       "V_Abs_Generic: RV is not rank 1");
@@ -208,12 +208,12 @@ namespace flare::blas::detail {
         using size_type = typename XMV::size_type;
 
         static void abs(const execution_space& space, const RMV& R, const XMV& X) {
-            static_assert(flare::is_view<RMV>::value,
+            static_assert(flare::is_tensor<RMV>::value,
                           "flare::base::detail::"
-                          "Abs<1-D>: RMV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Abs<1-D>: RMV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::base::detail::"
-                          "Abs<1-D>: XMV is not a flare::View.");
+                          "Abs<1-D>: XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 1,
                           "flare::base::detail::Abs<1-D>: "
                           "RMV is not rank 1.");
@@ -239,12 +239,12 @@ namespace flare::blas::detail {
         using size_type = typename XMV::size_type;
 
         static void abs(const execution_space& space, const RMV& R, const XMV& X) {
-            static_assert(flare::is_view<RMV>::value,
+            static_assert(flare::is_tensor<RMV>::value,
                           "flare::base::detail::"
-                          "Abs<2-D>: RMV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Abs<2-D>: RMV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::base::detail::"
-                          "Abs<2-D>: XMV is not a flare::View.");
+                          "Abs<2-D>: XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 2,
                           "flare::base::detail::Abs<2-D>: "
                           "RMV is not rank 2.");
@@ -275,9 +275,9 @@ namespace flare::blas::detail {
 #define FLARE_BLAS_ABS_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE) \
   template struct Abs<                                                       \
       EXEC_SPACE,                                                            \
-      flare::View<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,   \
+      flare::Tensor<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,   \
                    flare::MemoryTraits<flare::Unmanaged> >,                \
-      flare::View<const SCALAR*, LAYOUT,                                    \
+      flare::Tensor<const SCALAR*, LAYOUT,                                    \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                    \
                    flare::MemoryTraits<flare::Unmanaged> >,                \
       1>;
@@ -291,9 +291,9 @@ namespace flare::blas::detail {
                                          MEM_SPACE)                         \
   template struct Abs<                                                      \
       EXEC_SPACE,                                                           \
-      flare::View<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<const SCALAR**, LAYOUT,                                  \
+      flare::Tensor<const SCALAR**, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
       2>;

@@ -329,8 +329,8 @@ namespace flare::detail {
                       flare::is_memory_space<SrcMemorySpace>::value,
                       "template arguments must be memory spaces");
 
-        /**\brief  Can a View (or pointer) to memory in SrcMemorySpace
-         *         be assigned to a View (or pointer) to memory marked DstMemorySpace.
+        /**\brief  Can a Tensor (or pointer) to memory in SrcMemorySpace
+         *         be assigned to a Tensor (or pointer) to memory marked DstMemorySpace.
          *
          *  1. DstMemorySpace::execution_space == SrcMemorySpace::execution_space
          *  2. All execution spaces that can access DstMemorySpace can also access
@@ -368,7 +368,7 @@ namespace flare {
      *   Can AccessSpace::execution_space access MemorySpace ?
      *     enum : bool { accessible };
      *
-     *   Is View<AccessSpace::memory_space> assignable from View<MemorySpace> ?
+     *   Is Tensor<AccessSpace::memory_space> assignable from Tensor<MemorySpace> ?
      *     enum : bool { assignable };
      *
      *   If ! accessible then through which intercessory memory space
@@ -376,7 +376,7 @@ namespace flare {
      *     AccessSpace::execution_space
      *   to get access.
      *   When AccessSpace::memory_space == flare::HostSpace
-     *   then space is the View host mirror space.
+     *   then space is the Tensor host mirror space.
      */
     template<typename AccessSpace, typename MemorySpace>
     struct SpaceAccessibility {

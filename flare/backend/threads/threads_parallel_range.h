@@ -241,19 +241,19 @@ class ParallelReduce<CombinedFunctorReducerType, flare::RangePolicy<Traits...>,
     }
   }
 
-  template <class ViewType>
+  template <class TensorType>
   ParallelReduce(const CombinedFunctorReducerType &arg_functor_reducer,
-                 const Policy &arg_policy, const ViewType &arg_result_view)
+                 const Policy &arg_policy, const TensorType &arg_result_tensor)
       : m_functor_reducer(arg_functor_reducer),
         m_policy(arg_policy),
-        m_result_ptr(arg_result_view.data()) {
-    static_assert(flare::is_view<ViewType>::value,
-                  "flare::Threads reduce result must be a View");
+        m_result_ptr(arg_result_tensor.data()) {
+    static_assert(flare::is_tensor<TensorType>::value,
+                  "flare::Threads reduce result must be a Tensor");
 
     static_assert(
-        flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+        flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                                         flare::HostSpace>::accessible,
-        "flare::Threads reduce result must be a View accessible from "
+        "flare::Threads reduce result must be a Tensor accessible from "
         "HostSpace");
   }
 };
@@ -414,15 +414,15 @@ class ParallelScanWithTotal<FunctorType, flare::RangePolicy<Traits...>,
     ThreadsExec::fence();
   }
 
-  template <class ViewType>
+  template <class TensorType>
   ParallelScanWithTotal(const FunctorType &arg_functor,
                         const Policy &arg_policy,
-                        const ViewType &arg_result_view)
+                        const TensorType &arg_result_tensor)
       : m_functor(arg_functor),
         m_policy(arg_policy),
-        m_result_ptr(arg_result_view.data()) {
+        m_result_ptr(arg_result_tensor.data()) {
     static_assert(
-        flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+        flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                                         flare::HostSpace>::accessible,
         "flare::Threads parallel_scan result must be host-accessible!");
   }

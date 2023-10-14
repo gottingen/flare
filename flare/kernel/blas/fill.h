@@ -26,11 +26,11 @@ namespace flare::blas {
     /// This function is non-blocking and thread-safe
     ///
     /// \tparam execution_space a flare execution space
-    /// \tparam XMV 1-D or 2-D output View
+    /// \tparam XMV 1-D or 2-D output Tensor
     ///
     /// \param space [in] A flare instance of execution_space on which the
     ///                   kernel will run.
-    /// \param X [out] Output View (1-D or 2-D).
+    /// \param X [out] Output Tensor (1-D or 2-D).
     /// \param val [in] Value with which to fill the entries of X.
     template <class execution_space, class XMV>
     void fill(const execution_space& space, const XMV& X,
@@ -46,9 +46,9 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue
     /// associated with the execution space of XMV.
     ///
-    /// \tparam XMV 1-D or 2-D output View
+    /// \tparam XMV 1-D or 2-D output Tensor
     ///
-    /// \param X [out] Output View (1-D or 2-D).
+    /// \param X [out] Output Tensor (1-D or 2-D).
     /// \param val [in] Value with which to fill the entries of X.
     template <class XMV>
     void fill(const XMV& X, const typename XMV::non_const_value_type& val) {

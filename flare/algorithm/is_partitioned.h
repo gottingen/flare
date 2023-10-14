@@ -39,18 +39,18 @@ bool is_partitioned(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class PredicateType, class DataType,
           class... Properties>
 bool is_partitioned(const ExecutionSpace& ex,
-                    const ::flare::View<DataType, Properties...>& v,
+                    const ::flare::Tensor<DataType, Properties...>& v,
                     PredicateType p) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
-  return detail::is_partitioned_impl("flare::is_partitioned_view_api_default",
+  return detail::is_partitioned_impl("flare::is_partitioned_tensor_api_default",
                                    ex, cbegin(v), cend(v), std::move(p));
 }
 
 template <class ExecutionSpace, class PredicateType, class DataType,
           class... Properties>
 bool is_partitioned(const std::string& label, const ExecutionSpace& ex,
-                    const ::flare::View<DataType, Properties...>& v,
+                    const ::flare::Tensor<DataType, Properties...>& v,
                     PredicateType p) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 

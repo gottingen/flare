@@ -25,15 +25,15 @@
 
 namespace flare::blas::detail {
 
-    template <class VectorView, class ScalarView>
+    template <class VectorTensor, class ScalarTensor>
     struct rot_functor {
-        using scalar_type = typename VectorView::non_const_value_type;
+        using scalar_type = typename VectorTensor::non_const_value_type;
 
-        VectorView X, Y;
-        ScalarView c, s;
+        VectorTensor X, Y;
+        ScalarTensor c, s;
 
-        rot_functor(VectorView const& X_, VectorView const& Y_, ScalarView const& c_,
-                    ScalarView const& s_)
+        rot_functor(VectorTensor const& X_, VectorTensor const& Y_, ScalarTensor const& c_,
+                    ScalarTensor const& s_)
                 : X(X_), Y(Y_), c(c_), s(s_) {}
 
         FLARE_INLINE_FUNCTION
@@ -44,9 +44,9 @@ namespace flare::blas::detail {
         }
     };
 
-    template <class ExecutionSpace, class VectorView, class ScalarView>
-    void Rot_Invoke(ExecutionSpace const& space, VectorView const& X,
-                    VectorView const& Y, ScalarView const& c, ScalarView const& s) {
+    template <class ExecutionSpace, class VectorTensor, class ScalarTensor>
+    void Rot_Invoke(ExecutionSpace const& space, VectorTensor const& X,
+                    VectorTensor const& Y, ScalarTensor const& c, ScalarTensor const& s) {
         flare::RangePolicy<ExecutionSpace> rot_policy(space, 0, X.extent(0));
         rot_functor rot_func(X, Y, c, s);
         flare::parallel_for("flare::blas::rot", rot_policy, rot_func);
@@ -54,13 +54,13 @@ namespace flare::blas::detail {
 
 
     // Unification layer
-    template <class ExecutionSpace, class VectorView, class ScalarView>
+    template <class ExecutionSpace, class VectorTensor, class ScalarTensor>
     struct Rot {
-        static void rot(ExecutionSpace const& space, VectorView const& X,
-                        VectorView const& Y, ScalarView const& c,
-                        ScalarView const& s) {
+        static void rot(ExecutionSpace const& space, VectorTensor const& X,
+                        VectorTensor const& Y, ScalarTensor const& c,
+                        ScalarTensor const& s) {
             flare::Profiling::pushRegion("flare::blas::rot");
-            Rot_Invoke<ExecutionSpace, VectorView, ScalarView>(space, X, Y, c, s);
+            Rot_Invoke<ExecutionSpace, VectorTensor, ScalarTensor>(space, X, Y, c, s);
             flare::Profiling::popRegion();
         }
     };
@@ -75,9 +75,9 @@ namespace flare::blas::detail {
 #define FLARE_BLAS_ROT_SPEC_INST(SCALAR, LAYOUT, EXECSPACE, MEMSPACE) \
   template struct Rot<                                                     \
       EXECSPACE,                                                           \
-      flare::View<SCALAR*, LAYOUT, flare::Device<EXECSPACE, MEMSPACE>,   \
+      flare::Tensor<SCALAR*, LAYOUT, flare::Device<EXECSPACE, MEMSPACE>,   \
                    flare::MemoryTraits<flare::Unmanaged>>,               \
-      flare::View<typename flare::ArithTraits<SCALAR>::mag_type, LAYOUT, \
+      flare::Tensor<typename flare::ArithTraits<SCALAR>::mag_type, LAYOUT, \
                    flare::Device<EXECSPACE, MEMSPACE>,                    \
                    flare::MemoryTraits<flare::Unmanaged>>>;
 

@@ -50,14 +50,14 @@ struct UnifDist<double> {
   int operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -112,36 +112,36 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewFromType, class ViewDestType, class MyItResult>
-void verify_data(ViewFromType view_from, ViewDestType view_dest,
+template <class TensorFromType, class TensorDestType, class MyItResult>
+void verify_data(TensorFromType tensor_from, TensorDestType tensor_dest,
                  MyItResult my_result) {
-  // make a host copy of the view_from
-  auto view_from_h      = create_host_space_copy(view_from);
-  const std::size_t ext = view_from_h.extent(0);
-  using value_type      = typename ViewFromType::value_type;
+  // make a host copy of the tensor_from
+  auto trnsor_from_h      = create_host_space_copy(tensor_from);
+  const std::size_t ext = trnsor_from_h.extent(0);
+  using value_type      = typename TensorFromType::value_type;
 
   // run std::remove_copy
   std::vector<value_type> gold_dest_std(ext);
   auto std_result =
-      std::remove_copy(KE::cbegin(view_from_h), KE::cend(view_from_h),
+      std::remove_copy(KE::cbegin(trnsor_from_h), KE::cend(trnsor_from_h),
                        gold_dest_std.begin(), (value_type)match_value);
 
   // check that returned iterators are correct
   const std::size_t std_diff = std_result - gold_dest_std.begin();
-  const std::size_t my_diff  = my_result - KE::begin(view_dest);
+  const std::size_t my_diff  = my_result - KE::begin(tensor_dest);
   REQUIRE_EQ(std_diff, my_diff);
 
   // check the actual data after algo has been applied
-  auto view_dest_h = create_host_space_copy(view_dest);
+  auto tensor_dest_h = create_host_space_copy(tensor_dest);
   for (std::size_t i = 0; i < my_diff; ++i) {
-    REQUIRE_EQ(view_dest_h(i), gold_dest_std[i]);
+    REQUIRE_EQ(tensor_dest_h(i), gold_dest_std[i]);
     // std::cout << "i= " << i << " "
-    // 	      << "mine: " << view_dest_h(i) << " "
+    // 	      << "mine: " << tensor_dest_h(i) << " "
     // 	      << "std: " << gold_dest_std[i]
     // 	      << '\n';
   }
@@ -153,58 +153,58 @@ std::string value_type_to_string(double) { return "double"; }
 template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
-  // std::cout << "remove_copy: " << name << ", " << view_tag_to_string(Tag{})
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
+  // std::cout << "remove_copy: " << name << ", " << tensor_tag_to_string(Tag{})
   //           << ", " << value_type_to_string(ValueType()) << std::endl;
 
   {
-    auto view_from =
-        create_view<ValueType>(Tag{}, view_ext, "remove_copy_view_from");
-    fill_view(view_from, name);
+    auto tensor_from =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "remove_copy_tensor_from");
+    fill_tensor(tensor_from, name);
 
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "remove_copy_view_dest");
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "remove_copy_tensor_dest");
     auto rit =
-        KE::remove_copy(exespace(), KE::cbegin(view_from), KE::cend(view_from),
-                        KE::begin(view_dest), (ValueType)match_value);
-    verify_data(view_from, view_dest, rit);
+        KE::remove_copy(exespace(), KE::cbegin(tensor_from), KE::cend(tensor_from),
+                        KE::begin(tensor_dest), (ValueType)match_value);
+    verify_data(tensor_from, tensor_dest, rit);
   }
 
   {
-    auto view_from =
-        create_view<ValueType>(Tag{}, view_ext, "remove_copy_view_from");
-    fill_view(view_from, name);
+    auto tensor_from =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "remove_copy_tensor_from");
+    fill_tensor(tensor_from, name);
 
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "remove_copy_view_dest");
-    auto rit = KE::remove_copy("label", exespace(), KE::cbegin(view_from),
-                               KE::cend(view_from), KE::begin(view_dest),
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "remove_copy_tensor_dest");
+    auto rit = KE::remove_copy("label", exespace(), KE::cbegin(tensor_from),
+                               KE::cend(tensor_from), KE::begin(tensor_dest),
                                (ValueType)match_value);
-    verify_data(view_from, view_dest, rit);
+    verify_data(tensor_from, tensor_dest, rit);
   }
 
   {
-    auto view_from =
-        create_view<ValueType>(Tag{}, view_ext, "remove_copy_view_from");
-    fill_view(view_from, name);
+    auto tensor_from =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "remove_copy_tensor_from");
+    fill_tensor(tensor_from, name);
 
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "remove_copy_view_dest");
-    auto rit = KE::remove_copy(exespace(), view_from, view_dest,
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "remove_copy_tensor_dest");
+    auto rit = KE::remove_copy(exespace(), tensor_from, tensor_dest,
                                (ValueType)match_value);
-    verify_data(view_from, view_dest, rit);
+    verify_data(tensor_from, tensor_dest, rit);
   }
 
   {
-    auto view_from =
-        create_view<ValueType>(Tag{}, view_ext, "remove_copy_view_from");
-    fill_view(view_from, name);
+    auto tensor_from =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "remove_copy_tensor_from");
+    fill_tensor(tensor_from, name);
 
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "remove_copy_view_dest");
-    auto rit = KE::remove_copy("label", exespace(), view_from, view_dest,
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "remove_copy_tensor_dest");
+    auto rit = KE::remove_copy("label", exespace(), tensor_from, tensor_dest,
                                (ValueType)match_value);
-    verify_data(view_from, view_dest, rit);
+    verify_data(tensor_from, tensor_dest, rit);
   }
 
   flare::fence();

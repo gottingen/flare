@@ -489,18 +489,18 @@ namespace Test {
         };
 
         template<typename ScalarType, class DeviceType>
-        class TestReduceDynamicView {
+        class TestReduceDynamicTensor {
         public:
             using execution_space = DeviceType;
             using size_type = typename execution_space::size_type;
 
-            TestReduceDynamicView(const size_type nwork) { run_test_dynamic_view(nwork); }
+            TestReduceDynamicTensor(const size_type nwork) { run_test_dynamic_tensor(nwork); }
 
-            void run_test_dynamic_view(const size_type nwork) {
+            void run_test_dynamic_tensor(const size_type nwork) {
                 using functor_type =
                         Test::RuntimeReduceFunctor<ScalarType, execution_space>;
 
-                using result_type = flare::View<ScalarType *, DeviceType>;
+                using result_type = flare::Tensor<ScalarType *, DeviceType>;
                 using result_host_type = typename result_type::HostMirror;
 
                 const unsigned CountLimit = 23;
@@ -580,9 +580,9 @@ namespace Test {
 
         uint64_t nsum = (nw / 2) * (nw + 1);
         {
-            auto result1_v = flare::View<int64_t, flare::HostSpace>{"result1_v"};
+            auto result1_v = flare::Tensor<int64_t, flare::HostSpace>{"result1_v"};
             int64_t result2 = 0;
-            auto result3_v = flare::View<int64_t, flare::HostSpace>{"result3_v"};
+            auto result3_v = flare::Tensor<int64_t, flare::HostSpace>{"result3_v"};
             flare::parallel_reduce("int_combined-reduce_mixed",
                                    flare::RangePolicy<TEST_EXECSPACE>(0, nw),
                                    functor_type(nw), result1_v, result2,
@@ -593,9 +593,9 @@ namespace Test {
         }
         {
             using MemorySpace = typename TEST_EXECSPACE::memory_space;
-            auto result1_v = flare::View<int64_t, MemorySpace>{"result1_v"};
+            auto result1_v = flare::Tensor<int64_t, MemorySpace>{"result1_v"};
             int64_t result2 = 0;
-            auto result3_v = flare::View<int64_t, MemorySpace>{"result3_v"};
+            auto result3_v = flare::Tensor<int64_t, MemorySpace>{"result3_v"};
             flare::parallel_reduce("int_combined-reduce_mixed",
                                    flare::RangePolicy<TEST_EXECSPACE>(0, nw),
                                    functor_type(nw), result1_v, result2,

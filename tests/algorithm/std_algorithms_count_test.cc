@@ -22,25 +22,25 @@ namespace Count {
 
 namespace KE = flare::experimental;
 
-template <class ViewType>
-void test_count(const ViewType view) {
-  using value_t           = typename ViewType::value_type;
-  using view_host_space_t = flare::View<value_t*, flare::HostSpace>;
+template <class TensorType>
+void test_count(const TensorType tensor) {
+  using value_t           = typename TensorType::value_type;
+  using tensor_host_space_t = flare::Tensor<value_t*, flare::HostSpace>;
 
-  view_host_space_t expected("count_expected", view.extent(0));
-  compare_views(expected, view);
+  tensor_host_space_t expected("count_expected", tensor.extent(0));
+  compare_tensors(expected, tensor);
 
   {
     const value_t count_value = 0;
     const auto std_result =
         std::count(KE::cbegin(expected), KE::cend(expected), count_value);
-    REQUIRE_EQ(view.extent(0), size_t(std_result));
+    REQUIRE_EQ(tensor.extent(0), size_t(std_result));
 
     // pass const iterators
-    REQUIRE_EQ(std_result, KE::count(exespace(), KE::cbegin(view),
-                                    KE::cend(view), count_value));
-    // pass view
-    REQUIRE_EQ(std_result, KE::count(exespace(), view, count_value));
+    REQUIRE_EQ(std_result, KE::count(exespace(), KE::cbegin(tensor),
+                                    KE::cend(tensor), count_value));
+    // pass tensor
+    REQUIRE_EQ(std_result, KE::count(exespace(), tensor, count_value));
   }
 
   {
@@ -49,20 +49,20 @@ void test_count(const ViewType view) {
         std::count(KE::cbegin(expected), KE::cend(expected), count_value);
 
     // pass iterators
-    REQUIRE_EQ(std_result, KE::count("label", exespace(), KE::begin(view),
-                                    KE::end(view), count_value));
-    // pass view
-    REQUIRE_EQ(std_result, KE::count("label", exespace(), view, count_value));
+    REQUIRE_EQ(std_result, KE::count("label", exespace(), KE::begin(tensor),
+                                    KE::end(tensor), count_value));
+    // pass tensor
+    REQUIRE_EQ(std_result, KE::count("label", exespace(), tensor, count_value));
   }
 }
 
-template <class ViewType>
-void test_count_if(const ViewType view) {
-  using value_t           = typename ViewType::value_type;
-  using view_host_space_t = flare::View<value_t*, flare::HostSpace>;
+template <class TensorType>
+void test_count_if(const TensorType tensor) {
+  using value_t           = typename TensorType::value_type;
+  using tensor_host_space_t = flare::Tensor<value_t*, flare::HostSpace>;
 
-  view_host_space_t expected("count_expected", view.extent(0));
-  compare_views(expected, view);
+  tensor_host_space_t expected("count_expected", tensor.extent(0));
+  compare_tensors(expected, tensor);
 
   // no positive elements (all zeroes)
   const auto predicate = IsPositiveFunctor<value_type>();
@@ -71,31 +71,31 @@ void test_count_if(const ViewType view) {
 
   // pass iterators
   REQUIRE_EQ(
-      0, KE::count_if(exespace(), KE::begin(view), KE::end(view), predicate));
-  // pass view
-  REQUIRE_EQ(0, KE::count_if(exespace(), view, predicate));
+      0, KE::count_if(exespace(), KE::begin(tensor), KE::end(tensor), predicate));
+  // pass tensor
+  REQUIRE_EQ(0, KE::count_if(exespace(), tensor, predicate));
 
-  fill_views_inc(view, expected);
+  fill_tensors_inc(tensor, expected);
 
   const auto std_result =
       std::count_if(KE::begin(expected), KE::end(expected), predicate);
   // pass const iterators
-  REQUIRE_EQ(std_result, KE::count_if("label", exespace(), KE::cbegin(view),
-                                     KE::cend(view), predicate));
-  // pass view
-  REQUIRE_EQ(std_result, KE::count_if("label", exespace(), view, predicate));
+  REQUIRE_EQ(std_result, KE::count_if("label", exespace(), KE::cbegin(tensor),
+                                     KE::cend(tensor), predicate));
+  // pass tensor
+  REQUIRE_EQ(std_result, KE::count_if("label", exespace(), tensor, predicate));
 }
 
 template <class Tag, class ValueType>
 void run_all_scenarios() {
   for (const auto& scenario : default_scenarios) {
     {
-      auto view = create_view<ValueType>(Tag{}, scenario.second, "count");
-      test_count(view);
+      auto tensor = create_tensor<ValueType>(Tag{}, scenario.second, "count");
+      test_count(tensor);
     }
     {
-      auto view = create_view<ValueType>(Tag{}, scenario.second, "count");
-      test_count_if(view);
+      auto tensor = create_tensor<ValueType>(Tag{}, scenario.second, "count");
+      test_count_if(tensor);
     }
   }
 }

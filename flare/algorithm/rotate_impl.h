@@ -44,16 +44,16 @@ IteratorType rotate_with_pivot_in_left_half(const std::string& label,
       ^           ^              mid					   ^
     first       n_first							  last
 
-    In step 1, we create a temporary view with extent = distance(n_first, last)
-    and *move* the elements from [n_first, last) to tmp view, such that
-    tmp view becomes:
+    In step 1, we create a temporary tensor with extent = distance(n_first, last)
+    and *move* the elements from [n_first, last) to tmp tensor, such that
+    tmp tensor becomes:
 
     | 1 | 4 | 5 | 2 | 2 | 10 | -3 | 1 | -6 | -5 | 8 | 9 | 11 |
 
     In step 2, we move the elements in [first, n_first)
     to the new position where they are supposed to end up.
 
-    In step 3, we move the elements from the tmp view to
+    In step 3, we move the elements from the tmp tensor to
     the range starting at first.
    */
 
@@ -61,12 +61,12 @@ IteratorType rotate_with_pivot_in_left_half(const std::string& label,
   const auto num_elements_on_left  = KE::distance(first, n_first);
   const auto num_elements_on_right = KE::distance(n_first, last);
 
-  // create helper tmp view
+  // create helper tmp tensor
   using value_type    = typename IteratorType::value_type;
-  using tmp_view_type = flare::View<value_type*, ExecutionSpace>;
-  tmp_view_type tmp_view("rotate_impl_for_pivot_in_left_half_impl",
+  using tmp_tensor_type = flare::Tensor<value_type*, ExecutionSpace>;
+  tmp_tensor_type tmp_tensor("rotate_impl_for_pivot_in_left_half_impl",
                          num_elements_on_right);
-  using tmp_readwrite_iterator_type = decltype(begin(tmp_view));
+  using tmp_readwrite_iterator_type = decltype(begin(tmp_tensor));
 
   // index_type is the same and needed in all steps
   using index_type = typename IteratorType::difference_type;
@@ -76,7 +76,7 @@ IteratorType rotate_with_pivot_in_left_half(const std::string& label,
       StdMoveFunctor<index_type, IteratorType, tmp_readwrite_iterator_type>;
   ::flare::parallel_for(
       label, RangePolicy<ExecutionSpace>(ex, 0, num_elements_on_right),
-      step1_func_type(n_first, begin(tmp_view)));
+      step1_func_type(n_first, begin(tmp_tensor)));
 
   // stage 2
   using step2_func_type =
@@ -89,8 +89,8 @@ IteratorType rotate_with_pivot_in_left_half(const std::string& label,
   using step3_func_type =
       StdMoveFunctor<index_type, tmp_readwrite_iterator_type, IteratorType>;
   ::flare::parallel_for(label,
-                         RangePolicy<ExecutionSpace>(ex, 0, tmp_view.extent(0)),
-                         step3_func_type(begin(tmp_view), first));
+                         RangePolicy<ExecutionSpace>(ex, 0, tmp_tensor.extent(0)),
+                         step3_func_type(begin(tmp_tensor), first));
 
   ex.fence("flare::rotate: fence after operation");
   return first + (last - n_first);
@@ -112,16 +112,16 @@ IteratorType rotate_with_pivot_in_right_half(const std::string& label,
       ^                          mid            ^                          ^
     first                                    n_first			  last
 
-    In step 1, we create a temporary view with extent = distance(first, n_first)
-    and *move* the elements from [first, n_first) to tmp view,
-    such that tmp view becomes:
+    In step 1, we create a temporary tensor with extent = distance(first, n_first)
+    and *move* the elements from [first, n_first) to tmp tensor,
+    such that tmp tensor becomes:
 
     | 0 | 1 | 2 | 1 | 4 | 5 | 2 | 2 | 10 | -3 | 1 |
 
     In step 2, we move the elements in [n_first, last)
     to the beginning where they are supposed to end up.
 
-    In step 3, we move the elements from the tmp view to
+    In step 3, we move the elements from the tmp tensor to
     the range starting at first.
    */
 
@@ -129,12 +129,12 @@ IteratorType rotate_with_pivot_in_right_half(const std::string& label,
   const auto num_elements_on_left  = KE::distance(first, n_first);
   const auto num_elements_on_right = KE::distance(n_first, last);
 
-  // create helper tmp view
+  // create helper tmp tensor
   using value_type    = typename IteratorType::value_type;
-  using tmp_view_type = flare::View<value_type*, ExecutionSpace>;
-  tmp_view_type tmp_view("rotate_impl_for_pivot_in_left_half_impl",
+  using tmp_tensor_type = flare::Tensor<value_type*, ExecutionSpace>;
+  tmp_tensor_type tmp_tensor("rotate_impl_for_pivot_in_left_half_impl",
                          num_elements_on_left);
-  using tmp_readwrite_iterator_type = decltype(begin(tmp_view));
+  using tmp_readwrite_iterator_type = decltype(begin(tmp_tensor));
 
   // index_type is the same and needed in all steps
   using index_type = typename IteratorType::difference_type;
@@ -144,7 +144,7 @@ IteratorType rotate_with_pivot_in_right_half(const std::string& label,
       StdMoveFunctor<index_type, IteratorType, tmp_readwrite_iterator_type>;
   ::flare::parallel_for(
       label, RangePolicy<ExecutionSpace>(ex, 0, num_elements_on_left),
-      step1_func_type(first, begin(tmp_view)));
+      step1_func_type(first, begin(tmp_tensor)));
 
   // stage 2
   using step2_func_type =
@@ -157,8 +157,8 @@ IteratorType rotate_with_pivot_in_right_half(const std::string& label,
   using step3_func_type =
       StdMoveFunctor<index_type, tmp_readwrite_iterator_type, IteratorType>;
   ::flare::parallel_for(
-      label, RangePolicy<ExecutionSpace>(ex, 0, tmp_view.extent(0)),
-      step3_func_type(begin(tmp_view), first + num_elements_on_right));
+      label, RangePolicy<ExecutionSpace>(ex, 0, tmp_tensor.extent(0)),
+      step3_func_type(begin(tmp_tensor), first + num_elements_on_right));
 
   ex.fence("flare::rotate: fence after operation");
   return first + (last - n_first);

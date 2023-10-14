@@ -18,22 +18,22 @@
 
 namespace Test {
 
-    template<typename View>
-    struct SumView {
-        const View m_view;
+    template<typename Tensor>
+    struct SumTensor {
+        const Tensor m_tensor;
         FLARE_FUNCTION void operator()(const int i, const int j, int &update) const {
-            update += m_view(i, j);
+            update += m_tensor(i, j);
         }
 
-        SumView(View view) : m_view(view) {}
+        SumTensor(Tensor tensor) : m_tensor(tensor) {}
 
         int run() {
-            int sum_view = 0;
+            int sum_tensor = 0;
             flare::parallel_reduce(
-                    flare::MDRangePolicy<typename View::execution_space, flare::Rank<2>>(
-                            {0, 0}, {m_view.extent(0), m_view.extent(1)}),
-                    *this, sum_view);
-            return sum_view;
+                    flare::MDRangePolicy<typename Tensor::execution_space, flare::Rank<2>>(
+                            {0, 0}, {m_tensor.extent(0), m_tensor.extent(1)}),
+                    *this, sum_tensor);
+            return sum_tensor;
         }
     };
 
@@ -44,24 +44,24 @@ namespace Test {
             using MemorySpace = typename ExecutionSpace::memory_space;
             const int s = 45;
             const int step_sizes[2] = {1, 10000};
-            flare::View<int **, MemorySpace> view("v", s * step_sizes[0],
+            flare::Tensor<int **, MemorySpace> tensor("v", s * step_sizes[0],
                                                   (s + 1) * step_sizes[1]);
-            flare::deep_copy(exec, view, 1);
-            for (int step = 2; step < view.extent_int(0); ++step) {
-                auto subview =
-                        flare::subview(view, std::make_pair(0, (step + 1) * step_sizes[0]),
+            flare::deep_copy(exec, tensor, 1);
+            for (int step = 2; step < tensor.extent_int(0); ++step) {
+                auto subtensor =
+                        flare::subtensor(tensor, std::make_pair(0, (step + 1) * step_sizes[0]),
                                        std::make_pair(0, (step + 2) * step_sizes[1]));
-                flare::View<int **, MemorySpace> subview_copy(
-                        "subview_copy", subview.extent(0), subview.extent(1));
-                flare::deep_copy(TEST_EXECSPACE{}, subview_copy, subview);
+                flare::Tensor<int **, MemorySpace> subtensor_copy(
+                        "subtensor_copy", subtensor.extent(0), subtensor.extent(1));
+                flare::deep_copy(TEST_EXECSPACE{}, subtensor_copy, subtensor);
                 exec.fence();
 
-                SumView<decltype(subview)> sum_subview(subview);
-                int total_subview = sum_subview.run();
-                SumView<decltype(subview_copy)> sum_subview_copy(subview_copy);
-                int total_subview_copy = sum_subview_copy.run();
+                SumTensor<decltype(subtensor)> sum_subtensor(subtensor);
+                int total_subtensor = sum_subtensor.run();
+                SumTensor<decltype(subtensor_copy)> sum_subtensor_copy(subtensor_copy);
+                int total_subtensor_copy = sum_subtensor_copy.run();
 
-                REQUIRE_EQ(total_subview, total_subview_copy);
+                REQUIRE_EQ(total_subtensor, total_subtensor_copy);
             }
         }
     };

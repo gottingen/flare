@@ -38,23 +38,23 @@ Iterator remove_if(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType, class... Properties,
           class UnaryPredicate>
 auto remove_if(const ExecutionSpace& ex,
-               const ::flare::View<DataType, Properties...>& view,
+               const ::flare::Tensor<DataType, Properties...>& tensor,
                UnaryPredicate pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   return detail::remove_if_impl("flare::remove_if_iterator_api_default", ex,
-                              ::flare::experimental::begin(view),
-                              ::flare::experimental::end(view), pred);
+                              ::flare::experimental::begin(tensor),
+                              ::flare::experimental::end(tensor), pred);
 }
 
 template <class ExecutionSpace, class DataType, class... Properties,
           class UnaryPredicate>
 auto remove_if(const std::string& label, const ExecutionSpace& ex,
-               const ::flare::View<DataType, Properties...>& view,
+               const ::flare::Tensor<DataType, Properties...>& tensor,
                UnaryPredicate pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::remove_if_impl(label, ex, ::flare::experimental::begin(view),
-                              ::flare::experimental::end(view), pred);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::remove_if_impl(label, ex, ::flare::experimental::begin(tensor),
+                              ::flare::experimental::end(tensor), pred);
 }
 
 }  // namespace experimental

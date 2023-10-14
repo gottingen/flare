@@ -23,28 +23,28 @@
 #include <flare/kernel/blas/iamax.h>
 
 namespace Test {
-    template<class ViewTypeA, class Device>
+    template<class TensorTypeA, class Device>
     void impl_test_iamax(int N) {
-        typedef typename ViewTypeA::non_const_value_type ScalarA;
+        typedef typename TensorTypeA::non_const_value_type ScalarA;
         typedef flare::ArithTraits<ScalarA> AT;
         typedef typename AT::mag_type mag_type;
-        using size_type = typename ViewTypeA::size_type;
+        using size_type = typename TensorTypeA::size_type;
 
-        view_stride_adapter<ViewTypeA> a("X", N);
+        tensor_stride_adapter<TensorTypeA> a("X", N);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
 
         ScalarA randStart, randEnd;
         Test::getRandomBounds(10.0, randStart, randEnd);
-        flare::fill_random(a.d_view, rand_pool, randStart, randEnd);
+        flare::fill_random(a.d_tensor, rand_pool, randStart, randEnd);
 
         flare::deep_copy(a.h_base, a.d_base);
 
         mag_type expected_result = flare::ArithTraits<mag_type>::min();
         size_type expected_max_loc = 0;
         for (int i = 0; i < N; i++) {
-            mag_type val = AT::abs(a.h_view(i));
+            mag_type val = AT::abs(a.h_tensor(i));
             if (val > expected_result) {
                 expected_result = val;
                 expected_max_loc = i + 1;
@@ -59,51 +59,51 @@ namespace Test {
         {
             // printf("impl_test_iamax -- return result as a scalar on host -- N %d\n",
             // N);
-            size_type nonconst_max_loc = flare::blas::iamax(a.d_view);
+            size_type nonconst_max_loc = flare::blas::iamax(a.d_tensor);
             REQUIRE_EQ(nonconst_max_loc, expected_max_loc);
 
-            size_type const_max_loc = flare::blas::iamax(a.d_view_const);
+            size_type const_max_loc = flare::blas::iamax(a.d_tensor_const);
             REQUIRE_EQ(const_max_loc, expected_max_loc);
         }
 
         {
-            // printf("impl_test_iamax -- return result as a 0-D View on host -- N
+            // printf("impl_test_iamax -- return result as a 0-D Tensor on host -- N
             // %d\n", N);
-            typedef flare::View<size_type, typename ViewTypeA::array_layout,
+            typedef flare::Tensor<size_type, typename TensorTypeA::array_layout,
                     flare::HostSpace>
-                    ViewType0D;
-            ViewType0D r("Iamax::Result 0-D View on host",
-                         typename ViewTypeA::array_layout());
+                    TensorType0D;
+            TensorType0D r("Iamax::Result 0-D Tensor on host",
+                         typename TensorTypeA::array_layout());
 
-            flare::blas::iamax(r, a.d_view);
+            flare::blas::iamax(r, a.d_tensor);
             flare::fence();
             size_type nonconst_max_loc = r();
             REQUIRE_EQ(nonconst_max_loc, expected_max_loc);
 
-            flare::blas::iamax(r, a.d_view_const);
+            flare::blas::iamax(r, a.d_tensor_const);
             size_type const_max_loc = r();
             REQUIRE_EQ(const_max_loc, expected_max_loc);
         }
 
         {
-            // printf("impl_test_iamax -- return result as a 0-D View on device -- N
+            // printf("impl_test_iamax -- return result as a 0-D Tensor on device -- N
             // %d\n", N);
-            typedef flare::View<size_type, typename ViewTypeA::array_layout, Device>
-                    ViewType0D;
-            ViewType0D r("Iamax::Result 0-D View on device",
-                         typename ViewTypeA::array_layout());
-            typename ViewType0D::HostMirror h_r = flare::create_mirror_view(r);
+            typedef flare::Tensor<size_type, typename TensorTypeA::array_layout, Device>
+                    TensorType0D;
+            TensorType0D r("Iamax::Result 0-D Tensor on device",
+                         typename TensorTypeA::array_layout());
+            typename TensorType0D::HostMirror h_r = flare::create_mirror_tensor(r);
 
             size_type nonconst_max_loc, const_max_loc;
 
-            flare::blas::iamax(r, a.d_view);
+            flare::blas::iamax(r, a.d_tensor);
             flare::deep_copy(h_r, r);
 
             nonconst_max_loc = h_r();
 
             REQUIRE_EQ(nonconst_max_loc, expected_max_loc);
 
-            flare::blas::iamax(r, a.d_view_const);
+            flare::blas::iamax(r, a.d_tensor_const);
             flare::deep_copy(h_r, r);
 
             const_max_loc = h_r();
@@ -112,21 +112,21 @@ namespace Test {
         }
     }
 
-    template<class ViewTypeA, class Device>
+    template<class TensorTypeA, class Device>
     void impl_test_iamax_mv(int N, int K) {
-        typedef typename ViewTypeA::non_const_value_type ScalarA;
+        typedef typename TensorTypeA::non_const_value_type ScalarA;
         typedef flare::ArithTraits<ScalarA> AT;
         typedef typename AT::mag_type mag_type;
-        typedef typename ViewTypeA::size_type size_type;
+        typedef typename TensorTypeA::size_type size_type;
 
-        view_stride_adapter<ViewTypeA> a("A", N, K);
+        tensor_stride_adapter<TensorTypeA> a("A", N, K);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
 
         ScalarA randStart, randEnd;
         Test::getRandomBounds(10.0, randStart, randEnd);
-        flare::fill_random(a.d_view, rand_pool, randStart, randEnd);
+        flare::fill_random(a.d_tensor, rand_pool, randStart, randEnd);
 
         flare::deep_copy(a.h_base, a.d_base);
 
@@ -136,7 +136,7 @@ namespace Test {
         for (int j = 0; j < K; j++) {
             expected_result[j] = flare::ArithTraits<mag_type>::min();
             for (int i = 0; i < N; i++) {
-                mag_type val = AT::abs(a.h_view(i, j));
+                mag_type val = AT::abs(a.h_tensor(i, j));
                 if (val > expected_result[j]) {
                     expected_result[j] = val;
                     expected_max_loc[j] = i + 1;
@@ -149,15 +149,15 @@ namespace Test {
         }
 
         {
-            // printf("impl_test_iamax_mv -- return results as a 1-D View on host -- N
+            // printf("impl_test_iamax_mv -- return results as a 1-D Tensor on host -- N
             // %d\n", N);
-            flare::View<size_type *, flare::HostSpace> rcontig(
-                    "Iamax::Result View on host", K);
-            flare::View<size_type *, typename ViewTypeA::array_layout,
+            flare::Tensor<size_type *, flare::HostSpace> rcontig(
+                    "Iamax::Result Tensor on host", K);
+            flare::Tensor<size_type *, typename TensorTypeA::array_layout,
                     flare::HostSpace>
                     r = rcontig;
 
-            flare::blas::iamax(r, a.d_view);
+            flare::blas::iamax(r, a.d_tensor);
             flare::fence();
 
             for (int k = 0; k < K; k++) {
@@ -166,7 +166,7 @@ namespace Test {
                 REQUIRE_EQ(nonconst_result, exp_result);
             }
 
-            flare::blas::iamax(r, a.d_view_const);
+            flare::blas::iamax(r, a.d_tensor_const);
             flare::fence();
 
             for (int k = 0; k < K; k++) {
@@ -177,16 +177,16 @@ namespace Test {
         }
 
         {
-            // printf("impl_test_iamax_mv -- return results as a 1-D View on device -- N
+            // printf("impl_test_iamax_mv -- return results as a 1-D Tensor on device -- N
             // %d\n", N);
-            flare::View<size_type *, Device> rcontig("Iamax::Result View on host", K);
-            flare::View<size_type *, typename ViewTypeA::array_layout, Device> r =
+            flare::Tensor<size_type *, Device> rcontig("Iamax::Result Tensor on host", K);
+            flare::Tensor<size_type *, typename TensorTypeA::array_layout, Device> r =
                     rcontig;
-            typename flare::View<size_type *, typename ViewTypeA::array_layout,
+            typename flare::Tensor<size_type *, typename TensorTypeA::array_layout,
                     Device>::HostMirror h_r =
-                    flare::create_mirror_view(rcontig);
+                    flare::create_mirror_tensor(rcontig);
 
-            flare::blas::iamax(r, a.d_view);
+            flare::blas::iamax(r, a.d_tensor);
             flare::deep_copy(h_r, r);
 
             for (int k = 0; k < K; k++) {
@@ -195,7 +195,7 @@ namespace Test {
                 REQUIRE_EQ(nonconst_result, exp_result);
             }
 
-            flare::blas::iamax(r, a.d_view_const);
+            flare::blas::iamax(r, a.d_tensor_const);
             flare::deep_copy(h_r, r);
 
             for (int k = 0; k < K; k++) {
@@ -213,27 +213,27 @@ namespace Test {
 template<class ScalarA, class Device>
 int test_iamax() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA *, flare::LayoutLeft, Device> view_type_a_ll;
-    Test::impl_test_iamax<view_type_a_ll, Device>(0);
-    Test::impl_test_iamax<view_type_a_ll, Device>(13);
-    Test::impl_test_iamax<view_type_a_ll, Device>(1024);
-    // Test::impl_test_iamax<view_type_a_ll, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutLeft, Device> tensor_type_a_ll;
+    Test::impl_test_iamax<tensor_type_a_ll, Device>(0);
+    Test::impl_test_iamax<tensor_type_a_ll, Device>(13);
+    Test::impl_test_iamax<tensor_type_a_ll, Device>(1024);
+    // Test::impl_test_iamax<tensor_type_a_ll, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA *, flare::LayoutRight, Device> view_type_a_lr;
-    Test::impl_test_iamax<view_type_a_lr, Device>(0);
-    Test::impl_test_iamax<view_type_a_lr, Device>(13);
-    Test::impl_test_iamax<view_type_a_lr, Device>(1024);
-    // Test::impl_test_iamax<view_type_a_lr, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutRight, Device> tensor_type_a_lr;
+    Test::impl_test_iamax<tensor_type_a_lr, Device>(0);
+    Test::impl_test_iamax<tensor_type_a_lr, Device>(13);
+    Test::impl_test_iamax<tensor_type_a_lr, Device>(1024);
+    // Test::impl_test_iamax<tensor_type_a_lr, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA *, flare::LayoutStride, Device> view_type_a_ls;
-    Test::impl_test_iamax<view_type_a_ls, Device>(0);
-    Test::impl_test_iamax<view_type_a_ls, Device>(13);
-    Test::impl_test_iamax<view_type_a_ls, Device>(1024);
-    // Test::impl_test_iamax<view_type_a_ls, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutStride, Device> tensor_type_a_ls;
+    Test::impl_test_iamax<tensor_type_a_ls, Device>(0);
+    Test::impl_test_iamax<tensor_type_a_ls, Device>(13);
+    Test::impl_test_iamax<tensor_type_a_ls, Device>(1024);
+    // Test::impl_test_iamax<tensor_type_a_ls, Device>(132231);
 #endif
 
     return 1;
@@ -242,27 +242,27 @@ int test_iamax() {
 template<class ScalarA, class Device>
 int test_iamax_mv() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA **, flare::LayoutLeft, Device> view_type_a_ll;
-    Test::impl_test_iamax_mv<view_type_a_ll, Device>(0, 5);
-    Test::impl_test_iamax_mv<view_type_a_ll, Device>(13, 5);
-    Test::impl_test_iamax_mv<view_type_a_ll, Device>(1024, 5);
-    // Test::impl_test_iamax_mv<view_type_a_ll, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutLeft, Device> tensor_type_a_ll;
+    Test::impl_test_iamax_mv<tensor_type_a_ll, Device>(0, 5);
+    Test::impl_test_iamax_mv<tensor_type_a_ll, Device>(13, 5);
+    Test::impl_test_iamax_mv<tensor_type_a_ll, Device>(1024, 5);
+    // Test::impl_test_iamax_mv<tensor_type_a_ll, Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA **, flare::LayoutRight, Device> view_type_a_lr;
-    Test::impl_test_iamax_mv<view_type_a_lr, Device>(0, 5);
-    Test::impl_test_iamax_mv<view_type_a_lr, Device>(13, 5);
-    Test::impl_test_iamax_mv<view_type_a_lr, Device>(1024, 5);
-    // Test::impl_test_iamax_mv<view_type_a_lr, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutRight, Device> tensor_type_a_lr;
+    Test::impl_test_iamax_mv<tensor_type_a_lr, Device>(0, 5);
+    Test::impl_test_iamax_mv<tensor_type_a_lr, Device>(13, 5);
+    Test::impl_test_iamax_mv<tensor_type_a_lr, Device>(1024, 5);
+    // Test::impl_test_iamax_mv<tensor_type_a_lr, Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA **, flare::LayoutStride, Device> view_type_a_ls;
-    Test::impl_test_iamax_mv<view_type_a_ls, Device>(0, 5);
-    Test::impl_test_iamax_mv<view_type_a_ls, Device>(13, 5);
-    Test::impl_test_iamax_mv<view_type_a_ls, Device>(1024, 5);
-    // Test::impl_test_iamax_mv<view_type_a_ls, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutStride, Device> tensor_type_a_ls;
+    Test::impl_test_iamax_mv<tensor_type_a_ls, Device>(0, 5);
+    Test::impl_test_iamax_mv<tensor_type_a_ls, Device>(13, 5);
+    Test::impl_test_iamax_mv<tensor_type_a_ls, Device>(1024, 5);
+    // Test::impl_test_iamax_mv<tensor_type_a_ls, Device>(132231,5);
 #endif
 
     return 1;

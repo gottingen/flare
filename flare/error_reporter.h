@@ -18,8 +18,8 @@
 
 #include <vector>
 #include <flare/core.h>
-#include <flare/core/tensor/view.h>
-#include <flare/dual_view.h>
+#include <flare/core/tensor/tensor.h>
+#include <flare/dual_tensor.h>
 
 namespace flare {
 namespace experimental {
@@ -38,7 +38,7 @@ class ErrorReporter {
     clear();
   }
 
-  int getCapacity() const { return m_reports.h_view.extent(0); }
+  int getCapacity() const { return m_reports.h_tensor.extent(0); }
 
   int getNumReports();
 
@@ -47,10 +47,10 @@ class ErrorReporter {
   void getReports(std::vector<int> &reporters_out,
                   std::vector<report_type> &reports_out);
   void getReports(
-      typename flare::View<int *,
+      typename flare::Tensor<int *,
                             typename DeviceType::execution_space>::HostMirror
           &reporters_out,
-      typename flare::View<report_type *,
+      typename flare::Tensor<report_type *,
                             typename DeviceType::execution_space>::HostMirror
           &reports_out);
 
@@ -64,9 +64,9 @@ class ErrorReporter {
   bool add_report(int reporter_id, report_type report) const {
     int idx = flare::atomic_fetch_add(&m_numReportsAttempted(), 1);
 
-    if (idx >= 0 && (idx < static_cast<int>(m_reports.d_view.extent(0)))) {
-      m_reporters.d_view(idx) = reporter_id;
-      m_reports.d_view(idx)   = report;
+    if (idx >= 0 && (idx < static_cast<int>(m_reports.d_tensor.extent(0)))) {
+      m_reporters.d_tensor(idx) = reporter_id;
+      m_reports.d_tensor(idx)   = report;
       return true;
     } else {
       return false;
@@ -74,21 +74,21 @@ class ErrorReporter {
   }
 
  private:
-  using reports_view_t     = flare::View<report_type *, device_type>;
-  using reports_dualview_t = flare::DualView<report_type *, device_type>;
+  using reports_tensor_t     = flare::Tensor<report_type *, device_type>;
+  using reports_dualtensor_t = flare::DualTensor<report_type *, device_type>;
 
-  using host_mirror_space = typename reports_dualview_t::host_mirror_space;
-  flare::View<int, device_type> m_numReportsAttempted;
-  reports_dualview_t m_reports;
-  flare::DualView<int *, device_type> m_reporters;
+  using host_mirror_space = typename reports_dualtensor_t::host_mirror_space;
+  flare::Tensor<int, device_type> m_numReportsAttempted;
+  reports_dualtensor_t m_reports;
+  flare::DualTensor<int *, device_type> m_reporters;
 };
 
 template <typename ReportType, typename DeviceType>
 inline int ErrorReporter<ReportType, DeviceType>::getNumReports() {
   int num_reports = 0;
   flare::deep_copy(num_reports, m_numReportsAttempted);
-  if (num_reports > static_cast<int>(m_reports.h_view.extent(0))) {
-    num_reports = m_reports.h_view.extent(0);
+  if (num_reports > static_cast<int>(m_reports.h_tensor.extent(0))) {
+    num_reports = m_reports.h_tensor.extent(0);
   }
   return num_reports;
 }
@@ -114,23 +114,23 @@ void ErrorReporter<ReportType, DeviceType>::getReports(
     m_reporters.template sync<host_mirror_space>();
 
     for (int i = 0; i < num_reports; ++i) {
-      reporters_out.push_back(m_reporters.h_view(i));
-      reports_out.push_back(m_reports.h_view(i));
+      reporters_out.push_back(m_reporters.h_tensor(i));
+      reports_out.push_back(m_reports.h_tensor(i));
     }
   }
 }
 
 template <typename ReportType, typename DeviceType>
 void ErrorReporter<ReportType, DeviceType>::getReports(
-    typename flare::View<
+    typename flare::Tensor<
         int *, typename DeviceType::execution_space>::HostMirror &reporters_out,
-    typename flare::View<report_type *,
+    typename flare::Tensor<report_type *,
                           typename DeviceType::execution_space>::HostMirror
         &reports_out) {
   int num_reports = getNumReports();
-  reporters_out   = typename flare::View<int *, DeviceType>::HostMirror(
+  reporters_out   = typename flare::Tensor<int *, DeviceType>::HostMirror(
       "ErrorReport::reporters_out", num_reports);
-  reports_out = typename flare::View<report_type *, DeviceType>::HostMirror(
+  reports_out = typename flare::Tensor<report_type *, DeviceType>::HostMirror(
       "ErrorReport::reports_out", num_reports);
 
   if (num_reports > 0) {
@@ -138,8 +138,8 @@ void ErrorReporter<ReportType, DeviceType>::getReports(
     m_reporters.template sync<host_mirror_space>();
 
     for (int i = 0; i < num_reports; ++i) {
-      reporters_out(i) = m_reporters.h_view(i);
-      reports_out(i)   = m_reports.h_view(i);
+      reporters_out(i) = m_reporters.h_tensor(i);
+      reports_out(i)   = m_reports.h_tensor(i);
     }
   }
 }

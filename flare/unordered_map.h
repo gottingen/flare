@@ -122,22 +122,22 @@ class UnorderedMapInsertResult {
 /// to perform no operation. Alternatively, the caller may select to
 /// instantiate the UnorderedMap with the AtomicAdd insert operator such that
 /// duplicate keys accumulate values into the given values array entry.
-/// \tparam ValueTypeView The UnorderedMap value array type.
+/// \tparam ValueTypeTensor The UnorderedMap value array type.
 /// \tparam ValuesIdxType The index type for lookups in the value array.
 ///
 /// Supported operations:
 ///   NoOp:      the first key inserted stores the associated value.
 ///   AtomicAdd: duplicate key insertions sum values together.
-template <class ValueTypeView, class ValuesIdxType>
+template <class ValueTypeTensor, class ValuesIdxType>
 struct UnorderedMapInsertOpTypes {
-  using value_type = typename ValueTypeView::non_const_value_type;
+  using value_type = typename ValueTypeTensor::non_const_value_type;
   struct NoOp {
     FLARE_FUNCTION
-    void op(ValueTypeView, ValuesIdxType, const value_type) const {}
+    void op(ValueTypeTensor, ValuesIdxType, const value_type) const {}
   };
   struct AtomicAdd {
     FLARE_FUNCTION
-    void op(ValueTypeView values, ValuesIdxType values_idx,
+    void op(ValueTypeTensor values, ValuesIdxType values_idx,
             const value_type v) const {
       flare::atomic_add(values.data() + values_idx, v);
     }
@@ -206,7 +206,7 @@ template <typename Key, typename Value,
 class UnorderedMap {
  private:
   using host_mirror_space =
-      typename ViewTraits<Key, Device, void, void>::host_mirror_space;
+      typename TensorTraits<Key, Device, void, void>::host_mirror_space;
 
  public:
   //! \name Public types and constants
@@ -263,31 +263,31 @@ class UnorderedMap {
 
   using impl_value_type = std::conditional_t<is_set, int, declared_value_type>;
 
-  using key_type_view = std::conditional_t<
-      is_insertable_map, View<key_type *, device_type>,
-      View<const key_type *, device_type, MemoryTraits<RandomAccess>>>;
+  using key_type_tensor = std::conditional_t<
+      is_insertable_map, Tensor<key_type *, device_type>,
+      Tensor<const key_type *, device_type, MemoryTraits<RandomAccess>>>;
 
-  using value_type_view = std::conditional_t<
+  using value_type_tensor = std::conditional_t<
       is_insertable_map || is_modifiable_map,
-      View<impl_value_type *, device_type>,
-      View<const impl_value_type *, device_type, MemoryTraits<RandomAccess>>>;
+      Tensor<impl_value_type *, device_type>,
+      Tensor<const impl_value_type *, device_type, MemoryTraits<RandomAccess>>>;
 
-  using size_type_view = std::conditional_t<
-      is_insertable_map, View<size_type *, device_type>,
-      View<const size_type *, device_type, MemoryTraits<RandomAccess>>>;
+  using size_type_tensor = std::conditional_t<
+      is_insertable_map, Tensor<size_type *, device_type>,
+      Tensor<const size_type *, device_type, MemoryTraits<RandomAccess>>>;
 
   using bitset_type = std::conditional_t<is_insertable_map, Bitset<Device>,
                                          ConstBitset<Device>>;
 
   enum { modified_idx = 0, erasable_idx = 1, failed_insert_idx = 2 };
   enum { num_scalars = 3 };
-  using scalars_view = View<int[num_scalars], LayoutLeft, device_type>;
+  using scalars_tensor = Tensor<int[num_scalars], LayoutLeft, device_type>;
 
  public:
   //! \name Public member functions
   //@{
   using default_op_type =
-      typename UnorderedMapInsertOpTypes<value_type_view, uint32_t>::NoOp;
+      typename UnorderedMapInsertOpTypes<value_type_tensor, uint32_t>::NoOp;
 
   /// \brief Constructor
   ///
@@ -304,9 +304,9 @@ class UnorderedMap {
         m_equal_to(equal_to),
         m_size("UnorderedMap size"),
         m_available_indexes(calculate_capacity(capacity_hint)),
-        m_hash_lists(view_alloc(WithoutInitializing, "UnorderedMap hash list"),
+        m_hash_lists(tensor_alloc(WithoutInitializing, "UnorderedMap hash list"),
                      detail::find_hash_size(capacity())),
-        m_next_index(view_alloc(WithoutInitializing, "UnorderedMap next index"),
+        m_next_index(tensor_alloc(WithoutInitializing, "UnorderedMap next index"),
                      capacity() + 1)  // +1 so that the *_at functions can
                                       // always return a valid reference
         ,
@@ -729,7 +729,7 @@ class UnorderedMap {
   template <typename SKey, typename SValue, typename SDevice>
   std::enable_if_t<std::is_same<std::remove_const_t<SKey>, key_type>::value &&
                    std::is_same<std::remove_const_t<SValue>, value_type>::value>
-  create_copy_view(
+  create_copy_tensor(
       UnorderedMap<SKey, SValue, SDevice, Hasher, EqualTo> const &src) {
     if (m_hash_lists.data() != src.m_hash_lists.data()) {
       insertable_map_type tmp;
@@ -739,19 +739,19 @@ class UnorderedMap {
       tmp.m_equal_to          = src.m_equal_to;
       tmp.m_size()            = src.m_size();
       tmp.m_available_indexes = bitset_type(src.capacity());
-      tmp.m_hash_lists        = size_type_view(
-          view_alloc(WithoutInitializing, "UnorderedMap hash list"),
+      tmp.m_hash_lists        = size_type_tensor(
+          tensor_alloc(WithoutInitializing, "UnorderedMap hash list"),
           src.m_hash_lists.extent(0));
-      tmp.m_next_index = size_type_view(
-          view_alloc(WithoutInitializing, "UnorderedMap next index"),
+      tmp.m_next_index = size_type_tensor(
+          tensor_alloc(WithoutInitializing, "UnorderedMap next index"),
           src.m_next_index.extent(0));
       tmp.m_keys =
-          key_type_view(view_alloc(WithoutInitializing, "UnorderedMap keys"),
+          key_type_tensor(tensor_alloc(WithoutInitializing, "UnorderedMap keys"),
                         src.m_keys.extent(0));
-      tmp.m_values = value_type_view(
-          view_alloc(WithoutInitializing, "UnorderedMap values"),
+      tmp.m_values = value_type_tensor(
+          tensor_alloc(WithoutInitializing, "UnorderedMap values"),
           src.m_values.extent(0));
-      tmp.m_scalars = scalars_view("UnorderedMap scalars");
+      tmp.m_scalars = scalars_tensor("UnorderedMap scalars");
 
       flare::deep_copy(tmp.m_available_indexes, src.m_available_indexes);
 
@@ -773,7 +773,7 @@ class UnorderedMap {
                     sizeof(int) * num_scalars);
 
       flare::fence(
-          "flare::UnorderedMap::create_copy_view: fence after copy to tmp");
+          "flare::UnorderedMap::create_copy_tensor: fence after copy to tmp");
 
       *this = tmp;
     }
@@ -830,13 +830,13 @@ class UnorderedMap {
   bool m_bounded_insert;
   hasher_type m_hasher;
   equal_to_type m_equal_to;
-  View<size_type, HostSpace> m_size;
+  Tensor<size_type, HostSpace> m_size;
   bitset_type m_available_indexes;
-  size_type_view m_hash_lists;
-  size_type_view m_next_index;
-  key_type_view m_keys;
-  value_type_view m_values;
-  scalars_view m_scalars;
+  size_type_tensor m_hash_lists;
+  size_type_tensor m_next_index;
+  key_type_tensor m_keys;
+  value_type_tensor m_values;
+  scalars_tensor m_scalars;
 
   template <typename KKey, typename VValue, typename DDevice, typename HHash,
             typename EEqualTo>
@@ -858,7 +858,7 @@ template <typename DKey, typename DT, typename DDevice, typename SKey,
 inline void deep_copy(
     UnorderedMap<DKey, DT, DDevice, Hasher, EqualTo> &dst,
     const UnorderedMap<SKey, ST, SDevice, Hasher, EqualTo> &src) {
-  dst.create_copy_view(src);
+  dst.create_copy_tensor(src);
 }
 
 }  // namespace flare

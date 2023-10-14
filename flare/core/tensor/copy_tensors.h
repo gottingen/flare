@@ -28,39 +28,39 @@
 namespace flare::detail {
 
     template<class Layout>
-    struct ViewFillLayoutSelector {
+    struct TensorFillLayoutSelector {
     };
 
     template<>
-    struct ViewFillLayoutSelector<flare::LayoutLeft> {
+    struct TensorFillLayoutSelector<flare::LayoutLeft> {
         static const flare::Iterate iterate = flare::Iterate::Left;
     };
 
     template<>
-    struct ViewFillLayoutSelector<flare::LayoutRight> {
+    struct TensorFillLayoutSelector<flare::LayoutRight> {
         static const flare::Iterate iterate = flare::Iterate::Right;
     };
 
-    template<class ViewType, class Layout, class ExecSpace, typename iType>
-    struct ViewFill<ViewType, Layout, ExecSpace, 0, iType> {
-        using ST = typename ViewType::non_const_value_type;
+    template<class TensorType, class Layout, class ExecSpace, typename iType>
+    struct TensorFill<TensorType, Layout, ExecSpace, 0, iType> {
+        using ST = typename TensorType::non_const_value_type;
 
-        ViewFill(const ViewType &a, const ST &val, const ExecSpace &space) {
-            flare::detail::DeepCopy<typename ViewType::memory_space, flare::HostSpace,
+        TensorFill(const TensorType &a, const ST &val, const ExecSpace &space) {
+            flare::detail::DeepCopy<typename TensorType::memory_space, flare::HostSpace,
                     ExecSpace>(space, a.data(), &val, sizeof(ST));
         }
     };
 
-    template<class ViewType, class Layout, class ExecSpace, typename iType>
-    struct ViewFill<ViewType, Layout, ExecSpace, 1, iType> {
-        ViewType a;
-        typename ViewType::const_value_type val;
+    template<class TensorType, class Layout, class ExecSpace, typename iType>
+    struct TensorFill<TensorType, Layout, ExecSpace, 1, iType> {
+        TensorType a;
+        typename TensorType::const_value_type val;
         using policy_type = flare::RangePolicy<ExecSpace, flare::IndexType<iType>>;
 
-        ViewFill(const ViewType &a_, typename ViewType::const_value_type &val_,
+        TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
                  const ExecSpace &space)
                 : a(a_), val(val_) {
-            flare::parallel_for("flare::ViewFill-1D",
+            flare::parallel_for("flare::TensorFill-1D",
                                 policy_type(space, 0, a.extent(0)), *this);
         }
 
@@ -68,20 +68,20 @@ namespace flare::detail {
         void operator()(const iType &i) const { a(i) = val; };
     };
 
-    template<class ViewType, class Layout, class ExecSpace, typename iType>
-    struct ViewFill<ViewType, Layout, ExecSpace, 2, iType> {
-        ViewType a;
-        typename ViewType::const_value_type val;
+    template<class TensorType, class Layout, class ExecSpace, typename iType>
+    struct TensorFill<TensorType, Layout, ExecSpace, 2, iType> {
+        TensorType a;
+        typename TensorType::const_value_type val;
 
-        using iterate_type = flare::Rank<2, ViewFillLayoutSelector<Layout>::iterate,
-                ViewFillLayoutSelector<Layout>::iterate>;
+        using iterate_type = flare::Rank<2, TensorFillLayoutSelector<Layout>::iterate,
+                TensorFillLayoutSelector<Layout>::iterate>;
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewFill(const ViewType &a_, typename ViewType::const_value_type &val_,
+        TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
                  const ExecSpace &space)
                 : a(a_), val(val_) {
-            flare::parallel_for("flare::ViewFill-2D",
+            flare::parallel_for("flare::TensorFill-2D",
                                 policy_type(space, {0, 0}, {a.extent(0), a.extent(1)}),
                                 *this);
         }
@@ -90,21 +90,21 @@ namespace flare::detail {
         void operator()(const iType &i0, const iType &i1) const { a(i0, i1) = val; };
     };
 
-    template<class ViewType, class Layout, class ExecSpace, typename iType>
-    struct ViewFill<ViewType, Layout, ExecSpace, 3, iType> {
-        ViewType a;
-        typename ViewType::const_value_type val;
+    template<class TensorType, class Layout, class ExecSpace, typename iType>
+    struct TensorFill<TensorType, Layout, ExecSpace, 3, iType> {
+        TensorType a;
+        typename TensorType::const_value_type val;
 
-        using iterate_type = flare::Rank<3, ViewFillLayoutSelector<Layout>::iterate,
-                ViewFillLayoutSelector<Layout>::iterate>;
+        using iterate_type = flare::Rank<3, TensorFillLayoutSelector<Layout>::iterate,
+                TensorFillLayoutSelector<Layout>::iterate>;
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewFill(const ViewType &a_, typename ViewType::const_value_type &val_,
+        TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
                  const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for(
-                    "flare::ViewFill-3D",
+                    "flare::TensorFill-3D",
                     policy_type(space, {0, 0, 0}, {a.extent(0), a.extent(1), a.extent(2)}),
                     *this);
         }
@@ -115,21 +115,21 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewType, class Layout, class ExecSpace, typename iType>
-    struct ViewFill<ViewType, Layout, ExecSpace, 4, iType> {
-        ViewType a;
-        typename ViewType::const_value_type val;
+    template<class TensorType, class Layout, class ExecSpace, typename iType>
+    struct TensorFill<TensorType, Layout, ExecSpace, 4, iType> {
+        TensorType a;
+        typename TensorType::const_value_type val;
 
-        using iterate_type = flare::Rank<4, ViewFillLayoutSelector<Layout>::iterate,
-                ViewFillLayoutSelector<Layout>::iterate>;
+        using iterate_type = flare::Rank<4, TensorFillLayoutSelector<Layout>::iterate,
+                TensorFillLayoutSelector<Layout>::iterate>;
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewFill(const ViewType &a_, typename ViewType::const_value_type &val_,
+        TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
                  const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for(
-                    "flare::ViewFill-4D",
+                    "flare::TensorFill-4D",
                     policy_type(space, {0, 0, 0, 0},
                                 {a.extent(0), a.extent(1), a.extent(2), a.extent(3)}),
                     *this);
@@ -142,20 +142,20 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewType, class Layout, class ExecSpace, typename iType>
-    struct ViewFill<ViewType, Layout, ExecSpace, 5, iType> {
-        ViewType a;
-        typename ViewType::const_value_type val;
+    template<class TensorType, class Layout, class ExecSpace, typename iType>
+    struct TensorFill<TensorType, Layout, ExecSpace, 5, iType> {
+        TensorType a;
+        typename TensorType::const_value_type val;
 
-        using iterate_type = flare::Rank<5, ViewFillLayoutSelector<Layout>::iterate,
-                ViewFillLayoutSelector<Layout>::iterate>;
+        using iterate_type = flare::Rank<5, TensorFillLayoutSelector<Layout>::iterate,
+                TensorFillLayoutSelector<Layout>::iterate>;
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewFill(const ViewType &a_, typename ViewType::const_value_type &val_,
+        TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
                  const ExecSpace &space)
                 : a(a_), val(val_) {
-            flare::parallel_for("flare::ViewFill-5D",
+            flare::parallel_for("flare::TensorFill-5D",
                                 policy_type(space, {0, 0, 0, 0, 0},
                                             {a.extent(0), a.extent(1), a.extent(2),
                                              a.extent(3), a.extent(4)}),
@@ -169,20 +169,20 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewType, class Layout, class ExecSpace, typename iType>
-    struct ViewFill<ViewType, Layout, ExecSpace, 6, iType> {
-        ViewType a;
-        typename ViewType::const_value_type val;
+    template<class TensorType, class Layout, class ExecSpace, typename iType>
+    struct TensorFill<TensorType, Layout, ExecSpace, 6, iType> {
+        TensorType a;
+        typename TensorType::const_value_type val;
 
-        using iterate_type = flare::Rank<6, ViewFillLayoutSelector<Layout>::iterate,
-                ViewFillLayoutSelector<Layout>::iterate>;
+        using iterate_type = flare::Rank<6, TensorFillLayoutSelector<Layout>::iterate,
+                TensorFillLayoutSelector<Layout>::iterate>;
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewFill(const ViewType &a_, typename ViewType::const_value_type &val_,
+        TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
                  const ExecSpace &space)
                 : a(a_), val(val_) {
-            flare::parallel_for("flare::ViewFill-6D",
+            flare::parallel_for("flare::TensorFill-6D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
                                             {a.extent(0), a.extent(1), a.extent(2),
                                              a.extent(3), a.extent(4), a.extent(5)}),
@@ -196,20 +196,20 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewType, class Layout, class ExecSpace, typename iType>
-    struct ViewFill<ViewType, Layout, ExecSpace, 7, iType> {
-        ViewType a;
-        typename ViewType::const_value_type val;
+    template<class TensorType, class Layout, class ExecSpace, typename iType>
+    struct TensorFill<TensorType, Layout, ExecSpace, 7, iType> {
+        TensorType a;
+        typename TensorType::const_value_type val;
 
-        using iterate_type = flare::Rank<6, ViewFillLayoutSelector<Layout>::iterate,
-                ViewFillLayoutSelector<Layout>::iterate>;
+        using iterate_type = flare::Rank<6, TensorFillLayoutSelector<Layout>::iterate,
+                TensorFillLayoutSelector<Layout>::iterate>;
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewFill(const ViewType &a_, typename ViewType::const_value_type &val_,
+        TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
                  const ExecSpace &space)
                 : a(a_), val(val_) {
-            flare::parallel_for("flare::ViewFill-7D",
+            flare::parallel_for("flare::TensorFill-7D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
                                             {a.extent(0), a.extent(1), a.extent(2),
                                              a.extent(3), a.extent(5), a.extent(6)}),
@@ -224,20 +224,20 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewType, class Layout, class ExecSpace, typename iType>
-    struct ViewFill<ViewType, Layout, ExecSpace, 8, iType> {
-        ViewType a;
-        typename ViewType::const_value_type val;
+    template<class TensorType, class Layout, class ExecSpace, typename iType>
+    struct TensorFill<TensorType, Layout, ExecSpace, 8, iType> {
+        TensorType a;
+        typename TensorType::const_value_type val;
 
-        using iterate_type = flare::Rank<6, ViewFillLayoutSelector<Layout>::iterate,
-                ViewFillLayoutSelector<Layout>::iterate>;
+        using iterate_type = flare::Rank<6, TensorFillLayoutSelector<Layout>::iterate,
+                TensorFillLayoutSelector<Layout>::iterate>;
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewFill(const ViewType &a_, typename ViewType::const_value_type &val_,
+        TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
                  const ExecSpace &space)
                 : a(a_), val(val_) {
-            flare::parallel_for("flare::ViewFill-8D",
+            flare::parallel_for("flare::TensorFill-8D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
                                             {a.extent(0), a.extent(1), a.extent(3),
                                              a.extent(5), a.extent(6), a.extent(7)}),
@@ -253,19 +253,19 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewTypeA, class ViewTypeB, class Layout, class ExecSpace,
+    template<class TensorTypeA, class TensorTypeB, class Layout, class ExecSpace,
             typename iType>
-    struct ViewCopy<ViewTypeA, ViewTypeB, Layout, ExecSpace, 1, iType> {
-        ViewTypeA a;
-        ViewTypeB b;
+    struct TensorCopy<TensorTypeA, TensorTypeB, Layout, ExecSpace, 1, iType> {
+        TensorTypeA a;
+        TensorTypeB b;
 
         using policy_type = flare::RangePolicy<ExecSpace, flare::IndexType<iType>>;
-        using value_type = typename ViewTypeA::value_type;
+        using value_type = typename TensorTypeA::value_type;
 
-        ViewCopy(const ViewTypeA &a_, const ViewTypeB &b_,
+        TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
                  const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
-            flare::parallel_for("flare::ViewCopy-1D",
+            flare::parallel_for("flare::TensorCopy-1D",
                                 policy_type(space, 0, a.extent(0)), *this);
         }
 
@@ -275,11 +275,11 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewTypeA, class ViewTypeB, class Layout, class ExecSpace,
+    template<class TensorTypeA, class TensorTypeB, class Layout, class ExecSpace,
             typename iType>
-    struct ViewCopy<ViewTypeA, ViewTypeB, Layout, ExecSpace, 2, iType> {
-        ViewTypeA a;
-        ViewTypeB b;
+    struct TensorCopy<TensorTypeA, TensorTypeB, Layout, ExecSpace, 2, iType> {
+        TensorTypeA a;
+        TensorTypeB b;
         static const flare::Iterate outer_iteration_pattern =
                 flare::layout_iterate_type_selector<Layout>::outer_iteration_pattern;
         static const flare::Iterate inner_iteration_pattern =
@@ -288,12 +288,12 @@ namespace flare::detail {
                 flare::Rank<2, outer_iteration_pattern, inner_iteration_pattern>;
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
-        using value_type = typename ViewTypeA::value_type;
+        using value_type = typename TensorTypeA::value_type;
 
-        ViewCopy(const ViewTypeA &a_, const ViewTypeB &b_,
+        TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
                  const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
-            flare::parallel_for("flare::ViewCopy-2D",
+            flare::parallel_for("flare::TensorCopy-2D",
                                 policy_type(space, {0, 0}, {a.extent(0), a.extent(1)}),
                                 *this);
         }
@@ -304,11 +304,11 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewTypeA, class ViewTypeB, class Layout, class ExecSpace,
+    template<class TensorTypeA, class TensorTypeB, class Layout, class ExecSpace,
             typename iType>
-    struct ViewCopy<ViewTypeA, ViewTypeB, Layout, ExecSpace, 3, iType> {
-        ViewTypeA a;
-        ViewTypeB b;
+    struct TensorCopy<TensorTypeA, TensorTypeB, Layout, ExecSpace, 3, iType> {
+        TensorTypeA a;
+        TensorTypeB b;
 
         static const flare::Iterate outer_iteration_pattern =
                 flare::layout_iterate_type_selector<Layout>::outer_iteration_pattern;
@@ -318,13 +318,13 @@ namespace flare::detail {
                 flare::Rank<3, outer_iteration_pattern, inner_iteration_pattern>;
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
-        using value_type = typename ViewTypeA::value_type;
+        using value_type = typename TensorTypeA::value_type;
 
-        ViewCopy(const ViewTypeA &a_, const ViewTypeB &b_,
+        TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
                  const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for(
-                    "flare::ViewCopy-3D",
+                    "flare::TensorCopy-3D",
                     policy_type(space, {0, 0, 0}, {a.extent(0), a.extent(1), a.extent(2)}),
                     *this);
         }
@@ -335,11 +335,11 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewTypeA, class ViewTypeB, class Layout, class ExecSpace,
+    template<class TensorTypeA, class TensorTypeB, class Layout, class ExecSpace,
             typename iType>
-    struct ViewCopy<ViewTypeA, ViewTypeB, Layout, ExecSpace, 4, iType> {
-        ViewTypeA a;
-        ViewTypeB b;
+    struct TensorCopy<TensorTypeA, TensorTypeB, Layout, ExecSpace, 4, iType> {
+        TensorTypeA a;
+        TensorTypeB b;
 
         static const flare::Iterate outer_iteration_pattern =
                 flare::layout_iterate_type_selector<Layout>::outer_iteration_pattern;
@@ -350,11 +350,11 @@ namespace flare::detail {
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewCopy(const ViewTypeA &a_, const ViewTypeB &b_,
+        TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
                  const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for(
-                    "flare::ViewCopy-4D",
+                    "flare::TensorCopy-4D",
                     policy_type(space, {0, 0, 0, 0},
                                 {a.extent(0), a.extent(1), a.extent(2), a.extent(3)}),
                     *this);
@@ -367,11 +367,11 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewTypeA, class ViewTypeB, class Layout, class ExecSpace,
+    template<class TensorTypeA, class TensorTypeB, class Layout, class ExecSpace,
             typename iType>
-    struct ViewCopy<ViewTypeA, ViewTypeB, Layout, ExecSpace, 5, iType> {
-        ViewTypeA a;
-        ViewTypeB b;
+    struct TensorCopy<TensorTypeA, TensorTypeB, Layout, ExecSpace, 5, iType> {
+        TensorTypeA a;
+        TensorTypeB b;
 
         static const flare::Iterate outer_iteration_pattern =
                 flare::layout_iterate_type_selector<Layout>::outer_iteration_pattern;
@@ -382,10 +382,10 @@ namespace flare::detail {
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewCopy(const ViewTypeA &a_, const ViewTypeB &b_,
+        TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
                  const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
-            flare::parallel_for("flare::ViewCopy-5D",
+            flare::parallel_for("flare::TensorCopy-5D",
                                 policy_type(space, {0, 0, 0, 0, 0},
                                             {a.extent(0), a.extent(1), a.extent(2),
                                              a.extent(3), a.extent(4)}),
@@ -399,11 +399,11 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewTypeA, class ViewTypeB, class Layout, class ExecSpace,
+    template<class TensorTypeA, class TensorTypeB, class Layout, class ExecSpace,
             typename iType>
-    struct ViewCopy<ViewTypeA, ViewTypeB, Layout, ExecSpace, 6, iType> {
-        ViewTypeA a;
-        ViewTypeB b;
+    struct TensorCopy<TensorTypeA, TensorTypeB, Layout, ExecSpace, 6, iType> {
+        TensorTypeA a;
+        TensorTypeB b;
 
         static const flare::Iterate outer_iteration_pattern =
                 flare::layout_iterate_type_selector<Layout>::outer_iteration_pattern;
@@ -414,10 +414,10 @@ namespace flare::detail {
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewCopy(const ViewTypeA &a_, const ViewTypeB &b_,
+        TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
                  const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
-            flare::parallel_for("flare::ViewCopy-6D",
+            flare::parallel_for("flare::TensorCopy-6D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
                                             {a.extent(0), a.extent(1), a.extent(2),
                                              a.extent(3), a.extent(4), a.extent(5)}),
@@ -431,11 +431,11 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewTypeA, class ViewTypeB, class Layout, class ExecSpace,
+    template<class TensorTypeA, class TensorTypeB, class Layout, class ExecSpace,
             typename iType>
-    struct ViewCopy<ViewTypeA, ViewTypeB, Layout, ExecSpace, 7, iType> {
-        ViewTypeA a;
-        ViewTypeB b;
+    struct TensorCopy<TensorTypeA, TensorTypeB, Layout, ExecSpace, 7, iType> {
+        TensorTypeA a;
+        TensorTypeB b;
 
         static const flare::Iterate outer_iteration_pattern =
                 flare::layout_iterate_type_selector<Layout>::outer_iteration_pattern;
@@ -446,10 +446,10 @@ namespace flare::detail {
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewCopy(const ViewTypeA &a_, const ViewTypeB &b_,
+        TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
                  const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
-            flare::parallel_for("flare::ViewCopy-7D",
+            flare::parallel_for("flare::TensorCopy-7D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
                                             {a.extent(0), a.extent(1), a.extent(3),
                                              a.extent(4), a.extent(5), a.extent(6)}),
@@ -464,11 +464,11 @@ namespace flare::detail {
         };
     };
 
-    template<class ViewTypeA, class ViewTypeB, class Layout, class ExecSpace,
+    template<class TensorTypeA, class TensorTypeB, class Layout, class ExecSpace,
             typename iType>
-    struct ViewCopy<ViewTypeA, ViewTypeB, Layout, ExecSpace, 8, iType> {
-        ViewTypeA a;
-        ViewTypeB b;
+    struct TensorCopy<TensorTypeA, TensorTypeB, Layout, ExecSpace, 8, iType> {
+        TensorTypeA a;
+        TensorTypeB b;
 
         static const flare::Iterate outer_iteration_pattern =
                 flare::layout_iterate_type_selector<Layout>::outer_iteration_pattern;
@@ -479,10 +479,10 @@ namespace flare::detail {
         using policy_type =
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
-        ViewCopy(const ViewTypeA &a_, const ViewTypeB &b_,
+        TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
                  const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
-            flare::parallel_for("flare::ViewCopy-8D",
+            flare::parallel_for("flare::TensorCopy-8D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
                                             {a.extent(0), a.extent(1), a.extent(3),
                                              a.extent(5), a.extent(6), a.extent(7)}),
@@ -500,7 +500,7 @@ namespace flare::detail {
 
 
     template<class ExecutionSpace, class DstType, class SrcType>
-    void view_copy(const ExecutionSpace &space, const DstType &dst,
+    void tensor_copy(const ExecutionSpace &space, const DstType &dst,
                    const SrcType &src) {
         using dst_memory_space = typename DstType::memory_space;
         using src_memory_space = typename SrcType::memory_space;
@@ -516,7 +516,7 @@ namespace flare::detail {
 
         if (!(ExecCanAccessSrc && ExecCanAccessDst)) {
             flare::detail::throw_runtime_exception(
-                    "flare::detail::view_copy called with invalid execution space");
+                    "flare::detail::tensor_copy called with invalid execution space");
         } else {
             // Figure out iteration order in case we need it
             int64_t strides[DstType::rank + 1];
@@ -548,26 +548,26 @@ namespace flare::detail {
             if ((dst.span() >= size_t(std::numeric_limits<int>::max())) ||
                 (src.span() >= size_t(std::numeric_limits<int>::max()))) {
                 if (iterate == flare::Iterate::Right)
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutRight, ExecutionSpace, DstType::rank, int64_t>(
                             dst, src, space);
                 else
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutLeft, ExecutionSpace, DstType::rank, int64_t>(
                             dst, src, space);
             } else {
                 if (iterate == flare::Iterate::Right)
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutRight, ExecutionSpace, DstType::rank, int>(dst, src,
                                                                                     space);
                 else
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutLeft, ExecutionSpace, DstType::rank, int>(dst, src,
@@ -577,7 +577,7 @@ namespace flare::detail {
     }
 
     template<class DstType, class SrcType>
-    void view_copy(const DstType &dst, const SrcType &src) {
+    void tensor_copy(const DstType &dst, const SrcType &src) {
         using dst_execution_space = typename DstType::execution_space;
         using src_execution_space = typename SrcType::execution_space;
         using dst_memory_space = typename DstType::memory_space;
@@ -635,26 +635,26 @@ namespace flare::detail {
             (src.span() >= size_t(std::numeric_limits<int>::max()))) {
             if (DstExecCanAccessSrc) {
                 if (iterate == flare::Iterate::Right)
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutRight, dst_execution_space, DstType::rank, int64_t>(
                             dst, src);
                 else
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutLeft, dst_execution_space, DstType::rank, int64_t>(
                             dst, src);
             } else {
                 if (iterate == flare::Iterate::Right)
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutRight, src_execution_space, DstType::rank, int64_t>(
                             dst, src);
                 else
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutLeft, src_execution_space, DstType::rank, int64_t>(
@@ -663,26 +663,26 @@ namespace flare::detail {
         } else {
             if (DstExecCanAccessSrc) {
                 if (iterate == flare::Iterate::Right)
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutRight, dst_execution_space, DstType::rank, int>(dst,
                                                                                          src);
                 else
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutLeft, dst_execution_space, DstType::rank, int>(dst,
                                                                                         src);
             } else {
                 if (iterate == flare::Iterate::Right)
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutRight, src_execution_space, DstType::rank, int>(dst,
                                                                                          src);
                 else
-                    flare::detail::ViewCopy<
+                    flare::detail::TensorCopy<
                             typename DstType::uniform_runtime_nomemspace_type,
                             typename SrcType::uniform_runtime_const_nomemspace_type,
                             flare::LayoutLeft, src_execution_space, DstType::rank, int>(dst,
@@ -692,56 +692,56 @@ namespace flare::detail {
     }
 
     template<class DstType, class SrcType, int Rank, class... Args>
-    struct CommonSubview;
+    struct CommonSubtensor;
 
     template<class DstType, class SrcType, class Arg0, class... Args>
-    struct CommonSubview<DstType, SrcType, 1, Arg0, Args...> {
-        using dst_subview_type = typename flare::Subview<DstType, Arg0>;
-        using src_subview_type = typename flare::Subview<SrcType, Arg0>;
-        dst_subview_type dst_sub;
-        src_subview_type src_sub;
+    struct CommonSubtensor<DstType, SrcType, 1, Arg0, Args...> {
+        using dst_subtensor_type = typename flare::Subtensor<DstType, Arg0>;
+        using src_subtensor_type = typename flare::Subtensor<SrcType, Arg0>;
+        dst_subtensor_type dst_sub;
+        src_subtensor_type src_sub;
 
-        CommonSubview(const DstType &dst, const SrcType &src, const Arg0 &arg0,
+        CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
                       Args...)
                 : dst_sub(dst, arg0), src_sub(src, arg0) {}
     };
 
     template<class DstType, class SrcType, class Arg0, class Arg1, class... Args>
-    struct CommonSubview<DstType, SrcType, 2, Arg0, Arg1, Args...> {
-        using dst_subview_type = typename flare::Subview<DstType, Arg0, Arg1>;
-        using src_subview_type = typename flare::Subview<SrcType, Arg0, Arg1>;
-        dst_subview_type dst_sub;
-        src_subview_type src_sub;
+    struct CommonSubtensor<DstType, SrcType, 2, Arg0, Arg1, Args...> {
+        using dst_subtensor_type = typename flare::Subtensor<DstType, Arg0, Arg1>;
+        using src_subtensor_type = typename flare::Subtensor<SrcType, Arg0, Arg1>;
+        dst_subtensor_type dst_sub;
+        src_subtensor_type src_sub;
 
-        CommonSubview(const DstType &dst, const SrcType &src, const Arg0 &arg0,
+        CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
                       const Arg1 &arg1, Args...)
                 : dst_sub(dst, arg0, arg1), src_sub(src, arg0, arg1) {}
     };
 
     template<class DstType, class SrcType, class Arg0, class Arg1, class Arg2,
             class... Args>
-    struct CommonSubview<DstType, SrcType, 3, Arg0, Arg1, Arg2, Args...> {
-        using dst_subview_type = typename flare::Subview<DstType, Arg0, Arg1, Arg2>;
-        using src_subview_type = typename flare::Subview<SrcType, Arg0, Arg1, Arg2>;
-        dst_subview_type dst_sub;
-        src_subview_type src_sub;
+    struct CommonSubtensor<DstType, SrcType, 3, Arg0, Arg1, Arg2, Args...> {
+        using dst_subtensor_type = typename flare::Subtensor<DstType, Arg0, Arg1, Arg2>;
+        using src_subtensor_type = typename flare::Subtensor<SrcType, Arg0, Arg1, Arg2>;
+        dst_subtensor_type dst_sub;
+        src_subtensor_type src_sub;
 
-        CommonSubview(const DstType &dst, const SrcType &src, const Arg0 &arg0,
+        CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
                       const Arg1 &arg1, const Arg2 &arg2, Args...)
                 : dst_sub(dst, arg0, arg1, arg2), src_sub(src, arg0, arg1, arg2) {}
     };
 
     template<class DstType, class SrcType, class Arg0, class Arg1, class Arg2,
             class Arg3, class... Args>
-    struct CommonSubview<DstType, SrcType, 4, Arg0, Arg1, Arg2, Arg3, Args...> {
-        using dst_subview_type =
-                typename flare::Subview<DstType, Arg0, Arg1, Arg2, Arg3>;
-        using src_subview_type =
-                typename flare::Subview<SrcType, Arg0, Arg1, Arg2, Arg3>;
-        dst_subview_type dst_sub;
-        src_subview_type src_sub;
+    struct CommonSubtensor<DstType, SrcType, 4, Arg0, Arg1, Arg2, Arg3, Args...> {
+        using dst_subtensor_type =
+                typename flare::Subtensor<DstType, Arg0, Arg1, Arg2, Arg3>;
+        using src_subtensor_type =
+                typename flare::Subtensor<SrcType, Arg0, Arg1, Arg2, Arg3>;
+        dst_subtensor_type dst_sub;
+        src_subtensor_type src_sub;
 
-        CommonSubview(const DstType &dst, const SrcType &src, const Arg0 &arg0,
+        CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
                       const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
                       const Args...)
                 : dst_sub(dst, arg0, arg1, arg2, arg3),
@@ -750,16 +750,16 @@ namespace flare::detail {
 
     template<class DstType, class SrcType, class Arg0, class Arg1, class Arg2,
             class Arg3, class Arg4, class... Args>
-    struct CommonSubview<DstType, SrcType, 5, Arg0, Arg1, Arg2, Arg3, Arg4,
+    struct CommonSubtensor<DstType, SrcType, 5, Arg0, Arg1, Arg2, Arg3, Arg4,
             Args...> {
-        using dst_subview_type =
-                typename flare::Subview<DstType, Arg0, Arg1, Arg2, Arg3, Arg4>;
-        using src_subview_type =
-                typename flare::Subview<SrcType, Arg0, Arg1, Arg2, Arg3, Arg4>;
-        dst_subview_type dst_sub;
-        src_subview_type src_sub;
+        using dst_subtensor_type =
+                typename flare::Subtensor<DstType, Arg0, Arg1, Arg2, Arg3, Arg4>;
+        using src_subtensor_type =
+                typename flare::Subtensor<SrcType, Arg0, Arg1, Arg2, Arg3, Arg4>;
+        dst_subtensor_type dst_sub;
+        src_subtensor_type src_sub;
 
-        CommonSubview(const DstType &dst, const SrcType &src, const Arg0 &arg0,
+        CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
                       const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
                       const Arg4 &arg4, const Args...)
                 : dst_sub(dst, arg0, arg1, arg2, arg3, arg4),
@@ -768,16 +768,16 @@ namespace flare::detail {
 
     template<class DstType, class SrcType, class Arg0, class Arg1, class Arg2,
             class Arg3, class Arg4, class Arg5, class... Args>
-    struct CommonSubview<DstType, SrcType, 6, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
+    struct CommonSubtensor<DstType, SrcType, 6, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
             Args...> {
-        using dst_subview_type =
-                typename flare::Subview<DstType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5>;
-        using src_subview_type =
-                typename flare::Subview<SrcType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5>;
-        dst_subview_type dst_sub;
-        src_subview_type src_sub;
+        using dst_subtensor_type =
+                typename flare::Subtensor<DstType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5>;
+        using src_subtensor_type =
+                typename flare::Subtensor<SrcType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5>;
+        dst_subtensor_type dst_sub;
+        src_subtensor_type src_sub;
 
-        CommonSubview(const DstType &dst, const SrcType &src, const Arg0 &arg0,
+        CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
                       const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
                       const Arg4 &arg4, const Arg5 &arg5, const Args...)
                 : dst_sub(dst, arg0, arg1, arg2, arg3, arg4, arg5),
@@ -786,16 +786,16 @@ namespace flare::detail {
 
     template<class DstType, class SrcType, class Arg0, class Arg1, class Arg2,
             class Arg3, class Arg4, class Arg5, class Arg6, class... Args>
-    struct CommonSubview<DstType, SrcType, 7, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
+    struct CommonSubtensor<DstType, SrcType, 7, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
             Arg6, Args...> {
-        using dst_subview_type = typename flare::Subview<DstType, Arg0, Arg1, Arg2,
+        using dst_subtensor_type = typename flare::Subtensor<DstType, Arg0, Arg1, Arg2,
                 Arg3, Arg4, Arg5, Arg6>;
-        using src_subview_type = typename flare::Subview<SrcType, Arg0, Arg1, Arg2,
+        using src_subtensor_type = typename flare::Subtensor<SrcType, Arg0, Arg1, Arg2,
                 Arg3, Arg4, Arg5, Arg6>;
-        dst_subview_type dst_sub;
-        src_subview_type src_sub;
+        dst_subtensor_type dst_sub;
+        src_subtensor_type src_sub;
 
-        CommonSubview(const DstType &dst, const SrcType &src, const Arg0 &arg0,
+        CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
                       const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
                       const Arg4 &arg4, const Arg5 &arg5, const Arg6 &arg6, Args...)
                 : dst_sub(dst, arg0, arg1, arg2, arg3, arg4, arg5, arg6),
@@ -804,18 +804,18 @@ namespace flare::detail {
 
     template<class DstType, class SrcType, class Arg0, class Arg1, class Arg2,
             class Arg3, class Arg4, class Arg5, class Arg6, class Arg7>
-    struct CommonSubview<DstType, SrcType, 8, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
+    struct CommonSubtensor<DstType, SrcType, 8, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
             Arg6, Arg7> {
-        using dst_subview_type =
-                typename flare::Subview<DstType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
+        using dst_subtensor_type =
+                typename flare::Subtensor<DstType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
                         Arg6, Arg7>;
-        using src_subview_type =
-                typename flare::Subview<SrcType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
+        using src_subtensor_type =
+                typename flare::Subtensor<SrcType, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5,
                         Arg6, Arg7>;
-        dst_subview_type dst_sub;
-        src_subview_type src_sub;
+        dst_subtensor_type dst_sub;
+        src_subtensor_type src_sub;
 
-        CommonSubview(const DstType &dst, const SrcType &src, const Arg0 &arg0,
+        CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
                       const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
                       const Arg4 &arg4, const Arg5 &arg5, const Arg6 &arg6,
                       const Arg7 &arg7)
@@ -826,36 +826,36 @@ namespace flare::detail {
     template<class DstType, class SrcType,
             class ExecSpace = typename DstType::execution_space,
             int Rank = DstType::rank>
-    struct ViewRemap;
+    struct TensorRemap;
 
     template<class DstType, class SrcType, class ExecSpace>
-    struct ViewRemap<DstType, SrcType, ExecSpace, 1> {
+    struct TensorRemap<DstType, SrcType, ExecSpace, 1> {
         using p_type = flare::pair<int64_t, int64_t>;
 
         template<typename... OptExecSpace>
-        ViewRemap(const DstType &dst, const SrcType &src,
+        TensorRemap(const DstType &dst, const SrcType &src,
                   const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
                     "OptExecSpace must be either empty or be an execution space!");
 
             if (dst.extent(0) == src.extent(0)) {
-                view_copy(exec_space..., dst, src);
+                tensor_copy(exec_space..., dst, src);
             } else {
                 p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
-                using sv_adapter_type = CommonSubview<DstType, SrcType, 1, p_type>;
-                sv_adapter_type common_subview(dst, src, ext0);
-                view_copy(exec_space..., common_subview.dst_sub, common_subview.src_sub);
+                using sv_adapter_type = CommonSubtensor<DstType, SrcType, 1, p_type>;
+                sv_adapter_type common_subtensor(dst, src, ext0);
+                tensor_copy(exec_space..., common_subtensor.dst_sub, common_subtensor.src_sub);
             }
         }
     };
 
     template<class DstType, class SrcType, class ExecSpace>
-    struct ViewRemap<DstType, SrcType, ExecSpace, 2> {
+    struct TensorRemap<DstType, SrcType, ExecSpace, 2> {
         using p_type = flare::pair<int64_t, int64_t>;
 
         template<typename... OptExecSpace>
-        ViewRemap(const DstType &dst, const SrcType &src,
+        TensorRemap(const DstType &dst, const SrcType &src,
                   const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
@@ -863,42 +863,42 @@ namespace flare::detail {
 
             if (dst.extent(0) == src.extent(0)) {
                 if (dst.extent(1) == src.extent(1)) {
-                    view_copy(exec_space..., dst, src);
+                    tensor_copy(exec_space..., dst, src);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 2, flare::ALL_t, p_type>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                            CommonSubtensor<DstType, SrcType, 2, flare::ALL_t, p_type>;
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(1) == src.extent(1)) {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 2, p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, ext0, flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                            CommonSubtensor<DstType, SrcType, 2, p_type, flare::ALL_t>;
+                    sv_adapter_type common_subtensor(dst, src, ext0, flare::ALL);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 2, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                            CommonSubtensor<DstType, SrcType, 2, p_type, p_type>;
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             }
         }
     };
 
     template<class DstType, class SrcType, class ExecSpace>
-    struct ViewRemap<DstType, SrcType, ExecSpace, 3> {
+    struct TensorRemap<DstType, SrcType, ExecSpace, 3> {
         using p_type = flare::pair<int64_t, int64_t>;
 
         template<typename... OptExecSpace>
-        ViewRemap(const DstType &dst, const SrcType &src,
+        TensorRemap(const DstType &dst, const SrcType &src,
                   const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
@@ -908,50 +908,50 @@ namespace flare::detail {
                 if (dst.extent(2) == src.extent(2)) {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 3, flare::ALL_t, p_type,
+                            CommonSubtensor<DstType, SrcType, 3, flare::ALL_t, p_type,
                                     flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1,
                                                    flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 3, flare::ALL_t, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                            CommonSubtensor<DstType, SrcType, 3, flare::ALL_t, p_type, p_type>;
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(2) == src.extent(2)) {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 3, p_type, p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                            CommonSubtensor<DstType, SrcType, 3, p_type, p_type, flare::ALL_t>;
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, flare::ALL);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 3, p_type, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                            CommonSubtensor<DstType, SrcType, 3, p_type, p_type, p_type>;
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             }
         }
     };
 
     template<class DstType, class SrcType, class ExecSpace>
-    struct ViewRemap<DstType, SrcType, ExecSpace, 4> {
+    struct TensorRemap<DstType, SrcType, ExecSpace, 4> {
         using p_type = flare::pair<int64_t, int64_t>;
 
         template<typename... OptExecSpace>
-        ViewRemap(const DstType &dst, const SrcType &src,
+        TensorRemap(const DstType &dst, const SrcType &src,
                   const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
@@ -962,54 +962,54 @@ namespace flare::detail {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 4, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 4, flare::ALL_t, p_type, p_type,
                                     flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2,
                                                    flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
                     p_type ext3(0, std::min(dst.extent(3), src.extent(3)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 4, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 4, flare::ALL_t, p_type, p_type,
                                     p_type>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2, ext3);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(7) == src.extent(7)) {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
-                    using sv_adapter_type = CommonSubview<DstType, SrcType, 4, p_type,
+                    using sv_adapter_type = CommonSubtensor<DstType, SrcType, 4, p_type,
                             p_type, p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, flare::ALL);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
                     p_type ext3(0, std::min(dst.extent(3), src.extent(3)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 4, p_type, p_type, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, ext3);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                            CommonSubtensor<DstType, SrcType, 4, p_type, p_type, p_type, p_type>;
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             }
         }
     };
 
     template<class DstType, class SrcType, class ExecSpace>
-    struct ViewRemap<DstType, SrcType, ExecSpace, 5> {
+    struct TensorRemap<DstType, SrcType, ExecSpace, 5> {
         using p_type = flare::pair<int64_t, int64_t>;
 
         template<typename... OptExecSpace>
-        ViewRemap(const DstType &dst, const SrcType &src,
+        TensorRemap(const DstType &dst, const SrcType &src,
                   const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
@@ -1021,24 +1021,24 @@ namespace flare::detail {
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
                     p_type ext3(0, std::min(dst.extent(3), src.extent(3)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 5, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 5, flare::ALL_t, p_type, p_type,
                                     p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2, ext3,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
                                                    flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
                     p_type ext3(0, std::min(dst.extent(3), src.extent(3)));
                     p_type ext4(0, std::min(dst.extent(4), src.extent(4)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 5, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 5, flare::ALL_t, p_type, p_type,
                                     p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2, ext3,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
                                                    ext4);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(4) == src.extent(4)) {
@@ -1047,34 +1047,34 @@ namespace flare::detail {
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
                     p_type ext3(0, std::min(dst.extent(3), src.extent(3)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 5, p_type, p_type, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 5, p_type, p_type, p_type, p_type,
                                     flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, ext3,
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3,
                                                    flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
                     p_type ext3(0, std::min(dst.extent(3), src.extent(3)));
                     p_type ext4(0, std::min(dst.extent(4), src.extent(4)));
-                    using sv_adapter_type = CommonSubview<DstType, SrcType, 5, p_type,
+                    using sv_adapter_type = CommonSubtensor<DstType, SrcType, 5, p_type,
                             p_type, p_type, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, ext3, ext4);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             }
         }
     };
 
     template<class DstType, class SrcType, class ExecSpace>
-    struct ViewRemap<DstType, SrcType, ExecSpace, 6> {
+    struct TensorRemap<DstType, SrcType, ExecSpace, 6> {
         using p_type = flare::pair<int64_t, int64_t>;
 
         template<typename... OptExecSpace>
-        ViewRemap(const DstType &dst, const SrcType &src,
+        TensorRemap(const DstType &dst, const SrcType &src,
                   const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
@@ -1087,12 +1087,12 @@ namespace flare::detail {
                     p_type ext3(0, std::min(dst.extent(3), src.extent(3)));
                     p_type ext4(0, std::min(dst.extent(4), src.extent(4)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 6, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 6, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2, ext3,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
                                                    ext4, flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
@@ -1100,12 +1100,12 @@ namespace flare::detail {
                     p_type ext4(0, std::min(dst.extent(4), src.extent(4)));
                     p_type ext5(0, std::min(dst.extent(5), src.extent(5)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 6, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 6, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2, ext3,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
                                                    ext4, ext5);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(5) == src.extent(5)) {
@@ -1116,12 +1116,12 @@ namespace flare::detail {
                     p_type ext4(0, std::min(dst.extent(4), src.extent(4)));
 
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 6, p_type, p_type, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 6, p_type, p_type, p_type, p_type,
                                     p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, ext3, ext4,
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
                                                    flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -1131,23 +1131,23 @@ namespace flare::detail {
                     p_type ext5(0, std::min(dst.extent(5), src.extent(5)));
 
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 6, p_type, p_type, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 6, p_type, p_type, p_type, p_type,
                                     p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, ext3, ext4,
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
                                                    ext5);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             }
         }
     };
 
     template<class DstType, class SrcType, class ExecSpace>
-    struct ViewRemap<DstType, SrcType, ExecSpace, 7> {
+    struct TensorRemap<DstType, SrcType, ExecSpace, 7> {
         using p_type = flare::pair<int64_t, int64_t>;
 
         template<typename... OptExecSpace>
-        ViewRemap(const DstType &dst, const SrcType &src,
+        TensorRemap(const DstType &dst, const SrcType &src,
                   const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
@@ -1161,12 +1161,12 @@ namespace flare::detail {
                     p_type ext4(0, std::min(dst.extent(4), src.extent(4)));
                     p_type ext5(0, std::min(dst.extent(5), src.extent(5)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 7, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 7, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2, ext3,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
                                                    ext4, ext5, flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
@@ -1175,12 +1175,12 @@ namespace flare::detail {
                     p_type ext5(0, std::min(dst.extent(5), src.extent(5)));
                     p_type ext6(0, std::min(dst.extent(6), src.extent(6)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 7, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 7, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2, ext3,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
                                                    ext4, ext5, ext6);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(6) == src.extent(6)) {
@@ -1191,12 +1191,12 @@ namespace flare::detail {
                     p_type ext4(0, std::min(dst.extent(4), src.extent(4)));
                     p_type ext5(0, std::min(dst.extent(5), src.extent(5)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 7, p_type, p_type, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 7, p_type, p_type, p_type, p_type,
                                     p_type, p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, ext3, ext4,
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
                                                    ext5, flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -1206,23 +1206,23 @@ namespace flare::detail {
                     p_type ext5(0, std::min(dst.extent(5), src.extent(5)));
                     p_type ext6(0, std::min(dst.extent(6), src.extent(6)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 7, p_type, p_type, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 7, p_type, p_type, p_type, p_type,
                                     p_type, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, ext3, ext4,
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
                                                    ext5, ext6);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             }
         }
     };
 
     template<class DstType, class SrcType, class ExecSpace>
-    struct ViewRemap<DstType, SrcType, ExecSpace, 8> {
+    struct TensorRemap<DstType, SrcType, ExecSpace, 8> {
         using p_type = flare::pair<int64_t, int64_t>;
 
         template<typename... OptExecSpace>
-        ViewRemap(const DstType &dst, const SrcType &src,
+        TensorRemap(const DstType &dst, const SrcType &src,
                   const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
@@ -1237,12 +1237,12 @@ namespace flare::detail {
                     p_type ext5(0, std::min(dst.extent(5), src.extent(5)));
                     p_type ext6(0, std::min(dst.extent(6), src.extent(6)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 8, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 8, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type, p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2, ext3,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
                                                    ext4, ext5, ext6, flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
@@ -1252,12 +1252,12 @@ namespace flare::detail {
                     p_type ext6(0, std::min(dst.extent(6), src.extent(6)));
                     p_type ext7(0, std::min(dst.extent(7), src.extent(7)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 8, flare::ALL_t, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 8, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, flare::ALL, ext1, ext2, ext3,
+                    sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
                                                    ext4, ext5, ext6, ext7);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(7) == src.extent(7)) {
@@ -1269,12 +1269,12 @@ namespace flare::detail {
                     p_type ext5(0, std::min(dst.extent(5), src.extent(5)));
                     p_type ext6(0, std::min(dst.extent(6), src.extent(6)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 8, p_type, p_type, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 8, p_type, p_type, p_type, p_type,
                                     p_type, p_type, p_type, flare::ALL_t>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, ext3, ext4,
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
                                                    ext5, ext6, flare::ALL);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -1285,12 +1285,12 @@ namespace flare::detail {
                     p_type ext6(0, std::min(dst.extent(6), src.extent(6)));
                     p_type ext7(0, std::min(dst.extent(7), src.extent(7)));
                     using sv_adapter_type =
-                            CommonSubview<DstType, SrcType, 8, p_type, p_type, p_type, p_type,
+                            CommonSubtensor<DstType, SrcType, 8, p_type, p_type, p_type, p_type,
                                     p_type, p_type, p_type, p_type>;
-                    sv_adapter_type common_subview(dst, src, ext0, ext1, ext2, ext3, ext4,
+                    sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
                                                    ext5, ext6, ext7);
-                    view_copy(exec_space..., common_subview.dst_sub,
-                              common_subview.src_sub);
+                    tensor_copy(exec_space..., common_subtensor.dst_sub,
+                              common_subtensor.src_sub);
                 }
             }
         }
@@ -1298,54 +1298,54 @@ namespace flare::detail {
 
     template<typename ExecutionSpace, class DT, class... DP>
     inline void contiguous_fill(
-            const ExecutionSpace &exec_space, const View<DT, DP...> &dst,
-            typename ViewTraits<DT, DP...>::const_value_type &value) {
-        using ViewType = View<DT, DP...>;
-        using ViewTypeFlat = flare::View<
-                typename ViewType::value_type *, flare::LayoutRight,
-                flare::Device<typename ViewType::execution_space,
-                        std::conditional_t<ViewType::rank == 0,
-                                typename ViewType::memory_space,
+            const ExecutionSpace &exec_space, const Tensor<DT, DP...> &dst,
+            typename TensorTraits<DT, DP...>::const_value_type &value) {
+        using TensorType = Tensor<DT, DP...>;
+        using TensorTypeFlat = flare::Tensor<
+                typename TensorType::value_type *, flare::LayoutRight,
+                flare::Device<typename TensorType::execution_space,
+                        std::conditional_t<TensorType::rank == 0,
+                                typename TensorType::memory_space,
                                 flare::AnonymousSpace>>,
                 flare::MemoryTraits<0>>;
 
-        ViewTypeFlat dst_flat(dst.data(), dst.size());
+        TensorTypeFlat dst_flat(dst.data(), dst.size());
         if (dst.span() < static_cast<size_t>(std::numeric_limits<int>::max())) {
-            flare::detail::ViewFill<ViewTypeFlat, flare::LayoutRight, ExecutionSpace,
-                    ViewTypeFlat::rank, int>(dst_flat, value,
+            flare::detail::TensorFill<TensorTypeFlat, flare::LayoutRight, ExecutionSpace,
+                    TensorTypeFlat::rank, int>(dst_flat, value,
                                              exec_space);
         } else
-            flare::detail::ViewFill<ViewTypeFlat, flare::LayoutRight, ExecutionSpace,
-                    ViewTypeFlat::rank, int64_t>(dst_flat, value,
+            flare::detail::TensorFill<TensorTypeFlat, flare::LayoutRight, ExecutionSpace,
+                    TensorTypeFlat::rank, int64_t>(dst_flat, value,
                                                  exec_space);
     }
 
 // Default implementation for execution spaces that don't provide a definition
-    template<typename ExecutionSpace, class ViewType>
+    template<typename ExecutionSpace, class TensorType>
     struct ZeroMemset {
-        ZeroMemset(const ExecutionSpace &exec_space, const ViewType &dst,
-                   typename ViewType::const_value_type &value) {
+        ZeroMemset(const ExecutionSpace &exec_space, const TensorType &dst,
+                   typename TensorType::const_value_type &value) {
             contiguous_fill(exec_space, dst, value);
         }
 
-        ZeroMemset(const ViewType &dst, typename ViewType::const_value_type &value) {
+        ZeroMemset(const TensorType &dst, typename TensorType::const_value_type &value) {
             contiguous_fill(ExecutionSpace(), dst, value);
         }
     };
 
     template<typename ExecutionSpace, class DT, class... DP>
     inline std::enable_if_t<
-            std::is_trivial<typename ViewTraits<DT, DP...>::value_type>::value &&
+            std::is_trivial<typename TensorTraits<DT, DP...>::value_type>::value &&
             std::is_trivially_copy_assignable<
-                    typename ViewTraits<DT, DP...>::value_type>::value>
+                    typename TensorTraits<DT, DP...>::value_type>::value>
     contiguous_fill_or_memset(
-            const ExecutionSpace &exec_space, const View<DT, DP...> &dst,
-            typename ViewTraits<DT, DP...>::const_value_type &value) {
+            const ExecutionSpace &exec_space, const Tensor<DT, DP...> &dst,
+            typename TensorTraits<DT, DP...>::const_value_type &value) {
 // On A64FX memset seems to do the wrong thing with regards to first touch
 // leading to the significant performance issues
 #ifndef FLARE_ARCH_A64FX
         if (detail::is_zero_byte(value))
-            ZeroMemset<ExecutionSpace, View<DT, DP...>>(exec_space, dst, value);
+            ZeroMemset<ExecutionSpace, Tensor<DT, DP...>>(exec_space, dst, value);
         else
 #endif
             contiguous_fill(exec_space, dst, value);
@@ -1353,31 +1353,31 @@ namespace flare::detail {
 
     template<typename ExecutionSpace, class DT, class... DP>
     inline std::enable_if_t<
-            !(std::is_trivial<typename ViewTraits<DT, DP...>::value_type>::value &&
+            !(std::is_trivial<typename TensorTraits<DT, DP...>::value_type>::value &&
               std::is_trivially_copy_assignable<
-                      typename ViewTraits<DT, DP...>::value_type>::value)>
+                      typename TensorTraits<DT, DP...>::value_type>::value)>
     contiguous_fill_or_memset(
-            const ExecutionSpace &exec_space, const View<DT, DP...> &dst,
-            typename ViewTraits<DT, DP...>::const_value_type &value) {
+            const ExecutionSpace &exec_space, const Tensor<DT, DP...> &dst,
+            typename TensorTraits<DT, DP...>::const_value_type &value) {
         contiguous_fill(exec_space, dst, value);
     }
 
     template<class DT, class... DP>
     inline std::enable_if_t<
-            std::is_trivial<typename ViewTraits<DT, DP...>::value_type>::value &&
+            std::is_trivial<typename TensorTraits<DT, DP...>::value_type>::value &&
             std::is_trivially_copy_assignable<
-                    typename ViewTraits<DT, DP...>::value_type>::value>
+                    typename TensorTraits<DT, DP...>::value_type>::value>
     contiguous_fill_or_memset(
-            const View<DT, DP...> &dst,
-            typename ViewTraits<DT, DP...>::const_value_type &value) {
-        using ViewType = View<DT, DP...>;
-        using exec_space_type = typename ViewType::execution_space;
+            const Tensor<DT, DP...> &dst,
+            typename TensorTraits<DT, DP...>::const_value_type &value) {
+        using TensorType = Tensor<DT, DP...>;
+        using exec_space_type = typename TensorType::execution_space;
 
 // On A64FX memset seems to do the wrong thing with regards to first touch
 // leading to the significant performance issues
 #ifndef FLARE_ARCH_A64FX
         if (detail::is_zero_byte(value))
-            ZeroMemset<exec_space_type, View<DT, DP...>>(dst, value);
+            ZeroMemset<exec_space_type, Tensor<DT, DP...>>(dst, value);
         else
 #endif
             contiguous_fill(exec_space_type(), dst, value);
@@ -1385,36 +1385,36 @@ namespace flare::detail {
 
     template<class DT, class... DP>
     inline std::enable_if_t<
-            !(std::is_trivial<typename ViewTraits<DT, DP...>::value_type>::value &&
+            !(std::is_trivial<typename TensorTraits<DT, DP...>::value_type>::value &&
               std::is_trivially_copy_assignable<
-                      typename ViewTraits<DT, DP...>::value_type>::value)>
+                      typename TensorTraits<DT, DP...>::value_type>::value)>
     contiguous_fill_or_memset(
-            const View<DT, DP...> &dst,
-            typename ViewTraits<DT, DP...>::const_value_type &value) {
-        using ViewType = View<DT, DP...>;
-        using exec_space_type = typename ViewType::execution_space;
+            const Tensor<DT, DP...> &dst,
+            typename TensorTraits<DT, DP...>::const_value_type &value) {
+        using TensorType = Tensor<DT, DP...>;
+        using exec_space_type = typename TensorType::execution_space;
 
         contiguous_fill(exec_space_type(), dst, value);
     }
 }  // namespace flare::detail
 
 namespace flare {
-    /** \brief  Deep copy a value from Host memory into a view.  */
+    /** \brief  Deep copy a value from Host memory into a tensor.  */
     template<class DT, class... DP>
     inline void deep_copy(
-            const View<DT, DP...> &dst,
-            typename ViewTraits<DT, DP...>::const_value_type &value,
-            std::enable_if_t<std::is_same<typename ViewTraits<DT, DP...>::specialize,
+            const Tensor<DT, DP...> &dst,
+            typename TensorTraits<DT, DP...>::const_value_type &value,
+            std::enable_if_t<std::is_same<typename TensorTraits<DT, DP...>::specialize,
                     void>::value> * = nullptr) {
-        using ViewType = View<DT, DP...>;
-        using exec_space_type = typename ViewType::execution_space;
+        using TensorType = Tensor<DT, DP...>;
+        using exec_space_type = typename TensorType::execution_space;
 
         if (flare::Tools::experimental::get_callbacks().begin_deep_copy != nullptr) {
             flare::Profiling::beginDeepCopy(
-                    flare::Profiling::make_space_handle(ViewType::memory_space::name()),
+                    flare::Profiling::make_space_handle(TensorType::memory_space::name()),
                     dst.label(), dst.data(),
                     flare::Profiling::make_space_handle(flare::HostSpace::name()),
-                    "Scalar", &value, dst.span() * sizeof(typename ViewType::value_type));
+                    "Scalar", &value, dst.span() * sizeof(typename TensorType::value_type));
         }
 
         if (dst.data() == nullptr) {
@@ -1427,8 +1427,8 @@ namespace flare {
         }
 
         flare::fence("flare::deep_copy: scalar copy, pre copy fence");
-        static_assert(std::is_same<typename ViewType::non_const_value_type,
-                              typename ViewType::value_type>::value,
+        static_assert(std::is_same<typename TensorType::non_const_value_type,
+                              typename TensorType::value_type>::value,
                       "deep_copy requires non-const type");
 
         // If contiguous we can simply do a 1D flat loop or use memset
@@ -1441,53 +1441,53 @@ namespace flare {
             return;
         }
 
-        // Figure out iteration order to do the ViewFill
-        int64_t strides[ViewType::rank + 1];
+        // Figure out iteration order to do the TensorFill
+        int64_t strides[TensorType::rank + 1];
         dst.stride(strides);
         flare::Iterate iterate;
-        if (std::is_same<typename ViewType::array_layout,
+        if (std::is_same<typename TensorType::array_layout,
                 flare::LayoutRight>::value) {
             iterate = flare::Iterate::Right;
-        } else if (std::is_same<typename ViewType::array_layout,
+        } else if (std::is_same<typename TensorType::array_layout,
                 flare::LayoutLeft>::value) {
             iterate = flare::Iterate::Left;
-        } else if (std::is_same<typename ViewType::array_layout,
+        } else if (std::is_same<typename TensorType::array_layout,
                 flare::LayoutStride>::value) {
-            if (strides[0] > strides[ViewType::rank > 0 ? ViewType::rank - 1 : 0])
+            if (strides[0] > strides[TensorType::rank > 0 ? TensorType::rank - 1 : 0])
                 iterate = flare::Iterate::Right;
             else
                 iterate = flare::Iterate::Left;
         } else {
-            if (std::is_same<typename ViewType::execution_space::array_layout,
+            if (std::is_same<typename TensorType::execution_space::array_layout,
                     flare::LayoutRight>::value)
                 iterate = flare::Iterate::Right;
             else
                 iterate = flare::Iterate::Left;
         }
 
-        // Lets call the right ViewFill functor based on integer space needed and
+        // Lets call the right TensorFill functor based on integer space needed and
         // iteration type
-        using ViewTypeUniform =
-                std::conditional_t<ViewType::rank == 0,
-                        typename ViewType::uniform_runtime_type,
-                        typename ViewType::uniform_runtime_nomemspace_type>;
+        using TensorTypeUniform =
+                std::conditional_t<TensorType::rank == 0,
+                        typename TensorType::uniform_runtime_type,
+                        typename TensorType::uniform_runtime_nomemspace_type>;
         if (dst.span() > static_cast<size_t>(std::numeric_limits<int>::max())) {
             if (iterate == flare::Iterate::Right)
-                flare::detail::ViewFill<ViewTypeUniform, flare::LayoutRight,
-                        exec_space_type, ViewType::rank, int64_t>(
+                flare::detail::TensorFill<TensorTypeUniform, flare::LayoutRight,
+                        exec_space_type, TensorType::rank, int64_t>(
                         dst, value, exec_space_type());
             else
-                flare::detail::ViewFill<ViewTypeUniform, flare::LayoutLeft,
-                        exec_space_type, ViewType::rank, int64_t>(
+                flare::detail::TensorFill<TensorTypeUniform, flare::LayoutLeft,
+                        exec_space_type, TensorType::rank, int64_t>(
                         dst, value, exec_space_type());
         } else {
             if (iterate == flare::Iterate::Right)
-                flare::detail::ViewFill<ViewTypeUniform, flare::LayoutRight,
-                        exec_space_type, ViewType::rank, int>(
+                flare::detail::TensorFill<TensorTypeUniform, flare::LayoutRight,
+                        exec_space_type, TensorType::rank, int>(
                         dst, value, exec_space_type());
             else
-                flare::detail::ViewFill<ViewTypeUniform, flare::LayoutLeft,
-                        exec_space_type, ViewType::rank, int>(
+                flare::detail::TensorFill<TensorTypeUniform, flare::LayoutLeft,
+                        exec_space_type, TensorType::rank, int>(
                         dst, value, exec_space_type());
         }
         flare::fence("flare::deep_copy: scalar copy, post copy fence");
@@ -1497,18 +1497,18 @@ namespace flare {
         }
     }
 
-/** \brief  Deep copy into a value in Host memory from a view.  */
+/** \brief  Deep copy into a value in Host memory from a tensor.  */
     template<class ST, class... SP>
     inline void deep_copy(
-            typename ViewTraits<ST, SP...>::non_const_value_type &dst,
-            const View<ST, SP...> &src,
-            std::enable_if_t<std::is_same<typename ViewTraits<ST, SP...>::specialize,
+            typename TensorTraits<ST, SP...>::non_const_value_type &dst,
+            const Tensor<ST, SP...> &src,
+            std::enable_if_t<std::is_same<typename TensorTraits<ST, SP...>::specialize,
                     void>::value> * = nullptr) {
-        using src_traits = ViewTraits<ST, SP...>;
+        using src_traits = TensorTraits<ST, SP...>;
         using src_memory_space = typename src_traits::memory_space;
 
         static_assert(src_traits::rank == 0,
-                      "ERROR: Non-rank-zero view in deep_copy( value , View )");
+                      "ERROR: Non-rank-zero tensor in deep_copy( value , Tensor )");
 
         if (flare::Tools::experimental::get_callbacks().begin_deep_copy != nullptr) {
             flare::Profiling::beginDeepCopy(
@@ -1534,17 +1534,17 @@ namespace flare {
     }
 
 //----------------------------------------------------------------------------
-/** \brief  A deep copy between views of compatible type, and rank zero.  */
+/** \brief  A deep copy between tensors of compatible type, and rank zero.  */
     template<class DT, class... DP, class ST, class... SP>
     inline void deep_copy(
-            const View<DT, DP...> &dst, const View<ST, SP...> &src,
+            const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
             std::enable_if_t<
-                    (std::is_void<typename ViewTraits<DT, DP...>::specialize>::value &&
-                     std::is_void<typename ViewTraits<ST, SP...>::specialize>::value &&
-                     (unsigned(ViewTraits<DT, DP...>::rank) == unsigned(0) &&
-                      unsigned(ViewTraits<ST, SP...>::rank) == unsigned(0)))> * = nullptr) {
-        using dst_type = View<DT, DP...>;
-        using src_type = View<ST, SP...>;
+                    (std::is_void<typename TensorTraits<DT, DP...>::specialize>::value &&
+                     std::is_void<typename TensorTraits<ST, SP...>::specialize>::value &&
+                     (unsigned(TensorTraits<DT, DP...>::rank) == unsigned(0) &&
+                      unsigned(TensorTraits<ST, SP...>::rank) == unsigned(0)))> * = nullptr) {
+        using dst_type = Tensor<DT, DP...>;
+        using src_type = Tensor<ST, SP...>;
 
         using value_type = typename dst_type::value_type;
         using dst_memory_space = typename dst_type::memory_space;
@@ -1584,19 +1584,19 @@ namespace flare {
     }
 
 //----------------------------------------------------------------------------
-/** \brief  A deep copy between views of the default specialization, compatible
+/** \brief  A deep copy between tensors of the default specialization, compatible
  * type, same non-zero rank, same contiguous layout.
  */
     template<class DT, class... DP, class ST, class... SP>
     inline void deep_copy(
-            const View<DT, DP...> &dst, const View<ST, SP...> &src,
+            const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
             std::enable_if_t<
-                    (std::is_void<typename ViewTraits<DT, DP...>::specialize>::value &&
-                     std::is_void<typename ViewTraits<ST, SP...>::specialize>::value &&
-                     (unsigned(ViewTraits<DT, DP...>::rank) != 0 ||
-                      unsigned(ViewTraits<ST, SP...>::rank) != 0))> * = nullptr) {
-        using dst_type = View<DT, DP...>;
-        using src_type = View<ST, SP...>;
+                    (std::is_void<typename TensorTraits<DT, DP...>::specialize>::value &&
+                     std::is_void<typename TensorTraits<ST, SP...>::specialize>::value &&
+                     (unsigned(TensorTraits<DT, DP...>::rank) != 0 ||
+                      unsigned(TensorTraits<ST, SP...>::rank) != 0))> * = nullptr) {
+        using dst_type = Tensor<DT, DP...>;
+        using src_type = Tensor<ST, SP...>;
         using dst_execution_space = typename dst_type::execution_space;
         using src_execution_space = typename src_type::execution_space;
         using dst_memory_space = typename dst_type::memory_space;
@@ -1609,7 +1609,7 @@ namespace flare {
                       "deep_copy requires non-const destination type");
 
         static_assert((unsigned(dst_type::rank) == unsigned(src_type::rank)),
-                      "deep_copy requires Views of equal rank");
+                      "deep_copy requires Tensors of equal rank");
 
         if (flare::Tools::experimental::get_callbacks().begin_deep_copy != nullptr) {
             flare::Profiling::beginDeepCopy(
@@ -1627,7 +1627,7 @@ namespace flare {
                 (src.extent(4) != dst.extent(4)) || (src.extent(5) != dst.extent(5)) ||
                 (src.extent(6) != dst.extent(6)) || (src.extent(7) != dst.extent(7))) {
                 std::string message(
-                        "Deprecation Error: flare::deep_copy extents of views don't "
+                        "Deprecation Error: flare::deep_copy extents of tensors don't "
                         "match: ");
                 message += dst.label();
                 message += "(";
@@ -1649,7 +1649,7 @@ namespace flare {
                 flare::detail::throw_runtime_exception(message);
             }
             flare::fence(
-                    "flare::deep_copy: copy between contiguous views, fence due to null "
+                    "flare::deep_copy: copy between contiguous tensors, fence due to null "
                     "argument");
             if (flare::Tools::experimental::get_callbacks().end_deep_copy != nullptr) {
                 flare::Profiling::endDeepCopy();
@@ -1669,7 +1669,7 @@ namespace flare {
                     dst_memory_space>::accessible
         };
 
-        // Checking for Overlapping Views.
+        // Checking for Overlapping Tensors.
         dst_value_type *dst_start = dst.data();
         dst_value_type *dst_end = dst.data() + dst.span();
         src_value_type *src_start = src.data();
@@ -1678,7 +1678,7 @@ namespace flare {
             ((std::ptrdiff_t) dst_end == (std::ptrdiff_t) src_end) &&
             (dst.span_is_contiguous() && src.span_is_contiguous())) {
             flare::fence(
-                    "flare::deep_copy: copy between contiguous views, fence due to same "
+                    "flare::deep_copy: copy between contiguous tensors, fence due to same "
                     "spans");
             if (flare::Tools::experimental::get_callbacks().end_deep_copy != nullptr) {
                 flare::Profiling::endDeepCopy();
@@ -1689,7 +1689,7 @@ namespace flare {
         if ((((std::ptrdiff_t) dst_start < (std::ptrdiff_t) src_end) &&
              ((std::ptrdiff_t) dst_end > (std::ptrdiff_t) src_start)) &&
             ((dst.span_is_contiguous() && src.span_is_contiguous()))) {
-            std::string message("Error: flare::deep_copy of overlapping views: ");
+            std::string message("Error: flare::deep_copy of overlapping tensors: ");
             message += dst.label();
             message += "(";
             message += std::to_string((std::ptrdiff_t) dst_start);
@@ -1711,7 +1711,7 @@ namespace flare {
             (src.extent(4) != dst.extent(4)) || (src.extent(5) != dst.extent(5)) ||
             (src.extent(6) != dst.extent(6)) || (src.extent(7) != dst.extent(7))) {
             std::string message(
-                    "Deprecation Error: flare::deep_copy extents of views don't match: ");
+                    "Deprecation Error: flare::deep_copy extents of tensors don't match: ");
             message += dst.label();
             message += "(";
             message += std::to_string(dst.extent(0));
@@ -1751,21 +1751,21 @@ namespace flare {
             ((dst_type::rank < 8) || (dst.stride_7() == src.stride_7()))) {
             const size_t nbytes = sizeof(typename dst_type::value_type) * dst.span();
             flare::fence(
-                    "flare::deep_copy: copy between contiguous views, pre view equality "
+                    "flare::deep_copy: copy between contiguous tensors, pre tensor equality "
                     "check");
             if ((void *) dst.data() != (void *) src.data() && 0 < nbytes) {
                 flare::detail::DeepCopy<dst_memory_space, src_memory_space>(
                         dst.data(), src.data(), nbytes);
                 flare::fence(
-                        "flare::deep_copy: copy between contiguous views, post deep copy "
+                        "flare::deep_copy: copy between contiguous tensors, post deep copy "
                         "fence");
             }
         } else {
             flare::fence(
-                    "flare::deep_copy: copy between contiguous views, pre copy fence");
-            detail::view_copy(dst, src);
+                    "flare::deep_copy: copy between contiguous tensors, pre copy fence");
+            detail::tensor_copy(dst, src);
             flare::fence(
-                    "flare::deep_copy: copy between contiguous views, post copy fence");
+                    "flare::deep_copy: copy between contiguous tensors, post copy fence");
         }
         if (flare::Tools::experimental::get_callbacks().end_deep_copy != nullptr) {
             flare::Profiling::endDeepCopy();
@@ -1775,13 +1775,13 @@ namespace flare {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
     namespace experimental {
-/** \brief  A local deep copy between views of the default specialization,
+/** \brief  A local deep copy between tensors of the default specialization,
  * compatible type, same non-zero rank.
  */
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION
-        local_deep_copy_contiguous(const TeamType &team, const View<DT, DP...> &dst,
-                                   const View<ST, SP...> &src) {
+        local_deep_copy_contiguous(const TeamType &team, const Tensor<DT, DP...> &dst,
+                                   const Tensor<ST, SP...> &src) {
             flare::parallel_for(flare::TeamVectorRange(team, src.span()),
                                 [&](const int &i) { dst.data()[i] = src.data()[i]; });
         }
@@ -1789,7 +1789,7 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy_contiguous(
-                const View<DT, DP...> &dst, const View<ST, SP...> &src) {
+                const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src) {
             for (size_t i = 0; i < src.span(); ++i) {
                 dst.data()[i] = src.data()[i];
             }
@@ -1798,10 +1798,10 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 1 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 1)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 1 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 1)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -1817,10 +1817,10 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 2 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 2)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 2 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 2)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -1845,10 +1845,10 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 3 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 3)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 3 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 3)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -1875,10 +1875,10 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 4 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 4)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 4 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 4)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -1908,10 +1908,10 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 5 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 5)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 5 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 5)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -1943,10 +1943,10 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 6 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 6)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 6 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 6)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -1980,10 +1980,10 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 7 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 7)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 7 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 7)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2020,9 +2020,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst, const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 1 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 1)> * = nullptr) {
+                const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 1 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 1)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2037,9 +2037,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst, const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 2 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 2)> * = nullptr) {
+                const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 2 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 2)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2055,9 +2055,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst, const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 3 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 3)> * = nullptr) {
+                const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 3 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 3)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2075,9 +2075,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst, const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 4 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 4)> * = nullptr) {
+                const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 4 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 4)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2096,9 +2096,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst, const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 5 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 5)> * = nullptr) {
+                const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 5 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 5)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2118,9 +2118,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst, const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 6 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 6)> * = nullptr) {
+                const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 6 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 6)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2141,9 +2141,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst, const View<ST, SP...> &src,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 7 &&
-                                  unsigned(ViewTraits<ST, SP...>::rank) == 7)> * = nullptr) {
+                const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 7 &&
+                                  unsigned(TensorTraits<ST, SP...>::rank) == 7)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2164,12 +2164,12 @@ namespace flare {
         }
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-/** \brief  Deep copy a value into a view.  */
+/** \brief  Deep copy a value into a tensor.  */
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy_contiguous(
-                const TeamType &team, const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<std::is_same<typename ViewTraits<DT, DP...>::specialize,
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<std::is_same<typename TensorTraits<DT, DP...>::specialize,
                         void>::value> * = nullptr) {
             flare::parallel_for(flare::TeamVectorRange(team, dst.span()),
                                 [&](const int &i) { dst.data()[i] = value; });
@@ -2178,9 +2178,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy_contiguous(
-                const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<std::is_same<typename ViewTraits<DT, DP...>::specialize,
+                const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<std::is_same<typename TensorTraits<DT, DP...>::specialize,
                         void>::value> * = nullptr) {
             for (size_t i = 0; i < dst.span(); ++i) {
                 dst.data()[i] = value;
@@ -2190,9 +2190,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 1)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 1)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2208,9 +2208,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 2)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 2)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2235,9 +2235,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 3)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 3)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2264,9 +2264,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 4)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 4)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2296,9 +2296,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 5)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 5)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2330,9 +2330,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 6)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 6)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2366,9 +2366,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const TeamType &team, const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 7)> * = nullptr) {
+                const TeamType &team, const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 7)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2405,9 +2405,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 1)> * = nullptr) {
+                const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 1)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2422,9 +2422,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 2)> * = nullptr) {
+                const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 2)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2440,9 +2440,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 3)> * = nullptr) {
+                const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 3)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2459,9 +2459,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 4)> * = nullptr) {
+                const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 4)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2480,9 +2480,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 5)> * = nullptr) {
+                const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 5)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2502,9 +2502,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 6)> * = nullptr) {
+                const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 6)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2525,9 +2525,9 @@ namespace flare {
 //----------------------------------------------------------------------------
         template<class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
-                const View<DT, DP...> &dst,
-                typename ViewTraits<DT, DP...>::const_value_type &value,
-                std::enable_if_t<(unsigned(ViewTraits<DT, DP...>::rank) == 7)> * = nullptr) {
+                const Tensor<DT, DP...> &dst,
+                typename TensorTraits<DT, DP...>::const_value_type &value,
+                std::enable_if_t<(unsigned(TensorTraits<DT, DP...>::rank) == 7)> * = nullptr) {
             if (dst.data() == nullptr) {
                 return;
             }
@@ -2553,19 +2553,19 @@ namespace flare {
 
 namespace flare {
 
-/** \brief  Deep copy a value from Host memory into a view. ExecSpace can access
+/** \brief  Deep copy a value from Host memory into a tensor. ExecSpace can access
  * dst */
     template<class ExecSpace, class DT, class... DP>
     inline void deep_copy(
-            const ExecSpace &space, const View<DT, DP...> &dst,
-            typename ViewTraits<DT, DP...>::const_value_type &value,
+            const ExecSpace &space, const Tensor<DT, DP...> &dst,
+            typename TensorTraits<DT, DP...>::const_value_type &value,
             std::enable_if_t<
                     flare::is_execution_space<ExecSpace>::value &&
-                    std::is_void<typename ViewTraits<DT, DP...>::specialize>::value &&
-                    flare::SpaceAccessibility<ExecSpace, typename ViewTraits<DT, DP...>::
+                    std::is_void<typename TensorTraits<DT, DP...>::specialize>::value &&
+                    flare::SpaceAccessibility<ExecSpace, typename TensorTraits<DT, DP...>::
                     memory_space>::accessible> * =
             nullptr) {
-        using dst_traits = ViewTraits<DT, DP...>;
+        using dst_traits = TensorTraits<DT, DP...>;
         static_assert(std::is_same<typename dst_traits::non_const_value_type,
                               typename dst_traits::value_type>::value,
                       "deep_copy requires non-const type");
@@ -2582,51 +2582,51 @@ namespace flare {
         } else if (dst.span_is_contiguous()) {
             detail::contiguous_fill_or_memset(space, dst, value);
         } else {
-            using ViewType = View<DT, DP...>;
-            // Figure out iteration order to do the ViewFill
-            int64_t strides[ViewType::rank + 1];
+            using TensorType = Tensor<DT, DP...>;
+            // Figure out iteration order to do the TensorFill
+            int64_t strides[TensorType::rank + 1];
             dst.stride(strides);
             flare::Iterate iterate;
-            if (std::is_same<typename ViewType::array_layout,
+            if (std::is_same<typename TensorType::array_layout,
                     flare::LayoutRight>::value) {
                 iterate = flare::Iterate::Right;
-            } else if (std::is_same<typename ViewType::array_layout,
+            } else if (std::is_same<typename TensorType::array_layout,
                     flare::LayoutLeft>::value) {
                 iterate = flare::Iterate::Left;
-            } else if (std::is_same<typename ViewType::array_layout,
+            } else if (std::is_same<typename TensorType::array_layout,
                     flare::LayoutStride>::value) {
-                if (strides[0] > strides[ViewType::rank > 0 ? ViewType::rank - 1 : 0])
+                if (strides[0] > strides[TensorType::rank > 0 ? TensorType::rank - 1 : 0])
                     iterate = flare::Iterate::Right;
                 else
                     iterate = flare::Iterate::Left;
             } else {
-                if (std::is_same<typename ViewType::execution_space::array_layout,
+                if (std::is_same<typename TensorType::execution_space::array_layout,
                         flare::LayoutRight>::value)
                     iterate = flare::Iterate::Right;
                 else
                     iterate = flare::Iterate::Left;
             }
 
-            // Lets call the right ViewFill functor based on integer space needed and
+            // Lets call the right TensorFill functor based on integer space needed and
             // iteration type
-            using ViewTypeUniform =
-                    std::conditional_t<ViewType::rank == 0,
-                            typename ViewType::uniform_runtime_type,
-                            typename ViewType::uniform_runtime_nomemspace_type>;
+            using TensorTypeUniform =
+                    std::conditional_t<TensorType::rank == 0,
+                            typename TensorType::uniform_runtime_type,
+                            typename TensorType::uniform_runtime_nomemspace_type>;
             if (dst.span() > static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
                 if (iterate == flare::Iterate::Right)
-                    flare::detail::ViewFill<ViewTypeUniform, flare::LayoutRight, ExecSpace,
-                            ViewType::rank, int64_t>(dst, value, space);
+                    flare::detail::TensorFill<TensorTypeUniform, flare::LayoutRight, ExecSpace,
+                            TensorType::rank, int64_t>(dst, value, space);
                 else
-                    flare::detail::ViewFill<ViewTypeUniform, flare::LayoutLeft, ExecSpace,
-                            ViewType::rank, int64_t>(dst, value, space);
+                    flare::detail::TensorFill<TensorTypeUniform, flare::LayoutLeft, ExecSpace,
+                            TensorType::rank, int64_t>(dst, value, space);
             } else {
                 if (iterate == flare::Iterate::Right)
-                    flare::detail::ViewFill<ViewTypeUniform, flare::LayoutRight, ExecSpace,
-                            ViewType::rank, int32_t>(dst, value, space);
+                    flare::detail::TensorFill<TensorTypeUniform, flare::LayoutRight, ExecSpace,
+                            TensorType::rank, int32_t>(dst, value, space);
                 else
-                    flare::detail::ViewFill<ViewTypeUniform, flare::LayoutLeft, ExecSpace,
-                            ViewType::rank, int32_t>(dst, value, space);
+                    flare::detail::TensorFill<TensorTypeUniform, flare::LayoutLeft, ExecSpace,
+                            TensorType::rank, int32_t>(dst, value, space);
             }
         }
         if (flare::Tools::experimental::get_callbacks().end_deep_copy != nullptr) {
@@ -2634,19 +2634,19 @@ namespace flare {
         }
     }
 
-    /** \brief  Deep copy a value from Host memory into a view. ExecSpace can not
+    /** \brief  Deep copy a value from Host memory into a tensor. ExecSpace can not
      * access dst */
     template<class ExecSpace, class DT, class... DP>
     inline void deep_copy(
-            const ExecSpace &space, const View<DT, DP...> &dst,
-            typename ViewTraits<DT, DP...>::const_value_type &value,
+            const ExecSpace &space, const Tensor<DT, DP...> &dst,
+            typename TensorTraits<DT, DP...>::const_value_type &value,
             std::enable_if_t<
                     flare::is_execution_space<ExecSpace>::value &&
-                    std::is_void<typename ViewTraits<DT, DP...>::specialize>::value &&
-                    !flare::SpaceAccessibility<ExecSpace, typename ViewTraits<DT, DP...>::
+                    std::is_void<typename TensorTraits<DT, DP...>::specialize>::value &&
+                    !flare::SpaceAccessibility<ExecSpace, typename TensorTraits<DT, DP...>::
                     memory_space>::accessible> * =
             nullptr) {
-        using dst_traits = ViewTraits<DT, DP...>;
+        using dst_traits = TensorTraits<DT, DP...>;
         static_assert(std::is_same<typename dst_traits::non_const_value_type,
                               typename dst_traits::value_type>::value,
                       "deep_copy requires non-const type");
@@ -2660,41 +2660,41 @@ namespace flare {
         }
         if (dst.data() == nullptr) {
             space.fence(
-                    "flare::deep_copy: scalar-to-view copy on space, dst data is null");
+                    "flare::deep_copy: scalar-to-tensor copy on space, dst data is null");
         } else {
-            space.fence("flare::deep_copy: scalar-to-view copy on space, pre copy");
+            space.fence("flare::deep_copy: scalar-to-tensor copy on space, pre copy");
             using fill_exec_space = typename dst_traits::memory_space::execution_space;
             if (dst.span_is_contiguous()) {
                 detail::contiguous_fill_or_memset(fill_exec_space(), dst, value);
             } else {
-                using ViewTypeUniform = std::conditional_t<
-                        View<DT, DP...>::rank == 0,
-                        typename View<DT, DP...>::uniform_runtime_type,
-                        typename View<DT, DP...>::uniform_runtime_nomemspace_type>;
-                flare::detail::ViewFill<ViewTypeUniform, typename dst_traits::array_layout,
+                using TensorTypeUniform = std::conditional_t<
+                        Tensor<DT, DP...>::rank == 0,
+                        typename Tensor<DT, DP...>::uniform_runtime_type,
+                        typename Tensor<DT, DP...>::uniform_runtime_nomemspace_type>;
+                flare::detail::TensorFill<TensorTypeUniform, typename dst_traits::array_layout,
                         fill_exec_space>(dst, value, fill_exec_space());
             }
             fill_exec_space().fence(
-                    "flare::deep_copy: scalar-to-view copy on space, fence after fill");
+                    "flare::deep_copy: scalar-to-tensor copy on space, fence after fill");
         }
         if (flare::Tools::experimental::get_callbacks().end_deep_copy != nullptr) {
             flare::Profiling::endDeepCopy();
         }
     }
 
-    /** \brief  Deep copy into a value in Host memory from a view.  */
+    /** \brief  Deep copy into a value in Host memory from a tensor.  */
     template<class ExecSpace, class ST, class... SP>
     inline void deep_copy(
             const ExecSpace &exec_space,
-            typename ViewTraits<ST, SP...>::non_const_value_type &dst,
-            const View<ST, SP...> &src,
+            typename TensorTraits<ST, SP...>::non_const_value_type &dst,
+            const Tensor<ST, SP...> &src,
             std::enable_if_t<flare::is_execution_space<ExecSpace>::value &&
-                             std::is_same<typename ViewTraits<ST, SP...>::specialize,
+                             std::is_same<typename TensorTraits<ST, SP...>::specialize,
                                      void>::value> * = nullptr) {
-        using src_traits = ViewTraits<ST, SP...>;
+        using src_traits = TensorTraits<ST, SP...>;
         using src_memory_space = typename src_traits::memory_space;
         static_assert(src_traits::rank == 0,
-                      "ERROR: Non-rank-zero view in deep_copy( value , View )");
+                      "ERROR: Non-rank-zero tensor in deep_copy( value , Tensor )");
         if (flare::Tools::experimental::get_callbacks().begin_deep_copy != nullptr) {
             flare::Profiling::beginDeepCopy(
                     flare::Profiling::make_space_handle(flare::HostSpace::name()),
@@ -2705,7 +2705,7 @@ namespace flare {
 
         if (src.data() == nullptr) {
             exec_space.fence(
-                    "flare::deep_copy: view-to-scalar copy on space, src data is null");
+                    "flare::deep_copy: tensor-to-scalar copy on space, src data is null");
             if (flare::Tools::experimental::get_callbacks().end_deep_copy != nullptr) {
                 flare::Profiling::endDeepCopy();
             }
@@ -2720,19 +2720,19 @@ namespace flare {
     }
 
 //----------------------------------------------------------------------------
-/** \brief  A deep copy between views of compatible type, and rank zero.  */
+/** \brief  A deep copy between tensors of compatible type, and rank zero.  */
     template<class ExecSpace, class DT, class... DP, class ST, class... SP>
     inline void deep_copy(
-            const ExecSpace &exec_space, const View<DT, DP...> &dst,
-            const View<ST, SP...> &src,
+            const ExecSpace &exec_space, const Tensor<DT, DP...> &dst,
+            const Tensor<ST, SP...> &src,
             std::enable_if_t<
                     (flare::is_execution_space<ExecSpace>::value &&
-                     std::is_void<typename ViewTraits<DT, DP...>::specialize>::value &&
-                     std::is_void<typename ViewTraits<ST, SP...>::specialize>::value &&
-                     (unsigned(ViewTraits<DT, DP...>::rank) == unsigned(0) &&
-                      unsigned(ViewTraits<ST, SP...>::rank) == unsigned(0)))> * = nullptr) {
-        using src_traits = ViewTraits<ST, SP...>;
-        using dst_traits = ViewTraits<DT, DP...>;
+                     std::is_void<typename TensorTraits<DT, DP...>::specialize>::value &&
+                     std::is_void<typename TensorTraits<ST, SP...>::specialize>::value &&
+                     (unsigned(TensorTraits<DT, DP...>::rank) == unsigned(0) &&
+                      unsigned(TensorTraits<ST, SP...>::rank) == unsigned(0)))> * = nullptr) {
+        using src_traits = TensorTraits<ST, SP...>;
+        using dst_traits = TensorTraits<DT, DP...>;
 
         using src_memory_space = typename src_traits::memory_space;
         using dst_memory_space = typename dst_traits::memory_space;
@@ -2750,7 +2750,7 @@ namespace flare {
 
         if (dst.data() == nullptr && src.data() == nullptr) {
             exec_space.fence(
-                    "flare::deep_copy: view-to-view copy on space, data is null");
+                    "flare::deep_copy: tensor-to-tensor copy on space, data is null");
             if (flare::Tools::experimental::get_callbacks().end_deep_copy != nullptr) {
                 flare::Profiling::endDeepCopy();
             }
@@ -2768,28 +2768,28 @@ namespace flare {
     }
 
 //----------------------------------------------------------------------------
-/** \brief  A deep copy between views of the default specialization, compatible
+/** \brief  A deep copy between tensors of the default specialization, compatible
  * type, same non-zero rank
  */
     template<class ExecSpace, class DT, class... DP, class ST, class... SP>
     inline void deep_copy(
-            const ExecSpace &exec_space, const View<DT, DP...> &dst,
-            const View<ST, SP...> &src,
+            const ExecSpace &exec_space, const Tensor<DT, DP...> &dst,
+            const Tensor<ST, SP...> &src,
             std::enable_if_t<
                     (flare::is_execution_space<ExecSpace>::value &&
-                     std::is_void<typename ViewTraits<DT, DP...>::specialize>::value &&
-                     std::is_void<typename ViewTraits<ST, SP...>::specialize>::value &&
-                     (unsigned(ViewTraits<DT, DP...>::rank) != 0 ||
-                      unsigned(ViewTraits<ST, SP...>::rank) != 0))> * = nullptr) {
-        using dst_type = View<DT, DP...>;
-        using src_type = View<ST, SP...>;
+                     std::is_void<typename TensorTraits<DT, DP...>::specialize>::value &&
+                     std::is_void<typename TensorTraits<ST, SP...>::specialize>::value &&
+                     (unsigned(TensorTraits<DT, DP...>::rank) != 0 ||
+                      unsigned(TensorTraits<ST, SP...>::rank) != 0))> * = nullptr) {
+        using dst_type = Tensor<DT, DP...>;
+        using src_type = Tensor<ST, SP...>;
 
         static_assert(std::is_same<typename dst_type::value_type,
                               typename dst_type::non_const_value_type>::value,
                       "deep_copy requires non-const destination type");
 
         static_assert((unsigned(dst_type::rank) == unsigned(src_type::rank)),
-                      "deep_copy requires Views of equal rank");
+                      "deep_copy requires Tensors of equal rank");
 
         using dst_execution_space = typename dst_type::execution_space;
         using src_execution_space = typename src_type::execution_space;
@@ -2821,7 +2821,7 @@ namespace flare {
                 (src.extent(4) != dst.extent(4)) || (src.extent(5) != dst.extent(5)) ||
                 (src.extent(6) != dst.extent(6)) || (src.extent(7) != dst.extent(7))) {
                 std::string message(
-                        "Deprecation Error: flare::deep_copy extents of views don't "
+                        "Deprecation Error: flare::deep_copy extents of tensors don't "
                         "match: ");
                 message += dst.label();
                 message += "(";
@@ -2865,11 +2865,11 @@ namespace flare {
                     dst_memory_space>::accessible
         };
 
-        // Error out for non-identical overlapping views.
+        // Error out for non-identical overlapping tensors.
         if ((((std::ptrdiff_t) dst_start < (std::ptrdiff_t) src_end) &&
              ((std::ptrdiff_t) dst_end > (std::ptrdiff_t) src_start)) &&
             ((dst.span_is_contiguous() && src.span_is_contiguous()))) {
-            std::string message("Error: flare::deep_copy of overlapping views: ");
+            std::string message("Error: flare::deep_copy of overlapping tensors: ");
             message += dst.label();
             message += "(";
             message += std::to_string((std::ptrdiff_t) dst_start);
@@ -2891,7 +2891,7 @@ namespace flare {
             (src.extent(4) != dst.extent(4)) || (src.extent(5) != dst.extent(5)) ||
             (src.extent(6) != dst.extent(6)) || (src.extent(7) != dst.extent(7))) {
             std::string message(
-                    "Deprecation Error: flare::deep_copy extents of views don't match: ");
+                    "Deprecation Error: flare::deep_copy extents of tensors don't match: ");
             message += dst.label();
             message += "(";
             message += std::to_string(dst.extent(0));
@@ -2935,24 +2935,24 @@ namespace flare {
                         exec_space, dst.data(), src.data(), nbytes);
             }
         } else {
-            // Copying data between views in accessible memory spaces and either
+            // Copying data between tensors in accessible memory spaces and either
             // non-contiguous or incompatible shape.
             if (ExecCanAccessSrcDst) {
-                detail::view_copy(exec_space, dst, src);
+                detail::tensor_copy(exec_space, dst, src);
             } else if (DstExecCanAccessSrc || SrcExecCanAccessDst) {
                 using cpy_exec_space =
                         std::conditional_t<DstExecCanAccessSrc, dst_execution_space,
                                 src_execution_space>;
                 exec_space.fence(
-                        "flare::deep_copy: view-to-view noncontiguous copy on space, pre "
+                        "flare::deep_copy: tensor-to-tensor noncontiguous copy on space, pre "
                         "copy");
-                detail::view_copy(cpy_exec_space(), dst, src);
+                detail::tensor_copy(cpy_exec_space(), dst, src);
                 cpy_exec_space().fence(
-                        "flare::deep_copy: view-to-view noncontiguous copy on space, post "
+                        "flare::deep_copy: tensor-to-tensor noncontiguous copy on space, post "
                         "copy");
             } else {
                 flare::detail::throw_runtime_exception(
-                        "deep_copy given views that would require a temporary allocation");
+                        "deep_copy given tensors that would require a temporary allocation");
             }
         }
         if (flare::Tools::experimental::get_callbacks().end_deep_copy != nullptr) {
@@ -2968,11 +2968,11 @@ namespace flare {
 namespace flare {
 
     namespace detail {
-        template<typename ViewType>
-        bool size_mismatch(const ViewType &view, unsigned int max_extent,
+        template<typename TensorType>
+        bool size_mismatch(const TensorType &tensor, unsigned int max_extent,
                            const size_t new_extents[8]) {
             for (unsigned int dim = 0; dim < max_extent; ++dim)
-                if (new_extents[dim] != view.extent(dim)) {
+                if (new_extents[dim] != tensor.extent(dim)) {
                     return true;
                 }
             for (unsigned int dim = max_extent; dim < 8; ++dim)
@@ -2984,38 +2984,38 @@ namespace flare {
 
     }  // namespace detail
 
-/** \brief  Resize a view with copying old data to new data at the corresponding
+/** \brief  Resize a tensor with copying old data to new data at the corresponding
  * indices. */
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline typename std::enable_if<
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutRight>::value>::type
-    impl_resize(const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop,
-                flare::View<T, P...> &v, const size_t n0, const size_t n1,
+    impl_resize(const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
+                flare::Tensor<T, P...> &v, const size_t n0, const size_t n1,
                 const size_t n2, const size_t n3, const size_t n4, const size_t n5,
                 const size_t n6, const size_t n7) {
-        using view_type = flare::View<T, P...>;
-        using alloc_prop_input = detail::ViewCtorProp<ViewCtorArgs...>;
+        using tensor_type = flare::Tensor<T, P...>;
+        using alloc_prop_input = detail::TensorCtorProp<TensorCtorArgs...>;
 
-        static_assert(flare::ViewTraits<T, P...>::is_managed,
-                      "Can only resize managed views");
+        static_assert(flare::TensorTraits<T, P...>::is_managed,
+                      "Can only resize managed tensors");
         static_assert(!alloc_prop_input::has_label,
-                      "The view constructor arguments passed to flare::resize "
+                      "The tensor constructor arguments passed to flare::resize "
                       "must not include a label!");
         static_assert(!alloc_prop_input::has_pointer,
-                      "The view constructor arguments passed to flare::resize must "
+                      "The tensor constructor arguments passed to flare::resize must "
                       "not include a pointer!");
         static_assert(!alloc_prop_input::has_memory_space,
-                      "The view constructor arguments passed to flare::resize must "
+                      "The tensor constructor arguments passed to flare::resize must "
                       "not include a memory space instance!");
 
-        // TODO (mfh 27 Jun 2017) If the old View has enough space but just
+        // TODO (mfh 27 Jun 2017) If the old Tensor has enough space but just
         // different dimensions (e.g., if the product of the dimensions,
         // including extra space for alignment, will not change), then
         // consider just reusing storage.  For now, flare always
-        // reallocates if any of the dimensions change, even if the old View
+        // reallocates if any of the dimensions change, even if the old Tensor
         // has enough space.
 
         const size_t new_extents[8] = {n0, n1, n2, n3, n4, n5, n6, n7};
@@ -3023,30 +3023,30 @@ namespace flare {
 
         if (sizeMismatch) {
             auto prop_copy = detail::with_properties_if_unset(
-                    arg_prop, typename view_type::execution_space{}, v.label());
+                    arg_prop, typename tensor_type::execution_space{}, v.label());
 
-            view_type v_resized(prop_copy, n0, n1, n2, n3, n4, n5, n6, n7);
+            tensor_type v_resized(prop_copy, n0, n1, n2, n3, n4, n5, n6, n7);
 
             if constexpr (alloc_prop_input::has_execution_space)
-                flare::detail::ViewRemap<view_type, view_type>(
+                flare::detail::TensorRemap<tensor_type, tensor_type>(
                         v_resized, v, detail::get_property<detail::ExecutionSpaceTag>(prop_copy));
             else {
-                flare::detail::ViewRemap<view_type, view_type>(v_resized, v);
-                flare::fence("flare::resize(View)");
+                flare::detail::TensorRemap<tensor_type, tensor_type>(v_resized, v);
+                flare::fence("flare::resize(Tensor)");
             }
 
             v = v_resized;
         }
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline std::enable_if_t<
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutRight>::value>
-    resize(const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop,
-           flare::View<T, P...> &v, const size_t n0 = FLARE_IMPL_CTOR_DEFAULT_ARG,
+    resize(const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
+           flare::Tensor<T, P...> &v, const size_t n0 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n1 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n2 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n3 = FLARE_IMPL_CTOR_DEFAULT_ARG,
@@ -3059,11 +3059,11 @@ namespace flare {
 
     template<class T, class... P>
     inline std::enable_if_t<
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutRight>::value>
-    resize(flare::View<T, P...> &v, const size_t n0 = FLARE_IMPL_CTOR_DEFAULT_ARG,
+    resize(flare::Tensor<T, P...> &v, const size_t n0 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n1 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n2 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n3 = FLARE_IMPL_CTOR_DEFAULT_ARG,
@@ -3071,18 +3071,18 @@ namespace flare {
            const size_t n5 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n6 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n7 = FLARE_IMPL_CTOR_DEFAULT_ARG) {
-        impl_resize(detail::ViewCtorProp<>{}, v, n0, n1, n2, n3, n4, n5, n6, n7);
+        impl_resize(detail::TensorCtorProp<>{}, v, n0, n1, n2, n3, n4, n5, n6, n7);
     }
 
     template<class I, class T, class... P>
     inline std::enable_if_t<
-            (detail::is_view_ctor_property<I>::value ||
+            (detail::is_tensor_ctor_property<I>::value ||
              flare::is_execution_space<I>::value) &&
-            (std::is_same<typename flare::View<T, P...>::array_layout,
+            (std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-             std::is_same<typename flare::View<T, P...>::array_layout,
+             std::is_same<typename flare::Tensor<T, P...>::array_layout,
                      flare::LayoutRight>::value)>
-    resize(const I &arg_prop, flare::View<T, P...> &v,
+    resize(const I &arg_prop, flare::Tensor<T, P...> &v,
            const size_t n0 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n1 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n2 = FLARE_IMPL_CTOR_DEFAULT_ARG,
@@ -3091,47 +3091,47 @@ namespace flare {
            const size_t n5 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n6 = FLARE_IMPL_CTOR_DEFAULT_ARG,
            const size_t n7 = FLARE_IMPL_CTOR_DEFAULT_ARG) {
-        impl_resize(flare::view_alloc(arg_prop), v, n0, n1, n2, n3, n4, n5, n6, n7);
+        impl_resize(flare::tensor_alloc(arg_prop), v, n0, n1, n2, n3, n4, n5, n6, n7);
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline std::enable_if_t<
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutRight>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutStride>::value ||
-            is_layouttiled<typename flare::View<T, P...>::array_layout>::value>
-    impl_resize(const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop,
-                flare::View<T, P...> &v,
-                const typename flare::View<T, P...>::array_layout &layout) {
-        using view_type = flare::View<T, P...>;
-        using alloc_prop_input = detail::ViewCtorProp<ViewCtorArgs...>;
+            is_layouttiled<typename flare::Tensor<T, P...>::array_layout>::value>
+    impl_resize(const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
+                flare::Tensor<T, P...> &v,
+                const typename flare::Tensor<T, P...>::array_layout &layout) {
+        using tensor_type = flare::Tensor<T, P...>;
+        using alloc_prop_input = detail::TensorCtorProp<TensorCtorArgs...>;
 
-        static_assert(flare::ViewTraits<T, P...>::is_managed,
-                      "Can only resize managed views");
+        static_assert(flare::TensorTraits<T, P...>::is_managed,
+                      "Can only resize managed tensors");
         static_assert(!alloc_prop_input::has_label,
-                      "The view constructor arguments passed to flare::resize "
+                      "The tensor constructor arguments passed to flare::resize "
                       "must not include a label!");
         static_assert(!alloc_prop_input::has_pointer,
-                      "The view constructor arguments passed to flare::resize must "
+                      "The tensor constructor arguments passed to flare::resize must "
                       "not include a pointer!");
         static_assert(!alloc_prop_input::has_memory_space,
-                      "The view constructor arguments passed to flare::resize must "
+                      "The tensor constructor arguments passed to flare::resize must "
                       "not include a memory space instance!");
 
         if (v.layout() != layout) {
             auto prop_copy = detail::with_properties_if_unset(arg_prop, v.label());
 
-            view_type v_resized(prop_copy, layout);
+            tensor_type v_resized(prop_copy, layout);
 
             if constexpr (alloc_prop_input::has_execution_space)
-                flare::detail::ViewRemap<view_type, view_type>(
+                flare::detail::TensorRemap<tensor_type, tensor_type>(
                         v_resized, v, detail::get_property<detail::ExecutionSpaceTag>(arg_prop));
             else {
-                flare::detail::ViewRemap<view_type, view_type>(v_resized, v);
-                flare::fence("flare::resize(View)");
+                flare::detail::TensorRemap<tensor_type, tensor_type>(v_resized, v);
+                flare::fence("flare::resize(Tensor)");
             }
 
             v = v_resized;
@@ -3141,99 +3141,99 @@ namespace flare {
 // FIXME User-provided (custom) layouts are not required to have a comparison
 // operator. Hence, there is no way to check if the requested layout is actually
 // the same as the existing one.
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline std::enable_if_t<
-            !(std::is_same<typename flare::View<T, P...>::array_layout,
+            !(std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-              std::is_same<typename flare::View<T, P...>::array_layout,
+              std::is_same<typename flare::Tensor<T, P...>::array_layout,
                       flare::LayoutRight>::value ||
-              std::is_same<typename flare::View<T, P...>::array_layout,
+              std::is_same<typename flare::Tensor<T, P...>::array_layout,
                       flare::LayoutStride>::value ||
-              is_layouttiled<typename flare::View<T, P...>::array_layout>::value)>
-    impl_resize(const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop,
-                flare::View<T, P...> &v,
-                const typename flare::View<T, P...>::array_layout &layout) {
-        using view_type = flare::View<T, P...>;
-        using alloc_prop_input = detail::ViewCtorProp<ViewCtorArgs...>;
+              is_layouttiled<typename flare::Tensor<T, P...>::array_layout>::value)>
+    impl_resize(const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
+                flare::Tensor<T, P...> &v,
+                const typename flare::Tensor<T, P...>::array_layout &layout) {
+        using tensor_type = flare::Tensor<T, P...>;
+        using alloc_prop_input = detail::TensorCtorProp<TensorCtorArgs...>;
 
-        static_assert(flare::ViewTraits<T, P...>::is_managed,
-                      "Can only resize managed views");
+        static_assert(flare::TensorTraits<T, P...>::is_managed,
+                      "Can only resize managed tensors");
         static_assert(!alloc_prop_input::has_label,
-                      "The view constructor arguments passed to flare::resize "
+                      "The tensor constructor arguments passed to flare::resize "
                       "must not include a label!");
         static_assert(!alloc_prop_input::has_pointer,
-                      "The view constructor arguments passed to flare::resize must "
+                      "The tensor constructor arguments passed to flare::resize must "
                       "not include a pointer!");
         static_assert(!alloc_prop_input::has_memory_space,
-                      "The view constructor arguments passed to flare::resize must "
+                      "The tensor constructor arguments passed to flare::resize must "
                       "not include a memory space instance!");
 
         auto prop_copy = detail::with_properties_if_unset(arg_prop, v.label());
 
-        view_type v_resized(prop_copy, layout);
+        tensor_type v_resized(prop_copy, layout);
 
         if constexpr (alloc_prop_input::has_execution_space)
-            flare::detail::ViewRemap<view_type, view_type>(
+            flare::detail::TensorRemap<tensor_type, tensor_type>(
                     v_resized, v, detail::get_property<detail::ExecutionSpaceTag>(arg_prop));
         else {
-            flare::detail::ViewRemap<view_type, view_type>(v_resized, v);
-            flare::fence("flare::resize(View)");
+            flare::detail::TensorRemap<tensor_type, tensor_type>(v_resized, v);
+            flare::fence("flare::resize(Tensor)");
         }
 
         v = v_resized;
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
-    inline void resize(const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop,
-                       flare::View<T, P...> &v,
-                       const typename flare::View<T, P...>::array_layout &layout) {
+    template<class T, class... P, class... TensorCtorArgs>
+    inline void resize(const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
+                       flare::Tensor<T, P...> &v,
+                       const typename flare::Tensor<T, P...>::array_layout &layout) {
         impl_resize(arg_prop, v, layout);
     }
 
     template<class I, class T, class... P>
-    inline std::enable_if_t<detail::is_view_ctor_property<I>::value ||
+    inline std::enable_if_t<detail::is_tensor_ctor_property<I>::value ||
                             flare::is_execution_space<I>::value>
-    resize(const I &arg_prop, flare::View<T, P...> &v,
-           const typename flare::View<T, P...>::array_layout &layout) {
+    resize(const I &arg_prop, flare::Tensor<T, P...> &v,
+           const typename flare::Tensor<T, P...>::array_layout &layout) {
         impl_resize(arg_prop, v, layout);
     }
 
     template<class ExecutionSpace, class T, class... P>
-    inline void resize(const ExecutionSpace &exec_space, flare::View<T, P...> &v,
-                       const typename flare::View<T, P...>::array_layout &layout) {
-        impl_resize(detail::ViewCtorProp<>(), exec_space, v, layout);
+    inline void resize(const ExecutionSpace &exec_space, flare::Tensor<T, P...> &v,
+                       const typename flare::Tensor<T, P...>::array_layout &layout) {
+        impl_resize(detail::TensorCtorProp<>(), exec_space, v, layout);
     }
 
     template<class T, class... P>
-    inline void resize(flare::View<T, P...> &v,
-                       const typename flare::View<T, P...>::array_layout &layout) {
-        impl_resize(detail::ViewCtorProp<>{}, v, layout);
+    inline void resize(flare::Tensor<T, P...> &v,
+                       const typename flare::Tensor<T, P...>::array_layout &layout) {
+        impl_resize(detail::TensorCtorProp<>{}, v, layout);
     }
 
-/** \brief  Resize a view with discarding old data. */
-    template<class T, class... P, class... ViewCtorArgs>
+/** \brief  Resize a tensor with discarding old data. */
+    template<class T, class... P, class... TensorCtorArgs>
     inline std::enable_if_t<
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutRight>::value>
-    impl_realloc(flare::View<T, P...> &v, const size_t n0, const size_t n1,
+    impl_realloc(flare::Tensor<T, P...> &v, const size_t n0, const size_t n1,
                  const size_t n2, const size_t n3, const size_t n4, const size_t n5,
                  const size_t n6, const size_t n7,
-                 const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop) {
-        using view_type = flare::View<T, P...>;
-        using alloc_prop_input = detail::ViewCtorProp<ViewCtorArgs...>;
+                 const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
+        using tensor_type = flare::Tensor<T, P...>;
+        using alloc_prop_input = detail::TensorCtorProp<TensorCtorArgs...>;
 
-        static_assert(flare::ViewTraits<T, P...>::is_managed,
-                      "Can only realloc managed views");
+        static_assert(flare::TensorTraits<T, P...>::is_managed,
+                      "Can only realloc managed tensors");
         static_assert(!alloc_prop_input::has_label,
-                      "The view constructor arguments passed to flare::realloc must "
+                      "The tensor constructor arguments passed to flare::realloc must "
                       "not include a label!");
         static_assert(!alloc_prop_input::has_pointer,
-                      "The view constructor arguments passed to flare::realloc must "
+                      "The tensor constructor arguments passed to flare::realloc must "
                       "not include a pointer!");
         static_assert(!alloc_prop_input::has_memory_space,
-                      "The view constructor arguments passed to flare::realloc must "
+                      "The tensor constructor arguments passed to flare::realloc must "
                       "not include a memory space instance!");
 
         const size_t new_extents[8] = {n0, n1, n2, n3, n4, n5, n6, n7};
@@ -3241,27 +3241,27 @@ namespace flare {
 
         if (sizeMismatch) {
             auto arg_prop_copy = detail::with_properties_if_unset(arg_prop, v.label());
-            v = view_type();  // Best effort to deallocate in case no other view refers
+            v = tensor_type();  // Best effort to deallocate in case no other tensor refers
             // to the shared allocation
-            v = view_type(arg_prop_copy, n0, n1, n2, n3, n4, n5, n6, n7);
+            v = tensor_type(arg_prop_copy, n0, n1, n2, n3, n4, n5, n6, n7);
         } else if (alloc_prop_input::initialize) {
             if constexpr (alloc_prop_input::has_execution_space) {
                 const auto &exec_space =
                         detail::get_property<detail::ExecutionSpaceTag>(arg_prop);
-                flare::deep_copy(exec_space, v, typename view_type::value_type{});
+                flare::deep_copy(exec_space, v, typename tensor_type::value_type{});
             } else
-                flare::deep_copy(v, typename view_type::value_type{});
+                flare::deep_copy(v, typename tensor_type::value_type{});
         }
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline std::enable_if_t<
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutRight>::value>
-    realloc(const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop,
-            flare::View<T, P...> &v,
+    realloc(const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
+            flare::Tensor<T, P...> &v,
             const size_t n0 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n1 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n2 = FLARE_IMPL_CTOR_DEFAULT_ARG,
@@ -3275,11 +3275,11 @@ namespace flare {
 
     template<class T, class... P>
     inline std::enable_if_t<
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutRight>::value>
-    realloc(flare::View<T, P...> &v,
+    realloc(flare::Tensor<T, P...> &v,
             const size_t n0 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n1 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n2 = FLARE_IMPL_CTOR_DEFAULT_ARG,
@@ -3288,17 +3288,17 @@ namespace flare {
             const size_t n5 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n6 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n7 = FLARE_IMPL_CTOR_DEFAULT_ARG) {
-        impl_realloc(v, n0, n1, n2, n3, n4, n5, n6, n7, detail::ViewCtorProp<>{});
+        impl_realloc(v, n0, n1, n2, n3, n4, n5, n6, n7, detail::TensorCtorProp<>{});
     }
 
     template<class I, class T, class... P>
     inline std::enable_if_t<
-            detail::is_view_ctor_property<I>::value &&
-            (std::is_same<typename flare::View<T, P...>::array_layout,
+            detail::is_tensor_ctor_property<I>::value &&
+            (std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-             std::is_same<typename flare::View<T, P...>::array_layout,
+             std::is_same<typename flare::Tensor<T, P...>::array_layout,
                      flare::LayoutRight>::value)>
-    realloc(const I &arg_prop, flare::View<T, P...> &v,
+    realloc(const I &arg_prop, flare::Tensor<T, P...> &v,
             const size_t n0 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n1 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n2 = FLARE_IMPL_CTOR_DEFAULT_ARG,
@@ -3307,105 +3307,105 @@ namespace flare {
             const size_t n5 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n6 = FLARE_IMPL_CTOR_DEFAULT_ARG,
             const size_t n7 = FLARE_IMPL_CTOR_DEFAULT_ARG) {
-        impl_realloc(v, n0, n1, n2, n3, n4, n5, n6, n7, flare::view_alloc(arg_prop));
+        impl_realloc(v, n0, n1, n2, n3, n4, n5, n6, n7, flare::tensor_alloc(arg_prop));
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline std::enable_if_t<
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutRight>::value ||
-            std::is_same<typename flare::View<T, P...>::array_layout,
+            std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutStride>::value ||
-            is_layouttiled<typename flare::View<T, P...>::array_layout>::value>
-    impl_realloc(flare::View<T, P...> &v,
-                 const typename flare::View<T, P...>::array_layout &layout,
-                 const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop) {
-        using view_type = flare::View<T, P...>;
-        using alloc_prop_input = detail::ViewCtorProp<ViewCtorArgs...>;
+            is_layouttiled<typename flare::Tensor<T, P...>::array_layout>::value>
+    impl_realloc(flare::Tensor<T, P...> &v,
+                 const typename flare::Tensor<T, P...>::array_layout &layout,
+                 const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
+        using tensor_type = flare::Tensor<T, P...>;
+        using alloc_prop_input = detail::TensorCtorProp<TensorCtorArgs...>;
 
-        static_assert(flare::ViewTraits<T, P...>::is_managed,
-                      "Can only realloc managed views");
+        static_assert(flare::TensorTraits<T, P...>::is_managed,
+                      "Can only realloc managed tensors");
         static_assert(!alloc_prop_input::has_label,
-                      "The view constructor arguments passed to flare::realloc must "
+                      "The tensor constructor arguments passed to flare::realloc must "
                       "not include a label!");
         static_assert(!alloc_prop_input::has_pointer,
-                      "The view constructor arguments passed to flare::realloc must "
+                      "The tensor constructor arguments passed to flare::realloc must "
                       "not include a pointer!");
         static_assert(!alloc_prop_input::has_memory_space,
-                      "The view constructor arguments passed to flare::realloc must "
+                      "The tensor constructor arguments passed to flare::realloc must "
                       "not include a memory space instance!");
 
         if (v.layout() != layout) {
-            v = view_type();  // Deallocate first, if the only view to allocation
-            v = view_type(arg_prop, layout);
+            v = tensor_type();  // Deallocate first, if the only tensor to allocation
+            v = tensor_type(arg_prop, layout);
         } else if (alloc_prop_input::initialize) {
             if constexpr (alloc_prop_input::has_execution_space) {
                 const auto &exec_space =
                         detail::get_property<detail::ExecutionSpaceTag>(arg_prop);
-                flare::deep_copy(exec_space, v, typename view_type::value_type{});
+                flare::deep_copy(exec_space, v, typename tensor_type::value_type{});
             } else
-                flare::deep_copy(v, typename view_type::value_type{});
+                flare::deep_copy(v, typename tensor_type::value_type{});
         }
     }
 
 // FIXME User-provided (custom) layouts are not required to have a comparison
 // operator. Hence, there is no way to check if the requested layout is actually
 // the same as the existing one.
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline std::enable_if_t<
-            !(std::is_same<typename flare::View<T, P...>::array_layout,
+            !(std::is_same<typename flare::Tensor<T, P...>::array_layout,
                     flare::LayoutLeft>::value ||
-              std::is_same<typename flare::View<T, P...>::array_layout,
+              std::is_same<typename flare::Tensor<T, P...>::array_layout,
                       flare::LayoutRight>::value ||
-              std::is_same<typename flare::View<T, P...>::array_layout,
+              std::is_same<typename flare::Tensor<T, P...>::array_layout,
                       flare::LayoutStride>::value ||
-              is_layouttiled<typename flare::View<T, P...>::array_layout>::value)>
-    impl_realloc(flare::View<T, P...> &v,
-                 const typename flare::View<T, P...>::array_layout &layout,
-                 const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop) {
-        using view_type = flare::View<T, P...>;
-        using alloc_prop_input = detail::ViewCtorProp<ViewCtorArgs...>;
+              is_layouttiled<typename flare::Tensor<T, P...>::array_layout>::value)>
+    impl_realloc(flare::Tensor<T, P...> &v,
+                 const typename flare::Tensor<T, P...>::array_layout &layout,
+                 const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
+        using tensor_type = flare::Tensor<T, P...>;
+        using alloc_prop_input = detail::TensorCtorProp<TensorCtorArgs...>;
 
-        static_assert(flare::ViewTraits<T, P...>::is_managed,
-                      "Can only realloc managed views");
+        static_assert(flare::TensorTraits<T, P...>::is_managed,
+                      "Can only realloc managed tensors");
         static_assert(!alloc_prop_input::has_label,
-                      "The view constructor arguments passed to flare::realloc must "
+                      "The tensor constructor arguments passed to flare::realloc must "
                       "not include a label!");
         static_assert(!alloc_prop_input::has_pointer,
-                      "The view constructor arguments passed to flare::realloc must "
+                      "The tensor constructor arguments passed to flare::realloc must "
                       "not include a pointer!");
         static_assert(!alloc_prop_input::has_memory_space,
-                      "The view constructor arguments passed to flare::realloc must "
+                      "The tensor constructor arguments passed to flare::realloc must "
                       "not include a memory space instance!");
 
         auto arg_prop_copy = detail::with_properties_if_unset(arg_prop, v.label());
 
-        v = view_type();  // Deallocate first, if the only view to allocation
-        v = view_type(arg_prop_copy, layout);
+        v = tensor_type();  // Deallocate first, if the only tensor to allocation
+        v = tensor_type(arg_prop_copy, layout);
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline void realloc(
-            const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop,
-            flare::View<T, P...> &v,
-            const typename flare::View<T, P...>::array_layout &layout) {
+            const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
+            flare::Tensor<T, P...> &v,
+            const typename flare::Tensor<T, P...>::array_layout &layout) {
         impl_realloc(v, layout, arg_prop);
     }
 
     template<class I, class T, class... P>
-    inline std::enable_if_t<detail::is_view_ctor_property<I>::value> realloc(
-            const I &arg_prop, flare::View<T, P...> &v,
-            const typename flare::View<T, P...>::array_layout &layout) {
-        impl_realloc(v, layout, flare::view_alloc(arg_prop));
+    inline std::enable_if_t<detail::is_tensor_ctor_property<I>::value> realloc(
+            const I &arg_prop, flare::Tensor<T, P...> &v,
+            const typename flare::Tensor<T, P...>::array_layout &layout) {
+        impl_realloc(v, layout, flare::tensor_alloc(arg_prop));
     }
 
     template<class T, class... P>
     inline void realloc(
-            flare::View<T, P...> &v,
-            const typename flare::View<T, P...>::array_layout &layout) {
-        impl_realloc(v, layout, detail::ViewCtorProp<>{});
+            flare::Tensor<T, P...> &v,
+            const typename flare::Tensor<T, P...>::array_layout &layout) {
+        impl_realloc(v, layout, detail::TensorCtorProp<>{});
     }
 
 } /* namespace flare */
@@ -3417,76 +3417,76 @@ namespace flare::detail {
 
     // Deduce Mirror Types
     template<class Space, class T, class... P>
-    struct MirrorViewType {
-        // The incoming view_type
-        using src_view_type = typename flare::View<T, P...>;
-        // The memory space for the mirror view
+    struct MirrorTensorType {
+        // The incoming tensor_type
+        using src_tensor_type = typename flare::Tensor<T, P...>;
+        // The memory space for the mirror tensor
         using memory_space = typename Space::memory_space;
         // Check whether it is the same memory space
         enum {
             is_same_memspace =
-            std::is_same<memory_space, typename src_view_type::memory_space>::value
+            std::is_same<memory_space, typename src_tensor_type::memory_space>::value
         };
         // The array_layout
-        using array_layout = typename src_view_type::array_layout;
+        using array_layout = typename src_tensor_type::array_layout;
         // The data type (we probably want it non-const since otherwise we can't even
         // deep_copy to it.
-        using data_type = typename src_view_type::non_const_data_type;
-        // The destination view type if it is not the same memory space
-        using dest_view_type = flare::View<data_type, array_layout, Space>;
-        // If it is the same memory_space return the existsing view_type
+        using data_type = typename src_tensor_type::non_const_data_type;
+        // The destination tensor type if it is not the same memory space
+        using dest_tensor_type = flare::Tensor<data_type, array_layout, Space>;
+        // If it is the same memory_space return the existsing tensor_type
         // This will also keep the unmanaged trait if necessary
-        using view_type =
-                std::conditional_t<is_same_memspace, src_view_type, dest_view_type>;
+        using tensor_type =
+                std::conditional_t<is_same_memspace, src_tensor_type, dest_tensor_type>;
     };
 
     template<class Space, class T, class... P>
     struct MirrorType {
-        // The incoming view_type
-        using src_view_type = typename flare::View<T, P...>;
-        // The memory space for the mirror view
+        // The incoming tensor_type
+        using src_tensor_type = typename flare::Tensor<T, P...>;
+        // The memory space for the mirror tensor
         using memory_space = typename Space::memory_space;
         // Check whether it is the same memory space
         enum {
             is_same_memspace =
-            std::is_same<memory_space, typename src_view_type::memory_space>::value
+            std::is_same<memory_space, typename src_tensor_type::memory_space>::value
         };
         // The array_layout
-        using array_layout = typename src_view_type::array_layout;
+        using array_layout = typename src_tensor_type::array_layout;
         // The data type (we probably want it non-const since otherwise we can't even
         // deep_copy to it.
-        using data_type = typename src_view_type::non_const_data_type;
-        // The destination view type if it is not the same memory space
-        using view_type = flare::View<data_type, array_layout, Space>;
+        using data_type = typename src_tensor_type::non_const_data_type;
+        // The destination tensor type if it is not the same memory space
+        using tensor_type = flare::Tensor<data_type, array_layout, Space>;
     };
 
-    template<class... ViewCtorArgs>
-    void check_view_ctor_args_create_mirror() {
-        using alloc_prop_input = detail::ViewCtorProp<ViewCtorArgs...>;
+    template<class... TensorCtorArgs>
+    void check_tensor_ctor_args_create_mirror() {
+        using alloc_prop_input = detail::TensorCtorProp<TensorCtorArgs...>;
 
         static_assert(
                 !alloc_prop_input::has_label,
-                "The view constructor arguments passed to flare::create_mirror[_view] "
+                "The tensor constructor arguments passed to flare::create_mirror[_tensor] "
                 "must not include a label!");
         static_assert(!alloc_prop_input::has_pointer,
-                      "The view constructor arguments passed to "
-                      "flare::create_mirror[_view] must "
+                      "The tensor constructor arguments passed to "
+                      "flare::create_mirror[_tensor] must "
                       "not include a pointer!");
         static_assert(!alloc_prop_input::allow_padding,
-                      "The view constructor arguments passed to "
-                      "flare::create_mirror[_view] must "
+                      "The tensor constructor arguments passed to "
+                      "flare::create_mirror[_tensor] must "
                       "not explicitly allow padding!");
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
-    inline std::enable_if_t<!detail::ViewCtorProp<ViewCtorArgs...>::has_memory_space,
-            typename flare::View<T, P...>::HostMirror>
-    create_mirror(const flare::View<T, P...> &src,
-                  const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop) {
-        using src_type = View<T, P...>;
+    template<class T, class... P, class... TensorCtorArgs>
+    inline std::enable_if_t<!detail::TensorCtorProp<TensorCtorArgs...>::has_memory_space,
+            typename flare::Tensor<T, P...>::HostMirror>
+    create_mirror(const flare::Tensor<T, P...> &src,
+                  const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
+        using src_type = Tensor<T, P...>;
         using dst_type = typename src_type::HostMirror;
 
-        check_view_ctor_args_create_mirror<ViewCtorArgs...>();
+        check_tensor_ctor_args_create_mirror<TensorCtorArgs...>();
 
         auto prop_copy = detail::with_properties_if_unset(
                 arg_prop, std::string(src.label()).append("_mirror"));
@@ -3495,134 +3495,134 @@ namespace flare::detail {
     }
 
 // Create a mirror in a new space (specialization for different space)
-    template<class T, class... P, class... ViewCtorArgs,
+    template<class T, class... P, class... TensorCtorArgs,
             class Enable = std::enable_if_t<
-                    detail::ViewCtorProp<ViewCtorArgs...>::has_memory_space>>
-    auto create_mirror(const flare::View<T, P...> &src,
-                       const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop) {
-        check_view_ctor_args_create_mirror<ViewCtorArgs...>();
+                    detail::TensorCtorProp<TensorCtorArgs...>::has_memory_space>>
+    auto create_mirror(const flare::Tensor<T, P...> &src,
+                       const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
+        check_tensor_ctor_args_create_mirror<TensorCtorArgs...>();
 
         auto prop_copy = detail::with_properties_if_unset(
                 arg_prop, std::string(src.label()).append("_mirror"));
         using alloc_prop = decltype(prop_copy);
 
         return typename detail::MirrorType<typename alloc_prop::memory_space, T,
-                P...>::view_type(prop_copy, src.layout());
+                P...>::tensor_type(prop_copy, src.layout());
     }
 }  // namespace flare::detail
 namespace flare {
     template<class T, class... P>
-    std::enable_if_t<std::is_void<typename ViewTraits<T, P...>::specialize>::value,
-            typename flare::View<T, P...>::HostMirror>
-    create_mirror(flare::View<T, P...> const &v) {
-        return detail::create_mirror(v, detail::ViewCtorProp<>{});
+    std::enable_if_t<std::is_void<typename TensorTraits<T, P...>::specialize>::value,
+            typename flare::Tensor<T, P...>::HostMirror>
+    create_mirror(flare::Tensor<T, P...> const &v) {
+        return detail::create_mirror(v, detail::TensorCtorProp<>{});
     }
 
     template<class T, class... P>
-    std::enable_if_t<std::is_void<typename ViewTraits<T, P...>::specialize>::value,
-            typename flare::View<T, P...>::HostMirror>
+    std::enable_if_t<std::is_void<typename TensorTraits<T, P...>::specialize>::value,
+            typename flare::Tensor<T, P...>::HostMirror>
     create_mirror(flare::detail::WithoutInitializing_t wi,
-                  flare::View<T, P...> const &v) {
-        return detail::create_mirror(v, view_alloc(wi));
+                  flare::Tensor<T, P...> const &v) {
+        return detail::create_mirror(v, tensor_alloc(wi));
     }
 
     template<class Space, class T, class... P,
             typename Enable = std::enable_if_t<flare::is_space<Space>::value>>
-    std::enable_if_t<std::is_void<typename ViewTraits<T, P...>::specialize>::value,
-            typename detail::MirrorType<Space, T, P...>::view_type>
-    create_mirror(Space const &, flare::View<T, P...> const &v) {
-        return detail::create_mirror(v, view_alloc(typename Space::memory_space{}));
+    std::enable_if_t<std::is_void<typename TensorTraits<T, P...>::specialize>::value,
+            typename detail::MirrorType<Space, T, P...>::tensor_type>
+    create_mirror(Space const &, flare::Tensor<T, P...> const &v) {
+        return detail::create_mirror(v, tensor_alloc(typename Space::memory_space{}));
     }
 
-    template<class T, class... P, class... ViewCtorArgs,
+    template<class T, class... P, class... TensorCtorArgs,
             typename Enable = std::enable_if_t<
-                    std::is_void<typename ViewTraits<T, P...>::specialize>::value &&
-                    detail::ViewCtorProp<ViewCtorArgs...>::has_memory_space>>
-    auto create_mirror(detail::ViewCtorProp<ViewCtorArgs...> const &arg_prop,
-                       flare::View<T, P...> const &v) {
+                    std::is_void<typename TensorTraits<T, P...>::specialize>::value &&
+                    detail::TensorCtorProp<TensorCtorArgs...>::has_memory_space>>
+    auto create_mirror(detail::TensorCtorProp<TensorCtorArgs...> const &arg_prop,
+                       flare::Tensor<T, P...> const &v) {
         return detail::create_mirror(v, arg_prop);
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     std::enable_if_t<
-            std::is_void<typename ViewTraits<T, P...>::specialize>::value &&
-            !detail::ViewCtorProp<ViewCtorArgs...>::has_memory_space,
-            typename flare::View<T, P...>::HostMirror>
-    create_mirror(detail::ViewCtorProp<ViewCtorArgs...> const &arg_prop,
-                  flare::View<T, P...> const &v) {
+            std::is_void<typename TensorTraits<T, P...>::specialize>::value &&
+            !detail::TensorCtorProp<TensorCtorArgs...>::has_memory_space,
+            typename flare::Tensor<T, P...>::HostMirror>
+    create_mirror(detail::TensorCtorProp<TensorCtorArgs...> const &arg_prop,
+                  flare::Tensor<T, P...> const &v) {
         return detail::create_mirror(v, arg_prop);
     }
 
     template<class Space, class T, class... P,
             typename Enable = std::enable_if_t<flare::is_space<Space>::value>>
-    std::enable_if_t<std::is_void<typename ViewTraits<T, P...>::specialize>::value,
-            typename detail::MirrorType<Space, T, P...>::view_type>
+    std::enable_if_t<std::is_void<typename TensorTraits<T, P...>::specialize>::value,
+            typename detail::MirrorType<Space, T, P...>::tensor_type>
     create_mirror(flare::detail::WithoutInitializing_t wi, Space const &,
-                  flare::View<T, P...> const &v) {
-        return detail::create_mirror(v, view_alloc(typename Space::memory_space{}, wi));
+                  flare::Tensor<T, P...> const &v) {
+        return detail::create_mirror(v, tensor_alloc(typename Space::memory_space{}, wi));
     }
 }  // namespace flare
 namespace flare::detail {
 
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline std::enable_if_t<
-            !detail::ViewCtorProp<ViewCtorArgs...>::has_memory_space &&
+            !detail::TensorCtorProp<TensorCtorArgs...>::has_memory_space &&
             (std::is_same<
-                    typename flare::View<T, P...>::memory_space,
-                    typename flare::View<T, P...>::HostMirror::memory_space>::value &&
+                    typename flare::Tensor<T, P...>::memory_space,
+                    typename flare::Tensor<T, P...>::HostMirror::memory_space>::value &&
              std::is_same<
-                     typename flare::View<T, P...>::data_type,
-                     typename flare::View<T, P...>::HostMirror::data_type>::value),
-            typename flare::View<T, P...>::HostMirror>
-    create_mirror_view(const flare::View<T, P...> &src,
-                       const detail::ViewCtorProp<ViewCtorArgs...> &) {
-        check_view_ctor_args_create_mirror<ViewCtorArgs...>();
+                     typename flare::Tensor<T, P...>::data_type,
+                     typename flare::Tensor<T, P...>::HostMirror::data_type>::value),
+            typename flare::Tensor<T, P...>::HostMirror>
+    create_mirror_tensor(const flare::Tensor<T, P...> &src,
+                       const detail::TensorCtorProp<TensorCtorArgs...> &) {
+        check_tensor_ctor_args_create_mirror<TensorCtorArgs...>();
         return src;
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
+    template<class T, class... P, class... TensorCtorArgs>
     inline std::enable_if_t<
-            !detail::ViewCtorProp<ViewCtorArgs...>::has_memory_space &&
-            !(std::is_same<typename flare::View<T, P...>::memory_space,
-                    typename flare::View<
+            !detail::TensorCtorProp<TensorCtorArgs...>::has_memory_space &&
+            !(std::is_same<typename flare::Tensor<T, P...>::memory_space,
+                    typename flare::Tensor<
                             T, P...>::HostMirror::memory_space>::value &&
               std::is_same<
-                      typename flare::View<T, P...>::data_type,
-                      typename flare::View<T, P...>::HostMirror::data_type>::value),
-            typename flare::View<T, P...>::HostMirror>
-    create_mirror_view(const flare::View<T, P...> &src,
-                       const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop) {
+                      typename flare::Tensor<T, P...>::data_type,
+                      typename flare::Tensor<T, P...>::HostMirror::data_type>::value),
+            typename flare::Tensor<T, P...>::HostMirror>
+    create_mirror_tensor(const flare::Tensor<T, P...> &src,
+                       const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
         return flare::detail::create_mirror(src, arg_prop);
     }
 
-    // Create a mirror view in a new space (specialization for same space)
-    template<class T, class... P, class... ViewCtorArgs,
+    // Create a mirror tensor in a new space (specialization for same space)
+    template<class T, class... P, class... TensorCtorArgs,
             class = std::enable_if_t<
-                    detail::ViewCtorProp<ViewCtorArgs...>::has_memory_space>>
-    std::enable_if_t<detail::MirrorViewType<
-            typename detail::ViewCtorProp<ViewCtorArgs...>::memory_space,
+                    detail::TensorCtorProp<TensorCtorArgs...>::has_memory_space>>
+    std::enable_if_t<detail::MirrorTensorType<
+            typename detail::TensorCtorProp<TensorCtorArgs...>::memory_space,
             T, P...>::is_same_memspace,
-            typename detail::MirrorViewType<
-                    typename detail::ViewCtorProp<ViewCtorArgs...>::memory_space,
-                    T, P...>::view_type>
-    create_mirror_view(const flare::View<T, P...> &src,
-                       const detail::ViewCtorProp<ViewCtorArgs...> &) {
-        check_view_ctor_args_create_mirror<ViewCtorArgs...>();
+            typename detail::MirrorTensorType<
+                    typename detail::TensorCtorProp<TensorCtorArgs...>::memory_space,
+                    T, P...>::tensor_type>
+    create_mirror_tensor(const flare::Tensor<T, P...> &src,
+                       const detail::TensorCtorProp<TensorCtorArgs...> &) {
+        check_tensor_ctor_args_create_mirror<TensorCtorArgs...>();
         return src;
     }
 
-    // Create a mirror view in a new space (specialization for different space)
-    template<class T, class... P, class... ViewCtorArgs,
+    // Create a mirror tensor in a new space (specialization for different space)
+    template<class T, class... P, class... TensorCtorArgs,
             class = std::enable_if_t<
-                    detail::ViewCtorProp<ViewCtorArgs...>::has_memory_space>>
-    std::enable_if_t<!detail::MirrorViewType<
-            typename detail::ViewCtorProp<ViewCtorArgs...>::memory_space,
+                    detail::TensorCtorProp<TensorCtorArgs...>::has_memory_space>>
+    std::enable_if_t<!detail::MirrorTensorType<
+            typename detail::TensorCtorProp<TensorCtorArgs...>::memory_space,
             T, P...>::is_same_memspace,
-            typename detail::MirrorViewType<
-                    typename detail::ViewCtorProp<ViewCtorArgs...>::memory_space,
-                    T, P...>::view_type>
-    create_mirror_view(const flare::View<T, P...> &src,
-                       const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop) {
+            typename detail::MirrorTensorType<
+                    typename detail::TensorCtorProp<TensorCtorArgs...>::memory_space,
+                    T, P...>::tensor_type>
+    create_mirror_tensor(const flare::Tensor<T, P...> &src,
+                       const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
         return flare::detail::create_mirror(src, arg_prop);
     }
 }  // namespace flare::detail
@@ -3631,41 +3631,41 @@ namespace flare {
     template<class T, class... P>
     std::enable_if_t<
             std::is_same<
-                    typename flare::View<T, P...>::memory_space,
-                    typename flare::View<T, P...>::HostMirror::memory_space>::value &&
+                    typename flare::Tensor<T, P...>::memory_space,
+                    typename flare::Tensor<T, P...>::HostMirror::memory_space>::value &&
             std::is_same<
-                    typename flare::View<T, P...>::data_type,
-                    typename flare::View<T, P...>::HostMirror::data_type>::value,
-            typename flare::View<T, P...>::HostMirror>
-    create_mirror_view(const flare::View<T, P...> &src) {
+                    typename flare::Tensor<T, P...>::data_type,
+                    typename flare::Tensor<T, P...>::HostMirror::data_type>::value,
+            typename flare::Tensor<T, P...>::HostMirror>
+    create_mirror_tensor(const flare::Tensor<T, P...> &src) {
         return src;
     }
 
     template<class T, class... P>
     std::enable_if_t<
             !(std::is_same<
-                    typename flare::View<T, P...>::memory_space,
-                    typename flare::View<T, P...>::HostMirror::memory_space>::value &&
+                    typename flare::Tensor<T, P...>::memory_space,
+                    typename flare::Tensor<T, P...>::HostMirror::memory_space>::value &&
               std::is_same<
-                      typename flare::View<T, P...>::data_type,
-                      typename flare::View<T, P...>::HostMirror::data_type>::value),
-            typename flare::View<T, P...>::HostMirror>
-    create_mirror_view(const flare::View<T, P...> &src) {
+                      typename flare::Tensor<T, P...>::data_type,
+                      typename flare::Tensor<T, P...>::HostMirror::data_type>::value),
+            typename flare::Tensor<T, P...>::HostMirror>
+    create_mirror_tensor(const flare::Tensor<T, P...> &src) {
         return flare::create_mirror(src);
     }
 
     template<class T, class... P>
-    typename flare::View<T, P...>::HostMirror create_mirror_view(
-            flare::detail::WithoutInitializing_t wi, flare::View<T, P...> const &v) {
-        return detail::create_mirror_view(v, view_alloc(wi));
+    typename flare::Tensor<T, P...>::HostMirror create_mirror_tensor(
+            flare::detail::WithoutInitializing_t wi, flare::Tensor<T, P...> const &v) {
+        return detail::create_mirror_tensor(v, tensor_alloc(wi));
     }
 
     // FIXME_C++17 Improve SFINAE here.
     template<class Space, class T, class... P,
             class Enable = std::enable_if_t<flare::is_space<Space>::value>>
-    typename detail::MirrorViewType<Space, T, P...>::view_type create_mirror_view(
-            const Space &, const flare::View<T, P...> &src,
-            std::enable_if_t<detail::MirrorViewType<Space, T, P...>::is_same_memspace> * =
+    typename detail::MirrorTensorType<Space, T, P...>::tensor_type create_mirror_tensor(
+            const Space &, const flare::Tensor<T, P...> &src,
+            std::enable_if_t<detail::MirrorTensorType<Space, T, P...>::is_same_memspace> * =
             nullptr) {
         return src;
     }
@@ -3673,82 +3673,82 @@ namespace flare {
     // FIXME_C++17 Improve SFINAE here.
     template<class Space, class T, class... P,
             class Enable = std::enable_if_t<flare::is_space<Space>::value>>
-    typename detail::MirrorViewType<Space, T, P...>::view_type create_mirror_view(
-            const Space &space, const flare::View<T, P...> &src,
-            std::enable_if_t<!detail::MirrorViewType<Space, T, P...>::is_same_memspace> * =
+    typename detail::MirrorTensorType<Space, T, P...>::tensor_type create_mirror_tensor(
+            const Space &space, const flare::Tensor<T, P...> &src,
+            std::enable_if_t<!detail::MirrorTensorType<Space, T, P...>::is_same_memspace> * =
             nullptr) {
         return flare::create_mirror(space, src);
     }
 
     template<class Space, class T, class... P,
             typename Enable = std::enable_if_t<flare::is_space<Space>::value>>
-    typename detail::MirrorViewType<Space, T, P...>::view_type create_mirror_view(
+    typename detail::MirrorTensorType<Space, T, P...>::tensor_type create_mirror_tensor(
             flare::detail::WithoutInitializing_t wi, Space const &,
-            flare::View<T, P...> const &v) {
-        return detail::create_mirror_view(
-                v, view_alloc(typename Space::memory_space{}, wi));
+            flare::Tensor<T, P...> const &v) {
+        return detail::create_mirror_tensor(
+                v, tensor_alloc(typename Space::memory_space{}, wi));
     }
 
-    template<class T, class... P, class... ViewCtorArgs>
-    auto create_mirror_view(const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop,
-                            const flare::View<T, P...> &v) {
-        return detail::create_mirror_view(v, arg_prop);
+    template<class T, class... P, class... TensorCtorArgs>
+    auto create_mirror_tensor(const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
+                            const flare::Tensor<T, P...> &v) {
+        return detail::create_mirror_tensor(v, arg_prop);
     }
 
-    template<class... ViewCtorArgs, class T, class... P>
-    auto create_mirror_view_and_copy(
-            const detail::ViewCtorProp<ViewCtorArgs...> &,
-            const flare::View<T, P...> &src,
+    template<class... TensorCtorArgs, class T, class... P>
+    auto create_mirror_tensor_and_copy(
+            const detail::TensorCtorProp<TensorCtorArgs...> &,
+            const flare::Tensor<T, P...> &src,
             std::enable_if_t<
-                    std::is_void<typename ViewTraits<T, P...>::specialize>::value &&
-                    detail::MirrorViewType<
-                            typename detail::ViewCtorProp<ViewCtorArgs...>::memory_space, T,
+                    std::is_void<typename TensorTraits<T, P...>::specialize>::value &&
+                    detail::MirrorTensorType<
+                            typename detail::TensorCtorProp<TensorCtorArgs...>::memory_space, T,
                             P...>::is_same_memspace> * = nullptr) {
-        using alloc_prop_input = detail::ViewCtorProp<ViewCtorArgs...>;
+        using alloc_prop_input = detail::TensorCtorProp<TensorCtorArgs...>;
         static_assert(
                 alloc_prop_input::has_memory_space,
-                "The view constructor arguments passed to "
-                "flare::create_mirror_view_and_copy must include a memory space!");
+                "The tensor constructor arguments passed to "
+                "flare::create_mirror_tensor_and_copy must include a memory space!");
         static_assert(!alloc_prop_input::has_pointer,
-                      "The view constructor arguments passed to "
-                      "flare::create_mirror_view_and_copy must "
+                      "The tensor constructor arguments passed to "
+                      "flare::create_mirror_tensor_and_copy must "
                       "not include a pointer!");
         static_assert(!alloc_prop_input::allow_padding,
-                      "The view constructor arguments passed to "
-                      "flare::create_mirror_view_and_copy must "
+                      "The tensor constructor arguments passed to "
+                      "flare::create_mirror_tensor_and_copy must "
                       "not explicitly allow padding!");
 
         // same behavior as deep_copy(src, src)
         if (!alloc_prop_input::has_execution_space)
             fence(
-                    "flare::create_mirror_view_and_copy: fence before returning src view");
+                    "flare::create_mirror_tensor_and_copy: fence before returning src tensor");
         return src;
     }
 
-    template<class... ViewCtorArgs, class T, class... P>
-    auto create_mirror_view_and_copy(
-            const detail::ViewCtorProp<ViewCtorArgs...> &arg_prop,
-            const ::flare::View<T, P...> &src,
+    template<class... TensorCtorArgs, class T, class... P>
+    auto create_mirror_tensor_and_copy(
+            const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
+            const ::flare::Tensor<T, P...> &src,
             std::enable_if_t<
-                    std::is_void<typename ViewTraits<T, P...>::specialize>::value &&
-                    !detail::MirrorViewType<
-                            typename detail::ViewCtorProp<ViewCtorArgs...>::memory_space, T,
+                    std::is_void<typename TensorTraits<T, P...>::specialize>::value &&
+                    !detail::MirrorTensorType<
+                            typename detail::TensorCtorProp<TensorCtorArgs...>::memory_space, T,
                             P...>::is_same_memspace> * = nullptr) {
-        using alloc_prop_input = detail::ViewCtorProp<ViewCtorArgs...>;
+        using alloc_prop_input = detail::TensorCtorProp<TensorCtorArgs...>;
         static_assert(
                 alloc_prop_input::has_memory_space,
-                "The view constructor arguments passed to "
-                "flare::create_mirror_view_and_copy must include a memory space!");
+                "The tensor constructor arguments passed to "
+                "flare::create_mirror_tensor_and_copy must include a memory space!");
         static_assert(!alloc_prop_input::has_pointer,
-                      "The view constructor arguments passed to "
-                      "flare::create_mirror_view_and_copy must "
+                      "The tensor constructor arguments passed to "
+                      "flare::create_mirror_tensor_and_copy must "
                       "not include a pointer!");
         static_assert(!alloc_prop_input::allow_padding,
-                      "The view constructor arguments passed to "
-                      "flare::create_mirror_view_and_copy must "
+                      "The tensor constructor arguments passed to "
+                      "flare::create_mirror_tensor_and_copy must "
                       "not explicitly allow padding!");
         using Space = typename alloc_prop_input::memory_space;
-        using Mirror = typename detail::MirrorViewType<Space, T, P...>::view_type;
+        using Mirror = typename detail::MirrorTensorType<Space, T, P...>::tensor_type;
 
         auto arg_prop_copy = detail::with_properties_if_unset(
                 arg_prop, std::string{}, WithoutInitializing,
@@ -3770,15 +3770,15 @@ namespace flare {
     // of auto and just forwarding arguments (see issue #5196)
     template<class Space, class T, class... P,
             typename Enable = std::enable_if_t<flare::is_space<Space>::value>>
-    typename detail::MirrorViewType<Space, T, P...>::view_type
-    create_mirror_view_and_copy(
-            const Space &, const flare::View<T, P...> &src,
+    typename detail::MirrorTensorType<Space, T, P...>::tensor_type
+    create_mirror_tensor_and_copy(
+            const Space &, const flare::Tensor<T, P...> &src,
             std::string const &name = "",
             std::enable_if_t<
-                    std::is_void<typename ViewTraits<T, P...>::specialize>::value> * =
+                    std::is_void<typename TensorTraits<T, P...>::specialize>::value> * =
             nullptr) {
-        return create_mirror_view_and_copy(
-                flare::view_alloc(typename Space::memory_space{}, name), src);
+        return create_mirror_tensor_and_copy(
+                flare::tensor_alloc(typename Space::memory_space{}, name), src);
     }
 
 }  // namespace flare

@@ -51,13 +51,13 @@ template <class ExecutionSpace, class DataType, class... Properties,
           std::enable_if_t<::flare::is_execution_space<ExecutionSpace>::value,
                            int> = 0>
 auto search_n(const ExecutionSpace& ex,
-              const ::flare::View<DataType, Properties...>& view,
+              const ::flare::Tensor<DataType, Properties...>& tensor,
               SizeType count, const ValueType& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::search_n_exespace_impl("flare::search_n_view_api_default", ex,
-                                      KE::begin(view), KE::end(view), count,
+  return detail::search_n_exespace_impl("flare::search_n_tensor_api_default", ex,
+                                      KE::begin(tensor), KE::end(tensor), count,
                                       value);
 }
 
@@ -66,12 +66,12 @@ template <class ExecutionSpace, class DataType, class... Properties,
           std::enable_if_t<::flare::is_execution_space<ExecutionSpace>::value,
                            int> = 0>
 auto search_n(const std::string& label, const ExecutionSpace& ex,
-              const ::flare::View<DataType, Properties...>& view,
+              const ::flare::Tensor<DataType, Properties...>& tensor,
               SizeType count, const ValueType& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::search_n_exespace_impl(label, ex, KE::begin(view), KE::end(view),
+  return detail::search_n_exespace_impl(label, ex, KE::begin(tensor), KE::end(tensor),
                                       count, value);
 }
 
@@ -103,14 +103,14 @@ template <class ExecutionSpace, class DataType, class... Properties,
           std::enable_if_t<::flare::is_execution_space<ExecutionSpace>::value,
                            int> = 0>
 auto search_n(const ExecutionSpace& ex,
-              const ::flare::View<DataType, Properties...>& view,
+              const ::flare::Tensor<DataType, Properties...>& tensor,
               SizeType count, const ValueType& value,
               const BinaryPredicateType& pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::search_n_exespace_impl("flare::search_n_view_api_default", ex,
-                                      KE::begin(view), KE::end(view), count,
+  return detail::search_n_exespace_impl("flare::search_n_tensor_api_default", ex,
+                                      KE::begin(tensor), KE::end(tensor), count,
                                       value, pred);
 }
 
@@ -119,13 +119,13 @@ template <class ExecutionSpace, class DataType, class... Properties,
           std::enable_if_t<::flare::is_execution_space<ExecutionSpace>::value,
                            int> = 0>
 auto search_n(const std::string& label, const ExecutionSpace& ex,
-              const ::flare::View<DataType, Properties...>& view,
+              const ::flare::Tensor<DataType, Properties...>& tensor,
               SizeType count, const ValueType& value,
               const BinaryPredicateType& pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::search_n_exespace_impl(label, ex, KE::begin(view), KE::end(view),
+  return detail::search_n_exespace_impl(label, ex, KE::begin(tensor), KE::end(tensor),
                                       count, value, pred);
 }
 
@@ -151,12 +151,12 @@ template <
     std::enable_if_t<::flare::is_team_handle<TeamHandleType>::value, int> = 0>
 FLARE_FUNCTION auto search_n(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType, Properties...>& view, SizeType count,
+    const ::flare::Tensor<DataType, Properties...>& tensor, SizeType count,
     const ValueType& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::search_n_team_impl(teamHandle, KE::begin(view), KE::end(view),
+  return detail::search_n_team_impl(teamHandle, KE::begin(tensor), KE::end(tensor),
                                   count, value);
 }
 
@@ -177,12 +177,12 @@ template <
     std::enable_if_t<::flare::is_team_handle<TeamHandleType>::value, int> = 0>
 FLARE_FUNCTION auto search_n(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType, Properties...>& view, SizeType count,
+    const ::flare::Tensor<DataType, Properties...>& tensor, SizeType count,
     const ValueType& value, const BinaryPredicateType& pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::search_n_team_impl(teamHandle, KE::begin(view), KE::end(view),
+  return detail::search_n_team_impl(teamHandle, KE::begin(tensor), KE::end(tensor),
                                   count, value, pred);
 }
 

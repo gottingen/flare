@@ -39,14 +39,14 @@ struct UnifDist<int> {
   int operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -101,30 +101,30 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewTypeData, class ViewTypeTest, class MyItResult>
-void verify_data(ViewTypeData view_data_h, ViewTypeTest view_test,
+template <class TensorTypeData, class TensorTypeTest, class MyItResult>
+void verify_data(TensorTypeData tensor_data_h, TensorTypeTest tensor_test,
                  MyItResult my_result) {
   // run std::remove
   auto std_result =
-      std::remove(KE::begin(view_data_h), KE::end(view_data_h), match_value);
+      std::remove(KE::begin(tensor_data_h), KE::end(tensor_data_h), match_value);
 
   // check that returned iterators are correct
-  const std::size_t std_diff = std_result - KE::begin(view_data_h);
-  const std::size_t my_diff  = my_result - KE::begin(view_test);
+  const std::size_t std_diff = std_result - KE::begin(tensor_data_h);
+  const std::size_t my_diff  = my_result - KE::begin(tensor_test);
   REQUIRE_EQ(std_diff, my_diff);
 
   // check the actual data after algo has been applied
-  auto view_test_h = create_host_space_copy(view_test);
+  auto tensor_test_h = create_host_space_copy(tensor_test);
   for (std::size_t i = 0; i < my_diff; ++i) {
-    REQUIRE_EQ(view_test_h(i), view_data_h[i]);
+    REQUIRE_EQ(tensor_test_h(i), tensor_data_h[i]);
     // std::cout << "i= " << i << " "
-    // 	      << "mine: " << view_test_h(i) << " "
-    // 	      << "std: " << view_data_h(i)
+    // 	      << "mine: " << tensor_test_h(i) << " "
+    // 	      << "std: " << tensor_data_h(i)
     // 	      << '\n';
   }
 }
@@ -135,47 +135,47 @@ std::string value_type_to_string(double) { return "double"; }
 template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
-  // std::cout << "remove: " << name << ", " << view_tag_to_string(Tag{}) << ",
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
+  // std::cout << "remove: " << name << ", " << tensor_tag_to_string(Tag{}) << ",
   // "
   //           << value_type_to_string(ValueType()) << std::endl;
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "remove_from");
-    fill_view(view, name);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "remove_from");
+    fill_tensor(tensor, name);
     // make host copy BEFORE running algo
-    auto data_h = create_host_space_copy(view);
-    auto rit    = KE::remove(exespace(), KE::begin(view), KE::end(view),
+    auto data_h = create_host_space_copy(tensor);
+    auto rit    = KE::remove(exespace(), KE::begin(tensor), KE::end(tensor),
                           (ValueType)match_value);
-    verify_data(data_h, view, rit);
+    verify_data(data_h, tensor, rit);
   }
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "remove_from");
-    fill_view(view, name);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "remove_from");
+    fill_tensor(tensor, name);
     // make host copy BEFORE running algo
-    auto data_h = create_host_space_copy(view);
-    auto rit = KE::remove("label", exespace(), KE::begin(view), KE::end(view),
+    auto data_h = create_host_space_copy(tensor);
+    auto rit = KE::remove("label", exespace(), KE::begin(tensor), KE::end(tensor),
                           (ValueType)match_value);
-    verify_data(data_h, view, rit);
+    verify_data(data_h, tensor, rit);
   }
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "remove_from");
-    fill_view(view, name);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "remove_from");
+    fill_tensor(tensor, name);
     // make host copy BEFORE running algo
-    auto data_h = create_host_space_copy(view);
-    auto rit    = KE::remove(exespace(), view, (ValueType)match_value);
-    verify_data(data_h, view, rit);
+    auto data_h = create_host_space_copy(tensor);
+    auto rit    = KE::remove(exespace(), tensor, (ValueType)match_value);
+    verify_data(data_h, tensor, rit);
   }
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "remove_from");
-    fill_view(view, name);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "remove_from");
+    fill_tensor(tensor, name);
     // make host copy BEFORE running algo
-    auto data_h = create_host_space_copy(view);
-    auto rit    = KE::remove("label", exespace(), view, (ValueType)match_value);
-    verify_data(data_h, view, rit);
+    auto data_h = create_host_space_copy(tensor);
+    auto rit    = KE::remove("label", exespace(), tensor, (ValueType)match_value);
+    verify_data(data_h, tensor, rit);
   }
 
   flare::fence();

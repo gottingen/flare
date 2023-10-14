@@ -61,128 +61,128 @@ const std::map<std::string, std::size_t> default_scenarios = {
     {"large-b", 101513}};
 
 // see cpp file for these functions
-std::string view_tag_to_string(DynamicTag);
-std::string view_tag_to_string(DynamicLayoutLeftTag);
-std::string view_tag_to_string(DynamicLayoutRightTag);
-std::string view_tag_to_string(StridedTwoTag);
-std::string view_tag_to_string(StridedThreeTag);
-std::string view_tag_to_string(StridedTwoRowsTag);
-std::string view_tag_to_string(StridedThreeRowsTag);
+std::string tensor_tag_to_string(DynamicTag);
+std::string tensor_tag_to_string(DynamicLayoutLeftTag);
+std::string tensor_tag_to_string(DynamicLayoutRightTag);
+std::string tensor_tag_to_string(StridedTwoTag);
+std::string tensor_tag_to_string(StridedThreeTag);
+std::string tensor_tag_to_string(StridedTwoRowsTag);
+std::string tensor_tag_to_string(StridedThreeRowsTag);
 
 //
-// overload set for create_view for rank1
+// overload set for create_tensor for rank1
 //
 
 // dynamic
 template <class ValueType>
-auto create_view(DynamicTag, std::size_t ext, const std::string label) {
-  using view_t = flare::View<ValueType*>;
-  view_t view{label + "_" + view_tag_to_string(DynamicTag{}), ext};
-  return view;
+auto create_tensor(DynamicTag, std::size_t ext, const std::string label) {
+  using tensor_t = flare::Tensor<ValueType*>;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(DynamicTag{}), ext};
+  return tensor;
 }
 
 // dynamic layout left
 template <class ValueType>
-auto create_view(DynamicLayoutLeftTag, std::size_t ext,
+auto create_tensor(DynamicLayoutLeftTag, std::size_t ext,
                  const std::string label) {
-  using view_t = flare::View<ValueType*, flare::LayoutLeft>;
-  view_t view{label + "_" + view_tag_to_string(DynamicLayoutLeftTag{}), ext};
-  return view;
+  using tensor_t = flare::Tensor<ValueType*, flare::LayoutLeft>;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(DynamicLayoutLeftTag{}), ext};
+  return tensor;
 }
 
 // dynamic layout right
 template <class ValueType>
-auto create_view(DynamicLayoutRightTag, std::size_t ext,
+auto create_tensor(DynamicLayoutRightTag, std::size_t ext,
                  const std::string label) {
-  using view_t = flare::View<ValueType*, flare::LayoutRight>;
-  view_t view{label + "_" + view_tag_to_string(DynamicLayoutRightTag{}), ext};
-  return view;
+  using tensor_t = flare::Tensor<ValueType*, flare::LayoutRight>;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(DynamicLayoutRightTag{}), ext};
+  return tensor;
 }
 
 // stride2
 template <class ValueType>
-auto create_view(StridedTwoTag, std::size_t ext, const std::string label) {
-  using view_t = flare::View<ValueType*, flare::LayoutStride>;
+auto create_tensor(StridedTwoTag, std::size_t ext, const std::string label) {
+  using tensor_t = flare::Tensor<ValueType*, flare::LayoutStride>;
   flare::LayoutStride layout{ext, 2};
-  view_t view{label + "_" + view_tag_to_string(StridedTwoTag{}), layout};
-  return view;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(StridedTwoTag{}), layout};
+  return tensor;
 }
 
 // stride3
 template <class ValueType>
-auto create_view(StridedThreeTag, std::size_t ext, const std::string label) {
-  using view_t = flare::View<ValueType*, flare::LayoutStride>;
+auto create_tensor(StridedThreeTag, std::size_t ext, const std::string label) {
+  using tensor_t = flare::Tensor<ValueType*, flare::LayoutStride>;
   flare::LayoutStride layout{ext, 3};
-  view_t view{label + "_" + view_tag_to_string(StridedThreeTag{}), layout};
-  return view;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(StridedThreeTag{}), layout};
+  return tensor;
 }
 
 //
-// overload set for create_view for rank2
+// overload set for create_tensor for rank2
 //
 
 // dynamic
 template <class ValueType>
-auto create_view(DynamicTag, std::size_t ext0, std::size_t ext1,
+auto create_tensor(DynamicTag, std::size_t ext0, std::size_t ext1,
                  const std::string label) {
-  using view_t = flare::View<ValueType**>;
-  view_t view{label + "_" + view_tag_to_string(DynamicTag{}), ext0, ext1};
-  return view;
+  using tensor_t = flare::Tensor<ValueType**>;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(DynamicTag{}), ext0, ext1};
+  return tensor;
 }
 
 // dynamic layout left
 template <class ValueType>
-auto create_view(DynamicLayoutLeftTag, std::size_t ext0, std::size_t ext1,
+auto create_tensor(DynamicLayoutLeftTag, std::size_t ext0, std::size_t ext1,
                  const std::string label) {
-  using view_t = flare::View<ValueType**, flare::LayoutLeft>;
-  view_t view{label + "_" + view_tag_to_string(DynamicLayoutLeftTag{}), ext0,
+  using tensor_t = flare::Tensor<ValueType**, flare::LayoutLeft>;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(DynamicLayoutLeftTag{}), ext0,
               ext1};
-  return view;
+  return tensor;
 }
 
 // dynamic layout right
 template <class ValueType>
-auto create_view(DynamicLayoutRightTag, std::size_t ext0, std::size_t ext1,
+auto create_tensor(DynamicLayoutRightTag, std::size_t ext0, std::size_t ext1,
                  const std::string label) {
-  using view_t = flare::View<ValueType**, flare::LayoutRight>;
-  view_t view{label + "_" + view_tag_to_string(DynamicLayoutRightTag{}), ext0,
+  using tensor_t = flare::Tensor<ValueType**, flare::LayoutRight>;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(DynamicLayoutRightTag{}), ext0,
               ext1};
-  return view;
+  return tensor;
 }
 
 // stride2rows
 template <class ValueType>
-auto create_view(StridedTwoRowsTag, std::size_t ext0, std::size_t ext1,
+auto create_tensor(StridedTwoRowsTag, std::size_t ext0, std::size_t ext1,
                  const std::string label) {
-  using view_t = flare::View<ValueType**, flare::LayoutStride>;
+  using tensor_t = flare::Tensor<ValueType**, flare::LayoutStride>;
   flare::LayoutStride layout{ext0, 2, ext1, ext0 * 2};
-  view_t view{label + "_" + view_tag_to_string(StridedTwoRowsTag{}), layout};
-  return view;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(StridedTwoRowsTag{}), layout};
+  return tensor;
 }
 
 // stride3rows
 template <class ValueType>
-auto create_view(StridedThreeRowsTag, std::size_t ext0, std::size_t ext1,
+auto create_tensor(StridedThreeRowsTag, std::size_t ext0, std::size_t ext1,
                  const std::string label) {
-  using view_t = flare::View<ValueType**, flare::LayoutStride>;
+  using tensor_t = flare::Tensor<ValueType**, flare::LayoutStride>;
   flare::LayoutStride layout{ext0, 3, ext1, ext0 * 3};
-  view_t view{label + "_" + view_tag_to_string(StridedThreeRowsTag{}), layout};
-  return view;
+  tensor_t tensor{label + "_" + tensor_tag_to_string(StridedThreeRowsTag{}), layout};
+  return tensor;
 }
 
-template <class ViewType>
-auto create_deep_copyable_compatible_view_with_same_extent(ViewType view) {
-  using view_value_type  = typename ViewType::value_type;
-  using view_exespace    = typename ViewType::execution_space;
-  const std::size_t ext0 = view.extent(0);
-  if constexpr (ViewType::rank == 1) {
-    using view_deep_copyable_t = flare::View<view_value_type*, view_exespace>;
-    return view_deep_copyable_t{"view_dc", ext0};
+template <class TensorType>
+auto create_deep_copyable_compatible_tensor_with_same_extent(TensorType tensor) {
+  using tensor_value_type  = typename TensorType::value_type;
+  using tensor_exespace    = typename TensorType::execution_space;
+  const std::size_t ext0 = tensor.extent(0);
+  if constexpr (TensorType::rank == 1) {
+    using tensor_deep_copyable_t = flare::Tensor<tensor_value_type*, tensor_exespace>;
+    return tensor_deep_copyable_t{"tensor_dc", ext0};
   } else {
-    static_assert(ViewType::rank == 2, "Only rank 1 or 2 supported.");
-    using view_deep_copyable_t = flare::View<view_value_type**, view_exespace>;
-    const std::size_t ext1     = view.extent(1);
-    return view_deep_copyable_t{"view_dc", ext0, ext1};
+    static_assert(TensorType::rank == 2, "Only rank 1 or 2 supported.");
+    using tensor_deep_copyable_t = flare::Tensor<tensor_value_type**, tensor_exespace>;
+    const std::size_t ext1     = tensor.extent(1);
+    return tensor_deep_copyable_t{"tensor_dc", ext0, ext1};
   }
 
   // this is needed for intel to avoid
@@ -192,19 +192,19 @@ auto create_deep_copyable_compatible_view_with_same_extent(ViewType view) {
 #endif
 }
 
-template <class ViewType>
-auto create_deep_copyable_compatible_clone(ViewType view) {
-  auto view_dc    = create_deep_copyable_compatible_view_with_same_extent(view);
-  using view_dc_t = decltype(view_dc);
-  if constexpr (ViewType::rank == 1) {
-    CopyFunctor<ViewType, view_dc_t> F1(view, view_dc);
-    flare::parallel_for("copy", view.extent(0), F1);
+template <class TensorType>
+auto create_deep_copyable_compatible_clone(TensorType tensor) {
+  auto tensor_dc    = create_deep_copyable_compatible_tensor_with_same_extent(tensor);
+  using tensor_dc_t = decltype(tensor_dc);
+  if constexpr (TensorType::rank == 1) {
+    CopyFunctor<TensorType, tensor_dc_t> F1(tensor, tensor_dc);
+    flare::parallel_for("copy", tensor.extent(0), F1);
   } else {
-    static_assert(ViewType::rank == 2, "Only rank 1 or 2 supported.");
-    CopyFunctorRank2<ViewType, view_dc_t> F1(view, view_dc);
-    flare::parallel_for("copy", view.extent(0) * view.extent(1), F1);
+    static_assert(TensorType::rank == 2, "Only rank 1 or 2 supported.");
+    CopyFunctorRank2<TensorType, tensor_dc_t> F1(tensor, tensor_dc);
+    flare::parallel_for("copy", tensor.extent(0) * tensor.extent(1), F1);
   }
-  return view_dc;
+  return tensor_dc;
 }
 
 //
@@ -455,137 +455,137 @@ OutputIterator testing_transform_inclusive_scan(InputIterator first,
 #endif
 
 template <class LayoutTagType, class ValueType>
-auto create_random_view_and_host_clone(
+auto create_random_tensor_and_host_clone(
     LayoutTagType LayoutTag, std::size_t numRows, std::size_t numCols,
     flare::pair<ValueType, ValueType> bounds, const std::string& label,
     std::size_t seedIn = 12371) {
   // construct in memory space associated with default exespace
-  auto dataView = create_view<ValueType>(LayoutTag, numRows, numCols, label);
+  auto dataTensor = create_tensor<ValueType>(LayoutTag, numRows, numCols, label);
 
-  // dataView might not deep copyable (e.g. strided layout) so to
-  // randomize it, we make a new view that is for sure deep copyable,
+  // dataTensor might not deep copyable (e.g. strided layout) so to
+  // randomize it, we make a new tensor that is for sure deep copyable,
   // modify it on the host, deep copy to device and then launch
-  // a kernel to copy to dataView
-  auto dataView_dc =
-      create_deep_copyable_compatible_view_with_same_extent(dataView);
-  auto dataView_dc_h = create_mirror_view(flare::HostSpace(), dataView_dc);
+  // a kernel to copy to dataTensor
+  auto dataTensor_dc =
+      create_deep_copyable_compatible_tensor_with_same_extent(dataTensor);
+  auto dataTensor_dc_h = create_mirror_tensor(flare::HostSpace(), dataTensor_dc);
 
-  // randomly fill the view
+  // randomly fill the tensor
   flare::Random_XorShift64_Pool<flare::DefaultHostExecutionSpace> pool(
       seedIn);
-  flare::fill_random(dataView_dc_h, pool, bounds.first, bounds.second);
+  flare::fill_random(dataTensor_dc_h, pool, bounds.first, bounds.second);
 
-  // copy to dataView_dc and then to dataView
-  flare::deep_copy(dataView_dc, dataView_dc_h);
+  // copy to dataTensor_dc and then to dataTensor
+  flare::deep_copy(dataTensor_dc, dataTensor_dc_h);
   // use CTAD
-  CopyFunctorRank2 F1(dataView_dc, dataView);
-  flare::parallel_for("copy", dataView.extent(0) * dataView.extent(1), F1);
+  CopyFunctorRank2 F1(dataTensor_dc, dataTensor);
+  flare::parallel_for("copy", dataTensor.extent(0) * dataTensor.extent(1), F1);
 
-  return std::make_pair(dataView, dataView_dc_h);
+  return std::make_pair(dataTensor, dataTensor_dc_h);
 }
 
-template <class ViewType>
-auto create_host_space_copy(ViewType view) {
-  auto view_dc = create_deep_copyable_compatible_clone(view);
-  return create_mirror_view_and_copy(flare::HostSpace(), view_dc);
+template <class TensorType>
+auto create_host_space_copy(TensorType tensor) {
+  auto tensor_dc = create_deep_copyable_compatible_clone(tensor);
+  return create_mirror_tensor_and_copy(flare::HostSpace(), tensor_dc);
 }
 
-// fill the views with sequentially increasing values
-template <class ViewType, class ViewHostType>
-void fill_views_inc(ViewType view, ViewHostType host_view) {
+// fill the tensors with sequentially increasing values
+template <class TensorType, class TensorHostType>
+void fill_tensors_inc(TensorType tensor, TensorHostType host_tensor) {
   namespace KE = flare::experimental;
 
-  flare::parallel_for(view.extent(0), AssignIndexFunctor<ViewType>(view));
-  std::iota(KE::begin(host_view), KE::end(host_view), 0);
-  // compare_views(expected, view);
+  flare::parallel_for(tensor.extent(0), AssignIndexFunctor<TensorType>(tensor));
+  std::iota(KE::begin(host_tensor), KE::end(host_tensor), 0);
+  // compare_tensors(expected, tensor);
 }
 
-template <class ValueType, class ViewType>
-std::enable_if_t<!std::is_same<typename ViewType::traits::array_layout,
+template <class ValueType, class TensorType>
+std::enable_if_t<!std::is_same<typename TensorType::traits::array_layout,
                                flare::LayoutStride>::value>
-verify_values(ValueType expected, const ViewType view) {
-  static_assert(std::is_same<ValueType, typename ViewType::value_type>::value,
-                "Non-matching value types of view and reference value");
-  auto view_h = flare::create_mirror_view_and_copy(flare::HostSpace(), view);
-  for (std::size_t i = 0; i < view_h.extent(0); i++) {
-    REQUIRE_EQ(expected, view_h(i));
+verify_values(ValueType expected, const TensorType tensor) {
+  static_assert(std::is_same<ValueType, typename TensorType::value_type>::value,
+                "Non-matching value types of tensor and reference value");
+  auto tensor_h = flare::create_mirror_tensor_and_copy(flare::HostSpace(), tensor);
+  for (std::size_t i = 0; i < tensor_h.extent(0); i++) {
+    REQUIRE_EQ(expected, tensor_h(i));
   }
 }
 
-template <class ValueType, class ViewType>
-std::enable_if_t<std::is_same<typename ViewType::traits::array_layout,
+template <class ValueType, class TensorType>
+std::enable_if_t<std::is_same<typename TensorType::traits::array_layout,
                               flare::LayoutStride>::value>
-verify_values(ValueType expected, const ViewType view) {
-  static_assert(std::is_same<ValueType, typename ViewType::value_type>::value,
-                "Non-matching value types of view and reference value");
+verify_values(ValueType expected, const TensorType tensor) {
+  static_assert(std::is_same<ValueType, typename TensorType::value_type>::value,
+                "Non-matching value types of tensor and reference value");
 
-  using non_strided_view_t = flare::View<typename ViewType::value_type*>;
-  non_strided_view_t tmpView("tmpView", view.extent(0));
+  using non_strided_tensor_t = flare::Tensor<typename TensorType::value_type*>;
+  non_strided_tensor_t tmpTensor("tmpTensor", tensor.extent(0));
 
   flare::parallel_for(
-      "_std_algo_copy", view.extent(0),
-      CopyFunctor<ViewType, non_strided_view_t>(view, tmpView));
-  auto view_h =
-      flare::create_mirror_view_and_copy(flare::HostSpace(), tmpView);
-  for (std::size_t i = 0; i < view_h.extent(0); i++) {
-    REQUIRE_EQ(expected, view_h(i));
+      "_std_algo_copy", tensor.extent(0),
+      CopyFunctor<TensorType, non_strided_tensor_t>(tensor, tmpTensor));
+  auto tensor_h =
+      flare::create_mirror_tensor_and_copy(flare::HostSpace(), tmpTensor);
+  for (std::size_t i = 0; i < tensor_h.extent(0); i++) {
+    REQUIRE_EQ(expected, tensor_h(i));
   }
 }
 
-template <class ViewType1, class ViewType2>
-std::enable_if_t<!std::is_same<typename ViewType2::traits::array_layout,
+template <class TensorType1, class TensorType2>
+std::enable_if_t<!std::is_same<typename TensorType2::traits::array_layout,
                                flare::LayoutStride>::value>
-compare_views(ViewType1 expected, const ViewType2 actual) {
-  static_assert(std::is_same<typename ViewType1::value_type,
-                             typename ViewType2::value_type>::value,
-                "Non-matching value types of expected and actual view");
+compare_tensors(TensorType1 expected, const TensorType2 actual) {
+  static_assert(std::is_same<typename TensorType1::value_type,
+                             typename TensorType2::value_type>::value,
+                "Non-matching value types of expected and actual tensor");
   auto expected_h =
-      flare::create_mirror_view_and_copy(flare::HostSpace(), expected);
+      flare::create_mirror_tensor_and_copy(flare::HostSpace(), expected);
   auto actual_h =
-      flare::create_mirror_view_and_copy(flare::HostSpace(), actual);
+      flare::create_mirror_tensor_and_copy(flare::HostSpace(), actual);
 
   for (std::size_t i = 0; i < expected_h.extent(0); i++) {
     REQUIRE_EQ(expected_h(i), actual_h(i));
   }
 }
 
-template <class ViewType1, class ViewType2>
-std::enable_if_t<std::is_same<typename ViewType2::traits::array_layout,
+template <class TensorType1, class TensorType2>
+std::enable_if_t<std::is_same<typename TensorType2::traits::array_layout,
                               flare::LayoutStride>::value>
-compare_views(ViewType1 expected, const ViewType2 actual) {
-  static_assert(std::is_same<typename ViewType1::value_type,
-                             typename ViewType2::value_type>::value,
-                "Non-matching value types of expected and actual view");
+compare_tensors(TensorType1 expected, const TensorType2 actual) {
+  static_assert(std::is_same<typename TensorType1::value_type,
+                             typename TensorType2::value_type>::value,
+                "Non-matching value types of expected and actual tensor");
 
-  using non_strided_view_t = flare::View<typename ViewType2::value_type*>;
-  non_strided_view_t tmp_view("tmp_view", actual.extent(0));
+  using non_strided_tensor_t = flare::Tensor<typename TensorType2::value_type*>;
+  non_strided_tensor_t tmp_tensor("tmp_tensor", actual.extent(0));
   flare::parallel_for(
       "_std_algo_copy", actual.extent(0),
-      CopyFunctor<ViewType2, non_strided_view_t>(actual, tmp_view));
+      CopyFunctor<TensorType2, non_strided_tensor_t>(actual, tmp_tensor));
 
   auto actual_h =
-      flare::create_mirror_view_and_copy(flare::HostSpace(), tmp_view);
+      flare::create_mirror_tensor_and_copy(flare::HostSpace(), tmp_tensor);
   auto expected_h =
-      flare::create_mirror_view_and_copy(flare::HostSpace(), expected);
+      flare::create_mirror_tensor_and_copy(flare::HostSpace(), expected);
 
   for (std::size_t i = 0; i < expected_h.extent(0); i++) {
     REQUIRE_EQ(expected_h(i), actual_h(i));
   }
 }
 
-template <class ViewType1, class ViewType2>
-void expect_equal_host_views(ViewType1 A, const ViewType2 B) {
+template <class TensorType1, class TensorType2>
+void expect_equal_host_tensors(TensorType1 A, const TensorType2 B) {
   static_assert(
-      ViewType1::rank == 2 && ViewType2::rank == 2 &&
-          std::is_same_v<typename ViewType1::memory_space, flare::HostSpace> &&
-          std::is_same_v<typename ViewType2::memory_space, flare::HostSpace>,
-      "Expected 2-dimensional host view.");
+      TensorType1::rank == 2 && TensorType2::rank == 2 &&
+          std::is_same_v<typename TensorType1::memory_space, flare::HostSpace> &&
+          std::is_same_v<typename TensorType2::memory_space, flare::HostSpace>,
+      "Expected 2-dimensional host tensor.");
   REQUIRE_EQ(A.extent(0), B.extent(0));
   REQUIRE_EQ(A.extent(1), B.extent(1));
 
   constexpr bool values_are_floast =
-      std::is_floating_point_v<typename ViewType1::value_type> ||
-      std::is_floating_point_v<typename ViewType2::value_type>;
+      std::is_floating_point_v<typename TensorType1::value_type> ||
+      std::is_floating_point_v<typename TensorType2::value_type>;
 
   for (std::size_t i = 0; i < A.extent(0); i++) {
     for (std::size_t j = 0; j < A.extent(1); j++) {
@@ -598,14 +598,14 @@ void expect_equal_host_views(ViewType1 A, const ViewType2 B) {
   }
 }
 
-template <class ViewType>
-void fill_zero(ViewType a) {
-  const auto functor = FillZeroFunctor<ViewType>(a);
+template <class TensorType>
+void fill_zero(TensorType a) {
+  const auto functor = FillZeroFunctor<TensorType>(a);
   ::flare::parallel_for(a.extent(0), std::move(functor));
 }
 
-template <class ViewType1, class ViewType2>
-void fill_zero(ViewType1 a, ViewType2 b) {
+template <class TensorType1, class TensorType2>
+void fill_zero(TensorType1 a, TensorType2 b) {
   fill_zero(a);
   fill_zero(b);
 }
@@ -613,35 +613,35 @@ void fill_zero(ViewType1 a, ViewType2 b) {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-// helpers for testing small views (extent = 10)
+// helpers for testing small tensors (extent = 10)
 // prefer `default_scenarios` map for creating new tests
 using value_type = double;
 
 struct std_algorithms_test {
   static constexpr size_t extent = 10;
 
-  using static_view_t = flare::View<value_type[extent]>;
-  static_view_t m_static_view{"std-algo-test-1D-contiguous-view-static"};
+  using static_tensor_t = flare::Tensor<value_type[extent]>;
+  static_tensor_t m_static_tensor{"std-algo-test-1D-contiguous-tensor-static"};
 
-  using dyn_view_t = flare::View<value_type*>;
-  dyn_view_t m_dynamic_view{"std-algo-test-1D-contiguous-view-dynamic", extent};
+  using dyn_tensor_t = flare::Tensor<value_type*>;
+  dyn_tensor_t m_dynamic_tensor{"std-algo-test-1D-contiguous-tensor-dynamic", extent};
 
-  using strided_view_t = flare::View<value_type*, flare::LayoutStride>;
+  using strided_tensor_t = flare::Tensor<value_type*, flare::LayoutStride>;
   flare::LayoutStride layout{extent, 2};
-  strided_view_t m_strided_view{"std-algo-test-1D-strided-view", layout};
+  strided_tensor_t m_strided_tensor{"std-algo-test-1D-strided-tensor", layout};
 
-  using view_host_space_t = flare::View<value_type[10], flare::HostSpace>;
+  using tensor_host_space_t = flare::Tensor<value_type[10], flare::HostSpace>;
 
-  template <class ViewFromType>
-  void copyInputViewToFixtureViews(ViewFromType view) {
-    CopyFunctor<ViewFromType, static_view_t> F1(view, m_static_view);
-    flare::parallel_for("_std_algo_copy1", view.extent(0), F1);
+  template <class TensorFromType>
+  void copyInputTensorToFixtureTensors(TensorFromType tensor) {
+    CopyFunctor<TensorFromType, static_tensor_t> F1(tensor, m_static_tensor);
+    flare::parallel_for("_std_algo_copy1", tensor.extent(0), F1);
 
-    CopyFunctor<ViewFromType, dyn_view_t> F2(view, m_dynamic_view);
-    flare::parallel_for("_std_algo_copy2", view.extent(0), F2);
+    CopyFunctor<TensorFromType, dyn_tensor_t> F2(tensor, m_dynamic_tensor);
+    flare::parallel_for("_std_algo_copy2", tensor.extent(0), F2);
 
-    CopyFunctor<ViewFromType, strided_view_t> F3(view, m_strided_view);
-    flare::parallel_for("_std_algo_copy3", view.extent(0), F3);
+    CopyFunctor<TensorFromType, strided_tensor_t> F3(tensor, m_strided_tensor);
+    flare::parallel_for("_std_algo_copy3", tensor.extent(0), F3);
   }
 };
 

@@ -23,23 +23,23 @@
 
 namespace flare {
 
-template <class KeyViewType, class BinSortOp,
-          class Space    = typename KeyViewType::device_type,
-          class SizeType = typename KeyViewType::memory_space::size_type>
+template <class KeyTensorType, class BinSortOp,
+          class Space    = typename KeyTensorType::device_type,
+          class SizeType = typename KeyTensorType::memory_space::size_type>
 class BinSort {
  public:
-  template <class DstViewType, class SrcViewType>
+  template <class DstTensorType, class SrcTensorType>
   struct copy_functor {
-    using src_view_type = typename SrcViewType::const_type;
+    using src_tensor_type = typename SrcTensorType::const_type;
 
-    using copy_op = detail::CopyOp<DstViewType, src_view_type>;
+    using copy_op = detail::CopyOp<DstTensorType, src_tensor_type>;
 
-    DstViewType dst_values;
-    src_view_type src_values;
+    DstTensorType dst_values;
+    src_tensor_type src_values;
     int dst_offset;
 
-    copy_functor(DstViewType const& dst_values_, int const& dst_offset_,
-                 SrcViewType const& src_values_)
+    copy_functor(DstTensorType const& dst_values_, int const& dst_offset_,
+                 SrcTensorType const& src_values_)
         : dst_values(dst_values_),
           src_values(src_values_),
           dst_offset(dst_offset_) {}
@@ -50,35 +50,35 @@ class BinSort {
     }
   };
 
-  template <class DstViewType, class PermuteViewType, class SrcViewType>
+  template <class DstTensorType, class PermuteTensorType, class SrcTensorType>
   struct copy_permute_functor {
-    // If a flare::View then can generate constant random access
+    // If a flare::Tensor then can generate constant random access
     // otherwise can only use the constant type.
 
-    using src_view_type = std::conditional_t<
-        flare::is_view<SrcViewType>::value,
-        flare::View<typename SrcViewType::const_data_type,
-                     typename SrcViewType::array_layout,
-                     typename SrcViewType::device_type
+    using src_tensor_type = std::conditional_t<
+        flare::is_tensor<SrcTensorType>::value,
+        flare::Tensor<typename SrcTensorType::const_data_type,
+                     typename SrcTensorType::array_layout,
+                     typename SrcTensorType::device_type
 #if !defined(FLARE_COMPILER_NVHPC) || (FLARE_COMPILER_NVHPC >= 230700)
                      ,
                      flare::MemoryTraits<flare::RandomAccess>
 #endif
                      >,
-        typename SrcViewType::const_type>;
+        typename SrcTensorType::const_type>;
 
-    using perm_view_type = typename PermuteViewType::const_type;
+    using perm_tensor_type = typename PermuteTensorType::const_type;
 
-    using copy_op = detail::CopyOp<DstViewType, src_view_type>;
+    using copy_op = detail::CopyOp<DstTensorType, src_tensor_type>;
 
-    DstViewType dst_values;
-    perm_view_type sort_order;
-    src_view_type src_values;
+    DstTensorType dst_values;
+    perm_tensor_type sort_order;
+    src_tensor_type src_values;
     int src_offset;
 
-    copy_permute_functor(DstViewType const& dst_values_,
-                         PermuteViewType const& sort_order_,
-                         SrcViewType const& src_values_, int const& src_offset_)
+    copy_permute_functor(DstTensorType const& dst_values_,
+                         PermuteTensorType const& sort_order_,
+                         SrcTensorType const& src_values_, int const& src_offset_)
         : dst_values(dst_values_),
           sort_order(sort_order_),
           src_values(src_values_),
@@ -105,31 +105,31 @@ class BinSort {
   using size_type  = SizeType;
   using value_type = size_type;
 
-  using offset_type    = flare::View<size_type*, Space>;
-  using bin_count_type = flare::View<const int*, Space>;
+  using offset_type    = flare::Tensor<size_type*, Space>;
+  using bin_count_type = flare::Tensor<const int*, Space>;
 
-  using const_key_view_type = typename KeyViewType::const_type;
+  using const_key_tensor_type = typename KeyTensorType::const_type;
 
-  // If a flare::View then can generate constant random access
+  // If a flare::Tensor then can generate constant random access
   // otherwise can only use the constant type.
 
-  using const_rnd_key_view_type = std::conditional_t<
-      flare::is_view<KeyViewType>::value,
-      flare::View<typename KeyViewType::const_data_type,
-                   typename KeyViewType::array_layout,
-                   typename KeyViewType::device_type,
+  using const_rnd_key_tensor_type = std::conditional_t<
+      flare::is_tensor<KeyTensorType>::value,
+      flare::Tensor<typename KeyTensorType::const_data_type,
+                   typename KeyTensorType::array_layout,
+                   typename KeyTensorType::device_type,
                    flare::MemoryTraits<flare::RandomAccess> >,
-      const_key_view_type>;
+      const_key_tensor_type>;
 
-  using non_const_key_scalar = typename KeyViewType::non_const_value_type;
-  using const_key_scalar     = typename KeyViewType::const_value_type;
+  using non_const_key_scalar = typename KeyTensorType::non_const_value_type;
+  using const_key_scalar     = typename KeyTensorType::const_value_type;
 
   using bin_count_atomic_type =
-      flare::View<int*, Space, flare::MemoryTraits<flare::Atomic> >;
+      flare::Tensor<int*, Space, flare::MemoryTraits<flare::Atomic> >;
 
  private:
-  const_key_view_type keys;
-  const_rnd_key_view_type keys_rnd;
+  const_key_tensor_type keys;
+  const_rnd_key_tensor_type keys_rnd;
 
  public:
   BinSortOp bin_op;
@@ -148,7 +148,7 @@ class BinSort {
   // Constructor: takes the keys, the binning_operator and optionally whether to
   // sort within bins (default false)
   template <typename ExecutionSpace>
-  BinSort(const ExecutionSpace& exec, const_key_view_type keys_,
+  BinSort(const ExecutionSpace& exec, const_key_tensor_type keys_,
           int range_begin_, int range_end_, BinSortOp bin_op_,
           bool sort_within_bins_ = false)
       : keys(keys_),
@@ -169,30 +169,30 @@ class BinSort {
     if (bin_op.max_bins() <= 0)
       flare::abort(
           "The number of bins in the BinSortOp object must be greater than 0!");
-    bin_count_atomic = flare::View<int*, Space>(
+    bin_count_atomic = flare::Tensor<int*, Space>(
         "flare::SortImpl::BinSortFunctor::bin_count", bin_op.max_bins());
     bin_count_const = bin_count_atomic;
     bin_offsets =
-        offset_type(view_alloc(exec, WithoutInitializing,
+        offset_type(tensor_alloc(exec, WithoutInitializing,
                                "flare::SortImpl::BinSortFunctor::bin_offsets"),
                     bin_op.max_bins());
     sort_order =
-        offset_type(view_alloc(exec, WithoutInitializing,
+        offset_type(tensor_alloc(exec, WithoutInitializing,
                                "flare::SortImpl::BinSortFunctor::sort_order"),
                     range_end - range_begin);
   }
 
-  BinSort(const_key_view_type keys_, int range_begin_, int range_end_,
+  BinSort(const_key_tensor_type keys_, int range_begin_, int range_end_,
           BinSortOp bin_op_, bool sort_within_bins_ = false)
       : BinSort(exec_space{}, keys_, range_begin_, range_end_, bin_op_,
                 sort_within_bins_) {}
 
   template <typename ExecutionSpace>
-  BinSort(const ExecutionSpace& exec, const_key_view_type keys_,
+  BinSort(const ExecutionSpace& exec, const_key_tensor_type keys_,
           BinSortOp bin_op_, bool sort_within_bins_ = false)
       : BinSort(exec, keys_, 0, keys_.extent(0), bin_op_, sort_within_bins_) {}
 
-  BinSort(const_key_view_type keys_, BinSortOp bin_op_,
+  BinSort(const_key_tensor_type keys_, BinSortOp bin_op_,
           bool sort_within_bins_ = false)
       : BinSort(exec_space{}, keys_, bin_op_, sort_within_bins_) {}
 
@@ -240,10 +240,10 @@ class BinSort {
     e.fence("flare::Binsort::create_permute_vector: after");
   }
 
-  // Sort a subset of a view with respect to the first dimension using the
+  // Sort a subset of a tensor with respect to the first dimension using the
   // permutation array
-  template <class ExecutionSpace, class ValuesViewType>
-  void sort(const ExecutionSpace& exec, ValuesViewType const& values,
+  template <class ExecutionSpace, class ValuesTensorType>
+  void sort(const ExecutionSpace& exec, ValuesTensorType const& values,
             int values_range_begin, int values_range_end) const {
     if (values.extent(0) == 0) {
       return;
@@ -256,9 +256,9 @@ class BinSort {
         "BinSort was initialized with!");
     static_assert(
         flare::SpaceAccessibility<
-            ExecutionSpace, typename ValuesViewType::memory_space>::accessible,
+            ExecutionSpace, typename ValuesTensorType::memory_space>::accessible,
         "The provided execution space must be able to access the memory space "
-        "of the View argument!");
+        "of the Tensor argument!");
 
     const size_t len        = range_end - range_begin;
     const size_t values_len = values_range_end - values_range_begin;
@@ -267,11 +267,11 @@ class BinSort {
           "BinSort::sort: values range length != permutation vector length");
     }
 
-    using scratch_view_type =
-        flare::View<typename ValuesViewType::data_type,
-                     typename ValuesViewType::device_type>;
-    scratch_view_type sorted_values(
-        view_alloc(exec, WithoutInitializing,
+    using scratch_tensor_type =
+        flare::Tensor<typename ValuesTensorType::data_type,
+                     typename ValuesTensorType::device_type>;
+    scratch_tensor_type sorted_values(
+        tensor_alloc(exec, WithoutInitializing,
                    "flare::SortImpl::BinSortFunctor::sorted_values"),
         values.rank_dynamic > 0 ? len : FLARE_IMPL_CTOR_DEFAULT_ARG,
         values.rank_dynamic > 1 ? values.extent(1)
@@ -290,11 +290,11 @@ class BinSort {
                                 : FLARE_IMPL_CTOR_DEFAULT_ARG);
 
     {
-      copy_permute_functor<scratch_view_type /* DstViewType */
+      copy_permute_functor<scratch_tensor_type /* DstTensorType */
                            ,
-                           offset_type /* PermuteViewType */
+                           offset_type /* PermuteTensorType */
                            ,
-                           ValuesViewType /* SrcViewType */
+                           ValuesTensorType /* SrcTensorType */
                            >
           functor(sorted_values, sort_order, values,
                   values_range_begin - range_begin);
@@ -304,7 +304,7 @@ class BinSort {
     }
 
     {
-      copy_functor<ValuesViewType, scratch_view_type> functor(
+      copy_functor<ValuesTensorType, scratch_tensor_type> functor(
           values, range_begin, sorted_values);
 
       parallel_for("flare::Sort::Copy",
@@ -312,10 +312,10 @@ class BinSort {
     }
   }
 
-  // Sort a subset of a view with respect to the first dimension using the
+  // Sort a subset of a tensor with respect to the first dimension using the
   // permutation array
-  template <class ValuesViewType>
-  void sort(ValuesViewType const& values, int values_range_begin,
+  template <class ValuesTensorType>
+  void sort(ValuesTensorType const& values, int values_range_begin,
             int values_range_end) const {
     flare::fence("flare::Binsort::sort: before");
     exec_space exec;
@@ -323,13 +323,13 @@ class BinSort {
     exec.fence("flare::BinSort:sort: after");
   }
 
-  template <class ExecutionSpace, class ValuesViewType>
-  void sort(ExecutionSpace const& exec, ValuesViewType const& values) const {
+  template <class ExecutionSpace, class ValuesTensorType>
+  void sort(ExecutionSpace const& exec, ValuesTensorType const& values) const {
     this->sort(exec, values, 0, /*values.extent(0)*/ range_end - range_begin);
   }
 
-  template <class ValuesViewType>
-  void sort(ValuesViewType const& values) const {
+  template <class ValuesTensorType>
+  void sort(ValuesTensorType const& values) const {
     this->sort(values, 0, /*values.extent(0)*/ range_end - range_begin);
   }
 

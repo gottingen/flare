@@ -22,105 +22,105 @@ namespace ForEach {
 
 namespace KE = flare::experimental;
 
-template <class ViewType>
-void test_for_each(const ViewType view) {
-  using value_t           = typename ViewType::value_type;
-  using view_host_space_t = flare::View<value_t*, flare::HostSpace>;
+template <class TensorType>
+void test_for_each(const TensorType tensor) {
+  using value_t           = typename TensorType::value_type;
+  using tensor_host_space_t = flare::Tensor<value_t*, flare::HostSpace>;
 
-  view_host_space_t expected("for_each_expected", view.extent(0));
-  compare_views(expected, view);
+  tensor_host_space_t expected("for_each_expected", tensor.extent(0));
+  compare_tensors(expected, tensor);
 
   const auto mod_functor = IncrementElementWiseFunctor<value_t>();
 
-  // pass view, functor takes non-const ref
-  KE::for_each("label", exespace(), view, mod_functor);
+  // pass tensor, functor takes non-const ref
+  KE::for_each("label", exespace(), tensor, mod_functor);
   std::for_each(KE::begin(expected), KE::end(expected), mod_functor);
-  compare_views(expected, view);
+  compare_tensors(expected, tensor);
 
   // pass iterators, functor takes non-const ref
-  KE::for_each(exespace(), KE::begin(view), KE::end(view), mod_functor);
+  KE::for_each(exespace(), KE::begin(tensor), KE::end(tensor), mod_functor);
   std::for_each(KE::begin(expected), KE::end(expected), mod_functor);
-  compare_views(expected, view);
+  compare_tensors(expected, tensor);
 
   const auto non_mod_functor = NoOpNonMutableFunctor<value_t>();
 
-  // pass view, functor takes const ref
-  KE::for_each(exespace(), view, non_mod_functor);
+  // pass tensor, functor takes const ref
+  KE::for_each(exespace(), tensor, non_mod_functor);
   std::for_each(KE::begin(expected), KE::end(expected), non_mod_functor);
-  compare_views(expected, view);
+  compare_tensors(expected, tensor);
 
   // pass const iterators, functor takes const ref
-  KE::for_each(exespace(), KE::cbegin(view), KE::cend(view), non_mod_functor);
+  KE::for_each(exespace(), KE::cbegin(tensor), KE::cend(tensor), non_mod_functor);
   std::for_each(KE::begin(expected), KE::end(expected), non_mod_functor);
-  compare_views(expected, view);
+  compare_tensors(expected, tensor);
 
 #if defined(FLARE_ENABLE_CXX11_DISPATCH_LAMBDA)
   const auto mod_lambda = FLARE_LAMBDA(value_t & i) { ++i; };
 
-  // pass view, lambda takes non-const ref
-  KE::for_each(exespace(), view, mod_lambda);
+  // pass tensor, lambda takes non-const ref
+  KE::for_each(exespace(), tensor, mod_lambda);
   std::for_each(KE::begin(expected), KE::end(expected), mod_lambda);
-  compare_views(expected, view);
+  compare_tensors(expected, tensor);
 
   // pass iterators, lambda takes non-const ref
-  KE::for_each(exespace(), KE::begin(view), KE::end(view), mod_lambda);
+  KE::for_each(exespace(), KE::begin(tensor), KE::end(tensor), mod_lambda);
   std::for_each(KE::begin(expected), KE::end(expected), mod_lambda);
-  compare_views(expected, view);
+  compare_tensors(expected, tensor);
 
   const auto non_mod_lambda = FLARE_LAMBDA(const value_t& i) { (void)i; };
 
-  // pass view, lambda takes const ref
-  KE::for_each(exespace(), view, non_mod_lambda);
+  // pass tensor, lambda takes const ref
+  KE::for_each(exespace(), tensor, non_mod_lambda);
   std::for_each(KE::cbegin(expected), KE::cend(expected), non_mod_lambda);
-  compare_views(expected, view);
+  compare_tensors(expected, tensor);
 
   // pass const iterators, lambda takes const ref
-  KE::for_each(exespace(), KE::cbegin(view), KE::cend(view), non_mod_lambda);
+  KE::for_each(exespace(), KE::cbegin(tensor), KE::cend(tensor), non_mod_lambda);
   std::for_each(KE::cbegin(expected), KE::cend(expected), non_mod_lambda);
-  compare_views(expected, view);
+  compare_tensors(expected, tensor);
 #endif
 }
 
 // std::for_each_n is C++17, so we cannot compare results directly
-template <class ViewType>
-void test_for_each_n(const ViewType view) {
-  using value_t       = typename ViewType::value_type;
-  const std::size_t n = view.extent(0);
+template <class TensorType>
+void test_for_each_n(const TensorType tensor) {
+  using value_t       = typename TensorType::value_type;
+  const std::size_t n = tensor.extent(0);
 
   const auto non_mod_functor = NoOpNonMutableFunctor<value_t>();
 
   // pass const iterators, functor takes const ref
-  REQUIRE_EQ(KE::cbegin(view) + n,
-            KE::for_each_n(exespace(), KE::cbegin(view), n, non_mod_functor));
-  verify_values(value_t{0}, view);
+  REQUIRE_EQ(KE::cbegin(tensor) + n,
+            KE::for_each_n(exespace(), KE::cbegin(tensor), n, non_mod_functor));
+  verify_values(value_t{0}, tensor);
 
-  // pass view, functor takes const ref
-  REQUIRE_EQ(KE::begin(view) + n,
-            KE::for_each_n(exespace(), view, n, non_mod_functor));
-  verify_values(value_t{0}, view);
+  // pass tensor, functor takes const ref
+  REQUIRE_EQ(KE::begin(tensor) + n,
+            KE::for_each_n(exespace(), tensor, n, non_mod_functor));
+  verify_values(value_t{0}, tensor);
 
   // pass iterators, functor takes non-const ref
   const auto mod_functor = IncrementElementWiseFunctor<value_t>();
-  REQUIRE_EQ(KE::begin(view) + n,
-            KE::for_each_n(exespace(), KE::begin(view), n, mod_functor));
-  verify_values(value_t{1}, view);
+  REQUIRE_EQ(KE::begin(tensor) + n,
+            KE::for_each_n(exespace(), KE::begin(tensor), n, mod_functor));
+  verify_values(value_t{1}, tensor);
 
-  // pass view, functor takes non-const ref
-  REQUIRE_EQ(KE::begin(view) + n,
-            KE::for_each_n("label", exespace(), view, n, mod_functor));
-  verify_values(value_t{2}, view);
+  // pass tensor, functor takes non-const ref
+  REQUIRE_EQ(KE::begin(tensor) + n,
+            KE::for_each_n("label", exespace(), tensor, n, mod_functor));
+  verify_values(value_t{2}, tensor);
 }
 
 template <class Tag, class ValueType>
 void run_all_scenarios() {
   for (const auto& scenario : default_scenarios) {
     {
-      auto view = create_view<ValueType>(Tag{}, scenario.second, "for_each");
-      test_for_each(view);
+      auto tensor = create_tensor<ValueType>(Tag{}, scenario.second, "for_each");
+      test_for_each(tensor);
     }
     {
-      auto view = create_view<ValueType>(Tag{}, scenario.second, "for_each_n");
-      test_for_each_n(view);
+      auto tensor = create_tensor<ValueType>(Tag{}, scenario.second, "for_each_n");
+      test_for_each_n(tensor);
     }
   }
 }

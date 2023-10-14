@@ -37,7 +37,7 @@ namespace flare {
     template<typename DstDevice, typename SrcDevice>
     void deep_copy(ConstBitset<DstDevice> &dst, ConstBitset<SrcDevice> const &src);
 
-    /// A thread safe view to a bitset
+    /// A thread safe tensor to a bitset
     template<typename Device>
     class Bitset {
     public:
@@ -259,7 +259,7 @@ namespace flare {
     private:
         unsigned m_size;
         unsigned m_last_block_mask;
-        View<unsigned *, Device, MemoryTraits<RandomAccess> > m_blocks;
+        Tensor<unsigned *, Device, MemoryTraits<RandomAccess> > m_blocks;
 
     private:
         template<typename DDevice>
@@ -282,7 +282,7 @@ namespace flare {
                               ConstBitset<SrcDevice> const &src);
     };
 
-/// a thread-safe view to a const bitset
+/// a thread-safe tensor to a const bitset
 /// i.e. can only test bits
     template<typename Device>
     class ConstBitset {
@@ -349,7 +349,7 @@ namespace flare {
 
     private:
         unsigned m_size;
-        View<const unsigned *, Device, MemoryTraits<RandomAccess> > m_blocks;
+        Tensor<const unsigned *, Device, MemoryTraits<RandomAccess> > m_blocks;
 
     private:
         template<typename DDevice>

@@ -26,47 +26,47 @@ namespace AllAnyNoneOf {
 
 namespace KE = flare::experimental;
 
-template <class ViewType>
-void test_all_of(const ViewType view) {
-  using value_t           = typename ViewType::value_type;
-  using view_host_space_t = flare::View<value_t*, flare::HostSpace>;
+template <class TensorType>
+void test_all_of(const TensorType tensor) {
+  using value_t           = typename TensorType::value_type;
+  using tensor_host_space_t = flare::Tensor<value_t*, flare::HostSpace>;
   const auto equals_zero  = EqualsValFunctor<value_t>(0);
 
-  view_host_space_t expected("all_of_expected", view.extent(0));
-  compare_views(expected, view);
+  tensor_host_space_t expected("all_of_expected", tensor.extent(0));
+  compare_tensors(expected, tensor);
 
   // reference result
   REQUIRE(std::all_of(KE::begin(expected), KE::end(expected), equals_zero));
 
   // pass iterators
   REQUIRE(
-      KE::all_of(exespace(), KE::begin(view), KE::end(view), equals_zero));
-  // pass view
-  REQUIRE(KE::all_of(exespace(), view, equals_zero));
+      KE::all_of(exespace(), KE::begin(tensor), KE::end(tensor), equals_zero));
+  // pass tensor
+  REQUIRE(KE::all_of(exespace(), tensor, equals_zero));
 
-  fill_views_inc(view, expected);
+  fill_tensors_inc(tensor, expected);
 
-  if (view.extent(0) > 1) {
+  if (tensor.extent(0) > 1) {
     // reference result
     REQUIRE_FALSE(
         std::all_of(KE::begin(expected), KE::end(expected), equals_zero));
 
     // pass const iterators
     REQUIRE_FALSE(
-        KE::all_of(exespace(), KE::cbegin(view), KE::cend(view), equals_zero));
-    // pass view
-    REQUIRE_FALSE(KE::all_of("label", exespace(), view, equals_zero));
+        KE::all_of(exespace(), KE::cbegin(tensor), KE::cend(tensor), equals_zero));
+    // pass tensor
+    REQUIRE_FALSE(KE::all_of("label", exespace(), tensor, equals_zero));
   }
 }
 
-template <class ViewType>
-void test_any_of(const ViewType view) {
-  using value_t              = typename ViewType::value_type;
-  using view_host_space_t    = flare::View<value_t*, flare::HostSpace>;
+template <class TensorType>
+void test_any_of(const TensorType tensor) {
+  using value_t              = typename TensorType::value_type;
+  using tensor_host_space_t    = flare::Tensor<value_t*, flare::HostSpace>;
   const auto not_equals_zero = NotEqualsZeroFunctor<value_t>();
 
-  view_host_space_t expected("any_of_expected", view.extent(0));
-  compare_views(expected, view);
+  tensor_host_space_t expected("any_of_expected", tensor.extent(0));
+  compare_tensors(expected, tensor);
 
   // reference result
   REQUIRE_FALSE(
@@ -74,33 +74,33 @@ void test_any_of(const ViewType view) {
 
   // pass iterators
   REQUIRE_FALSE(
-      KE::any_of(exespace(), KE::begin(view), KE::end(view), not_equals_zero));
-  // pass view
-  REQUIRE_FALSE(KE::any_of(exespace(), view, not_equals_zero));
+      KE::any_of(exespace(), KE::begin(tensor), KE::end(tensor), not_equals_zero));
+  // pass tensor
+  REQUIRE_FALSE(KE::any_of(exespace(), tensor, not_equals_zero));
 
-  fill_views_inc(view, expected);
+  fill_tensors_inc(tensor, expected);
 
-  if (view.extent(0) > 1) {
+  if (tensor.extent(0) > 1) {
     // reference result
     REQUIRE(
         std::any_of(KE::begin(expected), KE::end(expected), not_equals_zero));
 
     // pass const iterators
-    REQUIRE(KE::any_of(exespace(), KE::cbegin(view), KE::cend(view),
+    REQUIRE(KE::any_of(exespace(), KE::cbegin(tensor), KE::cend(tensor),
                            not_equals_zero));
-    // pass view
-    REQUIRE(KE::any_of("label", exespace(), view, not_equals_zero));
+    // pass tensor
+    REQUIRE(KE::any_of("label", exespace(), tensor, not_equals_zero));
   }
 }
 
-template <class ViewType>
-void test_none_of(const ViewType view) {
-  using value_t           = typename ViewType::value_type;
-  using view_host_space_t = flare::View<value_t*, flare::HostSpace>;
+template <class TensorType>
+void test_none_of(const TensorType tensor) {
+  using value_t           = typename TensorType::value_type;
+  using tensor_host_space_t = flare::Tensor<value_t*, flare::HostSpace>;
   const auto is_positive  = IsPositiveFunctor<value_t>();
 
-  view_host_space_t expected("none_of_expected", view.extent(0));
-  compare_views(expected, view);
+  tensor_host_space_t expected("none_of_expected", tensor.extent(0));
+  compare_tensors(expected, tensor);
 
   // reference result
   REQUIRE(
@@ -108,22 +108,22 @@ void test_none_of(const ViewType view) {
 
   // pass iterators
   REQUIRE(
-      KE::none_of(exespace(), KE::begin(view), KE::end(view), is_positive));
-  // pass view
-  REQUIRE(KE::none_of(exespace(), view, is_positive));
+      KE::none_of(exespace(), KE::begin(tensor), KE::end(tensor), is_positive));
+  // pass tensor
+  REQUIRE(KE::none_of(exespace(), tensor, is_positive));
 
-  fill_views_inc(view, expected);
+  fill_tensors_inc(tensor, expected);
 
-  if (view.extent(0) > 1) {
+  if (tensor.extent(0) > 1) {
     // reference result
     REQUIRE_FALSE(
         std::none_of(KE::begin(expected), KE::end(expected), is_positive));
 
     // pass const iterators
     REQUIRE_FALSE(
-        KE::none_of(exespace(), KE::cbegin(view), KE::cend(view), is_positive));
-    // pass view
-    REQUIRE_FALSE(KE::none_of("label", exespace(), view, is_positive));
+        KE::none_of(exespace(), KE::cbegin(tensor), KE::cend(tensor), is_positive));
+    // pass tensor
+    REQUIRE_FALSE(KE::none_of("label", exespace(), tensor, is_positive));
   }
 }
 
@@ -131,16 +131,16 @@ template <class Tag, class ValueType>
 void run_all_scenarios() {
   for (const auto& scenario : default_scenarios) {
     {
-      auto view = create_view<ValueType>(Tag{}, scenario.second, "all_of");
-      test_all_of(view);
+      auto tensor = create_tensor<ValueType>(Tag{}, scenario.second, "all_of");
+      test_all_of(tensor);
     }
     {
-      auto view = create_view<ValueType>(Tag{}, scenario.second, "any_of");
-      test_any_of(view);
+      auto tensor = create_tensor<ValueType>(Tag{}, scenario.second, "any_of");
+      test_any_of(tensor);
     }
     {
-      auto view = create_view<ValueType>(Tag{}, scenario.second, "none_of");
-      test_none_of(view);
+      auto tensor = create_tensor<ValueType>(Tag{}, scenario.second, "none_of");
+      test_none_of(tensor);
     }
   }
 }

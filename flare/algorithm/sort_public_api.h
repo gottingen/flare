@@ -29,50 +29,50 @@ namespace flare {
 
 template <class ExecutionSpace, class DataType, class... Properties>
 void sort([[maybe_unused]] const ExecutionSpace& exec,
-          const flare::View<DataType, Properties...>& view) {
+          const flare::Tensor<DataType, Properties...>& tensor) {
   // constraints
-  using ViewType = flare::View<DataType, Properties...>;
-  using MemSpace = typename ViewType::memory_space;
+  using TensorType = flare::Tensor<DataType, Properties...>;
+  using MemSpace = typename TensorType::memory_space;
   static_assert(
-      ViewType::rank == 1 &&
-          (std::is_same_v<typename ViewType::array_layout, LayoutRight> ||
-           std::is_same_v<typename ViewType::array_layout, LayoutLeft> ||
-           std::is_same_v<typename ViewType::array_layout, LayoutStride>),
-      "flare::sort without comparator: supports 1D Views with LayoutRight, "
+      TensorType::rank == 1 &&
+          (std::is_same_v<typename TensorType::array_layout, LayoutRight> ||
+           std::is_same_v<typename TensorType::array_layout, LayoutLeft> ||
+           std::is_same_v<typename TensorType::array_layout, LayoutStride>),
+      "flare::sort without comparator: supports 1D Tensors with LayoutRight, "
       "LayoutLeft or LayoutStride.");
 
   static_assert(SpaceAccessibility<ExecutionSpace, MemSpace>::accessible,
                 "flare::sort: execution space instance is not able to access "
                 "the memory space of the "
-                "View argument!");
+                "Tensor argument!");
 
-  if (view.extent(0) <= 1) {
+  if (tensor.extent(0) <= 1) {
     return;
   }
 
   if constexpr (detail::better_off_calling_std_sort_v<ExecutionSpace>) {
-    auto first = ::flare::experimental::begin(view);
-    auto last  = ::flare::experimental::end(view);
+    auto first = ::flare::experimental::begin(tensor);
+    auto last  = ::flare::experimental::end(tensor);
     std::sort(first, last);
   } else {
-    detail::sort_device_view_without_comparator(exec, view);
+    detail::sort_device_tensor_without_comparator(exec, tensor);
   }
 }
 
 template <class DataType, class... Properties>
-void sort(const flare::View<DataType, Properties...>& view) {
-  using ViewType = flare::View<DataType, Properties...>;
-  static_assert(ViewType::rank == 1,
-                "flare::sort: currently only supports rank-1 Views.");
+void sort(const flare::Tensor<DataType, Properties...>& tensor) {
+  using TensorType = flare::Tensor<DataType, Properties...>;
+  static_assert(TensorType::rank == 1,
+                "flare::sort: currently only supports rank-1 Tensors.");
 
   flare::fence("flare::sort: before");
 
-  if (view.extent(0) <= 1) {
+  if (tensor.extent(0) <= 1) {
     return;
   }
 
-  typename ViewType::execution_space exec;
-  sort(exec, view);
+  typename TensorType::execution_space exec;
+  sort(exec, tensor);
   exec.fence("flare::sort: fence after sorting");
 }
 
@@ -82,110 +82,110 @@ void sort(const flare::View<DataType, Properties...>& view) {
 template <class ExecutionSpace, class ComparatorType, class DataType,
           class... Properties>
 void sort([[maybe_unused]] const ExecutionSpace& exec,
-          const flare::View<DataType, Properties...>& view,
+          const flare::Tensor<DataType, Properties...>& tensor,
           const ComparatorType& comparator) {
   // constraints
-  using ViewType = flare::View<DataType, Properties...>;
-  using MemSpace = typename ViewType::memory_space;
+  using TensorType = flare::Tensor<DataType, Properties...>;
+  using MemSpace = typename TensorType::memory_space;
   static_assert(
-      ViewType::rank == 1 &&
-          (std::is_same_v<typename ViewType::array_layout, LayoutRight> ||
-           std::is_same_v<typename ViewType::array_layout, LayoutLeft> ||
-           std::is_same_v<typename ViewType::array_layout, LayoutStride>),
-      "flare::sort with comparator: supports 1D Views with LayoutRight, "
+      TensorType::rank == 1 &&
+          (std::is_same_v<typename TensorType::array_layout, LayoutRight> ||
+           std::is_same_v<typename TensorType::array_layout, LayoutLeft> ||
+           std::is_same_v<typename TensorType::array_layout, LayoutStride>),
+      "flare::sort with comparator: supports 1D Tensors with LayoutRight, "
       "LayoutLeft or LayoutStride.");
 
   static_assert(SpaceAccessibility<ExecutionSpace, MemSpace>::accessible,
                 "flare::sort: execution space instance is not able to access "
-                "the memory space of the View argument!");
+                "the memory space of the Tensor argument!");
 
-  if (view.extent(0) <= 1) {
+  if (tensor.extent(0) <= 1) {
     return;
   }
 
   if constexpr (detail::better_off_calling_std_sort_v<ExecutionSpace>) {
-    auto first = ::flare::experimental::begin(view);
-    auto last  = ::flare::experimental::end(view);
+    auto first = ::flare::experimental::begin(tensor);
+    auto last  = ::flare::experimental::end(tensor);
     std::sort(first, last, comparator);
   } else {
-    detail::sort_device_view_with_comparator(exec, view, comparator);
+    detail::sort_device_tensor_with_comparator(exec, tensor, comparator);
   }
 }
 
 template <class ComparatorType, class DataType, class... Properties>
-void sort(const flare::View<DataType, Properties...>& view,
+void sort(const flare::Tensor<DataType, Properties...>& tensor,
           const ComparatorType& comparator) {
-  using ViewType = flare::View<DataType, Properties...>;
+  using TensorType = flare::Tensor<DataType, Properties...>;
   static_assert(
-      ViewType::rank == 1 &&
-          (std::is_same_v<typename ViewType::array_layout, LayoutRight> ||
-           std::is_same_v<typename ViewType::array_layout, LayoutLeft> ||
-           std::is_same_v<typename ViewType::array_layout, LayoutStride>),
-      "flare::sort with comparator: supports 1D Views with LayoutRight, "
+      TensorType::rank == 1 &&
+          (std::is_same_v<typename TensorType::array_layout, LayoutRight> ||
+           std::is_same_v<typename TensorType::array_layout, LayoutLeft> ||
+           std::is_same_v<typename TensorType::array_layout, LayoutStride>),
+      "flare::sort with comparator: supports 1D Tensors with LayoutRight, "
       "LayoutLeft or LayoutStride.");
 
   flare::fence("flare::sort with comparator: before");
 
-  if (view.extent(0) <= 1) {
+  if (tensor.extent(0) <= 1) {
     return;
   }
 
-  typename ViewType::execution_space exec;
-  sort(exec, view, comparator);
+  typename TensorType::execution_space exec;
+  sort(exec, tensor, comparator);
   exec.fence("flare::sort with comparator: fence after sorting");
 }
 
 // ---------------------------------------------------------------
-// overloads for sorting a view with a subrange
+// overloads for sorting a tensor with a subrange
 // specified via integers begin, end
 // ---------------------------------------------------------------
 
-template <class ExecutionSpace, class ViewType>
+template <class ExecutionSpace, class TensorType>
 std::enable_if_t<flare::is_execution_space<ExecutionSpace>::value> sort(
-    const ExecutionSpace& exec, ViewType view, size_t const begin,
+    const ExecutionSpace& exec, TensorType tensor, size_t const begin,
     size_t const end) {
-  // view must be rank-1 because the detail::min_max_functor
-  // used below only works for rank-1 views for now
-  static_assert(ViewType::rank == 1,
-                "flare::sort: currently only supports rank-1 Views.");
+  // tensor must be rank-1 because the detail::min_max_functor
+  // used below only works for rank-1 tensors for now
+  static_assert(TensorType::rank == 1,
+                "flare::sort: currently only supports rank-1 Tensors.");
 
-  if (view.extent(0) <= 1) {
+  if (tensor.extent(0) <= 1) {
     return;
   }
 
-  using range_policy = flare::RangePolicy<typename ViewType::execution_space>;
-  using CompType     = BinOp1D<ViewType>;
+  using range_policy = flare::RangePolicy<typename TensorType::execution_space>;
+  using CompType     = BinOp1D<TensorType>;
 
-  flare::MinMaxScalar<typename ViewType::non_const_value_type> result;
-  flare::MinMax<typename ViewType::non_const_value_type> reducer(result);
+  flare::MinMaxScalar<typename TensorType::non_const_value_type> result;
+  flare::MinMax<typename TensorType::non_const_value_type> reducer(result);
 
   parallel_reduce("flare::Sort::FindExtent", range_policy(exec, begin, end),
-                  detail::min_max_functor<ViewType>(view), reducer);
+                  detail::min_max_functor<TensorType>(tensor), reducer);
 
   if (result.min_val == result.max_val) return;
 
-  BinSort<ViewType, CompType> bin_sort(
-      exec, view, begin, end,
+  BinSort<TensorType, CompType> bin_sort(
+      exec, tensor, begin, end,
       CompType((end - begin) / 2, result.min_val, result.max_val), true);
 
   bin_sort.create_permute_vector(exec);
-  bin_sort.sort(exec, view, begin, end);
+  bin_sort.sort(exec, tensor, begin, end);
 }
 
-template <class ViewType>
-void sort(ViewType view, size_t const begin, size_t const end) {
+template <class TensorType>
+void sort(TensorType tensor, size_t const begin, size_t const end) {
   // same constraints as the overload above which this gets dispatched to
-  static_assert(ViewType::rank == 1,
-                "flare::sort: currently only supports rank-1 Views.");
+  static_assert(TensorType::rank == 1,
+                "flare::sort: currently only supports rank-1 Tensors.");
 
   flare::fence("flare::sort: before");
 
-  if (view.extent(0) <= 1) {
+  if (tensor.extent(0) <= 1) {
     return;
   }
 
-  typename ViewType::execution_space exec;
-  sort(exec, view, begin, end);
+  typename TensorType::execution_space exec;
+  sort(exec, tensor, begin, end);
   exec.fence("flare::Sort: fence after sorting");
 }
 

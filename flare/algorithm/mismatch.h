@@ -27,7 +27,7 @@ namespace experimental {
 //
 // auto mismatch(const ExecSpace& ex, It1 first1, It1 last1, It2 first2) {...}
 //
-// makes API ambiguous (with the overload accepting views).
+// makes API ambiguous (with the overload accepting tensors).
 
 //
 // overload set accepting execution space
@@ -84,15 +84,15 @@ template <
     class DataType2, class... Properties2,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto mismatch(const ExecutionSpace& ex,
-              const ::flare::View<DataType1, Properties1...>& view1,
-              const ::flare::View<DataType2, Properties2...>& view2) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+              const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+              const ::flare::Tensor<DataType2, Properties2...>& tensor2) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::mismatch_exespace_impl("flare::mismatch_view_api_default", ex,
-                                      KE::begin(view1), KE::end(view1),
-                                      KE::begin(view2), KE::end(view2));
+  return detail::mismatch_exespace_impl("flare::mismatch_tensor_api_default", ex,
+                                      KE::begin(tensor1), KE::end(tensor1),
+                                      KE::begin(tensor2), KE::end(tensor2));
 }
 
 template <
@@ -100,16 +100,16 @@ template <
     class DataType2, class... Properties2, class BinaryPredicateType,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto mismatch(const ExecutionSpace& ex,
-              const ::flare::View<DataType1, Properties1...>& view1,
-              const ::flare::View<DataType2, Properties2...>& view2,
+              const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+              const ::flare::Tensor<DataType2, Properties2...>& tensor2,
               BinaryPredicateType&& predicate) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
   return detail::mismatch_exespace_impl(
-      "flare::mismatch_view_api_default", ex, KE::begin(view1), KE::end(view1),
-      KE::begin(view2), KE::end(view2),
+      "flare::mismatch_tensor_api_default", ex, KE::begin(tensor1), KE::end(tensor1),
+      KE::begin(tensor2), KE::end(tensor2),
       std::forward<BinaryPredicateType>(predicate));
 }
 
@@ -118,15 +118,15 @@ template <
     class DataType2, class... Properties2,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto mismatch(const std::string& label, const ExecutionSpace& ex,
-              const ::flare::View<DataType1, Properties1...>& view1,
-              const ::flare::View<DataType2, Properties2...>& view2) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+              const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+              const ::flare::Tensor<DataType2, Properties2...>& tensor2) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::mismatch_exespace_impl(label, ex, KE::begin(view1),
-                                      KE::end(view1), KE::begin(view2),
-                                      KE::end(view2));
+  return detail::mismatch_exespace_impl(label, ex, KE::begin(tensor1),
+                                      KE::end(tensor1), KE::begin(tensor2),
+                                      KE::end(tensor2));
 }
 
 template <
@@ -134,16 +134,16 @@ template <
     class DataType2, class... Properties2, class BinaryPredicateType,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto mismatch(const std::string& label, const ExecutionSpace& ex,
-              const ::flare::View<DataType1, Properties1...>& view1,
-              const ::flare::View<DataType2, Properties2...>& view2,
+              const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+              const ::flare::Tensor<DataType2, Properties2...>& tensor2,
               BinaryPredicateType&& predicate) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
   return detail::mismatch_exespace_impl(
-      label, ex, KE::begin(view1), KE::end(view1), KE::begin(view2),
-      KE::end(view2), std::forward<BinaryPredicateType>(predicate));
+      label, ex, KE::begin(tensor1), KE::end(tensor1), KE::begin(tensor2),
+      KE::end(tensor2), std::forward<BinaryPredicateType>(predicate));
 }
 
 //
@@ -175,14 +175,14 @@ template <class TeamHandleType, class DataType1, class... Properties1,
           std::enable_if_t<flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto mismatch(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    const ::flare::View<DataType2, Properties2...>& view2) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor2) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::mismatch_team_impl(teamHandle, KE::begin(view1), KE::end(view1),
-                                  KE::begin(view2), KE::end(view2));
+  return detail::mismatch_team_impl(teamHandle, KE::begin(tensor1), KE::end(tensor1),
+                                  KE::begin(tensor2), KE::end(tensor2));
 }
 
 template <class TeamHandleType, class DataType1, class... Properties1,
@@ -190,15 +190,15 @@ template <class TeamHandleType, class DataType1, class... Properties1,
           std::enable_if_t<flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto mismatch(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    const ::flare::View<DataType2, Properties2...>& view2,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor2,
     BinaryPredicateType&& predicate) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::mismatch_team_impl(teamHandle, KE::begin(view1), KE::end(view1),
-                                  KE::begin(view2), KE::end(view2),
+  return detail::mismatch_team_impl(teamHandle, KE::begin(tensor1), KE::end(tensor1),
+                                  KE::begin(tensor2), KE::end(tensor2),
                                   std::forward<BinaryPredicateType>(predicate));
 }
 

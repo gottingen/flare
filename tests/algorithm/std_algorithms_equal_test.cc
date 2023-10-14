@@ -22,77 +22,77 @@ namespace Equal {
 
 namespace KE = flare::experimental;
 
-template <class ViewType>
-void test_equal(const ViewType view) {
-  auto copy = create_deep_copyable_compatible_clone(view);
+template <class TensorType>
+void test_equal(const TensorType tensor) {
+  auto copy = create_deep_copyable_compatible_clone(tensor);
 
   // pass iterators
   REQUIRE(
-      KE::equal(exespace(), KE::begin(view), KE::end(view), KE::begin(copy)));
-  // pass views
-  REQUIRE(KE::equal(exespace(), view, copy));
+      KE::equal(exespace(), KE::begin(tensor), KE::end(tensor), KE::begin(copy)));
+  // pass tensors
+  REQUIRE(KE::equal(exespace(), tensor, copy));
 
   // modify copy - make the last element different
-  const auto extent = view.extent(0);
+  const auto extent = tensor.extent(0);
   if (extent > 0) {
     KE::fill(exespace(), KE::end(copy) - 1, KE::end(copy), 1);
 
     // pass const iterators
-    REQUIRE_FALSE(KE::equal(exespace(), KE::cbegin(view), KE::cend(view),
+    REQUIRE_FALSE(KE::equal(exespace(), KE::cbegin(tensor), KE::cend(tensor),
                            KE::cbegin(copy)));
-    // pass views
-    REQUIRE_FALSE(KE::equal("label", exespace(), view, copy));
+    // pass tensors
+    REQUIRE_FALSE(KE::equal("label", exespace(), tensor, copy));
   }
 }
 
-template <class ViewType>
-void test_equal_custom_comparator(const ViewType view) {
-  using value_t = typename ViewType::value_type;
+template <class TensorType>
+void test_equal_custom_comparator(const TensorType tensor) {
+  using value_t = typename TensorType::value_type;
   const auto p  = CustomEqualityComparator<value_t>();
-  auto copy     = create_deep_copyable_compatible_clone(view);
+  auto copy     = create_deep_copyable_compatible_clone(tensor);
 
   // pass iterators
-  REQUIRE(KE::equal(exespace(), KE::begin(view), KE::end(view),
+  REQUIRE(KE::equal(exespace(), KE::begin(tensor), KE::end(tensor),
                         KE::begin(copy), p));
-  // pass views
-  REQUIRE(KE::equal(exespace(), view, copy, p));
+  // pass tensors
+  REQUIRE(KE::equal(exespace(), tensor, copy, p));
 
   // modify copy - make the last element different
-  const auto extent = view.extent(0);
+  const auto extent = tensor.extent(0);
   if (extent > 0) {
     KE::fill(exespace(), KE::end(copy) - 1, KE::end(copy), 1);
 
     // pass const iterators
-    REQUIRE_FALSE(KE::equal("label", exespace(), KE::cbegin(view),
-                           KE::cend(view), KE::cbegin(copy), p));
-    // pass views
-    REQUIRE_FALSE(KE::equal(exespace(), view, copy, p));
+    REQUIRE_FALSE(KE::equal("label", exespace(), KE::cbegin(tensor),
+                           KE::cend(tensor), KE::cbegin(copy), p));
+    // pass tensors
+    REQUIRE_FALSE(KE::equal(exespace(), tensor, copy, p));
   }
 }
 
-template <class ViewType>
-void test_equal_4_iterators(const ViewType view) {
-  using value_t = typename ViewType::value_type;
+template <class TensorType>
+void test_equal_4_iterators(const TensorType tensor) {
+  using value_t = typename TensorType::value_type;
   const auto p  = CustomEqualityComparator<value_t>();
-  auto copy     = create_deep_copyable_compatible_clone(view);
+  auto copy     = create_deep_copyable_compatible_clone(tensor);
 
   // pass iterators
-  REQUIRE(KE::equal(exespace(), KE::begin(view), KE::end(view),
+  REQUIRE(KE::equal(exespace(), KE::begin(tensor), KE::end(tensor),
                         KE::begin(copy), KE::end(copy)));
   // pass const and non-const iterators, custom comparator
-  REQUIRE(KE::equal("label", exespace(), KE::cbegin(view), KE::cend(view),
+  REQUIRE(KE::equal("label", exespace(), KE::cbegin(tensor), KE::cend(tensor),
                         KE::begin(copy), KE::end(copy), p));
 
-  const auto extent = view.extent(0);
+  const auto extent = tensor.extent(0);
   if (extent > 0) {
     // use different length ranges, pass const iterators
-    REQUIRE_FALSE(KE::equal(exespace(), KE::cbegin(view), KE::cend(view),
+    REQUIRE_FALSE(KE::equal(exespace(), KE::cbegin(tensor), KE::cend(tensor),
                            KE::cbegin(copy), KE::cend(copy) - 1));
 
     // modify copy - make the last element different
     KE::fill(exespace(), KE::end(copy) - 1, KE::end(copy), 1);
     // pass const iterators
-    REQUIRE_FALSE(KE::equal(exespace(), KE::cbegin(view), KE::cend(view),
+    REQUIRE_FALSE(KE::equal(exespace(), KE::cbegin(tensor), KE::cend(tensor),
                            KE::cbegin(copy), KE::cend(copy)));
   }
 }
@@ -100,10 +100,10 @@ void test_equal_4_iterators(const ViewType view) {
 template <class Tag, class ValueType>
 void run_all_scenarios() {
   for (const auto& scenario : default_scenarios) {
-    auto view = create_view<ValueType>(Tag{}, scenario.second, "equal");
-    test_equal(view);
-    test_equal_custom_comparator(view);
-    test_equal_4_iterators(view);
+    auto tensor = create_tensor<ValueType>(Tag{}, scenario.second, "equal");
+    test_equal(tensor);
+    test_equal_custom_comparator(tensor);
+    test_equal_4_iterators(tensor);
   }
 }
 

@@ -32,36 +32,36 @@ struct GreaterThanValueFunctor {
   bool operator()(ValueType val) const { return (val > m_val); }
 };
 
-template <class ViewType, class CountsViewType, class ValueType>
+template <class TensorType, class CountsTensorType, class ValueType>
 struct TestFunctorA {
-  ViewType m_view;
-  CountsViewType m_countsView;
+  TensorType m_tensor;
+  CountsTensorType m_countsTensor;
   ValueType m_threshold;
   int m_apiPick;
 
-  TestFunctorA(const ViewType view, const CountsViewType countsView,
+  TestFunctorA(const TensorType tensor, const CountsTensorType countsTensor,
                ValueType threshold, int apiPick)
-      : m_view(view),
-        m_countsView(countsView),
+      : m_tensor(tensor),
+        m_countsTensor(countsTensor),
         m_threshold(threshold),
         m_apiPick(apiPick) {}
 
   template <class MemberType>
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
-    auto myRowView        = flare::subview(m_view, myRowIndex, flare::ALL());
+    auto myRowTensor        = flare::subtensor(m_tensor, myRowIndex, flare::ALL());
 
     GreaterThanValueFunctor predicate(m_threshold);
     if (m_apiPick == 0) {
-      auto myCount = KE::count_if(member, KE::begin(myRowView),
-                                  KE::end(myRowView), predicate);
+      auto myCount = KE::count_if(member, KE::begin(myRowTensor),
+                                  KE::end(myRowTensor), predicate);
 
       flare::single(flare::PerTeam(member),
-                     [=, *this]() { m_countsView(myRowIndex) = myCount; });
+                     [=, *this]() { m_countsTensor(myRowIndex) = myCount; });
     } else if (m_apiPick == 1) {
-      auto myCount = KE::count_if(member, myRowView, predicate);
+      auto myCount = KE::count_if(member, myRowTensor, predicate);
       flare::single(flare::PerTeam(member),
-                     [=, *this]() { m_countsView(myRowIndex) = myCount; });
+                     [=, *this]() { m_countsTensor(myRowIndex) = myCount; });
     }
   }
 };
@@ -69,7 +69,7 @@ struct TestFunctorA {
 template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   /* description:
-     use a rank-2 view randomly filled with values,
+     use a rank-2 tensor randomly filled with values,
      and run a team-level count_if where only the values
      strictly greater than a threshold are counted
    */
@@ -79,16 +79,16 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range.
   constexpr ValueType lowerBound = 5;
   constexpr ValueType upperBound = 523;
   const auto bounds              = make_bounds(lowerBound, upperBound);
 
-  auto [dataView, cloneOfDataViewBeforeOp_h] =
-      create_random_view_and_host_clone(LayoutTag{}, numTeams, numCols, bounds,
-                                        "dataView");
+  auto [dataTensor, cloneOfDataTensorBeforeOp_h] =
+      create_random_tensor_and_host_clone(LayoutTag{}, numTeams, numCols, bounds,
+                                        "dataTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -99,24 +99,24 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   // to verify that things work, each team stores the result
   // of its count_if call, and then we check
   // that these match what we expect
-  flare::View<std::size_t*> countsView("countsView", numTeams);
+  flare::Tensor<std::size_t*> countsTensor("countsTensor", numTeams);
 
   // use CTAD for functor
-  TestFunctorA fnc(dataView, countsView, threshold, apiId);
+  TestFunctorA fnc(dataTensor, countsTensor, threshold, apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // check
   // -----------------------------------------------
-  auto countsView_h = create_host_space_copy(countsView);
-  for (std::size_t i = 0; i < cloneOfDataViewBeforeOp_h.extent(0); ++i) {
+  auto countsTensor_h = create_host_space_copy(countsTensor);
+  for (std::size_t i = 0; i < cloneOfDataTensorBeforeOp_h.extent(0); ++i) {
     std::size_t goldCountForRow = 0;
-    for (std::size_t j = 0; j < cloneOfDataViewBeforeOp_h.extent(1); ++j) {
-      if (cloneOfDataViewBeforeOp_h(i, j) > threshold) {
+    for (std::size_t j = 0; j < cloneOfDataTensorBeforeOp_h.extent(1); ++j) {
+      if (cloneOfDataTensorBeforeOp_h(i, j) > threshold) {
         goldCountForRow++;
       }
     }
-    REQUIRE_EQ(goldCountForRow, countsView_h(i));
+    REQUIRE_EQ(goldCountForRow, countsTensor_h(i));
   }
 }
 

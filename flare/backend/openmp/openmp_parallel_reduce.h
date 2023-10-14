@@ -162,18 +162,18 @@ class ParallelReduce<CombinedFunctorReducerType, flare::RangePolicy<Traits...>,
 
   //----------------------------------------
 
-  template <class ViewType>
+  template <class TensorType>
   inline ParallelReduce(const CombinedFunctorReducerType& arg_functor_reducer,
-                        Policy arg_policy, const ViewType& arg_view)
+                        Policy arg_policy, const TensorType& arg_tensor)
       : m_instance(nullptr),
         m_functor_reducer(arg_functor_reducer),
         m_policy(arg_policy),
-        m_result_ptr(arg_view.data()) {
+        m_result_ptr(arg_tensor.data()) {
     m_instance = arg_policy.space().impl_internal_space_instance();
     static_assert(
-        flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+        flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                                         flare::HostSpace>::accessible,
-        "flare::OpenMP reduce result must be a View accessible from "
+        "flare::OpenMP reduce result must be a Tensor accessible from "
         "HostSpace");
   }
 };
@@ -304,17 +304,17 @@ class ParallelReduce<CombinedFunctorReducerType,
 
   //----------------------------------------
 
-  template <class ViewType>
+  template <class TensorType>
   ParallelReduce(const CombinedFunctorReducerType& arg_functor_reducer,
-                 MDRangePolicy arg_policy, const ViewType& arg_view)
+                 MDRangePolicy arg_policy, const TensorType& arg_tensor)
       : m_instance(nullptr),
         m_iter(arg_policy, arg_functor_reducer),
-        m_result_ptr(arg_view.data()) {
+        m_result_ptr(arg_tensor.data()) {
     m_instance = arg_policy.space().impl_internal_space_instance();
     static_assert(
-        flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+        flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                                         flare::HostSpace>::accessible,
-        "flare::OpenMP reduce result must be a View accessible from "
+        "flare::OpenMP reduce result must be a Tensor accessible from "
         "HostSpace");
   }
 
@@ -515,9 +515,9 @@ class ParallelReduce<CombinedFunctorReducerType,
 
   //----------------------------------------
 
-  template <class ViewType>
+  template <class TensorType>
   inline ParallelReduce(const CombinedFunctorReducerType& arg_functor_reducer,
-                        const Policy& arg_policy, const ViewType& arg_result)
+                        const Policy& arg_policy, const TensorType& arg_result)
       : m_instance(nullptr),
         m_functor_reducer(arg_functor_reducer),
         m_policy(arg_policy),
@@ -529,9 +529,9 @@ class ParallelReduce<CombinedFunctorReducerType,
     m_instance = arg_policy.space().impl_internal_space_instance();
 
     static_assert(
-        flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+        flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                                         flare::HostSpace>::accessible,
-        "flare::OpenMP reduce result must be a View accessible from "
+        "flare::OpenMP reduce result must be a Tensor accessible from "
         "HostSpace");
   }
 };

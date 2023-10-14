@@ -61,28 +61,28 @@ TEST_CASE("std_algorithms_mod_ops_test, move") {
   REQUIRE_EQ(b.m_value, -4);
 }
 
-template <class ViewType>
+template <class TensorType>
 struct StdAlgoModSeqOpsTestMove {
-  ViewType m_view;
+  TensorType m_tensor;
 
   FLARE_INLINE_FUNCTION
   void operator()(const int index) const {
-    typename ViewType::value_type a{11};
+    typename TensorType::value_type a{11};
     using move_t = decltype(std::move(a));
     static_assert(std::is_rvalue_reference<move_t>::value, "");
-    m_view(index) = std::move(a);
+    m_tensor(index) = std::move(a);
   }
 
-  StdAlgoModSeqOpsTestMove(ViewType view) : m_view(view) {}
+  StdAlgoModSeqOpsTestMove(TensorType tensor) : m_tensor(tensor) {}
 };
 
 TEST_CASE("std_algorithms_mod_ops_test, move_within_parfor") {
-  using view_t = flare::View<double*>;
-  view_t a("a", 10);
+  using tensor_t = flare::Tensor<double*>;
+  tensor_t a("a", 10);
 
-  StdAlgoModSeqOpsTestMove<view_t> fnc(a);
+  StdAlgoModSeqOpsTestMove<tensor_t> fnc(a);
   flare::parallel_for(a.extent(0), fnc);
-  auto a_h = flare::create_mirror_view_and_copy(flare::HostSpace(), a);
+  auto a_h = flare::create_mirror_tensor_and_copy(flare::HostSpace(), a);
   for (std::size_t i = 0; i < a.extent(0); ++i) {
     REQUIRE_EQ(a_h(0), 11.);
   }
@@ -109,24 +109,24 @@ TEST_CASE("std_algorithms_mod_ops_test, swap") {
   }
 }
 
-template <class ViewType>
+template <class TensorType>
 struct StdAlgoModSeqOpsTestSwap {
-  ViewType m_view;
+  TensorType m_tensor;
 
   FLARE_INLINE_FUNCTION
   void operator()(const int index) const {
-    typename ViewType::value_type newval{11};
-    KE::swap(m_view(index), newval);
+    typename TensorType::value_type newval{11};
+    KE::swap(m_tensor(index), newval);
   }
 
-  StdAlgoModSeqOpsTestSwap(ViewType aIn) : m_view(aIn) {}
+  StdAlgoModSeqOpsTestSwap(TensorType aIn) : m_tensor(aIn) {}
 };
 
 TEST_CASE("std_algorithms_mod_ops_test, swap_within_parfor") {
-  auto a = create_view<double>(stdalgos::DynamicTag{}, 10, "a");
+  auto a = create_tensor<double>(stdalgos::DynamicTag{}, 10, "a");
   StdAlgoModSeqOpsTestSwap<decltype(a)> fnc(a);
   flare::parallel_for(a.extent(0), fnc);
-  auto a_h = flare::create_mirror_view_and_copy(flare::HostSpace(), a);
+  auto a_h = flare::create_mirror_tensor_and_copy(flare::HostSpace(), a);
   for (std::size_t i = 0; i < a.extent(0); ++i) {
     REQUIRE_EQ(a_h(0), 11.);
   }
@@ -135,22 +135,22 @@ TEST_CASE("std_algorithms_mod_ops_test, swap_within_parfor") {
 // ------------
 // iter_swap
 // ------------
-template <class ViewType>
-void test_iter_swap(ViewType view) {
-  /* fill view */
-  auto F = AssignIndexFunctor<ViewType>(view);
-  flare::parallel_for(view.extent(0), std::move(F));
+template <class TensorType>
+void test_iter_swap(TensorType tensor) {
+  /* fill tensor */
+  auto F = AssignIndexFunctor<TensorType>(tensor);
+  flare::parallel_for(tensor.extent(0), std::move(F));
 
   /* call iter_swap */
-  auto it1 = KE::begin(view);
+  auto it1 = KE::begin(tensor);
   KE::iter_swap(it1, it1 + 3);
   KE::iter_swap(it1 + 4, it1 + 6);
 
   /* check result */
-  using value_type = typename ViewType::value_type;
-  auto a_dc        = create_deep_copyable_compatible_clone(view);
-  auto a_h         = create_mirror_view_and_copy(flare::HostSpace(), a_dc);
-  REQUIRE_EQ(view.extent_int(0), 10);
+  using value_type = typename TensorType::value_type;
+  auto a_dc        = create_deep_copyable_compatible_clone(tensor);
+  auto a_h         = create_mirror_tensor_and_copy(flare::HostSpace(), a_dc);
+  REQUIRE_EQ(tensor.extent_int(0), 10);
   REQUIRE_EQ(a_h(0), value_type(3));
   REQUIRE_EQ(a_h(1), value_type(1));
   REQUIRE_EQ(a_h(2), value_type(2));
@@ -163,14 +163,14 @@ void test_iter_swap(ViewType view) {
   REQUIRE_EQ(a_h(9), value_type(9));
 }
 
-TEST_CASE("std_algorithms_mod_ops_test, iter_swap_static_view") {
-  auto a = create_view<double>(stdalgos::DynamicTag{}, 10, "a");
+TEST_CASE("std_algorithms_mod_ops_test, iter_swap_static_tensor") {
+  auto a = create_tensor<double>(stdalgos::DynamicTag{}, 10, "a");
   test_iter_swap(a);
 
-  auto a1 = create_view<double>(stdalgos::StridedTwoTag{}, 10, "a1");
+  auto a1 = create_tensor<double>(stdalgos::StridedTwoTag{}, 10, "a1");
   test_iter_swap(a1);
 
-  auto a2 = create_view<double>(stdalgos::StridedThreeTag{}, 10, "a2");
+  auto a2 = create_tensor<double>(stdalgos::StridedThreeTag{}, 10, "a2");
   test_iter_swap(a2);
 }
 

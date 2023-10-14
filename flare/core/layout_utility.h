@@ -23,34 +23,34 @@
 namespace flare::detail {
 
 
-    // Unify Layout of a View to PreferredLayoutType if possible
+    // Unify Layout of a Tensor to PreferredLayoutType if possible
     // (either matches already, or is rank-0/rank-1 and contiguous)
     // Used to reduce number of code instantiations.
-    template <class ViewType, class PreferredLayoutType>
+    template <class TensorType, class PreferredLayoutType>
     struct GetUnifiedLayoutPreferring {
         typedef typename std::conditional<
-                ((ViewType::rank == 1) && (!std::is_same<typename ViewType::array_layout,
+                ((TensorType::rank == 1) && (!std::is_same<typename TensorType::array_layout,
                         flare::LayoutStride>::value)) ||
-                ((ViewType::rank == 0)),
-                PreferredLayoutType, typename ViewType::array_layout>::type array_layout;
+                ((TensorType::rank == 0)),
+                PreferredLayoutType, typename TensorType::array_layout>::type array_layout;
     };
 
-    template <class ViewType>
+    template <class TensorType>
     struct GetUnifiedLayout {
         using array_layout =
-                typename GetUnifiedLayoutPreferring<ViewType,
+                typename GetUnifiedLayoutPreferring<TensorType,
                         default_layout>::array_layout;
     };
 
     template <class T, class TX, bool do_const,
-            bool isView = flare::is_view<T>::value>
-    struct GetUnifiedScalarViewType {
+            bool isTensor = flare::is_tensor<T>::value>
+    struct GetUnifiedScalarTensorType {
         typedef typename TX::non_const_value_type type;
     };
 
     template <class T, class TX>
-    struct GetUnifiedScalarViewType<T, TX, false, true> {
-        typedef flare::View<typename T::non_const_value_type*,
+    struct GetUnifiedScalarTensorType<T, TX, false, true> {
+        typedef flare::Tensor<typename T::non_const_value_type*,
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         T, typename TX::array_layout>::array_layout,
                 typename T::device_type,
@@ -59,8 +59,8 @@ namespace flare::detail {
     };
 
     template <class T, class TX>
-    struct GetUnifiedScalarViewType<T, TX, true, true> {
-        typedef flare::View<typename T::const_value_type*,
+    struct GetUnifiedScalarTensorType<T, TX, true, true> {
+        typedef flare::Tensor<typename T::const_value_type*,
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         T, typename TX::array_layout>::array_layout,
                 typename T::device_type,

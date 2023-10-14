@@ -16,4 +16,4 @@
 // Created by jeff on 23-10-5.
 //
 #include <openmp_category_test.h>
-#include <view/work_graph_test.h>
+#include <tensor/work_graph_test.h>

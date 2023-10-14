@@ -37,13 +37,13 @@ struct SomeCorrelation {
     using value_type = int;  // Specify value type for reduction target, sum
     using shared_space = flare::DefaultExecutionSpace::scratch_memory_space;
     using shared_1d_int =
-            flare::View<int *, shared_space, flare::MemoryUnmanaged>;
+            flare::Tensor<int *, shared_space, flare::MemoryUnmanaged>;
 
-    flare::View<const int ***, flare::LayoutRight> data;
-    flare::View<int> gsum;
+    flare::Tensor<const int ***, flare::LayoutRight> data;
+    flare::Tensor<int> gsum;
 
-    SomeCorrelation(flare::View<int ***, flare::LayoutRight> data_in,
-                    flare::View<int> sum)
+    SomeCorrelation(flare::Tensor<int ***, flare::LayoutRight> data_in,
+                    flare::Tensor<int> sum)
             : data(data_in), gsum(sum) {}
 
     FLARE_INLINE_FUNCTION
@@ -119,12 +119,12 @@ int main(int narg, char *args[]) {
     {
         // Produce some 3D random data (see Algorithms/01_random_numbers for more
         // info)
-        flare::View<int ***, flare::LayoutRight> data("Data", 512, 512, 32);
+        flare::Tensor<int ***, flare::LayoutRight> data("Data", 512, 512, 32);
         flare::Random_XorShift64_Pool<> rand_pool64(5374857);
         flare::fill_random(data, rand_pool64, 100);
 
         // A global value to put the result in
-        flare::View<int> gsum("Sum");
+        flare::Tensor<int> gsum("Sum");
 
         // Each team handles a slice of the data
         // Set up TeamPolicy with 512 teams with maximum number of threads per team

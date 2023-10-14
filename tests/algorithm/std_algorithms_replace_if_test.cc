@@ -47,14 +47,14 @@ struct UnifDist<int> {
   int operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   UnifDist<value_type> randObj;
   if (name == "empty") {
@@ -98,9 +98,9 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
 // my own because std::replace_if is ONLY found with std=c++20
@@ -114,30 +114,30 @@ void my_host_replace_if(ForwardIt first, ForwardIt last, UnaryPredicate p,
   }
 }
 
-template <class ViewType1, class ViewType2, class ValueType,
+template <class TensorType1, class TensorType2, class ValueType,
           class PredicateType>
-void verify_data(ViewType1 data_view,  // contains data
-                 ViewType2 test_view,  // the view to test
+void verify_data(TensorType1 data_tensor,  // contains data
+                 TensorType2 test_tensor,  // the tensor to test
                  ValueType new_value, PredicateType pred) {
-  //! always careful because views might not be deep copyable
+  //! always careful because tensors might not be deep copyable
 
-  auto data_view_dc = create_deep_copyable_compatible_clone(data_view);
-  auto data_view_h =
-      create_mirror_view_and_copy(flare::HostSpace(), data_view_dc);
-  my_host_replace_if(KE::begin(data_view_h), KE::end(data_view_h), pred,
+  auto data_tensor_dc = create_deep_copyable_compatible_clone(data_tensor);
+  auto data_tensor_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), data_tensor_dc);
+  my_host_replace_if(KE::begin(data_tensor_h), KE::end(data_tensor_h), pred,
                      new_value);
 
-  auto test_view_dc = create_deep_copyable_compatible_clone(test_view);
-  auto test_view_h =
-      create_mirror_view_and_copy(flare::HostSpace(), test_view_dc);
+  auto test_tensor_dc = create_deep_copyable_compatible_clone(test_tensor);
+  auto test_tensor_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), test_tensor_dc);
 
-  if (test_view_h.extent(0) > 0) {
-    for (std::size_t i = 0; i < test_view_h.extent(0); ++i) {
+  if (test_tensor_h.extent(0) > 0) {
+    for (std::size_t i = 0; i < test_tensor_h.extent(0); ++i) {
       // std::cout << i << " " << std::setprecision(15)
-      // 		<< data_view_dc(i) << " "
-      // 		<< data_view_h(i) << " "
-      // 		<< test_view_h(i) << std::endl;
-      REQUIRE_EQ(data_view_h(i), test_view_h(i));
+      // 		<< data_tensor_dc(i) << " "
+      // 		<< data_tensor_h(i) << " "
+      // 		<< test_tensor_h(i) << std::endl;
+      REQUIRE_EQ(data_tensor_h(i), test_tensor_h(i));
     }
   }
 }
@@ -148,52 +148,52 @@ std::string value_type_to_string(double) { return "double"; }
 template <class Tag, class ValueType, class InfoType, class PredicateType>
 void run_single_scenario(const InfoType& scenario_info, PredicateType pred) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
-  // std::cout << "replace_if: " << name << ", " << view_tag_to_string(Tag{})
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
+  // std::cout << "replace_if: " << name << ", " << tensor_tag_to_string(Tag{})
   //           << ", " << value_type_to_string(ValueType()) << std::endl;
 
   ValueType new_value{23};
-  auto view_with_data =
-      create_view<ValueType>(Tag{}, view_ext, "replace_if_v2");
-  auto view_to_test = create_view<ValueType>(Tag{}, view_ext, "replace_if_v1");
-  fill_view(view_with_data, name);
+  auto tensor_with_data_1d =
+      create_tensor<ValueType>(Tag{}, tensor_ext, "replace_if_v2");
+  auto tensor_to_test = create_tensor<ValueType>(Tag{}, tensor_ext, "replace_if_v1");
+  fill_tensor(tensor_with_data_1d, name);
 
   {
-    CopyFunctor<decltype(view_with_data), decltype(view_to_test)> F1(
-        view_with_data, view_to_test);
-    flare::parallel_for("copy", view_to_test.extent(0), F1);
+    CopyFunctor<decltype(tensor_with_data_1d), decltype(tensor_to_test)> F1(
+        tensor_with_data_1d, tensor_to_test);
+    flare::parallel_for("copy", tensor_to_test.extent(0), F1);
 
-    KE::replace_if(exespace(), KE::begin(view_to_test), KE::end(view_to_test),
+    KE::replace_if(exespace(), KE::begin(tensor_to_test), KE::end(tensor_to_test),
                    pred, new_value);
-    verify_data(view_with_data, view_to_test, new_value, pred);
+    verify_data(tensor_with_data_1d, tensor_to_test, new_value, pred);
   }
 
   {
-    CopyFunctor<decltype(view_with_data), decltype(view_to_test)> F1(
-        view_with_data, view_to_test);
-    flare::parallel_for("copy", view_to_test.extent(0), F1);
+    CopyFunctor<decltype(tensor_with_data_1d), decltype(tensor_to_test)> F1(
+        tensor_with_data_1d, tensor_to_test);
+    flare::parallel_for("copy", tensor_to_test.extent(0), F1);
 
-    KE::replace_if("label", exespace(), KE::begin(view_to_test),
-                   KE::end(view_to_test), pred, new_value);
-    verify_data(view_with_data, view_to_test, new_value, pred);
+    KE::replace_if("label", exespace(), KE::begin(tensor_to_test),
+                   KE::end(tensor_to_test), pred, new_value);
+    verify_data(tensor_with_data_1d, tensor_to_test, new_value, pred);
   }
 
   {
-    CopyFunctor<decltype(view_with_data), decltype(view_to_test)> F1(
-        view_with_data, view_to_test);
-    flare::parallel_for("copy", view_to_test.extent(0), F1);
+    CopyFunctor<decltype(tensor_with_data_1d), decltype(tensor_to_test)> F1(
+        tensor_with_data_1d, tensor_to_test);
+    flare::parallel_for("copy", tensor_to_test.extent(0), F1);
 
-    KE::replace_if(exespace(), view_to_test, pred, new_value);
-    verify_data(view_with_data, view_to_test, new_value, pred);
+    KE::replace_if(exespace(), tensor_to_test, pred, new_value);
+    verify_data(tensor_with_data_1d, tensor_to_test, new_value, pred);
   }
 
   {
-    CopyFunctor<decltype(view_with_data), decltype(view_to_test)> F1(
-        view_with_data, view_to_test);
-    flare::parallel_for("copy", view_to_test.extent(0), F1);
+    CopyFunctor<decltype(tensor_with_data_1d), decltype(tensor_to_test)> F1(
+        tensor_with_data_1d, tensor_to_test);
+    flare::parallel_for("copy", tensor_to_test.extent(0), F1);
 
-    KE::replace_if("label", exespace(), view_to_test, pred, new_value);
-    verify_data(view_with_data, view_to_test, new_value, pred);
+    KE::replace_if("label", exespace(), tensor_to_test, pred, new_value);
+    verify_data(tensor_with_data_1d, tensor_to_test, new_value, pred);
   }
 
   flare::fence();

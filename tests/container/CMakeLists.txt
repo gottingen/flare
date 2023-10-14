@@ -29,18 +29,18 @@ foreach(Tag Threads;Serial;OpenMP;Cuda)
     file(MAKE_DIRECTORY ${dir})
     foreach(Name
         bitset
-        dual_view
-        dynamic_view
-        dyn_view_api_generic
-        dyn_view_api_rank12345
-        dyn_view_api_rank67
+        dual_tensor
+        dynamic_tensor
+        dyn_tensor_api_generic
+        dyn_tenor_api_rank12345
+        dyn_tensor_api_rank67
         error_reporter
-        offset_view
-        scatter_view
+        offset_tensor
+        scatter_tensor
         static_crs_graph
         container_without_initializing
         unordered_map
-        container_view_ctor_prop_embedded_dim
+        container_tensor_ctor_prop_embedded_dim
         )
       # Write to a temporary intermediate file and call configure_file to avoid
       # updating timestamps triggering unnecessary rebuilds on subsequent cmake runs.
@@ -54,7 +54,7 @@ foreach(Tag Threads;Serial;OpenMP;Cuda)
     endforeach()
     #fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
     if(FLARE_BUILD_CUDA AND WIN32)
-     LIST(REMOVE_ITEM UnitTestSources ${dir}/cuda_dyn_view_api_generic_test.cu)
+     LIST(REMOVE_ITEM UnitTestSources ${dir}/cuda_dyn_tensor_api_generic_test.cu)
     endif()
     if (Tag STREQUAL "Cuda")
       carbin_cc_test(
@@ -87,8 +87,8 @@ endforeach()
 
 SET(COMPILE_ONLY_SOURCES
         create_mirror_test.cc
-        dual_view_parameter_pack_test.cc
-        is_view_trait_test.cc
+        dual_tensor_parameter_pack_test.cc
+        is_tensor_trait_test.cc
         compile_main_test.cc
 )
 

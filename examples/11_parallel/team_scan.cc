@@ -14,7 +14,7 @@
 //
 
 #include <flare/core.h>
-#include <flare/dual_view.h>
+#include <flare/dual_tensor.h>
 #include <flare/timer.h>
 #include <cstdio>
 #include <cstdlib>
@@ -29,23 +29,23 @@ static const int TEAM_SIZE = 16;
 
 struct find_2_tuples {
     int chunk_size;
-    flare::View<const int *> data;
-    flare::View<int **> histogram;
+    flare::Tensor<const int *> data;
+    flare::Tensor<int **> histogram;
 
-    find_2_tuples(int chunk_size_, flare::DualView<int *> data_,
-                  flare::DualView<int **> histogram_)
+    find_2_tuples(int chunk_size_, flare::DualTensor<int *> data_,
+                  flare::DualTensor<int **> histogram_)
             : chunk_size(chunk_size_),
-              data(data_.d_view),
-              histogram(histogram_.d_view) {
+              data(data_.d_tensor),
+              histogram(histogram_.d_tensor) {
         data_.sync<Device>();
         histogram_.sync<Device>();
         histogram_.modify<Device>();
     }
 
     FLARE_INLINE_FUNCTION void operator()(const team_member &dev) const {
-        flare::View<int **, flare::MemoryUnmanaged> l_histogram(
+        flare::Tensor<int **, flare::MemoryUnmanaged> l_histogram(
                 dev.team_shmem(), TEAM_SIZE, TEAM_SIZE);
-        flare::View<int *, flare::MemoryUnmanaged> l_data(dev.team_shmem(),
+        flare::Tensor<int *, flare::MemoryUnmanaged> l_data(dev.team_shmem(),
                                                           chunk_size + 1);
 
         const int i = dev.league_rank() * chunk_size;
@@ -71,9 +71,9 @@ struct find_2_tuples {
     }
 
     size_t team_shmem_size(int team_size) const {
-        return flare::View<int **, flare::MemoryUnmanaged>::shmem_size(TEAM_SIZE,
+        return flare::Tensor<int **, flare::MemoryUnmanaged>::shmem_size(TEAM_SIZE,
                                                                        TEAM_SIZE) +
-               flare::View<int *, flare::MemoryUnmanaged>::shmem_size(chunk_size +
+               flare::Tensor<int *, flare::MemoryUnmanaged>::shmem_size(chunk_size +
                                                                       1);
     }
 };
@@ -84,17 +84,17 @@ int main(int narg, char *args[]) {
     {
         int chunk_size = 1024;
         int nchunks = 100000;  // 1024*1024;
-        flare::DualView<int *> data("data", nchunks * chunk_size + 1);
+        flare::DualTensor<int *> data("data", nchunks * chunk_size + 1);
 
         srand(1231093);
 
         for (int i = 0; i < (int) data.extent(0); i++) {
-            data.h_view(i) = rand() % TEAM_SIZE;
+            data.h_tensor(i) = rand() % TEAM_SIZE;
         }
         data.modify<Host>();
         data.sync<Device>();
 
-        flare::DualView<int **> histogram("histogram", TEAM_SIZE, TEAM_SIZE);
+        flare::DualTensor<int **> histogram("histogram", TEAM_SIZE, TEAM_SIZE);
 
         flare::Timer timer;
         // threads/team is automatically limited to maximum supported by the device.
@@ -112,8 +112,8 @@ int main(int narg, char *args[]) {
         int sum = 0;
         for (int k = 0; k < TEAM_SIZE; k++) {
             for (int l = 0; l < TEAM_SIZE; l++) {
-                printf("%i ", histogram.h_view(k, l));
-                sum += histogram.h_view(k, l);
+                printf("%i ", histogram.h_tensor(k, l));
+                sum += histogram.h_tensor(k, l);
             }
             printf("\n");
         }

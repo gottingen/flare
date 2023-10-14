@@ -34,11 +34,11 @@ struct ReducerWithArbitraryJoinerNoNeutralElement {
       ReducerWithArbitraryJoinerNoNeutralElement<Scalar, JoinerType, Space>;
   using value_type = ValueWrapperForNoNeutralElement<scalar_type>;
 
-  using result_view_type = flare::View<value_type, Space>;
+  using result_tensor_type = flare::Tensor<value_type, Space>;
 
  private:
   JoinerType m_joiner;
-  result_view_type m_value;
+  result_tensor_type m_value;
   bool m_references_scalar_v;
 
  public:
@@ -48,7 +48,7 @@ struct ReducerWithArbitraryJoinerNoNeutralElement {
       : m_joiner(joiner_), m_value(&value_), m_references_scalar_v(true) {}
 
   FLARE_FUNCTION
-  ReducerWithArbitraryJoinerNoNeutralElement(const result_view_type& value_,
+  ReducerWithArbitraryJoinerNoNeutralElement(const result_tensor_type& value_,
                                              JoinerType joiner_)
       : m_joiner(joiner_), m_value(value_), m_references_scalar_v(false) {}
 
@@ -68,7 +68,7 @@ struct ReducerWithArbitraryJoinerNoNeutralElement {
   value_type& reference() const { return *m_value.data(); }
 
   FLARE_FUNCTION
-  result_view_type view() const { return m_value; }
+  result_tensor_type tensor() const { return m_value; }
 
   FLARE_FUNCTION
   bool references_scalar() const { return m_references_scalar_v; }

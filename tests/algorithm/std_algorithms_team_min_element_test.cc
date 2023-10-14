@@ -22,51 +22,51 @@ namespace TeamMinElement {
 
 namespace KE = flare::experimental;
 
-template <class ViewType, class DistancesViewType>
+template <class TensorType, class DistancesTensorType>
 struct TestFunctorA {
-  ViewType m_view;
-  DistancesViewType m_distancesView;
+  TensorType m_tensor;
+  DistancesTensorType m_distancesTensor;
   int m_apiPick;
 
-  TestFunctorA(const ViewType view, const DistancesViewType distancesView,
+  TestFunctorA(const TensorType tensor, const DistancesTensorType distancesTensor,
                int apiPick)
-      : m_view(view), m_distancesView(distancesView), m_apiPick(apiPick) {}
+      : m_tensor(tensor), m_distancesTensor(distancesTensor), m_apiPick(apiPick) {}
 
   template <class MemberType>
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
-    auto myRowView        = flare::subview(m_view, myRowIndex, flare::ALL());
+    auto myRowTensor        = flare::subtensor(m_tensor, myRowIndex, flare::ALL());
 
     if (m_apiPick == 0) {
       auto it =
-          KE::min_element(member, KE::cbegin(myRowView), KE::cend(myRowView));
+          KE::min_element(member, KE::cbegin(myRowTensor), KE::cend(myRowTensor));
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) = KE::distance(KE::cbegin(myRowView), it);
+        m_distancesTensor(myRowIndex) = KE::distance(KE::cbegin(myRowTensor), it);
       });
     }
 
     else if (m_apiPick == 1) {
-      auto it = KE::min_element(member, myRowView);
+      auto it = KE::min_element(member, myRowTensor);
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) = KE::distance(KE::begin(myRowView), it);
+        m_distancesTensor(myRowIndex) = KE::distance(KE::begin(myRowTensor), it);
       });
     }
     else if (m_apiPick == 2) {
-      using value_type = typename ViewType::value_type;
+      using value_type = typename TensorType::value_type;
       auto it =
-          KE::min_element(member, KE::cbegin(myRowView), KE::cend(myRowView),
+          KE::min_element(member, KE::cbegin(myRowTensor), KE::cend(myRowTensor),
                           CustomLessThanComparator<value_type>{});
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) = KE::distance(KE::cbegin(myRowView), it);
+        m_distancesTensor(myRowIndex) = KE::distance(KE::cbegin(myRowTensor), it);
       });
     }
 
     else if (m_apiPick == 3) {
-      using value_type = typename ViewType::value_type;
-      auto it          = KE::min_element(member, myRowView,
+      using value_type = typename TensorType::value_type;
+      auto it          = KE::min_element(member, myRowTensor,
                                 CustomLessThanComparator<value_type>{});
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) = KE::distance(KE::begin(myRowView), it);
+        m_distancesTensor(myRowIndex) = KE::distance(KE::begin(myRowTensor), it);
       });
     }
   }
@@ -75,19 +75,19 @@ struct TestFunctorA {
 template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   /* description:
-     team-level KE::min_element on a rank-2 view where
+     team-level KE::min_element on a rank-2 tensor where
      data is filled randomly and we use one team per row.
    */
 
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
-  auto [dataView, cloneOfDataViewBeforeOp_h] =
-      create_random_view_and_host_clone(
+  auto [dataTensor, cloneOfDataTensorBeforeOp_h] =
+      create_random_tensor_and_host_clone(
           LayoutTag{}, numTeams, numCols,
-          flare::pair<ValueType, ValueType>{0, 1153}, "dataView");
+          flare::pair<ValueType, ValueType>{0, 1153}, "dataTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -98,21 +98,21 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   // each team stores the distance of the returned iterator from the
   // beginning of the interval that team operates on and then we check
   // that these distances match the expectation
-  flare::View<std::size_t*> distancesView("distancesView", numTeams);
+  flare::Tensor<std::size_t*> distancesTensor("distancesTensor", numTeams);
 
   // use CTAD for functor
-  TestFunctorA fnc(dataView, distancesView, apiId);
+  TestFunctorA fnc(dataTensor, distancesTensor, apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // run std algo and check
   // -----------------------------------------------
-  // here I can use cloneOfDataViewBeforeOp_h to run std algo on
+  // here I can use cloneOfDataTensorBeforeOp_h to run std algo on
   // since that contains a valid copy of the data
-  auto distancesView_h   = create_host_space_copy(distancesView);
-  auto dataViewAfterOp_h = create_host_space_copy(dataView);
-  for (std::size_t i = 0; i < cloneOfDataViewBeforeOp_h.extent(0); ++i) {
-    auto myRow = flare::subview(cloneOfDataViewBeforeOp_h, i, flare::ALL());
+  auto distancesTensor_h   = create_host_space_copy(distancesTensor);
+  auto dataTensorAfterOp_h = create_host_space_copy(dataTensor);
+  for (std::size_t i = 0; i < cloneOfDataTensorBeforeOp_h.extent(0); ++i) {
+    auto myRow = flare::subtensor(cloneOfDataTensorBeforeOp_h, i, flare::ALL());
 
     std::size_t stdDistance = 0;
     if (apiId <= 1) {
@@ -123,11 +123,11 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
                                  CustomLessThanComparator<value_type>{});
       stdDistance = KE::distance(KE::cbegin(myRow), it);
     }
-    REQUIRE_EQ(stdDistance, distancesView_h(i));
+    REQUIRE_EQ(stdDistance, distancesTensor_h(i));
   }
 
-  // dataView should remain unchanged
-  expect_equal_host_views(cloneOfDataViewBeforeOp_h, dataViewAfterOp_h);
+  // dataTensor should remain unchanged
+  expect_equal_host_tensors(cloneOfDataTensorBeforeOp_h, dataTensorAfterOp_h);
 }
 
 template <class LayoutTag, class ValueType>

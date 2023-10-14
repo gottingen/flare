@@ -146,17 +146,17 @@ namespace {
 
         // Create two tracked instances
         Foo f1(true), f2(true);
-        // Scope Views
+        // Scope Tensors
         {
             Foo *fp_d_ptr =
                     static_cast<Foo *>(flare::flare_malloc<DevMemSpace>(sizeof(Foo)));
-            flare::View<Foo, DevMemSpace> fp_d(fp_d_ptr);
+            flare::Tensor<Foo, DevMemSpace> fp_d(fp_d_ptr);
             // If using UVM or on the CPU don't make an extra HostCopy
             Foo *fp_h_ptr = std::is_same<DevMemSpace, HostMemSpace>::value
                             ? fp_d_ptr
                             : static_cast<Foo *>(
                                     flare::flare_malloc<HostMemSpace>(sizeof(Foo)));
-            flare::View<Foo, HostMemSpace> fp_h(fp_h_ptr);
+            flare::Tensor<Foo, HostMemSpace> fp_h(fp_h_ptr);
             REQUIRE_EQ(1, f1.use_count());
             REQUIRE_EQ(1, f2.use_count());
 

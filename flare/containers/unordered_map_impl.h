@@ -119,13 +119,13 @@ struct UnorderedMapHistogram {
   using execution_space = typename map_type::execution_space;
   using size_type       = typename map_type::size_type;
 
-  using histogram_view      = View<int[100], typename map_type::device_type>;
-  using host_histogram_view = typename histogram_view::HostMirror;
+  using histogram_tensor      = Tensor<int[100], typename map_type::device_type>;
+  using host_histogram_tensor = typename histogram_tensor::HostMirror;
 
   map_type m_map;
-  histogram_view m_length;
-  histogram_view m_distance;
-  histogram_view m_block_distance;
+  histogram_tensor m_length;
+  histogram_tensor m_distance;
+  histogram_tensor m_block_distance;
 
   UnorderedMapHistogram(map_type const& map)
       : m_map(map),
@@ -145,8 +145,8 @@ struct UnorderedMapHistogram {
   }
 
   void print_length(std::ostream& out) {
-    host_histogram_view host_copy =
-        create_mirror_view_and_copy(flare::HostSpace{}, m_length);
+    host_histogram_tensor host_copy =
+        create_mirror_tensor_and_copy(flare::HostSpace{}, m_length);
 
     for (int i = 0, size = host_copy.extent(0); i < size; ++i) {
       out << host_copy[i] << " , ";
@@ -155,8 +155,8 @@ struct UnorderedMapHistogram {
   }
 
   void print_distance(std::ostream& out) {
-    host_histogram_view host_copy =
-        create_mirror_view_and_copy(flare::HostSpace{}, m_distance);
+    host_histogram_tensor host_copy =
+        create_mirror_tensor_and_copy(flare::HostSpace{}, m_distance);
 
     for (int i = 0, size = host_copy.extent(0); i < size; ++i) {
       out << host_copy[i] << " , ";
@@ -165,8 +165,8 @@ struct UnorderedMapHistogram {
   }
 
   void print_block_distance(std::ostream& out) {
-    host_histogram_view host_copy =
-        create_mirror_view_and_copy(flare::HostSpace{}, m_block_distance);
+    host_histogram_tensor host_copy =
+        create_mirror_tensor_and_copy(flare::HostSpace{}, m_block_distance);
 
     for (int i = 0, size = host_copy.extent(0); i < size; ++i) {
       out << host_copy[i] << " , ";

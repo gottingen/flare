@@ -27,15 +27,15 @@ namespace flare::blas {
     /// \brief Swaps the entries of vectors x and y.
     ///
     /// \tparam execution_space an execution space to perform parallel work
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
-    /// \tparam YVector Type of the first vector y; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
+    /// \tparam YVector Type of the first vector y; a 1-D flare::Tensor.
     ///
     /// \param space [in] execution space passed to execution policies
-    /// \param x [in/out] 1-D View.
-    /// \param y [in/out] 1-D View.
+    /// \param x [in/out] 1-D Tensor.
+    /// \param y [in/out] 1-D Tensor.
     ///
     /// Swaps x and y. Note that this is akin to performing a deep_copy, swapping
-    /// pointers inside view can only be performed if no aliasing, subviews, etc...
+    /// pointers inside tensor can only be performed if no aliasing, subtensors, etc...
     /// exist, which cannot be asserted by this function.
     ///
     /// This function is non-blocking unless the underlying TPL requested
@@ -43,8 +43,8 @@ namespace flare::blas {
     template <class execution_space, class XVector, class YVector>
     void swap(execution_space const& space, XVector const& x, YVector const& y) {
         // Assert properties of XVector
-        static_assert(flare::is_view<XVector>::value,
-                      "flare::blas::swap: XVector must be a flare::View.");
+        static_assert(flare::is_tensor<XVector>::value,
+                      "flare::blas::swap: XVector must be a flare::Tensor.");
         static_assert(XVector::rank == 1,
                       "flare::blas::swap: "
                       "Input vector x must have rank 1.");
@@ -58,8 +58,8 @@ namespace flare::blas {
 
         // Assert properties of YVector, could probably use a function for this as
         // XVector and YVector are required to have identical properties...
-        static_assert(flare::is_view<YVector>::value,
-                      "flare::blas::swap: YVector must be a flare::View.");
+        static_assert(flare::is_tensor<YVector>::value,
+                      "flare::blas::swap: YVector must be a flare::Tensor.");
         static_assert(YVector::rank == 1,
                       "flare::blas::swap: "
                       "Input vector y must have rank 1.");
@@ -71,12 +71,12 @@ namespace flare::blas {
                         typename YVector::memory_space>::accessible,
                 "swap: execution_space cannot access data in YVector");
 
-        using XVector_Internal = flare::View<
+        using XVector_Internal = flare::Tensor<
                 typename XVector::non_const_value_type*,
                 typename flare::detail::GetUnifiedLayout<XVector>::array_layout,
                 flare::Device<execution_space, typename XVector::memory_space>,
                 flare::MemoryTraits<flare::Unmanaged> >;
-        using YVector_Internal = flare::View<
+        using YVector_Internal = flare::Tensor<
                 typename YVector::non_const_value_type*,
                 typename flare::detail::GetUnifiedLayout<YVector>::array_layout,
                 flare::Device<execution_space, typename YVector::memory_space>,
@@ -101,11 +101,11 @@ namespace flare::blas {
 
     /// \brief Swaps the entries of vectors x and y.
     ///
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
-    /// \tparam YVector Type of the first vector y; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
+    /// \tparam YVector Type of the first vector y; a 1-D flare::Tensor.
     ///
-    /// \param x [in/out] 1-D View.
-    /// \param y [in/out] 1-D View.
+    /// \param x [in/out] 1-D Tensor.
+    /// \param y [in/out] 1-D Tensor.
     ///
     /// This function is non-blocking unless the underlying TPL requested
     /// at compile time is itself blocking. Note that the kernel will be

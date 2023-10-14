@@ -42,7 +42,7 @@ namespace Test {
  * constructor
  *     2. excplicity copy construct in local variable
  *     3. construct default and assign to input object
- *     4. construct object from views
+ *     4. construct object from tensors
  */
         template<class CrsType, class ExecSpace, class scalarType>
         struct RunUpdateCrsTest {
@@ -134,9 +134,9 @@ namespace Test {
             flare::Crs<float, ExecSpace, void, std::int32_t> graph;
             flare::count_and_fill_crs(graph, nrows, CountFillFunctor<ExecSpace>());
             REQUIRE_EQ(graph.numRows(), nrows);
-            auto row_map = flare::create_mirror_view(graph.row_map);
+            auto row_map = flare::create_mirror_tensor(graph.row_map);
             flare::deep_copy(row_map, graph.row_map);
-            auto entries = flare::create_mirror_view(graph.entries);
+            auto entries = flare::create_mirror_tensor(graph.entries);
             flare::deep_copy(entries, graph.entries);
             for (std::int32_t row = 0; row < nrows; ++row) {
                 auto n = (row % 4) + 1;
@@ -162,9 +162,9 @@ namespace Test {
                 RunUpdateCrsTest<crs_type, ExecSpace, std::int32_t> crstest(graph);
                 crstest.run_test(nTest);
 
-                auto row_map = flare::create_mirror_view(graph.row_map);
+                auto row_map = flare::create_mirror_tensor(graph.row_map);
                 flare::deep_copy(row_map, graph.row_map);
-                auto entries = flare::create_mirror_view(graph.entries);
+                auto entries = flare::create_mirror_tensor(graph.entries);
                 flare::deep_copy(entries, graph.entries);
 
                 for (std::int32_t row = 0; row < nrows; ++row) {

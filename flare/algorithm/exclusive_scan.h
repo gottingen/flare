@@ -55,34 +55,34 @@ exclusive_scan(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class ValueType>
 auto exclusive_scan(const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     ValueType init_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
   namespace KE = ::flare::experimental;
   return detail::exclusive_scan_default_op_impl(
-      "flare::exclusive_scan_default_functors_view_api", ex,
-      KE::cbegin(view_from), KE::cend(view_from), KE::begin(view_dest),
+      "flare::exclusive_scan_default_functors_tensor_api", ex,
+      KE::cbegin(tensor_from), KE::cend(tensor_from), KE::begin(tensor_dest),
       init_value);
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class ValueType>
 auto exclusive_scan(const std::string& label, const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     ValueType init_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
   namespace KE = ::flare::experimental;
-  return detail::exclusive_scan_default_op_impl(label, ex, KE::cbegin(view_from),
-                                              KE::cend(view_from),
-                                              KE::begin(view_dest), init_value);
+  return detail::exclusive_scan_default_op_impl(label, ex, KE::cbegin(tensor_from),
+                                              KE::cend(tensor_from),
+                                              KE::begin(tensor_dest), init_value);
 }
 
 // overload set 2
@@ -120,17 +120,17 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class ValueType,
           class BinaryOpType>
 auto exclusive_scan(const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     ValueType init_value, BinaryOpType bop) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
   namespace KE = ::flare::experimental;
   return detail::exclusive_scan_custom_op_impl(
-      "flare::exclusive_scan_custom_functors_view_api", ex,
-      KE::cbegin(view_from), KE::cend(view_from), KE::begin(view_dest),
+      "flare::exclusive_scan_custom_functors_tensor_api", ex,
+      KE::cbegin(tensor_from), KE::cend(tensor_from), KE::begin(tensor_dest),
       init_value, bop);
 }
 
@@ -138,17 +138,17 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class ValueType,
           class BinaryOpType>
 auto exclusive_scan(const std::string& label, const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     ValueType init_value, BinaryOpType bop) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
   namespace KE = ::flare::experimental;
   return detail::exclusive_scan_custom_op_impl(
-      label, ex, KE::cbegin(view_from), KE::cend(view_from),
-      KE::begin(view_dest), init_value, bop);
+      label, ex, KE::cbegin(tensor_from), KE::cend(tensor_from),
+      KE::begin(tensor_dest), init_value, bop);
 }
 
 }  // namespace experimental

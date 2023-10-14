@@ -154,8 +154,8 @@ using beginDeepCopyFunction   = flare_profiling_begin_deep_copy_function;
 using endDeepCopyFunction     = flare_profiling_end_deep_copy_function;
 using beginFenceFunction      = flare_profiling_begin_fence_function;
 using endFenceFunction        = flare_profiling_end_fence_function;
-using dualViewSyncFunction    = flare_profiling_dual_view_sync_function;
-using dualViewModifyFunction  = flare_profiling_dual_view_modify_function;
+using dualTensorSyncFunction    = flare_profiling_dual_tensor_sync_function;
+using dualTensorModifyFunction  = flare_profiling_dual_tensor_modify_function;
 using declareMetadataFunction = flare_profiling_declare_metadata_function;
 
 }  // namespace Tools

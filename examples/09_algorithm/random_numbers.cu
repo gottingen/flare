@@ -15,7 +15,7 @@
 
 #include <flare/core.h>
 #include <flare/random.h>
-#include <flare/dual_view.h>
+#include <flare/dual_tensor.h>
 #include <flare/timer.h>
 #include <cstdlib>
 
@@ -44,8 +44,8 @@ using DefaultHostType = flare::HostSpace::execution_space;
 // GeneratorPool type
 template <class GeneratorPool>
 struct generate_random {
-  // Output View for the random numbers
-  flare::View<uint64_t**> vals;
+  // Output Tensor for the random numbers
+  flare::Tensor<uint64_t**> vals;
 
   // The GeneratorPool
   GeneratorPool rand_pool;
@@ -53,7 +53,7 @@ struct generate_random {
   int samples;
 
   // Initialize all members
-  generate_random(flare::View<uint64_t**> vals_, GeneratorPool rand_pool_,
+  generate_random(flare::Tensor<uint64_t**> vals_, GeneratorPool rand_pool_,
                   int samples_)
       : vals(vals_), rand_pool(rand_pool_), samples(samples_) {}
 
@@ -87,31 +87,31 @@ int main(int argc, char* args[]) {
     // pool.
     flare::Random_XorShift64_Pool<> rand_pool64(5374857);
     flare::Random_XorShift1024_Pool<> rand_pool1024(5374857);
-    flare::DualView<uint64_t**> vals("Vals", size, samples);
+    flare::DualTensor<uint64_t**> vals("Vals", size, samples);
 
     // Run some performance comparisons
     flare::Timer timer;
     flare::parallel_for(size,
                          generate_random<flare::Random_XorShift64_Pool<> >(
-                             vals.d_view, rand_pool64, samples));
+                             vals.d_tensor, rand_pool64, samples));
     flare::fence();
 
     timer.reset();
     flare::parallel_for(size,
                          generate_random<flare::Random_XorShift64_Pool<> >(
-                             vals.d_view, rand_pool64, samples));
+                             vals.d_tensor, rand_pool64, samples));
     flare::fence();
     double time_64 = timer.seconds();
 
     flare::parallel_for(size,
                          generate_random<flare::Random_XorShift1024_Pool<> >(
-                             vals.d_view, rand_pool1024, samples));
+                             vals.d_tensor, rand_pool1024, samples));
     flare::fence();
 
     timer.reset();
     flare::parallel_for(size,
                          generate_random<flare::Random_XorShift1024_Pool<> >(
-                             vals.d_view, rand_pool1024, samples));
+                             vals.d_tensor, rand_pool1024, samples));
     flare::fence();
     double time_1024 = timer.seconds();
 
@@ -120,7 +120,7 @@ int main(int argc, char* args[]) {
     printf("#Time XorShift1024*: %e %e\n", time_1024,
            1.0e-9 * samples * size / time_1024);
 
-    flare::deep_copy(vals.h_view, vals.d_view);
+    flare::deep_copy(vals.h_tensor, vals.d_tensor);
   }
   flare::finalize();
   return 0;

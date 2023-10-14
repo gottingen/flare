@@ -33,7 +33,7 @@ namespace flare {
                 "Instantiating ScratchMemorySpace on non-execution-space type.");
 
     public:
-        // Minimal overalignment used by view scratch allocations
+        // Minimal overalignment used by tensor scratch allocations
         constexpr static int ALIGN = 8;
 
     private:

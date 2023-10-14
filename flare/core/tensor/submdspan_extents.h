@@ -87,7 +87,7 @@ first_of(const strided_slice<OffsetType, ExtentType, StrideType> &r) {
 
 // last_of(slice): getting end of slice specifier range
 // We need however not just the slice but also the extents
-// of the original view and which rank from the extents.
+// of the original tensor and which rank from the extents.
 // This is needed in the case of slice being full_extent_t.
 MDSPAN_TEMPLATE_REQUIRES(
   size_t k, class Extents, class Integral,

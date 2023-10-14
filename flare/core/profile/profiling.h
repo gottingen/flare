@@ -121,33 +121,33 @@ namespace flare {
         void endFence(const uint64_t handle);
 
         /**
-         * syncDualView declares to the tool that a given DualView
+         * syncDualTensor declares to the tool that a given DualTensor
          * has been synced.
          *
          * Arguments:
          *
-         * label:     name of the View within the DualView
-         * ptr:       that View's data ptr
+         * label:     name of the Tensor within the DualTensor
+         * ptr:       that Tensor's data ptr
          * to_device: true if the data is being synchronized to the device
          * 		false otherwise
          */
-        void syncDualView(const std::string &label, const void *const ptr,
+        void syncDualTensor(const std::string &label, const void *const ptr,
                           bool to_device);
 
         /**
-         * modifyDualView declares to the tool that a given DualView
+         * modifyDualTensor declares to the tool that a given DualTensor
          * has been modified. Note: this means that somebody *called*
-         * modify on the DualView, this doesn't get called any time
+         * modify on the DualTensor, this doesn't get called any time
          * somebody touches the data
          *
          * Arguments:
          *
-         * label:     name of the View within the DualView
-         * ptr:       that View's data ptr
+         * label:     name of the Tensor within the DualTensor
+         * ptr:       that Tensor's data ptr
          * on_device: true if the data is being modified on the device
          * 		false otherwise
          */
-        void modifyDualView(const std::string &label, const void *const ptr,
+        void modifyDualTensor(const std::string &label, const void *const ptr,
                             bool on_device);
 
         void declareMetadata(const std::string &key, const std::string &value);
@@ -283,9 +283,9 @@ namespace flare {
 
             void set_end_fence_callback(endFenceFunction callback);
 
-            void set_dual_view_sync_callback(dualViewSyncFunction callback);
+            void set_dual_tensor_sync_callback(dualTensorSyncFunction callback);
 
-            void set_dual_view_modify_callback(dualViewModifyFunction callback);
+            void set_dual_tensor_modify_callback(dualTensorModifyFunction callback);
 
             void set_declare_metadata_callback(declareMetadataFunction callback);
 

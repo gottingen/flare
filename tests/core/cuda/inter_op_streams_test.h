@@ -26,10 +26,10 @@ namespace Test {
 
     template<typename MemorySpace>
     struct FunctorRange {
-        flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
+        flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
 
         FunctorRange(
-                flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
+                flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
                 a_)
                 : a(a_) {}
 
@@ -39,10 +39,10 @@ namespace Test {
 
     template<typename MemorySpace>
     struct FunctorRangeReduce {
-        flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
+        flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
 
         FunctorRangeReduce(
-                flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
+                flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
                 a_)
                 : a(a_) {}
 
@@ -52,10 +52,10 @@ namespace Test {
 
     template<typename MemorySpace>
     struct FunctorMDRange {
-        flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
+        flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
 
         FunctorMDRange(
-                flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
+                flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
                 a_)
                 : a(a_) {}
 
@@ -65,10 +65,10 @@ namespace Test {
 
     template<typename MemorySpace>
     struct FunctorMDRangeReduce {
-        flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
+        flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
 
         FunctorMDRangeReduce(
-                flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
+                flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
                 a_)
                 : a(a_) {}
 
@@ -80,10 +80,10 @@ namespace Test {
 
     template<typename MemorySpace, typename ExecutionSpace>
     struct FunctorTeam {
-        flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
+        flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
 
         FunctorTeam(
-                flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
+                flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
                 a_)
                 : a(a_) {}
 
@@ -99,10 +99,10 @@ namespace Test {
 
     template<typename MemorySpace, typename ExecutionSpace>
     struct FunctorTeamReduce {
-        flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
+        flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>> a;
 
         FunctorTeamReduce(
-                flare::View<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
+                flare::Tensor<int *, MemorySpace, flare::MemoryTraits<flare::Unmanaged>>
                 a_)
                 : a(a_) {}
 

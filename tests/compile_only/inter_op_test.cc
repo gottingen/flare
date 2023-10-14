@@ -14,124 +14,124 @@
 //
 
 #include <flare/core.h>
-#include <flare/dyn_rank_view.h>
+#include <flare/dyn_rank_tensor.h>
 #include <flare/core/exp_inter_op.h>
 
-// View
+// Tensor
 static_assert(
         std::is_same<
-                flare::experimental::python_view_type_t<flare::View<double *>>,
-                flare::View<double *,
+                flare::experimental::python_tensor_type_t<flare::Tensor<double *>>,
+                flare::Tensor<double *,
                         typename flare::DefaultExecutionSpace::array_layout,
                         typename flare::DefaultExecutionSpace::memory_space,
-                        flare::experimental::DefaultViewHooks>>::value,
-        "Error! Unexpected python_view_type for: View");
+                        flare::experimental::DefaultTensorHooks>>::value,
+        "Error! Unexpected python_tensor_type for: Tensor");
 
-// DynRankView
+// DynRankTensor
 static_assert(
         std::is_same<
-                flare::experimental::python_view_type_t<flare::DynRankView<double>>,
-                flare::DynRankView<
+                flare::experimental::python_tensor_type_t<flare::DynRankTensor<double>>,
+                flare::DynRankTensor<
                         double, typename flare::DefaultExecutionSpace::array_layout,
                         typename flare::DefaultExecutionSpace::memory_space>>::value,
-        "Error! Unexpected python_view_type for: DynRankView");
+        "Error! Unexpected python_tensor_type for: DynRankTensor");
 
-// View + Execution Space
+// Tensor + Execution Space
 static_assert(
         std::is_same<
-                flare::experimental::python_view_type_t<
-                        flare::View<double *, flare::DefaultExecutionSpace>>,
-                flare::View<double *,
+                flare::experimental::python_tensor_type_t<
+                        flare::Tensor<double *, flare::DefaultExecutionSpace>>,
+                flare::Tensor<double *,
                         typename flare::DefaultExecutionSpace::array_layout,
                         typename flare::DefaultExecutionSpace::memory_space,
-                        flare::experimental::DefaultViewHooks>>::value,
-        "Error! Unexpected python_view_type for: View + Execution Space");
+                        flare::experimental::DefaultTensorHooks>>::value,
+        "Error! Unexpected python_tensor_type for: Tensor + Execution Space");
 
-// DynRankView + Execution Space
+// DynRankTensor + Execution Space
 static_assert(
         std::is_same<
-                flare::experimental::python_view_type_t<
-                        flare::DynRankView<double, flare::DefaultExecutionSpace>>,
-                flare::DynRankView<
+                flare::experimental::python_tensor_type_t<
+                        flare::DynRankTensor<double, flare::DefaultExecutionSpace>>,
+                flare::DynRankTensor<
                         double, typename flare::DefaultExecutionSpace::array_layout,
                         typename flare::DefaultExecutionSpace::memory_space>>::value,
-        "Error! Unexpected python_view_type for: DynRankView + Execution Space");
+        "Error! Unexpected python_tensor_type for: DynRankTensor + Execution Space");
 
-// View + Memory space
+// Tensor + Memory space
 static_assert(
-        std::is_same<flare::experimental::python_view_type_t<
-                flare::View<int64_t *, flare::HostSpace>>,
-                flare::View<int64_t *, flare::LayoutRight, flare::HostSpace,
-                        flare::experimental::DefaultViewHooks>>::value,
-        "Error! Unexpected python_view_type for: View + Memory space");
+        std::is_same<flare::experimental::python_tensor_type_t<
+                flare::Tensor<int64_t *, flare::HostSpace>>,
+                flare::Tensor<int64_t *, flare::LayoutRight, flare::HostSpace,
+                        flare::experimental::DefaultTensorHooks>>::value,
+        "Error! Unexpected python_tensor_type for: Tensor + Memory space");
 
-// DynRankView + Memory space
+// DynRankTensor + Memory space
 static_assert(
-        std::is_same<flare::experimental::python_view_type_t<
-                flare::DynRankView<int16_t, flare::HostSpace>>,
-                flare::DynRankView<int16_t, flare::LayoutRight,
+        std::is_same<flare::experimental::python_tensor_type_t<
+                flare::DynRankTensor<int16_t, flare::HostSpace>>,
+                flare::DynRankTensor<int16_t, flare::LayoutRight,
                         flare::HostSpace>>::value,
-        "Error! Unexpected python_view_type for: DynRankView + Memory space");
+        "Error! Unexpected python_tensor_type for: DynRankTensor + Memory space");
 
-// View + Layout + Execution space
+// Tensor + Layout + Execution space
 static_assert(
         std::is_same<
-                flare::experimental::python_view_type_t<flare::View<
+                flare::experimental::python_tensor_type_t<flare::Tensor<
                         int **, flare::LayoutLeft, flare::DefaultExecutionSpace>>,
-                flare::View<int **, flare::LayoutLeft,
+                flare::Tensor<int **, flare::LayoutLeft,
                         typename flare::DefaultExecutionSpace::memory_space,
-                        flare::experimental::DefaultViewHooks>>::value,
-        "Error! Unexpected python_view_type for: View + Layout + Execution space");
+                        flare::experimental::DefaultTensorHooks>>::value,
+        "Error! Unexpected python_tensor_type for: Tensor + Layout + Execution space");
 
-// DynRankView + Layout + Execution space
+// DynRankTensor + Layout + Execution space
 static_assert(
-        std::is_same<flare::experimental::python_view_type_t<flare::DynRankView<
+        std::is_same<flare::experimental::python_tensor_type_t<flare::DynRankTensor<
                 int, flare::LayoutLeft, flare::DefaultExecutionSpace>>,
-                flare::DynRankView<int, flare::LayoutLeft,
+                flare::DynRankTensor<int, flare::LayoutLeft,
                         typename flare::DefaultExecutionSpace::
                         memory_space>>::value,
-        "Error! Unexpected python_view_type for: DynRankView + Layout + Execution "
+        "Error! Unexpected python_tensor_type for: DynRankTensor + Layout + Execution "
         "space");
 
-// View + Layout + Memory Space
+// Tensor + Layout + Memory Space
 static_assert(
-        std::is_same<flare::experimental::python_view_type_t<flare::View<
+        std::is_same<flare::experimental::python_tensor_type_t<flare::Tensor<
                 uint32_t **, flare::LayoutLeft, flare::HostSpace>>,
-                flare::View<uint32_t **, flare::LayoutLeft, flare::HostSpace,
-                        flare::experimental::DefaultViewHooks>>::value,
-        "Error! Unexpected python_view_type for: View + Layout + Memory Space");
+                flare::Tensor<uint32_t **, flare::LayoutLeft, flare::HostSpace,
+                        flare::experimental::DefaultTensorHooks>>::value,
+        "Error! Unexpected python_tensor_type for: Tensor + Layout + Memory Space");
 
-// DynRankView + Layout + Memory Space
+// DynRankTensor + Layout + Memory Space
 static_assert(
-        std::is_same<flare::experimental::python_view_type_t<flare::DynRankView<
+        std::is_same<flare::experimental::python_tensor_type_t<flare::DynRankTensor<
                 uint64_t, flare::LayoutLeft, flare::HostSpace>>,
-                flare::DynRankView<uint64_t, flare::LayoutLeft,
+                flare::DynRankTensor<uint64_t, flare::LayoutLeft,
                         flare::HostSpace>>::value,
-        "Error! Unexpected python_view_type for: DynRankView + Layout + Memory "
+        "Error! Unexpected python_tensor_type for: DynRankTensor + Layout + Memory "
         "Space");
 
-// View + Layout + Execution space + Memory Trait
+// Tensor + Layout + Execution space + Memory Trait
 static_assert(
         std::is_same<
-                flare::experimental::python_view_type_t<flare::View<
+                flare::experimental::python_tensor_type_t<flare::Tensor<
                         float ***, flare::LayoutLeft, flare::DefaultHostExecutionSpace,
                         flare::MemoryTraits<flare::RandomAccess>>>,
-                flare::View<float ***, flare::LayoutLeft,
+                flare::Tensor<float ***, flare::LayoutLeft,
                         typename flare::DefaultHostExecutionSpace::memory_space,
-                        flare::experimental::DefaultViewHooks,
+                        flare::experimental::DefaultTensorHooks,
                         flare::MemoryTraits<flare::RandomAccess>>>::value,
-        "Error! Unexpected python_view_type for: View + Layout + Execution space + "
+        "Error! Unexpected python_tensor_type for: Tensor + Layout + Execution space + "
         "Memory Trait");
 
-// DynRankView + Layout + Execution space  + Memory trait
+// DynRankTensor + Layout + Execution space  + Memory trait
 static_assert(
         std::is_same<
-                flare::experimental::python_view_type_t<flare::DynRankView<
+                flare::experimental::python_tensor_type_t<flare::DynRankTensor<
                         float, flare::LayoutLeft, flare::DefaultHostExecutionSpace,
                         flare::MemoryTraits<flare::Atomic>>>,
-                flare::DynRankView<
+                flare::DynRankTensor<
                         float, flare::LayoutLeft,
                         typename flare::DefaultHostExecutionSpace::memory_space,
                         flare::MemoryTraits<flare::Atomic>>>::value,
-        "Error! Unexpected python_view_type for: DynRankView + Layout + Execution "
+        "Error! Unexpected python_tensor_type for: DynRankTensor + Layout + Execution "
         "space  + Memory trait");

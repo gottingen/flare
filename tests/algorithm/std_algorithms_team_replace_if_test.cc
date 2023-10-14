@@ -32,16 +32,16 @@ struct GreaterThanValueFunctor {
   bool operator()(ValueType val) const { return (val > m_val); }
 };
 
-template <class ViewType, class ValueType>
+template <class TensorType, class ValueType>
 struct TestFunctorA {
-  ViewType m_view;
+  TensorType m_tensor;
   ValueType m_threshold;
   ValueType m_newVal;
   int m_apiPick;
 
-  TestFunctorA(const ViewType view, ValueType threshold, ValueType newVal,
+  TestFunctorA(const TensorType tensor, ValueType threshold, ValueType newVal,
                int apiPick)
-      : m_view(view),
+      : m_tensor(tensor),
         m_threshold(threshold),
         m_newVal(newVal),
         m_apiPick(apiPick) {}
@@ -49,14 +49,14 @@ struct TestFunctorA {
   template <class MemberType>
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
-    auto myRowView        = flare::subview(m_view, myRowIndex, flare::ALL());
+    auto myRowTensor        = flare::subtensor(m_tensor, myRowIndex, flare::ALL());
 
     GreaterThanValueFunctor predicate(m_threshold);
     if (m_apiPick == 0) {
-      KE::replace_if(member, KE::begin(myRowView), KE::end(myRowView),
+      KE::replace_if(member, KE::begin(myRowTensor), KE::end(myRowTensor),
                      predicate, m_newVal);
     } else if (m_apiPick == 1) {
-      KE::replace_if(member, myRowView, predicate, m_newVal);
+      KE::replace_if(member, myRowTensor, predicate, m_newVal);
     }
   }
 };
@@ -64,7 +64,7 @@ struct TestFunctorA {
 template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   /* description:
-     use a rank-2 view randomly filled with values,
+     use a rank-2 tensor randomly filled with values,
      and run a team-level replace_if where the values strictly greater
      than a threshold are replaced with a new value.
    */
@@ -74,13 +74,13 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range
-  auto [dataView, cloneOfDataViewBeforeOp_h] =
-      create_random_view_and_host_clone(
+  auto [dataTensor, cloneOfDataTensorBeforeOp_h] =
+      create_random_tensor_and_host_clone(
           LayoutTag{}, numTeams, numCols,
-          flare::pair<ValueType, ValueType>{5, 523}, "dataView");
+          flare::pair<ValueType, ValueType>{5, 523}, "dataTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -88,31 +88,31 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   using space_t = flare::DefaultExecutionSpace;
   flare::TeamPolicy<space_t> policy(numTeams, flare::AUTO());
   // use CTAD for functor
-  TestFunctorA fnc(dataView, threshold, newVal, apiId);
+  TestFunctorA fnc(dataTensor, threshold, newVal, apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // run cpp-std kernel
   // -----------------------------------------------
-  flare::View<ValueType**, flare::HostSpace> stdDataView("stdDataView",
+  flare::Tensor<ValueType**, flare::HostSpace> stdDataTensor("stdDataTensor",
                                                            numTeams, numCols);
   // ensure that we use the same data to run the std algo on
-  for (std::size_t i = 0; i < dataView.extent(0); ++i) {
-    for (std::size_t j = 0; j < dataView.extent(1); ++j) {
-      stdDataView(i, j) = cloneOfDataViewBeforeOp_h(i, j);
+  for (std::size_t i = 0; i < dataTensor.extent(0); ++i) {
+    for (std::size_t j = 0; j < dataTensor.extent(1); ++j) {
+      stdDataTensor(i, j) = cloneOfDataTensorBeforeOp_h(i, j);
     }
   }
   GreaterThanValueFunctor predicate(threshold);
-  for (std::size_t i = 0; i < dataView.extent(0); ++i) {
-    auto thisRow = flare::subview(stdDataView, i, flare::ALL());
+  for (std::size_t i = 0; i < dataTensor.extent(0); ++i) {
+    auto thisRow = flare::subtensor(stdDataTensor, i, flare::ALL());
     std::replace_if(KE::begin(thisRow), KE::end(thisRow), predicate, newVal);
   }
 
   // -----------------------------------------------
   // check
   // -----------------------------------------------
-  auto dataViewAfterOp_h = create_host_space_copy(dataView);
-  expect_equal_host_views(stdDataView, dataViewAfterOp_h);
+  auto dataTensorAfterOp_h = create_host_space_copy(dataTensor);
+  expect_equal_host_tensors(stdDataTensor, dataTensorAfterOp_h);
 }
 
 template <class LayoutTag, class ValueType>

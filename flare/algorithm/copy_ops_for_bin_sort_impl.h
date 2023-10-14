@@ -22,31 +22,31 @@
 namespace flare {
 namespace detail {
 
-template <class DstViewType, class SrcViewType, int Rank = DstViewType::rank>
+template <class DstTensorType, class SrcTensorType, int Rank = DstTensorType::rank>
 struct CopyOp;
 
-template <class DstViewType, class SrcViewType>
-struct CopyOp<DstViewType, SrcViewType, 1> {
+template <class DstTensorType, class SrcTensorType>
+struct CopyOp<DstTensorType, SrcTensorType, 1> {
   FLARE_INLINE_FUNCTION
-  static void copy(DstViewType const& dst, size_t i_dst, SrcViewType const& src,
+  static void copy(DstTensorType const& dst, size_t i_dst, SrcTensorType const& src,
                    size_t i_src) {
     dst(i_dst) = src(i_src);
   }
 };
 
-template <class DstViewType, class SrcViewType>
-struct CopyOp<DstViewType, SrcViewType, 2> {
+template <class DstTensorType, class SrcTensorType>
+struct CopyOp<DstTensorType, SrcTensorType, 2> {
   FLARE_INLINE_FUNCTION
-  static void copy(DstViewType const& dst, size_t i_dst, SrcViewType const& src,
+  static void copy(DstTensorType const& dst, size_t i_dst, SrcTensorType const& src,
                    size_t i_src) {
     for (int j = 0; j < (int)dst.extent(1); j++) dst(i_dst, j) = src(i_src, j);
   }
 };
 
-template <class DstViewType, class SrcViewType>
-struct CopyOp<DstViewType, SrcViewType, 3> {
+template <class DstTensorType, class SrcTensorType>
+struct CopyOp<DstTensorType, SrcTensorType, 3> {
   FLARE_INLINE_FUNCTION
-  static void copy(DstViewType const& dst, size_t i_dst, SrcViewType const& src,
+  static void copy(DstTensorType const& dst, size_t i_dst, SrcTensorType const& src,
                    size_t i_src) {
     for (int j = 0; j < dst.extent(1); j++)
       for (int k = 0; k < dst.extent(2); k++)

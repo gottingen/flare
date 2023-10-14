@@ -125,19 +125,19 @@ namespace flare::detail {
             reducer.final(ptr);
         }
 
-        template<class ViewType>
+        template<class TensorType>
         ParallelReduce(const CombinedFunctorReducerType &arg_functor_reducer,
                        const MDRangePolicy &arg_policy,
-                       const ViewType &arg_result_view)
+                       const TensorType &arg_result_tensor)
                 : m_iter(arg_policy, arg_functor_reducer),
-                  m_result_ptr(arg_result_view.data()) {
-            static_assert(flare::is_view<ViewType>::value,
-                          "flare::Serial reduce result must be a View");
+                  m_result_ptr(arg_result_tensor.data()) {
+            static_assert(flare::is_tensor<TensorType>::value,
+                          "flare::Serial reduce result must be a Tensor");
 
             static_assert(
-                    flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+                    flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                             flare::HostSpace>::accessible,
-                    "flare::Serial reduce result must be a View accessible from "
+                    "flare::Serial reduce result must be a Tensor accessible from "
                     "HostSpace");
         }
     };

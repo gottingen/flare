@@ -27,41 +27,41 @@ namespace Test::stdalgos::TeamSearchN {
         }
     };
 
-    template<class DataViewType, class SearchedValuesViewType,
-            class DistancesViewType, class BinaryPredType>
+    template<class DatATensorType, class SearchedValuesTensorType,
+            class DistancesTensorType, class BinaryPredType>
     struct TestFunctorA {
-        DataViewType m_dataView;
+        DatATensorType m_dataTensor;
         std::size_t m_seqSize;
-        SearchedValuesViewType m_searchedValuesView;
-        DistancesViewType m_distancesView;
+        SearchedValuesTensorType m_searchedValuesTensor;
+        DistancesTensorType m_distancesTensor;
         BinaryPredType m_binaryPred;
         int m_apiPick;
 
-        TestFunctorA(const DataViewType dataView, std::size_t seqSize,
-                     const SearchedValuesViewType searchedValuesView,
-                     const DistancesViewType distancesView, BinaryPredType binaryPred,
+        TestFunctorA(const DatATensorType dataTensor, std::size_t seqSize,
+                     const SearchedValuesTensorType searchedValuesTensor,
+                     const DistancesTensorType distancesTensor, BinaryPredType binaryPred,
                      int apiPick)
-                : m_dataView(dataView),
+                : m_dataTensor(dataTensor),
                   m_seqSize(seqSize),
-                  m_searchedValuesView(searchedValuesView),
-                  m_distancesView(distancesView),
+                  m_searchedValuesTensor(searchedValuesTensor),
+                  m_distancesTensor(distancesTensor),
                   m_binaryPred(binaryPred),
                   m_apiPick(apiPick) {}
 
         template<class MemberType>
         FLARE_INLINE_FUNCTION void operator()(const MemberType &member) const {
             const auto myRowIndex = member.league_rank();
-            auto myRowViewFrom = flare::subview(m_dataView, myRowIndex, flare::ALL());
-            auto rowFromBegin = KE::begin(myRowViewFrom);
-            auto rowFromEnd = KE::end(myRowViewFrom);
-            const auto searchedValue = m_searchedValuesView(myRowIndex);
+            auto myRowTensorFrom = flare::subtensor(m_dataTensor, myRowIndex, flare::ALL());
+            auto rowFromBegin = KE::begin(myRowTensorFrom);
+            auto rowFromEnd = KE::end(myRowTensorFrom);
+            const auto searchedValue = m_searchedValuesTensor(myRowIndex);
 
             switch (m_apiPick) {
                 case 0: {
                     const auto it = KE::search_n(member, rowFromBegin, rowFromEnd,
                                                  m_seqSize, searchedValue);
                     flare::single(flare::PerTeam(member), [=, *this]() {
-                        m_distancesView(myRowIndex) = KE::distance(rowFromBegin, it);
+                        m_distancesTensor(myRowIndex) = KE::distance(rowFromBegin, it);
                     });
 
                     break;
@@ -69,9 +69,9 @@ namespace Test::stdalgos::TeamSearchN {
 
                 case 1: {
                     const auto it =
-                            KE::search_n(member, myRowViewFrom, m_seqSize, searchedValue);
+                            KE::search_n(member, myRowTensorFrom, m_seqSize, searchedValue);
                     flare::single(flare::PerTeam(member), [=, *this]() {
-                        m_distancesView(myRowIndex) = KE::distance(rowFromBegin, it);
+                        m_distancesTensor(myRowIndex) = KE::distance(rowFromBegin, it);
                     });
 
                     break;
@@ -81,17 +81,17 @@ namespace Test::stdalgos::TeamSearchN {
                     const auto it = KE::search_n(member, rowFromBegin, rowFromEnd,
                                                  m_seqSize, searchedValue, m_binaryPred);
                     flare::single(flare::PerTeam(member), [=, *this]() {
-                        m_distancesView(myRowIndex) = KE::distance(rowFromBegin, it);
+                        m_distancesTensor(myRowIndex) = KE::distance(rowFromBegin, it);
                     });
 
                     break;
                 }
 
                 case 3: {
-                    const auto it = KE::search_n(member, myRowViewFrom, m_seqSize,
+                    const auto it = KE::search_n(member, myRowTensorFrom, m_seqSize,
                                                  searchedValue, m_binaryPred);
                     flare::single(flare::PerTeam(member), [=, *this]() {
-                        m_distancesView(myRowIndex) = KE::distance(rowFromBegin, it);
+                        m_distancesTensor(myRowIndex) = KE::distance(rowFromBegin, it);
                     });
 
                     break;
@@ -104,66 +104,66 @@ namespace Test::stdalgos::TeamSearchN {
     void test_A(const bool sequencesExist, std::size_t numTeams,
                 std::size_t numCols, int apiId) {
         /* description:
-           use a rank-2 view randomly filled with values,
+           use a rank-2 tensor randomly filled with values,
            and run a team-level search_n
          */
 
         // -----------------------------------------------
         // prepare data
         // -----------------------------------------------
-        // create a view in the memory space associated with default exespace
+        // create a tensor in the memory space associated with default exespace
         // with as many rows as the number of teams and fill it with random
         // values from an arbitrary range.
         constexpr ValueType lowerBound = 5;
         constexpr ValueType upperBound = 523;
         const auto bounds = make_bounds(lowerBound, upperBound);
 
-        auto [dataView, dataViewBeforeOp_h] = create_random_view_and_host_clone(
-                LayoutTag{}, numTeams, numCols, bounds, "dataView");
+        auto [dataTensor, dataTensorBeforeOp_h] = create_random_tensor_and_host_clone(
+                LayoutTag{}, numTeams, numCols, bounds, "dataTensor");
 
         // If sequencesExist == true we need to inject some sequence of count test
-        // value into dataView. If sequencesExist == false we set searchedVal to a
-        // value that is not present in dataView
+        // value into dataTensor. If sequencesExist == false we set searchedVal to a
+        // value that is not present in dataTensor
 
         const std::size_t halfCols = (numCols > 1) ? ((numCols + 1) / 2) : (1);
         const std::size_t seqSize = (numCols > 1) ? (std::log2(numCols)) : (1);
 
-        flare::View<ValueType *> searchedValuesView("searchedValuesView", numTeams);
-        auto searchedValuesView_h = create_host_space_copy(searchedValuesView);
+        flare::Tensor<ValueType *> searchedValuesTensor("searchedValuesTensor", numTeams);
+        auto searchedValuesTensor_h = create_host_space_copy(searchedValuesTensor);
 
-        // dataView might not deep copyable (e.g. strided layout) so to prepare it
-        // correclty, we make a new view that is for sure deep copyable, modify it
+        // dataTensor might not deep copyable (e.g. strided layout) so to prepare it
+        // correclty, we make a new tensor that is for sure deep copyable, modify it
         // on the host, deep copy to device and then launch a kernel to copy to
-        // dataView
-        auto dataView_dc =
-                create_deep_copyable_compatible_view_with_same_extent(dataView);
-        auto dataView_dc_h = create_mirror_view(flare::HostSpace(), dataView_dc);
+        // dataTensor
+        auto dataTensor_dc =
+                create_deep_copyable_compatible_tensor_with_same_extent(dataTensor);
+        auto dataTensor_dc_h = create_mirror_tensor(flare::HostSpace(), dataTensor_dc);
 
         if (sequencesExist) {
             const std::size_t dataBegin = halfCols - seqSize;
-            for (std::size_t i = 0; i < searchedValuesView.extent(0); ++i) {
-                const ValueType searchedVal = dataView_dc_h(i, dataBegin);
-                searchedValuesView_h(i) = searchedVal;
+            for (std::size_t i = 0; i < searchedValuesTensor.extent(0); ++i) {
+                const ValueType searchedVal = dataTensor_dc_h(i, dataBegin);
+                searchedValuesTensor_h(i) = searchedVal;
 
                 for (std::size_t j = dataBegin + 1; j < seqSize; ++j) {
-                    dataView_dc_h(i, j) = searchedVal;
+                    dataTensor_dc_h(i, j) = searchedVal;
                 }
             }
 
-            // copy to dataView_dc and then to dataView
-            flare::deep_copy(dataView_dc, dataView_dc_h);
+            // copy to dataTensor_dc and then to dataTensor
+            flare::deep_copy(dataTensor_dc, dataTensor_dc_h);
 
-            CopyFunctorRank2 cpFun(dataView_dc, dataView);
-            flare::parallel_for("copy", dataView.extent(0) * dataView.extent(1),
+            CopyFunctorRank2 cpFun(dataTensor_dc, dataTensor);
+            flare::parallel_for("copy", dataTensor.extent(0) * dataTensor.extent(1),
                                 cpFun);
         } else {
             using rand_pool =
                     flare::Random_XorShift64_Pool<flare::DefaultHostExecutionSpace>;
             rand_pool pool(lowerBound * upperBound);
-            flare::fill_random(searchedValuesView_h, pool, upperBound, upperBound * 2);
+            flare::fill_random(searchedValuesTensor_h, pool, upperBound, upperBound * 2);
         }
 
-        flare::deep_copy(searchedValuesView, searchedValuesView_h);
+        flare::deep_copy(searchedValuesTensor, searchedValuesTensor_h);
 
         // -----------------------------------------------
         // launch flare kernel
@@ -175,27 +175,27 @@ namespace Test::stdalgos::TeamSearchN {
         // stores the distance of the returned iterator from the beginning of the
         // interval that team operates on and then we check that these distances match
         // the std result
-        flare::View<std::size_t *> distancesView("distancesView", numTeams);
+        flare::Tensor<std::size_t *> distancesTensor("distancesTensor", numTeams);
 
         EqualFunctor<ValueType> binaryPred;
 
         // use CTAD for functor
-        TestFunctorA fnc(dataView, seqSize, searchedValuesView, distancesView,
+        TestFunctorA fnc(dataTensor, seqSize, searchedValuesTensor, distancesTensor,
                          binaryPred, apiId);
         flare::parallel_for(policy, fnc);
 
         // -----------------------------------------------
         // run cpp-std kernel and check
         // -----------------------------------------------
-        auto distancesView_h = create_host_space_copy(distancesView);
+        auto distancesTensor_h = create_host_space_copy(distancesTensor);
 
-        for (std::size_t i = 0; i < dataView.extent(0); ++i) {
-            auto rowFrom = flare::subview(dataView_dc_h, i, flare::ALL());
+        for (std::size_t i = 0; i < dataTensor.extent(0); ++i) {
+            auto rowFrom = flare::subtensor(dataTensor_dc_h, i, flare::ALL());
 
             const auto rowFromBegin = KE::cbegin(rowFrom);
             const auto rowFromEnd = KE::cend(rowFrom);
 
-            const ValueType searchedVal = searchedValuesView_h(i);
+            const ValueType searchedVal = searchedValuesTensor_h(i);
 
             const std::size_t beginEndDist = KE::distance(rowFromBegin, rowFromEnd);
 
@@ -207,12 +207,12 @@ namespace Test::stdalgos::TeamSearchN {
                     const std::size_t stdDistance = KE::distance(rowFromBegin, it);
 
                     if (sequencesExist) {
-                        REQUIRE_LT(distancesView_h(i), beginEndDist);
+                        REQUIRE_LT(distancesTensor_h(i), beginEndDist);
                     } else {
-                        REQUIRE_EQ(distancesView_h(i), beginEndDist);
+                        REQUIRE_EQ(distancesTensor_h(i), beginEndDist);
                     }
 
-                    REQUIRE_EQ(stdDistance, distancesView_h(i));
+                    REQUIRE_EQ(stdDistance, distancesTensor_h(i));
 
                     break;
                 }
@@ -224,12 +224,12 @@ namespace Test::stdalgos::TeamSearchN {
                     const std::size_t stdDistance = KE::distance(rowFromBegin, it);
 
                     if (sequencesExist) {
-                        REQUIRE_LT(distancesView_h(i), beginEndDist);
+                        REQUIRE_LT(distancesTensor_h(i), beginEndDist);
                     } else {
-                        REQUIRE_EQ(distancesView_h(i), beginEndDist);
+                        REQUIRE_EQ(distancesTensor_h(i), beginEndDist);
                     }
 
-                    REQUIRE_EQ(stdDistance, distancesView_h(i));
+                    REQUIRE_EQ(stdDistance, distancesTensor_h(i));
 
                     break;
                 }

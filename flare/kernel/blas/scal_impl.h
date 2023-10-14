@@ -30,7 +30,7 @@
 namespace flare::blas::detail {
 
     // Single-vector version of MV_Scal_Functor.  By default, a is still a
-    // 1-D View.  Below is a partial specialization that lets a be a
+    // 1-D Tensor.  Below is a partial specialization that lets a be a
     // scalar.  This functor computes any of the following:
     //
     // 1. Y(i) = alpha*X(i) for alpha in -1,0,1
@@ -55,18 +55,18 @@ namespace flare::blas::detail {
         V_Scal_Functor(const RV &r, const XV &x, const AV &a,
                        const SizeType startingColumn)
                 : m_r(r), m_x(x), m_a(a) {
-            static_assert(flare::is_view<RV>::value,
-                          "V_Scal_Functor: RV is not a flare::View.");
-            static_assert(flare::is_view<AV>::value,
-                          "V_Scal_Functor: AV is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
-                          "V_Scal_Functor: XV is not a flare::View.");
+            static_assert(flare::is_tensor<RV>::value,
+                          "V_Scal_Functor: RV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<AV>::value,
+                          "V_Scal_Functor: AV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
+                          "V_Scal_Functor: XV is not a flare::Tensor.");
             static_assert(RV::rank == 1, "V_Scal_Functor: RV is not rank 1.");
             static_assert(AV::rank == 1, "V_Scal_Functor: AV is not rank 1.");
             static_assert(XV::rank == 1, "V_Scal_Functor: XV is not rank 1.");
 
             if (startingColumn != 0) {
-                m_a = flare::subview(
+                m_a = flare::subtensor(
                         a,
                         std::make_pair(startingColumn, static_cast<SizeType>(a.extent(0))));
             }
@@ -93,7 +93,7 @@ namespace flare::blas::detail {
     };
 
     // Partial specialization of V_Scal_Functor that lets a be a scalar
-    // (rather than a 1-D View, as in the most general version above).
+    // (rather than a 1-D Tensor, as in the most general version above).
     // This functor computes any of the following:
     //
     // 1. Y(i) = alpha*X(i) for alpha in -1,0,1
@@ -130,16 +130,16 @@ namespace flare::blas::detail {
         }
     };
 
-    // Variant of MV_Scal_Generic for single vectors (1-D Views) r and x.
-    // As above, av is either a 1-D View (and only its first entry will be
+    // Variant of MV_Scal_Generic for single vectors (1-D Tensors) r and x.
+    // As above, av is either a 1-D Tensor (and only its first entry will be
     // read), or a scalar.
     template<class execution_space, class RV, class AV, class XV, class SizeType>
     void V_Scal_Generic(const execution_space &space, const RV &r, const AV &av,
                         const XV &x, const SizeType startingColumn, int a = 2) {
-        static_assert(flare::is_view<RV>::value,
-                      "V_Scal_Generic: RV is not a flare::View.");
-        static_assert(flare::is_view<XV>::value,
-                      "V_Scal_Generic: XV is not a flare::View.");
+        static_assert(flare::is_tensor<RV>::value,
+                      "V_Scal_Generic: RV is not a flare::Tensor.");
+        static_assert(flare::is_tensor<XV>::value,
+                      "V_Scal_Generic: XV is not a flare::Tensor.");
         static_assert(RV::rank == 1, "V_Scal_Generic: RV is not rank 1.");
         static_assert(XV::rank == 1, "V_Scal_Generic: XV is not rank 1.");
 
@@ -169,7 +169,7 @@ namespace flare::blas::detail {
 
     /// mv
 
-    // Functor for multivectors R and X and 1-D View a, that computes any
+    // Functor for multivectors R and X and 1-D Tensor a, that computes any
     // of the following:
     //
     // 1. R(i,j) = alpha*X(i,j) for alpha in -1,0,1
@@ -199,7 +199,7 @@ namespace flare::blas::detail {
             if (startingColumn != 0) {
                 auto rng =
                         std::make_pair(startingColumn, static_cast<SizeType>(a.extent(0)));
-                a_ = flare::subview(a, rng);
+                a_ = flare::subtensor(a, rng);
             }
         }
 
@@ -301,7 +301,7 @@ namespace flare::blas::detail {
             if (startingColumn != 0) {
                 auto rng =
                         std::make_pair(startingColumn, static_cast<SizeType>(a.extent(0)));
-                m_a = flare::subview(a, rng);
+                m_a = flare::subtensor(a, rng);
             }
         }
 
@@ -405,7 +405,7 @@ namespace flare::blas::detail {
     //
     // a comes in as an int.  The values -1, 0, and 1 correspond to the
     // literal values of this coefficient.  The value 2 tells the functor
-    // to use av, which may be either a 1-D View or a scalar.  Otherwise,
+    // to use av, which may be either a 1-D Tensor or a scalar.  Otherwise,
     // av is ignored.
     //
     // Any literal coefficient of zero has BLAS semantics of ignoring the
@@ -457,7 +457,7 @@ namespace flare::blas::detail {
     //
     // a comes in as an int.  The values -1, 0, and 1 correspond to the
     // literal values of this coefficient.  The value 2 tells the functor
-    // to use av, which may be either a 1-D View or a scalar.  Otherwise,
+    // to use av, which may be either a 1-D Tensor or a scalar.  Otherwise,
     // av is ignored.
     //
     // Any literal coefficient of zero has BLAS semantics of ignoring the
@@ -504,7 +504,7 @@ namespace flare::blas::detail {
     //
     // a comes in as an int.  The values -1, 0, and 1 correspond to the
     // literal values of this coefficient.  The value 2 tells the functor
-    // to use av, which may be either a 1-D View or a scalar.  Otherwise,
+    // to use av, which may be either a 1-D Tensor or a scalar.  Otherwise,
     // av is ignored.
     //
     // Any literal coefficient of zero has BLAS semantics of ignoring the
@@ -524,8 +524,8 @@ namespace flare::blas::detail {
         SizeType j = 0;  // the current column of X and Y
         for (; j + 8 <= numCols; j += 8) {
             const std::pair<SizeType, SizeType> rng(j, j + 8);
-            auto X_cur = flare::subview(x, flare::ALL(), rng);
-            auto R_cur = flare::subview(r, flare::ALL(), rng);
+            auto X_cur = flare::subtensor(x, flare::ALL(), rng);
+            auto R_cur = flare::subtensor(r, flare::ALL(), rng);
             typedef decltype(X_cur) XMV2D;
             typedef decltype(R_cur) RMV2D;
 
@@ -534,8 +534,8 @@ namespace flare::blas::detail {
         }
         for (; j + 4 <= numCols; j += 4) {
             const std::pair<SizeType, SizeType> rng(j, j + 4);
-            auto X_cur = flare::subview(x, flare::ALL(), rng);
-            auto R_cur = flare::subview(r, flare::ALL(), rng);
+            auto X_cur = flare::subtensor(x, flare::ALL(), rng);
+            auto R_cur = flare::subtensor(r, flare::ALL(), rng);
             typedef decltype(X_cur) XMV2D;
             typedef decltype(R_cur) RMV2D;
 
@@ -544,8 +544,8 @@ namespace flare::blas::detail {
         }
         for (; j < numCols; ++j) {
             // RMV and XMV need to turn 1-D.
-            auto x_cur = flare::subview(x, flare::ALL(), j);
-            auto r_cur = flare::subview(r, flare::ALL(), j);
+            auto x_cur = flare::subtensor(x, flare::ALL(), j);
+            auto r_cur = flare::subtensor(r, flare::ALL(), j);
             typedef decltype(r_cur) RV;
             typedef decltype(x_cur) XV;
 
@@ -557,8 +557,8 @@ namespace flare::blas::detail {
 
         switch (numCols) {
     case 1: {
-      auto r_0 = flare::subview(r, flare::ALL(), 0);
-      auto x_0 = flare::subview(x, flare::ALL(), 0);
+      auto r_0 = flare::subtensor(r, flare::ALL(), 0);
+      auto x_0 = flare::subtensor(x, flare::ALL(), 0);
       typedef decltype(r_0) RV;
       typedef decltype(x_0) XV;
 
@@ -642,7 +642,7 @@ namespace flare::blas::detail {
     //
     // a comes in as an int.  The values -1, 0, and 1 correspond to the
     // literal values of this coefficient.  The value 2 tells the functor
-    // to use av, which may be either a 1-D View or a scalar.  Otherwise,
+    // to use av, which may be either a 1-D Tensor or a scalar.  Otherwise,
     // av is ignored.
     //
     // Any literal coefficient of zero has BLAS semantics of ignoring the
@@ -655,15 +655,15 @@ namespace flare::blas::detail {
         const SizeType numCols = x.extent(1);
 
         if (numCols == 1) {
-            typedef flare::View<typename RMV::value_type *, typename RMV::array_layout,
+            typedef flare::Tensor<typename RMV::value_type *, typename RMV::array_layout,
                     typename RMV::device_type, typename RMV::memory_traits>
                     RV;
-            typedef flare::View<typename XMV::value_type *, typename XMV::array_layout,
+            typedef flare::Tensor<typename XMV::value_type *, typename XMV::array_layout,
                     typename XMV::device_type, typename XMV::memory_traits>
                     XV;
 
-            RV r_0 = flare::subview(r, flare::ALL(), 0);
-            XV x_0 = flare::subview(x, flare::ALL(), 0);
+            RV r_0 = flare::subtensor(r, flare::ALL(), 0);
+            XV x_0 = flare::subtensor(x, flare::ALL(), 0);
             V_Scal_Generic<execution_space, RMV, aVector, XMV, 1, SizeType>(space, r_0,
                                                                             av, x_0, a);
         } else {
@@ -690,12 +690,12 @@ namespace flare::blas::detail {
 
         static void scal(const execution_space &space, const RV &R, const AV &alpha,
                          const XV &X) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::blas::Impl::"
-                          "Scal<1-D>: RV is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "Scal<1-D>: RV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::Impl::"
-                          "Scal<1-D>: XV is not a flare::View.");
+                          "Scal<1-D>: XV is not a flare::Tensor.");
             static_assert(RV::rank == 1,
                           "flare::blas::Impl::Scal<1-D>: "
                           "RV is not rank 1.");
@@ -727,7 +727,7 @@ namespace flare::blas::detail {
         }
     };
 
-    /// \brief Partial specialization of Scal for 2-D Views and 1-D View AV.
+    /// \brief Partial specialization of Scal for 2-D Tensors and 1-D Tensor AV.
     ///
     /// Compute any of the following:
     ///
@@ -740,15 +740,15 @@ namespace flare::blas::detail {
 
         static void scal(const execution_space &space, const RMV &R, const AV &av,
                          const XMV &X) {
-            static_assert(flare::is_view<RMV>::value,
+            static_assert(flare::is_tensor<RMV>::value,
                           "flare::blas::Impl::"
-                          "Scal<2-D>: RMV is not a flare::View.");
-            static_assert(flare::is_view<AV>::value,
+                          "Scal<2-D>: RMV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<AV>::value,
                           "flare::blas::Impl::"
-                          "Scal<2-D>: AV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Scal<2-D>: AV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::Impl::"
-                          "Scal<2-D>: XMV is not a flare::View.");
+                          "Scal<2-D>: XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 2,
                           "flare::blas::Impl::Scal<2-D>: "
                           "RMV is not rank 2.");
@@ -777,7 +777,7 @@ namespace flare::blas::detail {
         }
     };
 
-    /// \brief Partial specialization of Scal for 2-D Views and scalar AV.
+    /// \brief Partial specialization of Scal for 2-D Tensors and scalar AV.
     ///
     /// Compute any of the following:
     ///
@@ -791,12 +791,12 @@ namespace flare::blas::detail {
 
         static void scal(const execution_space &space, const RMV &R, const AV &alpha,
                          const XMV &X) {
-            static_assert(flare::is_view<RMV>::value,
+            static_assert(flare::is_tensor<RMV>::value,
                           "flare::blas::Impl::"
-                          "Scal<2-D, AV=scalar>: RMV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Scal<2-D, AV=scalar>: RMV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::Impl::"
-                          "Scal<2-D, AV=scalar>: XMV is not a flare::View.");
+                          "Scal<2-D, AV=scalar>: XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 2,
                           "flare::blas::Impl::Scal<2-D, AV=scalar>: "
                           "RMV is not rank 2.");
@@ -976,10 +976,10 @@ namespace flare::blas::detail {
 #define FLARE_BLAS_SCAL_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE) \
   template struct Scal<                                                       \
       EXEC_SPACE,                                                             \
-      flare::View<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
+      flare::Tensor<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
       SCALAR,                                                                 \
-      flare::View<const SCALAR*, LAYOUT,                                     \
+      flare::Tensor<const SCALAR*, LAYOUT,                                     \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                     \
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
       1>;
@@ -988,21 +988,21 @@ namespace flare::blas::detail {
                                           MEM_SPACE)                        \
   template struct Scal<                                                     \
       EXEC_SPACE,                                                           \
-      flare::View<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<const SCALAR*, LAYOUT,                                   \
+      flare::Tensor<const SCALAR*, LAYOUT,                                   \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<const SCALAR**, LAYOUT,                                  \
+      flare::Tensor<const SCALAR**, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
       2>;                                                                 \
   template struct Scal<                                                     \
       EXEC_SPACE,                                                           \
-      flare::View<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
       SCALAR,                                                               \
-      flare::View<const SCALAR**, LAYOUT,                                  \
+      flare::Tensor<const SCALAR**, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
       2>;

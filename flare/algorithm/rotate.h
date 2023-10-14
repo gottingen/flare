@@ -47,23 +47,23 @@ template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto rotate(const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view,
+            const ::flare::Tensor<DataType, Properties...>& tensor,
             std::size_t n_location) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::rotate_exespace_impl("flare::rotate_view_api_default", ex,
-                                    begin(view), begin(view) + n_location,
-                                    end(view));
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::rotate_exespace_impl("flare::rotate_tensor_api_default", ex,
+                                    begin(tensor), begin(tensor) + n_location,
+                                    end(tensor));
 }
 
 template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto rotate(const std::string& label, const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view,
+            const ::flare::Tensor<DataType, Properties...>& tensor,
             std::size_t n_location) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::rotate_exespace_impl(label, ex, begin(view),
-                                    begin(view) + n_location, end(view));
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::rotate_exespace_impl(label, ex, begin(tensor),
+                                    begin(tensor) + n_location, end(tensor));
 }
 
 //
@@ -82,11 +82,11 @@ FLARE_FUNCTION IteratorType rotate(const TeamHandleType& teamHandle,
 template <typename TeamHandleType, typename DataType, typename... Properties,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto rotate(const TeamHandleType& teamHandle,
-                            const ::flare::View<DataType, Properties...>& view,
+                            const ::flare::Tensor<DataType, Properties...>& tensor,
                             std::size_t n_location) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::rotate_team_impl(teamHandle, begin(view),
-                                begin(view) + n_location, end(view));
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::rotate_team_impl(teamHandle, begin(tensor),
+                                begin(tensor) + n_location, end(tensor));
 }
 
 }  // namespace experimental

@@ -99,16 +99,16 @@ IteratorType unique_impl(const std::string& label, const ExecutionSpace& ex,
       // remaining range [it_found, last)
       const auto num_elements_to_explore = last - it_found;
 
-      // create a tmp view to use to *move* all unique elements
+      // create a tmp tensor to use to *move* all unique elements
       // using the same algorithm used for unique_copy but we now move things
       using value_type    = typename IteratorType::value_type;
-      using tmp_view_type = flare::View<value_type*, ExecutionSpace>;
-      tmp_view_type tmp_view("std_unique_tmp_view", num_elements_to_explore);
+      using tmp_tensor_type = flare::Tensor<value_type*, ExecutionSpace>;
+      tmp_tensor_type tmp_tensor("std_unique_tmp_tensor", num_elements_to_explore);
 
       // scan extent is: num_elements_to_explore - 1
       // for same reason as the one explained in unique_copy
       const auto scan_size = num_elements_to_explore - 1;
-      auto tmp_first       = ::flare::experimental::begin(tmp_view);
+      auto tmp_first       = ::flare::experimental::begin(tmp_tensor);
       using output_it      = decltype(tmp_first);
 
       using index_type = typename IteratorType::difference_type;
@@ -130,14 +130,14 @@ IteratorType unique_impl(const std::string& label, const ExecutionSpace& ex,
       // ----------
       // move back from tmp to original range,
       // ensuring we start overwriting after the original unique found
-      using tmp_readwrite_iterator_type = decltype(begin(tmp_view));
+      using tmp_readwrite_iterator_type = decltype(begin(tmp_tensor));
       using step3_func_t =
           StdMoveFunctor<index_type, tmp_readwrite_iterator_type, IteratorType>;
 
       ::flare::parallel_for(
           "unique_step3_parfor",
-          RangePolicy<ExecutionSpace>(ex, 0, tmp_view.extent(0)),
-          step3_func_t(begin(tmp_view),
+          RangePolicy<ExecutionSpace>(ex, 0, tmp_tensor.extent(0)),
+          step3_func_t(begin(tmp_tensor),
                        (first + num_unique_found_in_step_one)));
 
       ex.fence("flare::unique: fence after operation");

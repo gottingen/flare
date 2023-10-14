@@ -28,29 +28,29 @@
 
 namespace flare::detail {
 
-    template<class ViewType>
+    template<class TensorType>
     class SquareRootFunctor {
     public:
-        typedef typename ViewType::execution_space execution_space;
-        typedef typename ViewType::size_type size_type;
+        typedef typename TensorType::execution_space execution_space;
+        typedef typename TensorType::size_type size_type;
 
-        SquareRootFunctor(const ViewType &theView) : theView_(theView) {}
+        SquareRootFunctor(const TensorType &theTensor) : theTensor_(theTensor) {}
 
         FLARE_INLINE_FUNCTION void operator()(const size_type i) const {
-            typedef typename ViewType::value_type value_type;
-            theView_(i) = flare::ArithTraits<value_type>::sqrt(theView_(i));
+            typedef typename TensorType::value_type value_type;
+            theTensor_(i) = flare::ArithTraits<value_type>::sqrt(theTensor_(i));
         }
 
     private:
-        ViewType theView_;
+        TensorType theTensor_;
     };
 
-    template<typename view_t>
+    template<typename tensor_t>
     struct ExclusiveParallelPrefixSum {
-        typedef typename view_t::value_type value_type;
-        view_t array_sum;
+        typedef typename tensor_t::value_type value_type;
+        tensor_t array_sum;
 
-        ExclusiveParallelPrefixSum(view_t arr_) : array_sum(arr_) {}
+        ExclusiveParallelPrefixSum(tensor_t arr_) : array_sum(arr_) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const size_t ii, value_type &update, const bool final) const {
@@ -86,14 +86,14 @@ namespace flare::detail {
      * \param num_elements: size of the array
      * \param arr: the array for which the prefix sum will be performed.
      */
-    template<typename MyExecSpace, typename view_t>
+    template<typename MyExecSpace, typename tensor_t>
     inline void flare_exclusive_parallel_prefix_sum(
-            const MyExecSpace &exec, typename view_t::value_type num_elements,
-            view_t arr) {
+            const MyExecSpace &exec, typename tensor_t::value_type num_elements,
+            tensor_t arr) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         flare::parallel_scan("flare::Common::PrefixSum",
                              my_exec_space(exec, 0, num_elements),
-                             ExclusiveParallelPrefixSum<view_t>(arr));
+                             ExclusiveParallelPrefixSum<tensor_t>(arr));
     }
 
     /***
@@ -102,9 +102,9 @@ namespace flare::detail {
      * \param num_elements: size of the array
      * \param arr: the array for which the prefix sum will be performed.
      */
-    template<typename MyExecSpace, typename view_t>
+    template<typename MyExecSpace, typename tensor_t>
     inline void flare_exclusive_parallel_prefix_sum(
-            typename view_t::value_type num_elements, view_t arr) {
+            typename tensor_t::value_type num_elements, tensor_t arr) {
         flare_exclusive_parallel_prefix_sum(MyExecSpace(), num_elements, arr);
     }
 
@@ -118,14 +118,14 @@ namespace flare::detail {
      * \param finalSum: will be set to arr[num_elements - 1] after computing the
      * prefix sum.
      */
-    template<typename MyExecSpace, typename view_t>
+    template<typename MyExecSpace, typename tensor_t>
     inline void flare_exclusive_parallel_prefix_sum(
-            const MyExecSpace &exec, typename view_t::value_type num_elements,
-            view_t arr, typename view_t::non_const_value_type &finalSum) {
+            const MyExecSpace &exec, typename tensor_t::value_type num_elements,
+            tensor_t arr, typename tensor_t::non_const_value_type &finalSum) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         flare::parallel_scan("flare::Common::PrefixSum",
                              my_exec_space(exec, 0, num_elements),
-                             ExclusiveParallelPrefixSum<view_t>(arr), finalSum);
+                             ExclusiveParallelPrefixSum<tensor_t>(arr), finalSum);
     }
 
     /***
@@ -137,10 +137,10 @@ namespace flare::detail {
      * \param finalSum: will be set to arr[num_elements - 1] after computing the
      * prefix sum.
      */
-    template<typename MyExecSpace, typename view_t>
+    template<typename MyExecSpace, typename tensor_t>
     inline void flare_exclusive_parallel_prefix_sum(
-            typename view_t::value_type num_elements, view_t arr,
-            typename view_t::non_const_value_type &finalSum) {
+            typename tensor_t::value_type num_elements, tensor_t arr,
+            typename tensor_t::non_const_value_type &finalSum) {
         flare_exclusive_parallel_prefix_sum(MyExecSpace(), num_elements, arr, finalSum);
     }
 
@@ -176,23 +176,23 @@ namespace flare::detail {
         return flare_inclusive_parallel_prefix_sum(my_exec_space, num_elements, arr);
     }
 
-    template<typename view_t>
+    template<typename tensor_t>
     struct ReductionFunctor {
-        view_t array_sum;
+        tensor_t array_sum;
 
-        ReductionFunctor(view_t arr_) : array_sum(arr_) {}
+        ReductionFunctor(tensor_t arr_) : array_sum(arr_) {}
 
         FLARE_INLINE_FUNCTION
-        void operator()(const size_t ii, typename view_t::value_type &update) const {
+        void operator()(const size_t ii, typename tensor_t::value_type &update) const {
             update += array_sum(ii);
         }
     };
 
-    template<typename view_t>
+    template<typename tensor_t>
     struct ReductionFunctor2 {
-        view_t array_sum;
+        tensor_t array_sum;
 
-        ReductionFunctor2(view_t arr_) : array_sum(arr_) {}
+        ReductionFunctor2(tensor_t arr_) : array_sum(arr_) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const size_t ii, size_t &update) const {
@@ -200,29 +200,29 @@ namespace flare::detail {
         }
     };
 
-    template<typename view_t, typename view2_t>
+    template<typename tensor_t, typename tensor2_t>
     struct DiffReductionFunctor {
-        view_t array_begins;
-        view2_t array_ends;
+        tensor_t array_begins;
+        tensor2_t array_ends;
 
-        DiffReductionFunctor(view_t begins, view2_t ends)
+        DiffReductionFunctor(tensor_t begins, tensor2_t ends)
                 : array_begins(begins), array_ends(ends) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const size_t ii,
-                        typename view_t::non_const_value_type &update) const {
+                        typename tensor_t::non_const_value_type &update) const {
             update += (array_ends(ii) - array_begins(ii));
         }
     };
 
-    template<typename view_t, typename view2_t, typename MyExecSpace>
-    inline void flare_reduce_diff_view(
-            size_t num_elements, view_t smaller, view2_t bigger,
-            typename view_t::non_const_value_type &reduction) {
+    template<typename tensor_t, typename tensor2_t, typename MyExecSpace>
+    inline void flare_reduce_diff_tensor(
+            size_t num_elements, tensor_t smaller, tensor2_t bigger,
+            typename tensor_t::non_const_value_type &reduction) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         flare::parallel_reduce(
-                "flare::Common::ReduceDiffView", my_exec_space(0, num_elements),
-                DiffReductionFunctor<view_t, view2_t>(smaller, bigger), reduction);
+                "flare::Common::ReduceDiffTensor", my_exec_space(0, num_elements),
+                DiffReductionFunctor<tensor_t, tensor2_t>(smaller, bigger), reduction);
     }
 
     template<typename it>
@@ -240,11 +240,11 @@ namespace flare::detail {
     };
 
     template<typename it, typename MyExecSpace>
-    inline void kkp_reduce_diff_view(const size_t num_elements, const it *smaller,
+    inline void kkp_reduce_diff_tensor(const size_t num_elements, const it *smaller,
                                      const it *bigger, it &reduction) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         flare::parallel_reduce(
-                "flare::Common::ReduceDiffView", my_exec_space(0, num_elements),
+                "flare::Common::ReduceDiffTensor", my_exec_space(0, num_elements),
                 DiffReductionFunctorP<it>(smaller, bigger), reduction);
     }
 
@@ -254,41 +254,41 @@ namespace flare::detail {
      * \param num_elements: size of the array
      * \param arr: the array for which the prefix sum will be performed.
      */
-    template<typename view_t, typename MyExecSpace>
-    inline void flare_reduce_view(size_t num_elements, view_t arr,
-                               typename view_t::value_type &reduction) {
+    template<typename tensor_t, typename MyExecSpace>
+    inline void flare_reduce_tensor(size_t num_elements, tensor_t arr,
+                               typename tensor_t::value_type &reduction) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
-        flare::parallel_reduce("flare::Common::ReduceView",
+        flare::parallel_reduce("flare::Common::ReduceTensor",
                                my_exec_space(0, num_elements),
-                               ReductionFunctor<view_t>(arr), reduction);
+                               ReductionFunctor<tensor_t>(arr), reduction);
     }
 
-    template<typename view_t, typename MyExecSpace>
-    inline void flare_reduce_view2(size_t num_elements, view_t arr,
+    template<typename tensor_t, typename MyExecSpace>
+    inline void flare_reduce_tensor2(size_t num_elements, tensor_t arr,
                                 size_t &reduction) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
-        flare::parallel_reduce("flare::Common::ReduceView2",
+        flare::parallel_reduce("flare::Common::ReduceTensor2",
                                my_exec_space(0, num_elements),
-                               ReductionFunctor2<view_t>(arr), reduction);
+                               ReductionFunctor2<tensor_t>(arr), reduction);
     }
 
-    template<typename view_type1, typename view_type2,
+    template<typename tensor_type1, typename tensor_type2,
             typename eps_type = typename flare::ArithTraits<
-                    typename view_type2::non_const_value_type>::mag_type>
+                    typename tensor_type2::non_const_value_type>::mag_type>
     struct IsIdenticalFunctor {
-        view_type1 view1;
-        view_type2 view2;
+        tensor_type1 tensor1;
+        tensor_type2 tensor2;
         eps_type eps;
 
-        IsIdenticalFunctor(view_type1 view1_, view_type2 view2_, eps_type eps_)
-                : view1(view1_), view2(view2_), eps(eps_) {}
+        IsIdenticalFunctor(tensor_type1 tensor1_, tensor_type2 tensor2_, eps_type eps_)
+                : tensor1(tensor1_), tensor2(tensor2_), eps(eps_) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const size_t &i, size_t &is_equal) const {
-            typedef typename view_type2::non_const_value_type val_type;
+            typedef typename tensor_type2::non_const_value_type val_type;
             typedef flare::ArithTraits<val_type> KAT;
             typedef typename KAT::mag_type mag_type;
-            const mag_type val_diff = KAT::abs(view1(i) - view2(i));
+            const mag_type val_diff = KAT::abs(tensor1(i) - tensor2(i));
 
             if (val_diff > eps) {
                 is_equal += 1;
@@ -296,20 +296,20 @@ namespace flare::detail {
         }
     };
 
-    template<typename view_type1, typename view_type2, typename eps_type,
+    template<typename tensor_type1, typename tensor_type2, typename eps_type,
             typename MyExecSpace>
-    bool flare_is_identical_view(view_type1 view1, view_type2 view2, eps_type eps) {
-        if (view1.extent(0) != view2.extent(0)) {
+    bool flare_is_identical_tensor(tensor_type1 tensor1, tensor_type2 tensor2, eps_type eps) {
+        if (tensor1.extent(0) != tensor2.extent(0)) {
             return false;
         }
 
-        size_t num_elements = view1.extent(0);
+        size_t num_elements = tensor1.extent(0);
 
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         size_t issame = 0;
         flare::parallel_reduce(
-                "flare::Common::IsIdenticalView", my_exec_space(0, num_elements),
-                IsIdenticalFunctor<view_type1, view_type2, eps_type>(view1, view2, eps),
+                "flare::Common::IsIdenticalTensor", my_exec_space(0, num_elements),
+                IsIdenticalFunctor<tensor_type1, tensor_type2, eps_type>(tensor1, tensor2, eps),
                 issame);
         MyExecSpace().fence();
         if (issame > 0) {
@@ -319,30 +319,30 @@ namespace flare::detail {
         }
     }
 
-    template<typename view_type1, typename view_type2,
+    template<typename tensor_type1, typename tensor_type2,
             typename eps_type = typename flare::ArithTraits<
-                    typename view_type2::non_const_value_type>::mag_type>
+                    typename tensor_type2::non_const_value_type>::mag_type>
     struct IsRelativelyIdenticalFunctor {
-        view_type1 view1;
-        view_type2 view2;
+        tensor_type1 tensor1;
+        tensor_type2 tensor2;
         eps_type eps;
 
-        IsRelativelyIdenticalFunctor(view_type1 view1_, view_type2 view2_,
+        IsRelativelyIdenticalFunctor(tensor_type1 tensor1_, tensor_type2 tensor2_,
                                      eps_type eps_)
-                : view1(view1_), view2(view2_), eps(eps_) {}
+                : tensor1(tensor1_), tensor2(tensor2_), eps(eps_) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const size_t &i, size_t &num_diffs) const {
-            typedef typename view_type2::non_const_value_type val_type;
+            typedef typename tensor_type2::non_const_value_type val_type;
             typedef flare::ArithTraits<val_type> KAT;
             typedef typename KAT::mag_type mag_type;
             typedef flare::ArithTraits<mag_type> KATM;
 
             mag_type val_diff = KATM::zero();
-            if (KAT::abs(view1(i)) > mag_type(eps) ||
-                KAT::abs(view2(i)) > mag_type(eps)) {
-                val_diff = KAT::abs(view1(i) - view2(i)) /
-                           (KAT::abs(view1(i)) + KAT::abs(view2(i)));
+            if (KAT::abs(tensor1(i)) > mag_type(eps) ||
+                KAT::abs(tensor2(i)) > mag_type(eps)) {
+                val_diff = KAT::abs(tensor1(i) - tensor2(i)) /
+                           (KAT::abs(tensor1(i)) + KAT::abs(tensor2(i)));
             }
 
             if (val_diff > mag_type(eps)) {
@@ -350,54 +350,54 @@ namespace flare::detail {
                 FLARE_IMPL_DO_NOT_USE_PRINTF(
                         "Values at index %d, %.6f + %.6fi and %.6f + %.6fi, differ too much "
                         "(eps = %e)\n",
-                        (int) i, KAT::real(view1(i)), KAT::imag(view1(i)), KAT::real(view2(i)),
-                        KAT::imag(view2(i)), eps);
+                        (int) i, KAT::real(tensor1(i)), KAT::imag(tensor1(i)), KAT::real(tensor2(i)),
+                        KAT::imag(tensor2(i)), eps);
 #else
                 flare::printf(
       "Values at index %d, %.6f + %.6fi and %.6f + %.6fi, differ too much "
       "(eps = %e)\n",
-      (int)i, KAT::real(view1(i)), KAT::imag(view1(i)), KAT::real(view2(i)),
-      KAT::imag(view2(i)), eps);
+      (int)i, KAT::real(tensor1(i)), KAT::imag(tensor1(i)), KAT::real(tensor2(i)),
+      KAT::imag(tensor2(i)), eps);
 #endif
                 num_diffs++;
             }
         }
     };
 
-    template<typename view_type1, typename view_type2, typename eps_type,
+    template<typename tensor_type1, typename tensor_type2, typename eps_type,
             typename MyExecSpace>
-    bool flare_is_relatively_identical_view(view_type1 view1, view_type2 view2,
+    bool flare_is_relatively_identical_tensor(tensor_type1 tensor1, tensor_type2 tensor2,
                                          eps_type eps) {
-        if (view1.extent(0) != view2.extent(0)) {
+        if (tensor1.extent(0) != tensor2.extent(0)) {
             return false;
         }
 
-        size_t num_elements = view1.extent(0);
+        size_t num_elements = tensor1.extent(0);
 
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         size_t numDifferences = 0;
         flare::parallel_reduce(
-                "flare::Common::IsRelativelyIdenticalView",
+                "flare::Common::IsRelativelyIdenticalTensor",
                 my_exec_space(0, num_elements),
-                IsRelativelyIdenticalFunctor<view_type1, view_type2, eps_type>(
-                        view1, view2, eps),
+                IsRelativelyIdenticalFunctor<tensor_type1, tensor_type2, eps_type>(
+                        tensor1, tensor2, eps),
                 numDifferences);
         return numDifferences == 0;
     }
 
-    template<typename view_type>
+    template<typename tensor_type>
     struct ReduceMaxFunctor {
-        view_type view_to_reduce;
-        typedef typename view_type::non_const_value_type value_type;
+        tensor_type tensor_to_reduce;
+        typedef typename tensor_type::non_const_value_type value_type;
         const value_type min_val;
 
-        ReduceMaxFunctor(view_type view_to_reduce_)
-                : view_to_reduce(view_to_reduce_),
+        ReduceMaxFunctor(tensor_type tensor_to_reduce_)
+                : tensor_to_reduce(tensor_to_reduce_),
                   min_val((std::numeric_limits<value_type>::lowest())) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const size_t &i, value_type &max_reduction) const {
-            value_type val = view_to_reduce(i);
+            value_type val = tensor_to_reduce(i);
             if (max_reduction < val) {
                 max_reduction = val;
             }
@@ -420,14 +420,14 @@ namespace flare::detail {
         }
     };
 
-    template<typename view_type, typename MyExecSpace>
-    void flare_view_reduce_max(
-            size_t num_elements, view_type view_to_reduce,
-            typename view_type::non_const_value_type &max_reduction) {
+    template<typename tensor_type, typename MyExecSpace>
+    void flare_tensor_reduce_max(
+            size_t num_elements, tensor_type tensor_to_reduce,
+            typename tensor_type::non_const_value_type &max_reduction) {
         typedef flare::RangePolicy<MyExecSpace> my_exec_space;
         flare::parallel_reduce(
                 "flare::Common::ReduceMax", my_exec_space(0, num_elements),
-                ReduceMaxFunctor<view_type>(view_to_reduce), max_reduction);
+                ReduceMaxFunctor<tensor_type>(tensor_to_reduce), max_reduction);
     }
 
     // xorshift hash/pseudorandom function (supported for 32- and 64-bit integer
@@ -445,8 +445,8 @@ namespace flare::detail {
                : static_cast<Value>(x * 2685821657736338717ULL - 1);
     }
 
-    struct ViewHashFunctor {
-        ViewHashFunctor(const uint8_t *data_) : data(data_) {}
+    struct TensorHashFunctor {
+        TensorHashFunctor(const uint8_t *data_) : data(data_) {}
 
         FLARE_INLINE_FUNCTION void operator()(size_t i, uint32_t &lhash) const {
             // Compute a hash/digest of both the index i, and data[i]. Then add that to
@@ -465,26 +465,26 @@ namespace flare::detail {
         const uint8_t *data;
     };
 
-    /// \brief Compute a hash of a view.
-    /// \param v: the view to hash. Must be contiguous, and its element type must
+    /// \brief Compute a hash of a tensor.
+    /// \param v: the tensor to hash. Must be contiguous, and its element type must
     /// not contain any padding bytes.
-    template<typename View>
-    uint32_t hashView(const View &v) {
+    template<typename Tensor>
+    uint32_t hashTensor(const Tensor &v) {
         assert(v.span_is_contiguous());
         // Note: This type trait is supposed to be part of C++17,
         // but it's not defined on Intel 19 (with GCC 7.2.0 standard library).
         // So just check if it's available before using.
 #ifdef __cpp_lib_has_unique_object_representations
         static_assert(std::has_unique_object_representations<
-                              typename View::non_const_value_type>::value,
-                      "flare::Impl::hashView: the view's element type must "
+                              typename Tensor::non_const_value_type>::value,
+                      "flare::Impl::hashTensor: the tensor's element type must "
                       "not have any padding bytes.");
 #endif
-        size_t nbytes = v.span() * sizeof(typename View::value_type);
+        size_t nbytes = v.span() * sizeof(typename Tensor::value_type);
         uint32_t h;
         flare::parallel_reduce(
-                flare::RangePolicy<typename View::execution_space, size_t>(0, nbytes),
-                ViewHashFunctor(reinterpret_cast<const uint8_t *>(v.data())), h);
+                flare::RangePolicy<typename Tensor::execution_space, size_t>(0, nbytes),
+                TensorHashFunctor(reinterpret_cast<const uint8_t *>(v.data())), h);
         return h;
     }
 

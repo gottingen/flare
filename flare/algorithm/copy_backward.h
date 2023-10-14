@@ -39,20 +39,20 @@ IteratorType2 copy_backward(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto copy_backward(const ExecutionSpace& ex,
-                   const ::flare::View<DataType1, Properties1...>& source,
-                   ::flare::View<DataType2, Properties2...>& dest) {
+                   const ::flare::Tensor<DataType1, Properties1...>& source,
+                   ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
-  return detail::copy_backward_impl("flare::copy_backward_view_api_default", ex,
+  return detail::copy_backward_impl("flare::copy_backward_tensor_api_default", ex,
                                   cbegin(source), cend(source), end(dest));
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto copy_backward(const std::string& label, const ExecutionSpace& ex,
-                   const ::flare::View<DataType1, Properties1...>& source,
-                   ::flare::View<DataType2, Properties2...>& dest) {
+                   const ::flare::Tensor<DataType1, Properties1...>& source,
+                   ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 

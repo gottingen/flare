@@ -21,25 +21,25 @@
 
 namespace flare::detail {
 
-// Forward declarations from flare/impl/view_mapping.hpp
-// We cannot include directly since ViewMapping is used elsewhere in View.
-// After View is fully moved to mdspan we can include it only from here.
+// Forward declarations from flare/core/tensor/tensor_mapping.h
+// We cannot include directly since TensorMapping is used elsewhere in Tensor.
+// After Tensor is fully moved to mdspan we can include it only from here.
 template <class DataType>
-struct ViewArrayAnalysis;
+struct TensorArrayAnalysis;
 
 template <std::size_t... Vals>
-struct ViewDimension;
+struct TensorDimension;
 
 template <class T, class Dim>
-struct ViewDataType;
+struct TensorDataType_;
 }  // namespace flare::detail
 
 namespace flare::experimental::detail {
 
 // A few things to note --
-// - mdspan allows for 0-rank extents similarly to View, so we don't need
+// - mdspan allows for 0-rank extents similarly to Tensor, so we don't need
 // special handling of this case
-// - View dynamic dimensions must be appear before static dimensions. This isn't
+// - Tensor dynamic dimensions must be appear before static dimensions. This isn't
 // a requirement in mdspan but won't cause an issue here
 template <std::size_t N>
 struct ExtentFromDimension {
@@ -78,13 +78,13 @@ struct DimensionsFromExtent;
 
 template <class Extents, std::size_t... Indices>
 struct DimensionsFromExtent<Extents, std::index_sequence<Indices...>> {
-  using type = ::flare::detail::ViewDimension<
+  using type = ::flare::detail::TensorDimension<
       DimensionFromExtent<Extents::static_extent(Indices)>::value...>;
 };
 
 template <class IndexType, class DataType>
 struct ExtentsFromDataType {
-  using array_analysis = ::flare::detail::ViewArrayAnalysis<DataType>;
+  using array_analysis = ::flare::detail::TensorArrayAnalysis<DataType>;
   using dimension_type = typename array_analysis::dimension;
 
   using type = typename ExtentsFromDimension<
@@ -99,7 +99,7 @@ struct DataTypeFromExtents {
       Extents, std::make_index_sequence<extents_type::rank()>>::type;
 
   // Will cause a compile error if it is malformed (i.e. dynamic after static)
-  using type = typename ::flare::detail::ViewDataType<T, dimension_type>::type;
+  using type = typename ::flare::detail::TensorDataType_<T, dimension_type>::type;
 };
 }  // namespace flare::experimental::detail
 

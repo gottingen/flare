@@ -202,9 +202,9 @@ class ParallelReduce<CombinedFunctorReducerType,
     return policy;
   }
 
-  template <class ViewType>
+  template <class TensorType>
   inline ParallelReduce(const CombinedFunctorReducerType &arg_functor_reducer,
-                        const Policy &arg_policy, const ViewType &arg_result)
+                        const Policy &arg_policy, const TensorType &arg_result)
       : m_functor_reducer(arg_functor_reducer),
         m_policy(fix_policy(arg_policy)),
         m_result_ptr(arg_result.data()),
@@ -212,9 +212,9 @@ class ParallelReduce<CombinedFunctorReducerType,
                  FunctorTeamShmemSize<FunctorType>::value(
                      arg_functor_reducer.get_functor(), m_policy.team_size())) {
     static_assert(
-        flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+        flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                                         flare::HostSpace>::accessible,
-        "flare::Threads reduce result must be a View accessible from "
+        "flare::Threads reduce result must be a Tensor accessible from "
         "HostSpace");
   }
 };

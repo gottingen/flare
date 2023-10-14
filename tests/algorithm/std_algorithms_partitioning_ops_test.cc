@@ -24,7 +24,7 @@ struct std_algorithms_partitioning_test : public std_algorithms_test {
     std_algorithms_partitioning_test() =default;
     ~std_algorithms_partitioning_test() = default;
     
-  enum FixtureViews {
+  enum FixtureTensors {
     Mixed,
     NegativeFirst,
     AllNegative,
@@ -34,97 +34,97 @@ struct std_algorithms_partitioning_test : public std_algorithms_test {
     Count
   };
 
-  void fillFixtureViews(FixtureViews caseNumber) {
-    static_view_t tmpView("tmpView");
-    auto tmp_view_h = flare::create_mirror_view(flare::HostSpace(), tmpView);
+  void fillFixtureTensors(FixtureTensors caseNumber) {
+    static_tensor_t tmpTensor("tmpTensor");
+    auto tmp_tensor_h = flare::create_mirror_tensor(flare::HostSpace(), tmpTensor);
 
     switch (caseNumber) {
-      case FixtureViews::Mixed:
-        tmp_view_h(0) = -1;
-        tmp_view_h(1) = -2;
-        tmp_view_h(2) = 3;
-        tmp_view_h(3) = -4;
-        tmp_view_h(4) = 5;
-        tmp_view_h(5) = -6;
-        tmp_view_h(6) = 7;
-        tmp_view_h(7) = -8;
-        tmp_view_h(8) = 9;
-        tmp_view_h(9) = 10;
+      case FixtureTensors::Mixed:
+        tmp_tensor_h(0) = -1;
+        tmp_tensor_h(1) = -2;
+        tmp_tensor_h(2) = 3;
+        tmp_tensor_h(3) = -4;
+        tmp_tensor_h(4) = 5;
+        tmp_tensor_h(5) = -6;
+        tmp_tensor_h(6) = 7;
+        tmp_tensor_h(7) = -8;
+        tmp_tensor_h(8) = 9;
+        tmp_tensor_h(9) = 10;
         break;
 
-      case FixtureViews::NegativeFirst:
-        tmp_view_h(0) = -2;
-        tmp_view_h(1) = -4;
-        tmp_view_h(2) = -6;
-        tmp_view_h(3) = -80;
-        tmp_view_h(4) = 5;
-        tmp_view_h(5) = 7;
-        tmp_view_h(6) = 115;
-        tmp_view_h(7) = 3;
-        tmp_view_h(8) = 9;
-        tmp_view_h(9) = 11;
+      case FixtureTensors::NegativeFirst:
+        tmp_tensor_h(0) = -2;
+        tmp_tensor_h(1) = -4;
+        tmp_tensor_h(2) = -6;
+        tmp_tensor_h(3) = -80;
+        tmp_tensor_h(4) = 5;
+        tmp_tensor_h(5) = 7;
+        tmp_tensor_h(6) = 115;
+        tmp_tensor_h(7) = 3;
+        tmp_tensor_h(8) = 9;
+        tmp_tensor_h(9) = 11;
         break;
 
-      case FixtureViews::AllNegative:
-        tmp_view_h(0) = -2;
-        tmp_view_h(1) = -4;
-        tmp_view_h(2) = -6;
-        tmp_view_h(3) = -8;
-        tmp_view_h(4) = -4;
-        tmp_view_h(5) = -12;
-        tmp_view_h(6) = -14;
-        tmp_view_h(7) = -2;
-        tmp_view_h(8) = -6;
-        tmp_view_h(9) = -8;
+      case FixtureTensors::AllNegative:
+        tmp_tensor_h(0) = -2;
+        tmp_tensor_h(1) = -4;
+        tmp_tensor_h(2) = -6;
+        tmp_tensor_h(3) = -8;
+        tmp_tensor_h(4) = -4;
+        tmp_tensor_h(5) = -12;
+        tmp_tensor_h(6) = -14;
+        tmp_tensor_h(7) = -2;
+        tmp_tensor_h(8) = -6;
+        tmp_tensor_h(9) = -8;
         break;
 
-      case FixtureViews::AllPositive:
-        tmp_view_h(0) = 11;
-        tmp_view_h(1) = 3;
-        tmp_view_h(2) = 17;
-        tmp_view_h(3) = 9;
-        tmp_view_h(4) = 3;
-        tmp_view_h(5) = 11;
-        tmp_view_h(6) = 13;
-        tmp_view_h(7) = 1;
-        tmp_view_h(8) = 9;
-        tmp_view_h(9) = 43;
+      case FixtureTensors::AllPositive:
+        tmp_tensor_h(0) = 11;
+        tmp_tensor_h(1) = 3;
+        tmp_tensor_h(2) = 17;
+        tmp_tensor_h(3) = 9;
+        tmp_tensor_h(4) = 3;
+        tmp_tensor_h(5) = 11;
+        tmp_tensor_h(6) = 13;
+        tmp_tensor_h(7) = 1;
+        tmp_tensor_h(8) = 9;
+        tmp_tensor_h(9) = 43;
         break;
 
-      case FixtureViews::NegativeLast:
-        tmp_view_h(0) = 1;
-        tmp_view_h(1) = 11;
-        tmp_view_h(2) = 1;
-        tmp_view_h(3) = 33;
-        tmp_view_h(4) = 3;
-        tmp_view_h(5) = 3;
-        tmp_view_h(6) = -3;
-        tmp_view_h(7) = -5;
-        tmp_view_h(8) = -5;
-        tmp_view_h(9) = -10;
+      case FixtureTensors::NegativeLast:
+        tmp_tensor_h(0) = 1;
+        tmp_tensor_h(1) = 11;
+        tmp_tensor_h(2) = 1;
+        tmp_tensor_h(3) = 33;
+        tmp_tensor_h(4) = 3;
+        tmp_tensor_h(5) = 3;
+        tmp_tensor_h(6) = -3;
+        tmp_tensor_h(7) = -5;
+        tmp_tensor_h(8) = -5;
+        tmp_tensor_h(9) = -10;
         break;
 
-      case FixtureViews::SingleNegative:
-        tmp_view_h(0) = -200;
-        tmp_view_h(1) = 1;
-        tmp_view_h(2) = 1;
-        tmp_view_h(3) = 3;
-        tmp_view_h(4) = 3;
-        tmp_view_h(5) = 211;
-        tmp_view_h(6) = 3;
-        tmp_view_h(7) = 5;
-        tmp_view_h(8) = 5;
-        tmp_view_h(9) = 11;
+      case FixtureTensors::SingleNegative:
+        tmp_tensor_h(0) = -200;
+        tmp_tensor_h(1) = 1;
+        tmp_tensor_h(2) = 1;
+        tmp_tensor_h(3) = 3;
+        tmp_tensor_h(4) = 3;
+        tmp_tensor_h(5) = 211;
+        tmp_tensor_h(6) = 3;
+        tmp_tensor_h(7) = 5;
+        tmp_tensor_h(8) = 5;
+        tmp_tensor_h(9) = 11;
         break;
 
       default: break;
     }
 
-    flare::deep_copy(tmpView, tmp_view_h);
-    copyInputViewToFixtureViews(tmpView);
+    flare::deep_copy(tmpTensor, tmp_tensor_h);
+    copyInputTensorToFixtureTensors(tmpTensor);
   }
 
-  bool goldSolutionIsPartitioned(FixtureViews caseNumber) const {
+  bool goldSolutionIsPartitioned(FixtureTensors caseNumber) const {
     switch (caseNumber) {
       case Mixed: return false;
       case NegativeFirst: return true;
@@ -136,7 +136,7 @@ struct std_algorithms_partitioning_test : public std_algorithms_test {
     }
   }
 
-  int goldSolutionPartitionedPoint(FixtureViews caseNumber) const {
+  int goldSolutionPartitionedPoint(FixtureTensors caseNumber) const {
     switch (caseNumber) {
       case Mixed: return 2;
       case NegativeFirst: return 4;
@@ -151,54 +151,54 @@ struct std_algorithms_partitioning_test : public std_algorithms_test {
 
 TEST_CASE_FIXTURE(std_algorithms_partitioning_test, "is_partitioned_trivial") {
   IsNegativeFunctor<value_type> p;
-  const auto result1 = KE::is_partitioned(exespace(), KE::cbegin(m_static_view),
-                                          KE::cbegin(m_static_view), p);
+  const auto result1 = KE::is_partitioned(exespace(), KE::cbegin(m_static_tensor),
+                                          KE::cbegin(m_static_tensor), p);
   REQUIRE(result1);
 
   const auto result2 = KE::is_partitioned(
-      exespace(), KE::cbegin(m_dynamic_view), KE::cbegin(m_dynamic_view), p);
+      exespace(), KE::cbegin(m_dynamic_tensor), KE::cbegin(m_dynamic_tensor), p);
   REQUIRE(result2);
 
   const auto result3 = KE::is_partitioned(
-      exespace(), KE::cbegin(m_strided_view), KE::cbegin(m_strided_view), p);
+      exespace(), KE::cbegin(m_strided_tensor), KE::cbegin(m_strided_tensor), p);
   REQUIRE(result3);
 }
 
 TEST_CASE_FIXTURE(std_algorithms_partitioning_test, "is_partitioned_accepting_iterators") {
   const IsNegativeFunctor<value_type> p;
 
-  for (int id = 0; id < FixtureViews::Count; ++id) {
-    fillFixtureViews(static_cast<FixtureViews>(id));
+  for (int id = 0; id < FixtureTensors::Count; ++id) {
+    fillFixtureTensors(static_cast<FixtureTensors>(id));
     const bool goldBool =
-        goldSolutionIsPartitioned(static_cast<FixtureViews>(id));
+        goldSolutionIsPartitioned(static_cast<FixtureTensors>(id));
     const auto result1 = KE::is_partitioned(
-        exespace(), KE::cbegin(m_static_view), KE::cend(m_static_view), p);
+        exespace(), KE::cbegin(m_static_tensor), KE::cend(m_static_tensor), p);
     REQUIRE_EQ(goldBool, result1);
 
     const auto result2 = KE::is_partitioned(
-        exespace(), KE::cbegin(m_dynamic_view), KE::cend(m_dynamic_view), p);
+        exespace(), KE::cbegin(m_dynamic_tensor), KE::cend(m_dynamic_tensor), p);
     REQUIRE_EQ(goldBool, result2);
 
     const auto result3 = KE::is_partitioned(
-        exespace(), KE::cbegin(m_strided_view), KE::cend(m_strided_view), p);
+        exespace(), KE::cbegin(m_strided_tensor), KE::cend(m_strided_tensor), p);
     REQUIRE_EQ(goldBool, result3);
   }
 }
 
-TEST_CASE_FIXTURE(std_algorithms_partitioning_test, "is_partitioned_accepting_view") {
+TEST_CASE_FIXTURE(std_algorithms_partitioning_test, "is_partitioned_accepting_tensor") {
   const IsNegativeFunctor<value_type> p;
 
-  for (int id = 0; id < FixtureViews::Count; ++id) {
-    fillFixtureViews(static_cast<FixtureViews>(id));
+  for (int id = 0; id < FixtureTensors::Count; ++id) {
+    fillFixtureTensors(static_cast<FixtureTensors>(id));
     const bool goldBool =
-        goldSolutionIsPartitioned(static_cast<FixtureViews>(id));
-    const auto result1 = KE::is_partitioned(exespace(), m_static_view, p);
+        goldSolutionIsPartitioned(static_cast<FixtureTensors>(id));
+    const auto result1 = KE::is_partitioned(exespace(), m_static_tensor, p);
     REQUIRE_EQ(goldBool, result1);
 
-    const auto result2 = KE::is_partitioned(exespace(), m_dynamic_view, p);
+    const auto result2 = KE::is_partitioned(exespace(), m_dynamic_tensor, p);
     REQUIRE_EQ(goldBool, result2);
 
-    const auto result3 = KE::is_partitioned(exespace(), m_strided_view, p);
+    const auto result3 = KE::is_partitioned(exespace(), m_strided_tensor, p);
     REQUIRE_EQ(goldBool, result3);
   }
 }
@@ -206,22 +206,22 @@ TEST_CASE_FIXTURE(std_algorithms_partitioning_test, "is_partitioned_accepting_vi
 TEST_CASE_FIXTURE(std_algorithms_partitioning_test, "partition_point") {
   const IsNegativeFunctor<value_type> p;
 
-  for (int id = 0; id < FixtureViews::Count; ++id) {
-    fillFixtureViews(static_cast<FixtureViews>(id));
+  for (int id = 0; id < FixtureTensors::Count; ++id) {
+    fillFixtureTensors(static_cast<FixtureTensors>(id));
     const auto goldIndex =
-        goldSolutionPartitionedPoint(static_cast<FixtureViews>(id));
-    auto first1        = KE::cbegin(m_static_view);
-    auto last1         = KE::cend(m_static_view);
+        goldSolutionPartitionedPoint(static_cast<FixtureTensors>(id));
+    auto first1        = KE::cbegin(m_static_tensor);
+    auto last1         = KE::cend(m_static_tensor);
     const auto result1 = KE::partition_point(exespace(), first1, last1, p);
     REQUIRE_EQ(goldIndex, result1 - first1);
 
-    auto first2        = KE::cbegin(m_dynamic_view);
-    auto last2         = KE::cend(m_dynamic_view);
+    auto first2        = KE::cbegin(m_dynamic_tensor);
+    auto last2         = KE::cend(m_dynamic_tensor);
     const auto result2 = KE::partition_point(exespace(), first2, last2, p);
     REQUIRE_EQ(goldIndex, result2 - first2);
 
-    auto first3        = KE::cbegin(m_strided_view);
-    auto last3         = KE::cend(m_strided_view);
+    auto first3        = KE::cbegin(m_strided_tensor);
+    auto last3         = KE::cend(m_strided_tensor);
     const auto result3 = KE::partition_point(exespace(), first3, last3, p);
     REQUIRE_EQ(goldIndex, result3 - first3);
   }

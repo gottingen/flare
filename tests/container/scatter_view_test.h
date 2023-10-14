@@ -13,62 +13,62 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_TEST_SCATTER_VIEW_HPP
-#define FLARE_TEST_SCATTER_VIEW_HPP
+#ifndef FLARE_test_scatter_tensor_HPP
+#define FLARE_test_scatter_tensor_HPP
 
-#include <flare/scatter_view.h>
+#include <flare/scatter_tensor.h>
 #include <doctest.h>
 
 namespace Test {
 
 template <typename DeviceType, typename Layout, typename Duplication,
           typename Contribution, typename Op, typename NumberType>
-struct test_scatter_view_impl_cls;
+struct test_scatter_tensor_impl_cls;
 
 template <typename DeviceType, typename Layout, typename Duplication,
           typename Contribution, typename NumberType>
-struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
+struct test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication, Contribution,
                                   flare::experimental::ScatterSum,
                                   NumberType> {
  public:
-  using scatter_view_type =
-      flare::experimental::ScatterView<NumberType * [12], Layout, DeviceType,
+  using scatter_tensor_type =
+      flare::experimental::ScatterTensor<NumberType * [12], Layout, DeviceType,
                                         flare::experimental::ScatterSum,
                                         Duplication, Contribution>;
 
-  using orig_view_type = flare::View<NumberType * [12], Layout, DeviceType>;
+  using orig_tensor_type = flare::Tensor<NumberType * [12], Layout, DeviceType>;
 
   using size_type = typename flare::HostSpace::size_type;
 
-  scatter_view_type scatter_view;
+  scatter_tensor_type scatter_tensor;
   int scatterSize;
 
-  test_scatter_view_impl_cls(const scatter_view_type& view) {
-    scatter_view = view;
+  test_scatter_tensor_impl_cls(const scatter_tensor_type& tensor) {
+    scatter_tensor = tensor;
     scatterSize  = 0;
   }
 
-  void initialize(orig_view_type orig) {
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+  void initialize(orig_tensor_type orig) {
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    flare::deep_copy(host_view, 0);
+    flare::deep_copy(host_tensor, 0);
     flare::fence();
-    flare::deep_copy(orig, host_view);
+    flare::deep_copy(orig, host_tensor);
   }
 
   void run_parallel(int n) {
     scatterSize = n;
     auto policy =
         flare::RangePolicy<typename DeviceType::execution_space, int>(0, n);
-    flare::parallel_for("scatter_view_test: Sum", policy, *this);
+    flare::parallel_for("scatter_tensor_test: Sum", policy, *this);
   }
 
   FLARE_INLINE_FUNCTION
   void operator()(int i) const {
-    auto scatter_access = scatter_view.access();
+    auto scatter_access = scatter_tensor.access();
     auto scatter_access_atomic =
-        scatter_view.template access<flare::experimental::ScatterAtomic>();
+        scatter_tensor.template access<flare::experimental::ScatterAtomic>();
     for (int j = 0; j < 10; ++j) {
       auto k = (i + j) % scatterSize;
       scatter_access(k, 0) += 4;
@@ -86,33 +86,33 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
     }
   }
 
-  void validateResults(orig_view_type orig) {
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+  void validateResults(orig_tensor_type orig) {
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      for (size_type j = 0; j < host_view.extent(1); ++j) {
-        REQUIRE_LE(std::abs(host_view(i, j) - NumberType(ref[j])), 1e-14);
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      for (size_type j = 0; j < host_tensor.extent(1); ++j) {
+        REQUIRE_LE(std::abs(host_tensor(i, j) - NumberType(ref[j])), 1e-14);
       }
     }
   }
 
   // check for correct padding
-  void validateResultsForSubview(
-      orig_view_type orig, std::pair<size_type, size_type>& subRangeDim0,
+  void validateResultsForSubtensor(
+      orig_tensor_type orig, std::pair<size_type, size_type>& subRangeDim0,
       std::pair<size_type, size_type>& subRangeDim1) {
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      for (size_type j = 0; j < host_view.extent(1); ++j) {
-        auto val = host_view(i, j);
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      for (size_type j = 0; j < host_tensor.extent(1); ++j) {
+        auto val = host_tensor(i, j);
         if ((i >= std::get<0>(subRangeDim0) && i < std::get<1>(subRangeDim0)) &&
             (j >= std::get<0>(subRangeDim1) && j < std::get<1>(subRangeDim1))) {
-          // is in subview
+          // is in subtensor
             REQUIRE_LE(std::abs(val- NumberType(ref[j])), 1e-14);
         } else {
-          // is outside of subview
+          // is outside of subtensor
             REQUIRE_LE(std::abs(val - NumberType(0)), 1e-14);
         }
       }
@@ -125,52 +125,52 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
 
 template <typename DeviceType, typename Layout, typename Duplication,
           typename Contribution, typename NumberType>
-struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
+struct test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication, Contribution,
                                   flare::experimental::ScatterProd,
                                   NumberType> {
  public:
-  using scatter_view_type =
-      flare::experimental::ScatterView<NumberType * [3], Layout, DeviceType,
+  using scatter_tensor_type =
+      flare::experimental::ScatterTensor<NumberType * [3], Layout, DeviceType,
                                         flare::experimental::ScatterProd,
                                         Duplication, Contribution>;
 
-  using orig_view_type = flare::View<NumberType * [3], Layout, DeviceType>;
+  using orig_tensor_type = flare::Tensor<NumberType * [3], Layout, DeviceType>;
 
   using size_type = typename flare::HostSpace::size_type;
 
-  scatter_view_type scatter_view;
+  scatter_tensor_type scatter_tensor;
   int scatterSize;
 
-  test_scatter_view_impl_cls(const scatter_view_type& view) {
-    scatter_view = view;
+  test_scatter_tensor_impl_cls(const scatter_tensor_type& tensor) {
+    scatter_tensor = tensor;
     scatterSize  = 0;
   }
 
-  void initialize(orig_view_type orig) {
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+  void initialize(orig_tensor_type orig) {
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      host_view(i, 0) = 1.0;
-      host_view(i, 1) = 1.0;
-      host_view(i, 2) = 1.0;
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      host_tensor(i, 0) = 1.0;
+      host_tensor(i, 1) = 1.0;
+      host_tensor(i, 2) = 1.0;
     }
     flare::fence();
-    flare::deep_copy(orig, host_view);
+    flare::deep_copy(orig, host_tensor);
   }
 
   void run_parallel(int n) {
     scatterSize = n;
     auto policy =
         flare::RangePolicy<typename DeviceType::execution_space, int>(0, n);
-    flare::parallel_for("scatter_view_test: Prod", policy, *this);
+    flare::parallel_for("scatter_tensor_test: Prod", policy, *this);
   }
 
   FLARE_INLINE_FUNCTION
   void operator()(int i) const {
-    auto scatter_access = scatter_view.access();
+    auto scatter_access = scatter_tensor.access();
     auto scatter_access_atomic =
-        scatter_view.template access<flare::experimental::ScatterAtomic>();
+        scatter_tensor.template access<flare::experimental::ScatterAtomic>();
     for (int j = 0; j < 4; ++j) {
       auto k = (i + j) % scatterSize;
       scatter_access(k, 0) *= 4.0;
@@ -179,14 +179,14 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
     }
   }
 
-  void validateResults(orig_view_type orig) {
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+  void validateResults(orig_tensor_type orig) {
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      auto val0 = host_view(i, 0);
-      auto val1 = host_view(i, 1);
-      auto val2 = host_view(i, 2);
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      auto val0 = host_tensor(i, 0);
+      auto val1 = host_tensor(i, 1);
+      auto val2 = host_tensor(i, 2);
         REQUIRE_LE(std::abs(val0 - 65536.0), 1e-14 * 65536.0);
         REQUIRE_LE(std::abs(val1 - 256.0), 1e-14 * 256.0);
         REQUIRE_LE(std::abs(val2 - 1.0), 1e-14 * 1.0);
@@ -194,24 +194,24 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
   }
 
   // check for correct padding
-  void validateResultsForSubview(
-      orig_view_type orig, std::pair<size_type, size_type>& subRangeDim0,
+  void validateResultsForSubtensor(
+      orig_tensor_type orig, std::pair<size_type, size_type>& subRangeDim0,
       std::pair<size_type, size_type>& subRangeDim1) {
     (void)subRangeDim1;
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      auto val0 = host_view(i, 0);
-      auto val1 = host_view(i, 1);
-      auto val2 = host_view(i, 2);
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      auto val0 = host_tensor(i, 0);
+      auto val1 = host_tensor(i, 1);
+      auto val2 = host_tensor(i, 2);
       if (i >= std::get<0>(subRangeDim0) && i < std::get<1>(subRangeDim0)) {
-        // is in subview
+        // is in subtensor
           REQUIRE_LE(std::abs(val0 - 65536.0), 1e-14 * 65536.0);
           REQUIRE_LE(std::abs(val1 - 256.0), 1e-14 * 256.0);
           REQUIRE_LE(std::abs(val2 - 1.0), 1e-14 * 1.0);
       } else {
-        // is outside of subview
+        // is outside of subtensor
           REQUIRE_LE(std::abs(val0 - NumberType(1)), 1e-14);
           REQUIRE_LE(std::abs(val1 - NumberType(1)), 1e-14);
           REQUIRE_LE(std::abs(val2 - NumberType(1)), 1e-14);
@@ -222,52 +222,52 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
 
 template <typename DeviceType, typename Layout, typename Duplication,
           typename Contribution, typename NumberType>
-struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
+struct test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication, Contribution,
                                   flare::experimental::ScatterMin,
                                   NumberType> {
  public:
-  using scatter_view_type =
-      flare::experimental::ScatterView<NumberType * [3], Layout, DeviceType,
+  using scatter_tensor_type =
+      flare::experimental::ScatterTensor<NumberType * [3], Layout, DeviceType,
                                         flare::experimental::ScatterMin,
                                         Duplication, Contribution>;
 
-  using orig_view_type = flare::View<NumberType * [3], Layout, DeviceType>;
+  using orig_tensor_type = flare::Tensor<NumberType * [3], Layout, DeviceType>;
 
   using size_type = typename flare::HostSpace::size_type;
 
-  scatter_view_type scatter_view;
+  scatter_tensor_type scatter_tensor;
   int scatterSize;
 
-  test_scatter_view_impl_cls(const scatter_view_type& view) {
-    scatter_view = view;
+  test_scatter_tensor_impl_cls(const scatter_tensor_type& tensor) {
+    scatter_tensor = tensor;
     scatterSize  = 0;
   }
 
-  void initialize(orig_view_type orig) {
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+  void initialize(orig_tensor_type orig) {
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      host_view(i, 0) = 999999.0;
-      host_view(i, 1) = 999999.0;
-      host_view(i, 2) = 999999.0;
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      host_tensor(i, 0) = 999999.0;
+      host_tensor(i, 1) = 999999.0;
+      host_tensor(i, 2) = 999999.0;
     }
     flare::fence();
-    flare::deep_copy(orig, host_view);
+    flare::deep_copy(orig, host_tensor);
   }
 
   void run_parallel(int n) {
     scatterSize = n;
     auto policy =
         flare::RangePolicy<typename DeviceType::execution_space, int>(0, n);
-    flare::parallel_for("scatter_view_test: Prod", policy, *this);
+    flare::parallel_for("scatter_tensor_test: Prod", policy, *this);
   }
 
   FLARE_INLINE_FUNCTION
   void operator()(int i) const {
-    auto scatter_access = scatter_view.access();
+    auto scatter_access = scatter_tensor.access();
     auto scatter_access_atomic =
-        scatter_view.template access<flare::experimental::ScatterAtomic>();
+        scatter_tensor.template access<flare::experimental::ScatterAtomic>();
     for (int j = 0; j < 4; ++j) {
       auto k = (i + j) % scatterSize;
       scatter_access(k, 0).update((NumberType)(j + 1) * 4);
@@ -276,14 +276,14 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
     }
   }
 
-  void validateResults(orig_view_type orig) {
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+  void validateResults(orig_tensor_type orig) {
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      auto val0 = host_view(i, 0);
-      auto val1 = host_view(i, 1);
-      auto val2 = host_view(i, 2);
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      auto val0 = host_tensor(i, 0);
+      auto val1 = host_tensor(i, 1);
+      auto val2 = host_tensor(i, 2);
         REQUIRE_LE(std::abs(val0 - 4.0), 1e-14 * 4.0);
         REQUIRE_LE(std::abs(val1 - 2.0), 1e-14 * 2.0);
         REQUIRE_LE(std::abs(val2 - 1.0), 1e-14 * 1.0);
@@ -291,24 +291,24 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
   }
 
   // check for correct padding
-  void validateResultsForSubview(
-      orig_view_type orig, std::pair<size_type, size_type>& subRangeDim0,
+  void validateResultsForSubtensor(
+      orig_tensor_type orig, std::pair<size_type, size_type>& subRangeDim0,
       std::pair<size_type, size_type>& subRangeDim1) {
     (void)subRangeDim1;
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      auto val0 = host_view(i, 0);
-      auto val1 = host_view(i, 1);
-      auto val2 = host_view(i, 2);
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      auto val0 = host_tensor(i, 0);
+      auto val1 = host_tensor(i, 1);
+      auto val2 = host_tensor(i, 2);
       if (i >= std::get<0>(subRangeDim0) && i < std::get<1>(subRangeDim0)) {
-        // is in subview
+        // is in subtensor
           REQUIRE_LE(std::abs(val0 - 4.0), 1e-14 * 4.0);
           REQUIRE_LE(std::abs(val1 - 2.0), 1e-14 * 2.0);
           REQUIRE_LE(std::abs(val2 - 1.0), 1e-14 * 1.0);
       } else {
-        // is outside of subview
+        // is outside of subtensor
           REQUIRE_LE(std::abs(val0 - NumberType(999999)), 1e-14);
           REQUIRE_LE(std::abs(val1 - NumberType(999999)), 1e-14);
           REQUIRE_LE(std::abs(val2 - NumberType(999999)), 1e-14);
@@ -319,51 +319,51 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
 
 template <typename DeviceType, typename Layout, typename Duplication,
           typename Contribution, typename NumberType>
-struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
+struct test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication, Contribution,
                                   flare::experimental::ScatterMax,
                                   NumberType> {
  public:
-  using scatter_view_type =
-      flare::experimental::ScatterView<NumberType * [3], Layout, DeviceType,
+  using scatter_tensor_type =
+      flare::experimental::ScatterTensor<NumberType * [3], Layout, DeviceType,
                                         flare::experimental::ScatterMax,
                                         Duplication, Contribution>;
 
-  using orig_view_type = flare::View<NumberType * [3], Layout, DeviceType>;
+  using orig_tensor_type = flare::Tensor<NumberType * [3], Layout, DeviceType>;
 
   using size_type = typename flare::HostSpace::size_type;
 
-  scatter_view_type scatter_view;
+  scatter_tensor_type scatter_tensor;
   int scatterSize;
 
-  test_scatter_view_impl_cls(const scatter_view_type& view) {
-    scatter_view = view;
+  test_scatter_tensor_impl_cls(const scatter_tensor_type& tensor) {
+    scatter_tensor = tensor;
     scatterSize  = 0;
   }
 
-  void initialize(orig_view_type orig) {
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+  void initialize(orig_tensor_type orig) {
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      host_view(i, 0) = 0.0;
-      host_view(i, 1) = 0.0;
-      host_view(i, 2) = 0.0;
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      host_tensor(i, 0) = 0.0;
+      host_tensor(i, 1) = 0.0;
+      host_tensor(i, 2) = 0.0;
     }
     flare::fence();
-    flare::deep_copy(orig, host_view);
+    flare::deep_copy(orig, host_tensor);
   }
 
   void run_parallel(int n) {
     scatterSize = n;
     flare::RangePolicy<typename DeviceType::execution_space, int> policy(0, n);
-    flare::parallel_for("scatter_view_test: Prod", policy, *this);
+    flare::parallel_for("scatter_tensor_test: Prod", policy, *this);
   }
 
   FLARE_INLINE_FUNCTION
   void operator()(int i) const {
-    auto scatter_access = scatter_view.access();
+    auto scatter_access = scatter_tensor.access();
     auto scatter_access_atomic =
-        scatter_view.template access<flare::experimental::ScatterAtomic>();
+        scatter_tensor.template access<flare::experimental::ScatterAtomic>();
     for (int j = 0; j < 4; ++j) {
       auto k = (i + j) % scatterSize;
       scatter_access(k, 0).update((NumberType)(j + 1) * 4);
@@ -372,14 +372,14 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
     }
   }
 
-  void validateResults(orig_view_type orig) {
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+  void validateResults(orig_tensor_type orig) {
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      auto val0 = host_view(i, 0);
-      auto val1 = host_view(i, 1);
-      auto val2 = host_view(i, 2);
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      auto val0 = host_tensor(i, 0);
+      auto val1 = host_tensor(i, 1);
+      auto val2 = host_tensor(i, 2);
         REQUIRE_LE(std::abs(val0 - 16.0), 1e-14 * 16.0);
         REQUIRE_LE(std::abs(val1 - 8.0), 1e-14 * 8.0);
         REQUIRE_LE(std::abs(val2 - 4.0), 1e-14 * 4.0);
@@ -387,24 +387,24 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
   }
 
   // check for correct padding
-  void validateResultsForSubview(
-      orig_view_type orig, std::pair<size_type, size_type>& subRangeDim0,
+  void validateResultsForSubtensor(
+      orig_tensor_type orig, std::pair<size_type, size_type>& subRangeDim0,
       std::pair<size_type, size_type>& subRangeDim1) {
     (void)subRangeDim1;
-    auto host_view =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), orig);
+    auto host_tensor =
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), orig);
     flare::fence();
-    for (size_type i = 0; i < host_view.extent(0); ++i) {
-      auto val0 = host_view(i, 0);
-      auto val1 = host_view(i, 1);
-      auto val2 = host_view(i, 2);
+    for (size_type i = 0; i < host_tensor.extent(0); ++i) {
+      auto val0 = host_tensor(i, 0);
+      auto val1 = host_tensor(i, 1);
+      auto val2 = host_tensor(i, 2);
       if (i >= std::get<0>(subRangeDim0) && i < std::get<1>(subRangeDim0)) {
-        // is in subview
+        // is in subtensor
         REQUIRE_LE(std::abs(val0 - 16.0), 1e-14 * 16.0);
           REQUIRE_LE(std::abs(val1 - 8.0), 1e-14 * 8.0);
           REQUIRE_LE(std::abs(val2 - 4.0), 1e-14 * 4.0);
       } else {
-        // is outside of subview
+        // is outside of subtensor
           REQUIRE_LE(std::abs(val0 - NumberType(0)), 1e-14);
           REQUIRE_LE(std::abs(val1 - NumberType(0)), 1e-14);
           REQUIRE_LE(std::abs(val2 - NumberType(0)), 1e-14);
@@ -413,57 +413,57 @@ struct test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
   }
 };
 
-// Test ScatterView on subview
+// Test ScatterTensor on subtensor
 template <typename DeviceType, typename Layout, typename Op,
           typename NumberType>
-struct test_default_scatter_sub_view {
+struct test_default_scatter_sub_tensor {
  public:
   using default_duplication = flare::detail::experimental::DefaultDuplication<
       typename DeviceType::execution_space>;
   using Duplication  = typename default_duplication::type;
   using Contribution = typename flare::detail::experimental::DefaultContribution<
       typename DeviceType::execution_space, Duplication>::type;
-  using scatter_view_def =
-      typename test_scatter_view_impl_cls<DeviceType, Layout, Duplication,
+  using scatter_tensor_def =
+      typename test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication,
                                           Contribution, Op,
-                                          NumberType>::scatter_view_type;
-  using orig_view_def =
-      typename test_scatter_view_impl_cls<DeviceType, Layout, Duplication,
+                                          NumberType>::scatter_tensor_type;
+  using orig_tensor_def =
+      typename test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication,
                                           Contribution, Op,
-                                          NumberType>::orig_view_type;
+                                          NumberType>::orig_tensor_type;
 
   using size_type = typename flare::HostSpace::size_type;
 
   void run_test(int n) {
-    // Test creation via create_scatter_view overload 1
+    // Test creation via create_scatter_tensor overload 1
     {
-      orig_view_def original_view("original_view", n);
+      orig_tensor_def original_tensor("original_tensor", n);
 
       auto rangeDim0 = std::pair<size_type, size_type>(0 + 1, n - 1);
       auto rangeDim1 =
-          std::pair<size_type, size_type>(0, original_view.extent(1));
+          std::pair<size_type, size_type>(0, original_tensor.extent(1));
 
-      auto original_sub_view =
-          flare::subview(original_view, rangeDim0, rangeDim1);
+      auto original_sub_tensor =
+          flare::subtensor(original_tensor, rangeDim0, rangeDim1);
 
-      scatter_view_def scatter_view =
-          flare::experimental::create_scatter_view(Op{}, original_sub_view);
+      scatter_tensor_def scatter_tensor =
+          flare::experimental::create_scatter_tensor(Op{}, original_sub_tensor);
 
-      test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
+      test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication, Contribution,
                                  Op, NumberType>
-          scatter_view_test_impl(scatter_view);
-      scatter_view_test_impl.initialize(original_view);
-      scatter_view_test_impl.run_parallel(original_sub_view.extent(0));
+          scatter_tensor_test_impl(scatter_tensor);
+      scatter_tensor_test_impl.initialize(original_tensor);
+      scatter_tensor_test_impl.run_parallel(original_sub_tensor.extent(0));
 
-      flare::experimental::contribute(original_sub_view, scatter_view);
-      scatter_view.reset_except(original_sub_view);
+      flare::experimental::contribute(original_sub_tensor, scatter_tensor);
+      scatter_tensor.reset_except(original_sub_tensor);
 
-      scatter_view_test_impl.run_parallel(original_sub_view.extent(0));
+      scatter_tensor_test_impl.run_parallel(original_sub_tensor.extent(0));
 
-      flare::experimental::contribute(original_sub_view, scatter_view);
+      flare::experimental::contribute(original_sub_tensor, scatter_tensor);
       flare::fence();
 
-      scatter_view_test_impl.validateResultsForSubview(original_view, rangeDim0,
+      scatter_tensor_test_impl.validateResultsForSubtensor(original_tensor, rangeDim0,
                                                        rangeDim1);
     }
   }
@@ -471,49 +471,49 @@ struct test_default_scatter_sub_view {
 
 template <typename DeviceType, typename Layout, typename Op,
           typename NumberType>
-struct test_default_scatter_view {
+struct test_default_scatter_tensor {
  public:
   using default_duplication = flare::detail::experimental::DefaultDuplication<
       typename DeviceType::execution_space>;
   using Duplication  = typename default_duplication::type;
   using Contribution = typename flare::detail::experimental::DefaultContribution<
       typename DeviceType::execution_space, Duplication>::type;
-  using scatter_view_def =
-      typename test_scatter_view_impl_cls<DeviceType, Layout, Duplication,
+  using scatter_tensor_def =
+      typename test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication,
                                           Contribution, Op,
-                                          NumberType>::scatter_view_type;
-  using orig_view_def =
-      typename test_scatter_view_impl_cls<DeviceType, Layout, Duplication,
+                                          NumberType>::scatter_tensor_type;
+  using orig_tensor_def =
+      typename test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication,
                                           Contribution, Op,
-                                          NumberType>::orig_view_type;
+                                          NumberType>::orig_tensor_type;
 
   void run_test(int n) {
-    // Test creation via create_scatter_view overload 1
+    // Test creation via create_scatter_tensor overload 1
     {
-      orig_view_def original_view("original_view", n);
-      scatter_view_def scatter_view =
-          flare::experimental::create_scatter_view(Op{}, original_view);
+      orig_tensor_def original_tensor("original_tensor", n);
+      scatter_tensor_def scatter_tensor =
+          flare::experimental::create_scatter_tensor(Op{}, original_tensor);
 
-      test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
+      test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication, Contribution,
                                  Op, NumberType>
-          scatter_view_test_impl(scatter_view);
-      scatter_view_test_impl.initialize(original_view);
-      scatter_view_test_impl.run_parallel(n);
+          scatter_tensor_test_impl(scatter_tensor);
+      scatter_tensor_test_impl.initialize(original_tensor);
+      scatter_tensor_test_impl.run_parallel(n);
 
-      flare::experimental::contribute(original_view, scatter_view);
-      scatter_view.reset_except(original_view);
+      flare::experimental::contribute(original_tensor, scatter_tensor);
+      scatter_tensor.reset_except(original_tensor);
 
-      scatter_view_test_impl.run_parallel(n);
+      scatter_tensor_test_impl.run_parallel(n);
 
-      flare::experimental::contribute(original_view, scatter_view);
+      flare::experimental::contribute(original_tensor, scatter_tensor);
       flare::fence();
 
-      scatter_view_test_impl.validateResults(original_view);
+      scatter_tensor_test_impl.validateResults(original_tensor);
 
       {
-        scatter_view_def persistent_view("persistent", n);
-        auto result_view = persistent_view.subview();
-        contribute(result_view, persistent_view);
+        scatter_tensor_def persistent_tensor("persistent", n);
+        auto result_tensor = persistent_tensor.subtensor();
+        contribute(result_tensor, persistent_tensor);
         flare::fence();
       }
     }
@@ -522,123 +522,123 @@ struct test_default_scatter_view {
 
 template <typename DeviceType, typename Layout, typename Duplication,
           typename Contribution, typename Op, typename NumberType>
-struct test_scatter_view_config {
+struct test_scatter_tensor_config {
  public:
-  using scatter_view_def =
-      typename test_scatter_view_impl_cls<DeviceType, Layout, Duplication,
+  using scatter_tensor_def =
+      typename test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication,
                                           Contribution, Op,
-                                          NumberType>::scatter_view_type;
-  using orig_view_def =
-      typename test_scatter_view_impl_cls<DeviceType, Layout, Duplication,
+                                          NumberType>::scatter_tensor_type;
+  using orig_tensor_def =
+      typename test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication,
                                           Contribution, Op,
-                                          NumberType>::orig_view_type;
+                                          NumberType>::orig_tensor_type;
 
   void compile_constructor() {
-    auto sv = scatter_view_def(flare::view_alloc(DeviceType{}, "label"), 10);
+    auto sv = scatter_tensor_def(flare::tensor_alloc(DeviceType{}, "label"), 10);
   }
 
   void run_test(int n) {
     // test allocation
     {
-      orig_view_def ov1("ov1", n);
-      scatter_view_def sv1;
+      orig_tensor_def ov1("ov1", n);
+      scatter_tensor_def sv1;
 
       REQUIRE_FALSE(sv1.is_allocated());
 
-      sv1 = flare::experimental::create_scatter_view<Op, Duplication,
+      sv1 = flare::experimental::create_scatter_tensor<Op, Duplication,
                                                       Contribution>(ov1);
 
-      scatter_view_def sv2(sv1);
-      scatter_view_def sv3("sv3", n);
+      scatter_tensor_def sv2(sv1);
+      scatter_tensor_def sv3("sv3", n);
 
       REQUIRE(sv1.is_allocated());
       REQUIRE(sv2.is_allocated());
       REQUIRE(sv3.is_allocated());
     }
 
-    // Test creation via create_scatter_view
+    // Test creation via create_scatter_tensor
     {
-      orig_view_def original_view("original_view", n);
-      scatter_view_def scatter_view = flare::experimental::create_scatter_view<
-          Op, Duplication, Contribution>(original_view);
+      orig_tensor_def original_tensor("original_tensor", n);
+      scatter_tensor_def scatter_tensor = flare::experimental::create_scatter_tensor<
+          Op, Duplication, Contribution>(original_tensor);
 
-      test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
+      test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication, Contribution,
                                  Op, NumberType>
-          scatter_view_test_impl(scatter_view);
-      scatter_view_test_impl.initialize(original_view);
-      scatter_view_test_impl.run_parallel(n);
+          scatter_tensor_test_impl(scatter_tensor);
+      scatter_tensor_test_impl.initialize(original_tensor);
+      scatter_tensor_test_impl.run_parallel(n);
 
-      flare::experimental::contribute(original_view, scatter_view);
-      scatter_view.reset_except(original_view);
+      flare::experimental::contribute(original_tensor, scatter_tensor);
+      scatter_tensor.reset_except(original_tensor);
 
-      scatter_view_test_impl.run_parallel(n);
+      scatter_tensor_test_impl.run_parallel(n);
 
-      flare::experimental::contribute(original_view, scatter_view);
+      flare::experimental::contribute(original_tensor, scatter_tensor);
       flare::fence();
 
-      scatter_view_test_impl.validateResults(original_view);
+      scatter_tensor_test_impl.validateResults(original_tensor);
 
       {
-        scatter_view_def persistent_view("persistent", n);
-        auto result_view = persistent_view.subview();
-        contribute(result_view, persistent_view);
+        scatter_tensor_def persistent_tensor("persistent", n);
+        auto result_tensor = persistent_tensor.subtensor();
+        contribute(result_tensor, persistent_tensor);
         flare::fence();
       }
     }
-    // Test creation via create_scatter_view overload 2
+    // Test creation via create_scatter_tensor overload 2
     {
-      orig_view_def original_view("original_view", n);
-      scatter_view_def scatter_view = flare::experimental::create_scatter_view(
-          Op{}, Duplication{}, Contribution{}, original_view);
+      orig_tensor_def original_tensor("original_tensor", n);
+      scatter_tensor_def scatter_tensor = flare::experimental::create_scatter_tensor(
+          Op{}, Duplication{}, Contribution{}, original_tensor);
 
-      test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
+      test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication, Contribution,
                                  Op, NumberType>
-          scatter_view_test_impl(scatter_view);
-      scatter_view_test_impl.initialize(original_view);
-      scatter_view_test_impl.run_parallel(n);
+          scatter_tensor_test_impl(scatter_tensor);
+      scatter_tensor_test_impl.initialize(original_tensor);
+      scatter_tensor_test_impl.run_parallel(n);
 
-      flare::experimental::contribute(original_view, scatter_view);
-      scatter_view.reset_except(original_view);
+      flare::experimental::contribute(original_tensor, scatter_tensor);
+      scatter_tensor.reset_except(original_tensor);
 
-      scatter_view_test_impl.run_parallel(n);
+      scatter_tensor_test_impl.run_parallel(n);
 
-      flare::experimental::contribute(original_view, scatter_view);
+      flare::experimental::contribute(original_tensor, scatter_tensor);
       flare::fence();
 
-      scatter_view_test_impl.validateResults(original_view);
+      scatter_tensor_test_impl.validateResults(original_tensor);
 
       {
-        scatter_view_def persistent_view("persistent", n);
-        auto result_view = persistent_view.subview();
-        contribute(result_view, persistent_view);
+        scatter_tensor_def persistent_tensor("persistent", n);
+        auto result_tensor = persistent_tensor.subtensor();
+        contribute(result_tensor, persistent_tensor);
         flare::fence();
       }
     }
     // Test creation via constructor
     {
-      orig_view_def original_view("original_view", n);
-      scatter_view_def scatter_view(original_view);
+      orig_tensor_def original_tensor("original_tensor", n);
+      scatter_tensor_def scatter_tensor(original_tensor);
 
-      test_scatter_view_impl_cls<DeviceType, Layout, Duplication, Contribution,
+      test_scatter_tensor_impl_cls<DeviceType, Layout, Duplication, Contribution,
                                  Op, NumberType>
-          scatter_view_test_impl(scatter_view);
-      scatter_view_test_impl.initialize(original_view);
-      scatter_view_test_impl.run_parallel(n);
+          scatter_tensor_test_impl(scatter_tensor);
+      scatter_tensor_test_impl.initialize(original_tensor);
+      scatter_tensor_test_impl.run_parallel(n);
 
-      flare::experimental::contribute(original_view, scatter_view);
-      scatter_view.reset_except(original_view);
+      flare::experimental::contribute(original_tensor, scatter_tensor);
+      scatter_tensor.reset_except(original_tensor);
 
-      scatter_view_test_impl.run_parallel(n);
+      scatter_tensor_test_impl.run_parallel(n);
 
-      flare::experimental::contribute(original_view, scatter_view);
+      flare::experimental::contribute(original_tensor, scatter_tensor);
       flare::fence();
 
-      scatter_view_test_impl.validateResults(original_view);
+      scatter_tensor_test_impl.validateResults(original_tensor);
 
       {
-        scatter_view_def persistent_view("persistent", n);
-        auto result_view = persistent_view.subview();
-        contribute(result_view, persistent_view);
+        scatter_tensor_def persistent_tensor("persistent", n);
+        auto result_tensor = persistent_tensor.subtensor();
+        contribute(result_tensor, persistent_tensor);
         flare::fence();
       }
     }
@@ -646,16 +646,16 @@ struct test_scatter_view_config {
 };
 
 template <typename DeviceType, typename ScatterType, typename NumberType>
-struct TestDuplicatedScatterView {
-  TestDuplicatedScatterView(int n) {
+struct TestDuplicatedScatterTensor {
+  TestDuplicatedScatterTensor(int n) {
     // ScatterSum test
-    test_scatter_view_config<DeviceType, flare::LayoutRight,
+    test_scatter_tensor_config<DeviceType, flare::LayoutRight,
                              flare::experimental::ScatterDuplicated,
                              flare::experimental::ScatterNonAtomic,
                              ScatterType, NumberType>
         test_sv_right_config;
     test_sv_right_config.run_test(n);
-    test_scatter_view_config<
+    test_scatter_tensor_config<
         DeviceType, flare::LayoutLeft, flare::experimental::ScatterDuplicated,
         flare::experimental::ScatterNonAtomic, ScatterType, NumberType>
         test_sv_left_config;
@@ -667,32 +667,32 @@ struct TestDuplicatedScatterView {
 // disable duplicated instantiation with CUDA until
 // UniqueToken can support it
 template <typename ScatterType, typename NumberType>
-struct TestDuplicatedScatterView<flare::Cuda, ScatterType, NumberType> {
-  TestDuplicatedScatterView(int) {}
+struct TestDuplicatedScatterTensor<flare::Cuda, ScatterType, NumberType> {
+  TestDuplicatedScatterTensor(int) {}
 };
 template <typename ScatterType, typename NumberType>
-struct TestDuplicatedScatterView<
+struct TestDuplicatedScatterTensor<
     flare::Device<flare::Cuda, flare::CudaSpace>, ScatterType, NumberType> {
-  TestDuplicatedScatterView(int) {}
+  TestDuplicatedScatterTensor(int) {}
 };
 template <typename ScatterType, typename NumberType>
-struct TestDuplicatedScatterView<
+struct TestDuplicatedScatterTensor<
     flare::Device<flare::Cuda, flare::CudaUVMSpace>, ScatterType,
     NumberType> {
-  TestDuplicatedScatterView(int) {}
+  TestDuplicatedScatterTensor(int) {}
 };
 #endif
 
 template <typename DeviceType, typename ScatterType,
           typename NumberType = double>
-void test_scatter_view(int64_t n) {
+void test_scatter_tensor(int64_t n) {
   using execution_space = typename DeviceType::execution_space;
 
   // no atomics or duplication is only sensible if the execution space
   // is running essentially in serial (doesn't have to be Serial though,
   // we also test OpenMP with one thread: LAMMPS cares about that)
   if (execution_space().concurrency() == 1) {
-    test_scatter_view_config<DeviceType, flare::LayoutRight,
+    test_scatter_tensor_config<DeviceType, flare::LayoutRight,
                              flare::experimental::ScatterNonDuplicated,
                              flare::experimental::ScatterNonAtomic,
                              ScatterType, NumberType>
@@ -702,7 +702,7 @@ void test_scatter_view(int64_t n) {
 #ifdef FLARE_ENABLE_SERIAL
   if (!std::is_same<DeviceType, flare::Serial>::value) {
 #endif
-    test_scatter_view_config<DeviceType, flare::LayoutRight,
+    test_scatter_tensor_config<DeviceType, flare::LayoutRight,
                              flare::experimental::ScatterNonDuplicated,
                              flare::experimental::ScatterAtomic, ScatterType,
                              NumberType>
@@ -725,32 +725,32 @@ void test_scatter_view(int64_t n) {
 
   // if the default is duplicated, this needs to follow the limit
   {
-    test_default_scatter_view<DeviceType, flare::LayoutRight, ScatterType,
+    test_default_scatter_tensor<DeviceType, flare::LayoutRight, ScatterType,
                               NumberType>
         test_default_sv;
     test_default_sv.run_test(n);
   }
 
-  // run same test but on a subview (this covers support for padded
-  // ScatterViews)
+  // run same test but on a subtensor (this covers support for padded
+  // ScatterTensors)
   {
-    test_default_scatter_sub_view<DeviceType, flare::LayoutRight, ScatterType,
+    test_default_scatter_sub_tensor<DeviceType, flare::LayoutRight, ScatterType,
                                   NumberType>
-        test_default_scatter_view_subview;
-    test_default_scatter_view_subview.run_test(n);
+        test_default_scatter_tensor_subtensor;
+    test_default_scatter_tensor_subtensor.run_test(n);
   }
 
-  TestDuplicatedScatterView<DeviceType, ScatterType, NumberType> duptest(n);
+  TestDuplicatedScatterTensor<DeviceType, ScatterType, NumberType> duptest(n);
 }
 
-TEST_CASE("TEST_CATEGORY, scatterview") {
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterSum, double>(
+TEST_CASE("TEST_CATEGORY, scattertensor") {
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterSum, double>(
       10);
 
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterSum, int>(10);
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterProd>(10);
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterMin>(10);
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterMax>(10);
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterSum, int>(10);
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterProd>(10);
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterMin>(10);
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterMax>(10);
   // tests were timing out in DEBUG mode, reduce the amount of work
 #ifdef FLARE_ENABLE_DEBUG
   int big_n = 100 * 1000;
@@ -774,24 +774,24 @@ TEST_CASE("TEST_CATEGORY, scatterview") {
 
 #endif
 
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterSum, double>(
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterSum, double>(
       big_n);
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterSum, int>(
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterSum, int>(
       big_n);
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterProd>(big_n);
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterMin>(big_n);
-  test_scatter_view<TEST_EXECSPACE, flare::experimental::ScatterMax>(big_n);
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterProd>(big_n);
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterMin>(big_n);
+  test_scatter_tensor<TEST_EXECSPACE, flare::experimental::ScatterMax>(big_n);
 }
 
-TEST_CASE("TEST_CATEGORY, scatterview_devicetype") {
+TEST_CASE("TEST_CATEGORY, scattertensor_devicetype") {
   using device_type =
       flare::Device<TEST_EXECSPACE, typename TEST_EXECSPACE::memory_space>;
 
-  test_scatter_view<device_type, flare::experimental::ScatterSum, double>(10);
-  test_scatter_view<device_type, flare::experimental::ScatterSum, int>(10);
-  test_scatter_view<device_type, flare::experimental::ScatterProd>(10);
-  test_scatter_view<device_type, flare::experimental::ScatterMin>(10);
-  test_scatter_view<device_type, flare::experimental::ScatterMax>(10);
+  test_scatter_tensor<device_type, flare::experimental::ScatterSum, double>(10);
+  test_scatter_tensor<device_type, flare::experimental::ScatterSum, int>(10);
+  test_scatter_tensor<device_type, flare::experimental::ScatterProd>(10);
+  test_scatter_tensor<device_type, flare::experimental::ScatterMin>(10);
+  test_scatter_tensor<device_type, flare::experimental::ScatterMax>(10);
 
 #if defined(FLARE_ON_CUDA_DEVICE)
   using device_execution_space = flare::Cuda;
@@ -800,27 +800,27 @@ TEST_CASE("TEST_CATEGORY, scatterview_devicetype") {
   if (std::is_same<TEST_EXECSPACE, device_execution_space>::value) {
     using device_device_type =
         flare::Device<device_execution_space, device_memory_space>;
-    test_scatter_view<device_device_type, flare::experimental::ScatterSum,
+    test_scatter_tensor<device_device_type, flare::experimental::ScatterSum,
                       double>(10);
-    test_scatter_view<device_device_type, flare::experimental::ScatterSum,
+    test_scatter_tensor<device_device_type, flare::experimental::ScatterSum,
                       int>(10);
-    test_scatter_view<device_device_type, flare::experimental::ScatterProd>(
+    test_scatter_tensor<device_device_type, flare::experimental::ScatterProd>(
         10);
-    test_scatter_view<device_device_type, flare::experimental::ScatterMin>(10);
-    test_scatter_view<device_device_type, flare::experimental::ScatterMax>(10);
+    test_scatter_tensor<device_device_type, flare::experimental::ScatterMin>(10);
+    test_scatter_tensor<device_device_type, flare::experimental::ScatterMax>(10);
     using host_device_type =
         flare::Device<device_execution_space, host_accessible_space>;
-    test_scatter_view<host_device_type, flare::experimental::ScatterSum,
+    test_scatter_tensor<host_device_type, flare::experimental::ScatterSum,
                       double>(10);
-    test_scatter_view<host_device_type, flare::experimental::ScatterSum, int>(
+    test_scatter_tensor<host_device_type, flare::experimental::ScatterSum, int>(
         10);
-    test_scatter_view<host_device_type, flare::experimental::ScatterProd>(10);
-    test_scatter_view<host_device_type, flare::experimental::ScatterMin>(10);
-    test_scatter_view<host_device_type, flare::experimental::ScatterMax>(10);
+    test_scatter_tensor<host_device_type, flare::experimental::ScatterProd>(10);
+    test_scatter_tensor<host_device_type, flare::experimental::ScatterMin>(10);
+    test_scatter_tensor<host_device_type, flare::experimental::ScatterMax>(10);
   }
 #endif
 }
 
 }  // namespace Test
 
-#endif  // FLARE_TEST_SCATTER_VIEW_HPP
+#endif  // FLARE_test_scatter_tensor_HPP

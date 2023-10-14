@@ -119,14 +119,14 @@ class AcquireTeamUniqueToken {
   using token_type       = UniqueToken<exec_space>;
   using size_type        = typename token_type::size_type;
   using team_member_type = typename TeamPolicy::member_type;
-  using scratch_view =
-      flare::View<size_type, typename exec_space::scratch_memory_space,
+  using scratch_tensor =
+      flare::Tensor<size_type, typename exec_space::scratch_memory_space,
                    flare::MemoryUnmanaged>;
 
  private:
   token_type my_token;
   size_type my_acquired_val;
-  scratch_view my_team_acquired_val;
+  scratch_tensor my_team_acquired_val;
   team_member_type my_team;
 
  public:
@@ -141,7 +141,7 @@ class AcquireTeamUniqueToken {
   FLARE_FUNCTION AcquireTeamUniqueToken(token_type t, team_member_type team);
   FLARE_FUNCTION ~AcquireTeamUniqueToken();
   FLARE_FUNCTION size_type value() const { return my_acquired_val; }
-  static std::size_t shmem_size() { return scratch_view::shmem_size(); }
+  static std::size_t shmem_size() { return scratch_tensor::shmem_size(); }
 };
 
 }  // namespace experimental

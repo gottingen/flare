@@ -46,12 +46,12 @@ template <
     typename SizeType, typename T,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto fill_n(const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view, SizeType n,
+            const ::flare::Tensor<DataType, Properties...>& tensor, SizeType n,
             const T& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
-  return detail::fill_n_exespace_impl("flare::fill_n_view_api_default", ex,
-                                    begin(view), n, value);
+  return detail::fill_n_exespace_impl("flare::fill_n_tensor_api_default", ex,
+                                    begin(tensor), n, value);
 }
 
 template <
@@ -59,11 +59,11 @@ template <
     typename SizeType, typename T,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto fill_n(const std::string& label, const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view, SizeType n,
+            const ::flare::Tensor<DataType, Properties...>& tensor, SizeType n,
             const T& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
-  return detail::fill_n_exespace_impl(label, ex, begin(view), n, value);
+  return detail::fill_n_exespace_impl(label, ex, begin(tensor), n, value);
 }
 
 //
@@ -84,10 +84,10 @@ template <typename TeamHandleType, typename DataType, typename... Properties,
           typename SizeType, typename T,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto fill_n(const TeamHandleType& th,
-                            const ::flare::View<DataType, Properties...>& view,
+                            const ::flare::Tensor<DataType, Properties...>& tensor,
                             SizeType n, const T& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::fill_n_team_impl(th, begin(view), n, value);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::fill_n_team_impl(th, begin(tensor), n, value);
 }
 
 }  // namespace experimental

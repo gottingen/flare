@@ -14,124 +14,124 @@
 //
 
 #include <flare/core.h>
-#include <flare/dynamic_view.h>
-#include <flare/dyn_rank_view.h>
-#include <flare/offset_view.h>
+#include <flare/dynamic_tensor.h>
+#include <flare/dyn_rank_tensor.h>
+#include <flare/offset_tensor.h>
 
-template <typename TestView, typename MemorySpace>
-void check_memory_space(TestView, MemorySpace) {
-  static_assert(std::is_same_v<typename TestView::memory_space, MemorySpace>);
+template <typename TestTensor, typename MemorySpace>
+void check_memory_space(TestTensor, MemorySpace) {
+  static_assert(std::is_same_v<typename TestTensor::memory_space, MemorySpace>);
 }
 
-template <class View>
-auto host_mirror_test_space(View) {
+template <class Tensor>
+auto host_mirror_test_space(Tensor) {
   return std::conditional_t<
       flare::SpaceAccessibility<flare::HostSpace,
-                                 typename View::memory_space>::accessible,
-      typename View::memory_space, flare::HostSpace>{};
+                                 typename Tensor::memory_space>::accessible,
+      typename Tensor::memory_space, flare::HostSpace>{};
 }
 
-template <typename View>
-void test_create_mirror_properties(const View& view) {
+template <typename Tensor>
+void test_create_mirror_properties(const Tensor& tensor) {
   using namespace flare;
   using DeviceMemorySpace = typename DefaultExecutionSpace::memory_space;
 
   // clang-format off
   
   // create_mirror
-  // FIXME DynamicView: HostMirror is the same type
-  if constexpr (!is_dynamic_view<View>::value) {
-    check_memory_space(create_mirror(WithoutInitializing,                        view), host_mirror_test_space(view));
-    check_memory_space(create_mirror(                                            view), host_mirror_test_space(view));
+  // FIXME DynamicTensor: HostMirror is the same type
+  if constexpr (!is_dynamic_tensor<Tensor>::value) {
+    check_memory_space(create_mirror(WithoutInitializing,                        tensor), host_mirror_test_space(tensor));
+    check_memory_space(create_mirror(                                            tensor), host_mirror_test_space(tensor));
   }
-  check_memory_space(create_mirror(WithoutInitializing, DefaultExecutionSpace{}, view), DeviceMemorySpace{});
-  check_memory_space(create_mirror(                     DefaultExecutionSpace{}, view), DeviceMemorySpace{});
+  check_memory_space(create_mirror(WithoutInitializing, DefaultExecutionSpace{}, tensor), DeviceMemorySpace{});
+  check_memory_space(create_mirror(                     DefaultExecutionSpace{}, tensor), DeviceMemorySpace{});
 
-  // create_mirror_view
-  // FIXME DynamicView: HostMirror is the same type
-  if constexpr (!is_dynamic_view<View>::value) {
-    check_memory_space(create_mirror_view(WithoutInitializing,                        view), host_mirror_test_space(view));
-    check_memory_space(create_mirror_view(                                            view), host_mirror_test_space(view));
+  // create_mirror_tensor
+  // FIXME DynamicTensor: HostMirror is the same type
+  if constexpr (!is_dynamic_tensor<Tensor>::value) {
+    check_memory_space(create_mirror_tensor(WithoutInitializing,                        tensor), host_mirror_test_space(tensor));
+    check_memory_space(create_mirror_tensor(                                            tensor), host_mirror_test_space(tensor));
   }
-  check_memory_space(create_mirror_view(WithoutInitializing, DefaultExecutionSpace{}, view), DeviceMemorySpace{});
-  check_memory_space(create_mirror_view(                     DefaultExecutionSpace{}, view), DeviceMemorySpace{});
+  check_memory_space(create_mirror_tensor(WithoutInitializing, DefaultExecutionSpace{}, tensor), DeviceMemorySpace{});
+  check_memory_space(create_mirror_tensor(                     DefaultExecutionSpace{}, tensor), DeviceMemorySpace{});
 
-  // create_mirror view_alloc
-  // FIXME DynamicView: HostMirror is the same type
-  if constexpr (!is_dynamic_view<View>::value) {
-    check_memory_space(create_mirror(view_alloc(WithoutInitializing),                    view), host_mirror_test_space(view));
-    check_memory_space(create_mirror(view_alloc(),                                       view), host_mirror_test_space(view));
+  // create_mirror tensor_alloc
+  // FIXME DynamicTensor: HostMirror is the same type
+  if constexpr (!is_dynamic_tensor<Tensor>::value) {
+    check_memory_space(create_mirror(tensor_alloc(WithoutInitializing),                    tensor), host_mirror_test_space(tensor));
+    check_memory_space(create_mirror(tensor_alloc(),                                       tensor), host_mirror_test_space(tensor));
   }
-  check_memory_space(create_mirror(view_alloc(WithoutInitializing, DeviceMemorySpace{}), view), DeviceMemorySpace{});
-  check_memory_space(create_mirror(view_alloc(                     DeviceMemorySpace{}), view), DeviceMemorySpace{});
+  check_memory_space(create_mirror(tensor_alloc(WithoutInitializing, DeviceMemorySpace{}), tensor), DeviceMemorySpace{});
+  check_memory_space(create_mirror(tensor_alloc(                     DeviceMemorySpace{}), tensor), DeviceMemorySpace{});
 
-  // create_mirror_view view_alloc
-  // FIXME DynamicView: HostMirror is the same type
-  if constexpr (!is_dynamic_view<View>::value) {
-    check_memory_space(create_mirror_view(view_alloc(WithoutInitializing),                    view), host_mirror_test_space(view));
-    check_memory_space(create_mirror_view(view_alloc(),                                       view), host_mirror_test_space(view));
+  // create_mirror_tensor tensor_alloc
+  // FIXME DynamicTensor: HostMirror is the same type
+  if constexpr (!is_dynamic_tensor<Tensor>::value) {
+    check_memory_space(create_mirror_tensor(tensor_alloc(WithoutInitializing),                    tensor), host_mirror_test_space(tensor));
+    check_memory_space(create_mirror_tensor(tensor_alloc(),                                       tensor), host_mirror_test_space(tensor));
   }
-  check_memory_space(create_mirror_view(view_alloc(WithoutInitializing, DeviceMemorySpace{}), view), DeviceMemorySpace{});
-  check_memory_space(create_mirror_view(view_alloc(                     DeviceMemorySpace{}), view), DeviceMemorySpace{});
+  check_memory_space(create_mirror_tensor(tensor_alloc(WithoutInitializing, DeviceMemorySpace{}), tensor), DeviceMemorySpace{});
+  check_memory_space(create_mirror_tensor(tensor_alloc(                     DeviceMemorySpace{}), tensor), DeviceMemorySpace{});
 
-  // create_mirror view_alloc + execution space
-  // FIXME DynamicView: HostMirror is the same type
-  if constexpr (!is_dynamic_view<View>::value) {
-    check_memory_space(create_mirror(view_alloc(DefaultHostExecutionSpace{}, WithoutInitializing),                      view), host_mirror_test_space(view));
-    check_memory_space(create_mirror(view_alloc(DefaultHostExecutionSpace{}),                                           view), host_mirror_test_space(view));
+  // create_mirror tensor_alloc + execution space
+  // FIXME DynamicTensor: HostMirror is the same type
+  if constexpr (!is_dynamic_tensor<Tensor>::value) {
+    check_memory_space(create_mirror(tensor_alloc(DefaultHostExecutionSpace{}, WithoutInitializing),                      tensor), host_mirror_test_space(tensor));
+    check_memory_space(create_mirror(tensor_alloc(DefaultHostExecutionSpace{}),                                           tensor), host_mirror_test_space(tensor));
   }
-  check_memory_space(create_mirror(view_alloc(DefaultExecutionSpace{},       WithoutInitializing, DeviceMemorySpace{}), view), DeviceMemorySpace{});
-  check_memory_space(create_mirror(view_alloc(DefaultExecutionSpace{},                            DeviceMemorySpace{}), view), DeviceMemorySpace{});
+  check_memory_space(create_mirror(tensor_alloc(DefaultExecutionSpace{},       WithoutInitializing, DeviceMemorySpace{}), tensor), DeviceMemorySpace{});
+  check_memory_space(create_mirror(tensor_alloc(DefaultExecutionSpace{},                            DeviceMemorySpace{}), tensor), DeviceMemorySpace{});
 
-  // create_mirror_view view_alloc + execution space
-  // FIXME DynamicView: HostMirror is the same type
-  if constexpr (!is_dynamic_view<View>::value) {
-    check_memory_space(create_mirror_view(view_alloc(DefaultHostExecutionSpace{}, WithoutInitializing),                      view), host_mirror_test_space(view));
-    check_memory_space(create_mirror_view(view_alloc(DefaultHostExecutionSpace{}),                                           view), host_mirror_test_space(view));
+  // create_mirror_tensor tensor_alloc + execution space
+  // FIXME DynamicTensor: HostMirror is the same type
+  if constexpr (!is_dynamic_tensor<Tensor>::value) {
+    check_memory_space(create_mirror_tensor(tensor_alloc(DefaultHostExecutionSpace{}, WithoutInitializing),                      tensor), host_mirror_test_space(tensor));
+    check_memory_space(create_mirror_tensor(tensor_alloc(DefaultHostExecutionSpace{}),                                           tensor), host_mirror_test_space(tensor));
   }
-  check_memory_space(create_mirror_view(view_alloc(DefaultExecutionSpace{},       WithoutInitializing, DeviceMemorySpace{}), view), DeviceMemorySpace{});
-  check_memory_space(create_mirror_view(view_alloc(DefaultExecutionSpace{},                            DeviceMemorySpace{}), view), DeviceMemorySpace{});
+  check_memory_space(create_mirror_tensor(tensor_alloc(DefaultExecutionSpace{},       WithoutInitializing, DeviceMemorySpace{}), tensor), DeviceMemorySpace{});
+  check_memory_space(create_mirror_tensor(tensor_alloc(DefaultExecutionSpace{},                            DeviceMemorySpace{}), tensor), DeviceMemorySpace{});
 
-  // create_mirror_view_and_copy
-  check_memory_space(create_mirror_view_and_copy(HostSpace{},         view), HostSpace{});
-  check_memory_space(create_mirror_view_and_copy(DeviceMemorySpace{}, view), DeviceMemorySpace{});
+  // create_mirror_tensor_and_copy
+  check_memory_space(create_mirror_tensor_and_copy(HostSpace{},         tensor), HostSpace{});
+  check_memory_space(create_mirror_tensor_and_copy(DeviceMemorySpace{}, tensor), DeviceMemorySpace{});
 
-  // create_mirror_view_and_copy view_alloc
-  check_memory_space(create_mirror_view_and_copy(view_alloc(HostSpace{}),         view), HostSpace{});
-  check_memory_space(create_mirror_view_and_copy(view_alloc(DeviceMemorySpace{}), view), DeviceMemorySpace{});
+  // create_mirror_tensor_and_copy tensor_alloc
+  check_memory_space(create_mirror_tensor_and_copy(tensor_alloc(HostSpace{}),         tensor), HostSpace{});
+  check_memory_space(create_mirror_tensor_and_copy(tensor_alloc(DeviceMemorySpace{}), tensor), DeviceMemorySpace{});
 
-  // create_mirror_view_and_copy view_alloc + execution space
-  check_memory_space(create_mirror_view_and_copy(view_alloc(HostSpace{},         DefaultHostExecutionSpace{}),   view), HostSpace{});
-  check_memory_space(create_mirror_view_and_copy(view_alloc(DeviceMemorySpace{}, DefaultExecutionSpace{}),       view), DeviceMemorySpace{});
+  // create_mirror_tensor_and_copy tensor_alloc + execution space
+  check_memory_space(create_mirror_tensor_and_copy(tensor_alloc(HostSpace{},         DefaultHostExecutionSpace{}),   tensor), HostSpace{});
+  check_memory_space(create_mirror_tensor_and_copy(tensor_alloc(DeviceMemorySpace{}, DefaultExecutionSpace{}),       tensor), DeviceMemorySpace{});
 
   // clang-format on
 }
 
-void test_create_mirror_dynrankview() {
-  flare::DynRankView<int, flare::DefaultExecutionSpace> device_view(
-      "device view", 10);
-  flare::DynRankView<int, flare::HostSpace> host_view("host view", 10);
+void test_create_mirror_dynranktensor() {
+  flare::DynRankTensor<int, flare::DefaultExecutionSpace> device_tensor(
+      "device tensor", 10);
+  flare::DynRankTensor<int, flare::HostSpace> host_tensor("host tensor", 10);
 
-  test_create_mirror_properties(device_view);
-  test_create_mirror_properties(host_view);
+  test_create_mirror_properties(device_tensor);
+  test_create_mirror_properties(host_tensor);
 }
 
-void test_reate_mirror_offsetview() {
-  flare::experimental::OffsetView<int*, flare::DefaultExecutionSpace>
-      device_view("device view", {0, 10});
-  flare::experimental::OffsetView<int*, flare::HostSpace> host_view(
-      "host view", {0, 10});
+void test_reate_mirror_offsettensor() {
+  flare::experimental::OffsetTensor<int*, flare::DefaultExecutionSpace>
+      device_tensor("device tensor", {0, 10});
+  flare::experimental::OffsetTensor<int*, flare::HostSpace> host_tensor(
+      "host tensor", {0, 10});
 
-  test_create_mirror_properties(device_view);
-  test_create_mirror_properties(host_view);
+  test_create_mirror_properties(device_tensor);
+  test_create_mirror_properties(host_tensor);
 }
 
-void test_create_mirror_dynamicview() {
-  flare::experimental::DynamicView<int*, flare::DefaultExecutionSpace>
-      device_view("device view", 2, 10);
-  flare::experimental::DynamicView<int*, flare::HostSpace> host_view(
-      "host view", 2, 10);
+void test_create_mirror_dynamictensor() {
+  flare::experimental::DynamicTensor<int*, flare::DefaultExecutionSpace>
+      device_tensor("device tensor", 2, 10);
+  flare::experimental::DynamicTensor<int*, flare::HostSpace> host_tensor(
+      "host tensor", 2, 10);
 
-  test_create_mirror_properties(device_view);
-  test_create_mirror_properties(host_view);
+  test_create_mirror_properties(device_tensor);
+  test_create_mirror_properties(host_tensor);
 }

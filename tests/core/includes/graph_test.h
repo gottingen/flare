@@ -23,10 +23,10 @@ namespace Test {
     struct CountTestFunctor {
         using value_type = int;
         template<class T>
-        using atomic_view =
-                flare::View<T, ExecSpace, flare::MemoryTraits<flare::Atomic>>;
-        atomic_view<int> count;
-        atomic_view<int> bugs;
+        using atomic_tensor =
+                flare::Tensor<T, ExecSpace, flare::MemoryTraits<flare::Atomic>>;
+        atomic_tensor<int> count;
+        atomic_tensor<int> bugs;
         int expected_count_min;
         int expected_count_max;
 
@@ -38,11 +38,11 @@ namespace Test {
     };
 
     template<class ExecSpace, class T>
-    struct SetViewToValueFunctor {
+    struct SetTensorToValueFunctor {
         using value_type = T;
-        using view_type =
-                flare::View<T, ExecSpace, flare::MemoryTraits<flare::Atomic>>;
-        view_type v;
+        using tensor_type =
+                flare::Tensor<T, ExecSpace, flare::MemoryTraits<flare::Atomic>>;
+        tensor_type v;
         T value;
 
         template<class... Ts>
@@ -52,11 +52,11 @@ namespace Test {
     };
 
     template<class ExecSpace, class T>
-    struct SetResultToViewFunctor {
+    struct SetResultToTensorFunctor {
         using value_type = T;
-        using view_type =
-                flare::View<T, ExecSpace, flare::MemoryTraits<flare::Atomic>>;
-        view_type v;
+        using tensor_type =
+                flare::Tensor<T, ExecSpace, flare::MemoryTraits<flare::Atomic>>;
+        tensor_type v;
 
         template<class U>
         FLARE_FUNCTION void operator()(U &&, value_type &val) const noexcept {
@@ -67,15 +67,15 @@ namespace Test {
     struct TEST_CATEGORY_FIXTURE(count_bugs) {
     public:
         using count_functor = CountTestFunctor<TEST_EXECSPACE>;
-        using set_functor = SetViewToValueFunctor<TEST_EXECSPACE, int>;
-        using set_result_functor = SetResultToViewFunctor<TEST_EXECSPACE, int>;
-        using view_type = flare::View<int, TEST_EXECSPACE>;
-        using atomic_view_type = typename count_functor::template atomic_view<int>;
-        using view_host = flare::View<int, flare::HostSpace>;
-        atomic_view_type count{"count"};
-        atomic_view_type bugs{"bugs"};
-        view_host count_host{"count_host"};
-        view_host bugs_host{"bugs_host"};
+        using set_functor = SetTensorToValueFunctor<TEST_EXECSPACE, int>;
+        using set_result_functor = SetResultToTensorFunctor<TEST_EXECSPACE, int>;
+        using tensor_type = flare::Tensor<int, TEST_EXECSPACE>;
+        using atomic_tensor_type = typename count_functor::template atomic_tensor<int>;
+        using tensor_host = flare::Tensor<int, flare::HostSpace>;
+        atomic_tensor_type count{"count"};
+        atomic_tensor_type bugs{"bugs"};
+        tensor_host count_host{"count_host"};
+        tensor_host bugs_host{"bugs_host"};
         TEST_EXECSPACE ex{};
 
     protected:
@@ -147,8 +147,8 @@ namespace Test {
     }
 
     TEST_CASE_FIXTURE(TEST_CATEGORY_FIXTURE(count_bugs), "when_all_cycle") {
-        view_type reduction_out{"reduction_out"};
-        view_host reduction_host{"reduction_host"};
+        tensor_type reduction_out{"reduction_out"};
+        tensor_host reduction_host{"reduction_host"};
         flare::experimental::create_graph(ex, [&](auto root) {
             //----------------------------------------
             // Test when_all when redundant dependencies are given

@@ -23,17 +23,17 @@
 #include <kernel/common/test_utility.h>
 
 namespace Test {
-    template<class ViewTypeA, class ViewTypeB, class Device>
+    template<class TensorTypeA, class TensorTypeB, class Device>
     void impl_test_scal(int N) {
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
         typedef flare::ArithTraits<ScalarA> AT;
 
         ScalarA a(3);
         typename AT::mag_type eps = AT::epsilon() * 1000;
 
-        view_stride_adapter<ViewTypeA> x("X", N);
-        view_stride_adapter<ViewTypeB> y("Y", N);
+        tensor_stride_adapter<TensorTypeA> x("X", N);
+        tensor_stride_adapter<TensorTypeB> y("Y", N);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
@@ -41,34 +41,34 @@ namespace Test {
         {
             ScalarA randStart, randEnd;
             Test::getRandomBounds(1.0, randStart, randEnd);
-            flare::fill_random(x.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(x.d_tensor, rand_pool, randStart, randEnd);
         }
 
         flare::deep_copy(x.h_base, x.d_base);
 
-        flare::blas::scal(y.d_view, a, x.d_view);
+        flare::blas::scal(y.d_tensor, a, x.d_tensor);
         flare::deep_copy(y.h_base, y.d_base);
         for (int i = 0; i < N; i++) {
-            EXPECT_NEAR_KK(static_cast<ScalarB>(a * x.h_view(i)), y.h_view(i), eps);
+            EXPECT_NEAR_KK(static_cast<ScalarB>(a * x.h_tensor(i)), y.h_tensor(i), eps);
         }
 
         // Zero out y again and run with const input
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
-        flare::blas::scal(y.d_view, a, x.d_view_const);
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
+        flare::blas::scal(y.d_tensor, a, x.d_tensor_const);
         flare::deep_copy(y.h_base, y.d_base);
         for (int i = 0; i < N; i++) {
-            EXPECT_NEAR_KK(static_cast<ScalarB>(a * x.h_view(i)), y.h_view(i), eps);
+            EXPECT_NEAR_KK(static_cast<ScalarB>(a * x.h_tensor(i)), y.h_tensor(i), eps);
         }
     }
 
-    template<class ViewTypeA, class ViewTypeB, class Device>
+    template<class TensorTypeA, class TensorTypeB, class Device>
     void impl_test_scal_mv(int N, int K) {
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
         typedef flare::ArithTraits<ScalarA> AT;
 
-        view_stride_adapter<ViewTypeA> x("X", N, K);
-        view_stride_adapter<ViewTypeB> y("Y", N, K);
+        tensor_stride_adapter<TensorTypeA> x("X", N, K);
+        tensor_stride_adapter<TensorTypeB> y("Y", N, K);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
@@ -76,7 +76,7 @@ namespace Test {
         {
             ScalarA randStart, randEnd;
             Test::getRandomBounds(1.0, randStart, randEnd);
-            flare::fill_random(x.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(x.d_tensor, rand_pool, randStart, randEnd);
         }
 
         flare::deep_copy(x.h_base, x.d_base);
@@ -85,62 +85,62 @@ namespace Test {
 
         typename AT::mag_type eps = AT::epsilon() * 1000;
 
-        flare::View<ScalarB *, flare::HostSpace> r("Dot::Result", K);
+        flare::Tensor<ScalarB *, flare::HostSpace> r("Dot::Result", K);
 
-        flare::blas::scal(y.d_view, a, x.d_view);
+        flare::blas::scal(y.d_tensor, a, x.d_tensor);
         flare::deep_copy(y.h_base, y.d_base);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < K; j++) {
-                EXPECT_NEAR_KK(static_cast<ScalarB>(a * x.h_view(i, j)), y.h_view(i, j),
+                EXPECT_NEAR_KK(static_cast<ScalarB>(a * x.h_tensor(i, j)), y.h_tensor(i, j),
                                eps);
             }
         }
 
         // Zero out y again, and run again with const input
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
-        flare::blas::scal(y.d_view, a, x.d_view_const);
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
+        flare::blas::scal(y.d_tensor, a, x.d_tensor_const);
         flare::deep_copy(y.h_base, y.d_base);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < K; j++) {
-                EXPECT_NEAR_KK(static_cast<ScalarB>(a * x.h_view(i, j)), y.h_view(i, j),
+                EXPECT_NEAR_KK(static_cast<ScalarB>(a * x.h_tensor(i, j)), y.h_tensor(i, j),
                                eps);
             }
         }
 
-        // Generate 'params' view with dimension == number of multivectors; each entry
+        // Generate 'params' tensor with dimension == number of multivectors; each entry
         // will be different scalar to scale y
-        flare::View<ScalarA *, Device> params("Params", K);
+        flare::Tensor<ScalarA *, Device> params("Params", K);
         for (int j = 0; j < K; j++) {
-            flare::View<ScalarA, Device> param_j(params, j);
+            flare::Tensor<ScalarA, Device> param_j(params, j);
             flare::deep_copy(param_j, ScalarA(3 + j));
         }
 
         auto h_params =
-                flare::create_mirror_view_and_copy(flare::HostSpace(), params);
+                flare::create_mirror_tensor_and_copy(flare::HostSpace(), params);
 
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
-        flare::blas::scal(y.d_view, params, x.d_view);
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
+        flare::blas::scal(y.d_tensor, params, x.d_tensor);
         flare::deep_copy(y.h_base, y.d_base);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < K; j++) {
-                EXPECT_NEAR_KK(static_cast<ScalarB>(h_params(j) * x.h_view(i, j)),
-                               y.h_view(i, j), eps);
+                EXPECT_NEAR_KK(static_cast<ScalarB>(h_params(j) * x.h_tensor(i, j)),
+                               y.h_tensor(i, j), eps);
             }
         }
 
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
-        flare::blas::scal(y.d_view, params, x.d_view_const);
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
+        flare::blas::scal(y.d_tensor, params, x.d_tensor_const);
         flare::deep_copy(y.h_base, y.d_base);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < K; j++) {
-                EXPECT_NEAR_KK(static_cast<ScalarB>(h_params(j) * x.h_view(i, j)),
-                               y.h_view(i, j), eps);
+                EXPECT_NEAR_KK(static_cast<ScalarB>(h_params(j) * x.h_tensor(i, j)),
+                               y.h_tensor(i, j), eps);
             }
         }
     }
 
     /// teamscal
-    template<class ViewTypeA, class ViewTypeB, class Device>
+    template<class TensorTypeA, class TensorTypeB, class Device>
     void impl_test_team_scal(int N) {
         using execution_space = typename Device::execution_space;
         typedef flare::TeamPolicy<execution_space> team_policy;
@@ -151,12 +151,12 @@ namespace Test {
         const team_policy policy(M, flare::AUTO);
         const int team_data_siz = (N % M == 0) ? (N / M) : (N / M + 1);
 
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
         typedef flare::ArithTraits<ScalarA> AT;
 
-        view_stride_adapter<ViewTypeA> x("X", N);
-        view_stride_adapter<ViewTypeB> y("Y", N);
+        tensor_stride_adapter<TensorTypeA> x("X", N);
+        tensor_stride_adapter<TensorTypeB> y("Y", N);
 
         ScalarA a(3);
         typename AT::mag_type eps = AT::epsilon() * 1000;
@@ -165,13 +165,13 @@ namespace Test {
 
         flare::Random_XorShift64_Pool<execution_space> rand_pool(13718);
 
-        flare::fill_random(x.d_view, rand_pool, ScalarA(1));
+        flare::fill_random(x.d_tensor, rand_pool, ScalarA(1));
 
         flare::deep_copy(x.h_base, x.d_base);
 
         ScalarA expected_result(0);
         for (int i = 0; i < N; i++) {
-            expected_result += ScalarB(a * x.h_view(i)) * ScalarB(a * x.h_view(i));
+            expected_result += ScalarB(a * x.h_tensor(i)) * ScalarB(a * x.h_tensor(i));
         }
 
         flare::parallel_for(
@@ -180,21 +180,21 @@ namespace Test {
                     const int teamId = teamMember.league_rank();
                     flare::blas::team_scal(
                             teamMember,
-                            flare::subview(
-                                    y.d_view,
+                            flare::subtensor(
+                                    y.d_tensor,
                                     flare::make_pair(
                                             teamId * team_data_siz,
                                             (teamId < M - 1) ? (teamId + 1) * team_data_siz : N)),
                             a,
-                            flare::subview(
-                                    x.d_view,
+                            flare::subtensor(
+                                    x.d_tensor,
                                     flare::make_pair(
                                             teamId * team_data_siz,
                                             (teamId < M - 1) ? (teamId + 1) * team_data_siz : N)));
                 });
 
         {
-            ScalarB nonconst_nonconst_result = flare::blas::dot(y.d_view, y.d_view);
+            ScalarB nonconst_nonconst_result = flare::blas::dot(y.d_tensor, y.d_tensor);
             typename AT::mag_type divisor =
                     AT::abs(expected_result) == zero ? one : AT::abs(expected_result);
             typename AT::mag_type diff =
@@ -202,7 +202,7 @@ namespace Test {
             EXPECT_NEAR_KK(diff, zero, eps);
         }
 
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
 
         flare::parallel_for(
                 "flare::blas::Test::TeamScal", policy,
@@ -210,21 +210,21 @@ namespace Test {
                     const int teamId = teamMember.league_rank();
                     flare::blas::team_scal(
                             teamMember,
-                            flare::subview(
-                                    y.d_view,
+                            flare::subtensor(
+                                    y.d_tensor,
                                     flare::make_pair(
                                             teamId * team_data_siz,
                                             (teamId < M - 1) ? (teamId + 1) * team_data_siz : N)),
                             a,
-                            flare::subview(
-                                    x.d_view_const,
+                            flare::subtensor(
+                                    x.d_tensor_const,
                                     flare::make_pair(
                                             teamId * team_data_siz,
                                             (teamId < M - 1) ? (teamId + 1) * team_data_siz : N)));
                 });
 
         {
-            ScalarB const_nonconst_result = flare::blas::dot(y.d_view, y.d_view);
+            ScalarB const_nonconst_result = flare::blas::dot(y.d_tensor, y.d_tensor);
             typename AT::mag_type divisor =
                     AT::abs(expected_result) == zero ? one : AT::abs(expected_result);
             typename AT::mag_type diff =
@@ -233,7 +233,7 @@ namespace Test {
         }
     }
 
-    template<class ViewTypeA, class ViewTypeB, class Device>
+    template<class TensorTypeA, class TensorTypeB, class Device>
     void impl_test_team_scal_mv(int N, int K) {
         using execution_space = typename Device::execution_space;
         typedef flare::TeamPolicy<execution_space> team_policy;
@@ -242,16 +242,16 @@ namespace Test {
         // Launch K teams of the maximum number of threads per team
         const team_policy policy(K, flare::AUTO);
 
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
         typedef flare::ArithTraits<ScalarA> AT;
 
-        view_stride_adapter<ViewTypeA> x("X", N, K);
-        view_stride_adapter<ViewTypeB> y("Y", N, K);
+        tensor_stride_adapter<TensorTypeA> x("X", N, K);
+        tensor_stride_adapter<TensorTypeB> y("Y", N, K);
 
         flare::Random_XorShift64_Pool<execution_space> rand_pool(13718);
 
-        flare::fill_random(x.d_view, rand_pool, ScalarA(1));
+        flare::fill_random(x.d_tensor, rand_pool, ScalarA(1));
         flare::deep_copy(x.h_base, x.d_base);
 
         ScalarA a(3);
@@ -261,7 +261,7 @@ namespace Test {
             expected_result[j] = ScalarA();
             for (int i = 0; i < N; i++) {
                 expected_result[j] +=
-                        ScalarB(a * x.h_view(i, j)) * ScalarB(a * x.h_view(i, j));
+                        ScalarB(a * x.h_tensor(i, j)) * ScalarB(a * x.h_tensor(i, j));
             }
         }
 
@@ -269,18 +269,18 @@ namespace Test {
         typename AT::mag_type zero = AT::abs(AT::zero());
         typename AT::mag_type one = AT::abs(AT::one());
 
-        flare::View<ScalarB *, flare::HostSpace> r("Dot::Result", K);
+        flare::Tensor<ScalarB *, flare::HostSpace> r("Dot::Result", K);
 
         flare::parallel_for(
                 "flare::blas::Test::TeamScal", policy,
                 FLARE_LAMBDA(const team_member &teamMember) {
                     const int teamId = teamMember.league_rank();
                     flare::blas::team_scal(
-                            teamMember, flare::subview(y.d_view, flare::ALL(), teamId), a,
-                            flare::subview(x.d_view, flare::ALL(), teamId));
+                            teamMember, flare::subtensor(y.d_tensor, flare::ALL(), teamId), a,
+                            flare::subtensor(x.d_tensor, flare::ALL(), teamId));
                 });
 
-        flare::blas::dot(r, y.d_view, y.d_view);
+        flare::blas::dot(r, y.d_tensor, y.d_tensor);
         for (int k = 0; k < K; k++) {
             ScalarA nonconst_scalar_result = r(k);
             typename AT::mag_type divisor =
@@ -291,18 +291,18 @@ namespace Test {
         }
 
         // Zero out y again, and run again with const input
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
 
         flare::parallel_for(
                 "flare::blas::Test::TeamScal", policy,
                 FLARE_LAMBDA(const team_member &teamMember) {
                     const int teamId = teamMember.league_rank();
                     flare::blas::team_scal(
-                            teamMember, flare::subview(y.d_view, flare::ALL(), teamId), a,
-                            flare::subview(x.d_view_const, flare::ALL(), teamId));
+                            teamMember, flare::subtensor(y.d_tensor, flare::ALL(), teamId), a,
+                            flare::subtensor(x.d_tensor_const, flare::ALL(), teamId));
                 });
 
-        flare::blas::dot(r, y.d_view, y.d_view);
+        flare::blas::dot(r, y.d_tensor, y.d_tensor);
         for (int k = 0; k < K; k++) {
             ScalarA const_scalar_result = r(k);
             typename AT::mag_type divisor =
@@ -312,11 +312,11 @@ namespace Test {
             EXPECT_NEAR_KK(diff, zero, eps);
         }
 
-        // Generate 'params' view with dimension == number of multivectors; each entry
+        // Generate 'params' tensor with dimension == number of multivectors; each entry
         // will be different scalar to scale y
-        flare::View<ScalarA *, Device> params("Params", K);
+        flare::Tensor<ScalarA *, Device> params("Params", K);
         for (int j = 0; j < K; j++) {
-            flare::View<ScalarA, Device> param_j(params, j);
+            flare::Tensor<ScalarA, Device> param_j(params, j);
             flare::deep_copy(param_j, ScalarA(3 + j));
         }
 
@@ -324,24 +324,24 @@ namespace Test {
         for (int j = 0; j < K; j++) {
             expected_result[j] = ScalarA();
             for (int i = 0; i < N; i++) {
-                expected_result[j] += ScalarB((3.0 + j) * x.h_view(i, j)) *
-                                      ScalarB((3.0 + j) * x.h_view(i, j));
+                expected_result[j] += ScalarB((3.0 + j) * x.h_tensor(i, j)) *
+                                      ScalarB((3.0 + j) * x.h_tensor(i, j));
             }
         }
 
         // Zero out y to run again
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
 
         flare::parallel_for(
                 "flare::blas::Test::TeamScal", policy,
                 FLARE_LAMBDA(const team_member &teamMember) {
                     const int teamId = teamMember.league_rank();
                     flare::blas::team_scal(
-                            teamMember, flare::subview(y.d_view, flare::ALL(), teamId),
-                            params(teamId), flare::subview(x.d_view, flare::ALL(), teamId));
+                            teamMember, flare::subtensor(y.d_tensor, flare::ALL(), teamId),
+                            params(teamId), flare::subtensor(x.d_tensor, flare::ALL(), teamId));
                 });
 
-        flare::blas::dot(r, y.d_view, y.d_view);
+        flare::blas::dot(r, y.d_tensor, y.d_tensor);
         for (int k = 0; k < K; k++) {
             ScalarA nonconst_vector_result = r(k);
             typename AT::mag_type divisor =
@@ -352,19 +352,19 @@ namespace Test {
         }
 
         // Zero out y again, and run again with const input
-        flare::deep_copy(y.d_view, flare::ArithTraits<ScalarB>::zero());
+        flare::deep_copy(y.d_tensor, flare::ArithTraits<ScalarB>::zero());
 
         flare::parallel_for(
                 "flare::blas::Test::TeamScal", policy,
                 FLARE_LAMBDA(const team_member &teamMember) {
                     const int teamId = teamMember.league_rank();
                     flare::blas::team_scal(
-                            teamMember, flare::subview(y.d_view, flare::ALL(), teamId),
+                            teamMember, flare::subtensor(y.d_tensor, flare::ALL(), teamId),
                             params(teamId),
-                            flare::subview(x.d_view_const, flare::ALL(), teamId));
+                            flare::subtensor(x.d_tensor_const, flare::ALL(), teamId));
                 });
 
-        flare::blas::dot(r, y.d_view, y.d_view);
+        flare::blas::dot(r, y.d_tensor, y.d_tensor);
         for (int k = 0; k < K; k++) {
             ScalarA const_vector_result = r(k);
             typename AT::mag_type divisor =
@@ -381,35 +381,35 @@ namespace Test {
 template<class ScalarA, class ScalarB, class Device>
 int test_scal() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA *, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB *, flare::LayoutLeft, Device> view_type_b_ll;
-    Test::impl_test_scal<view_type_a_ll, view_type_b_ll, Device>(0);
-    Test::impl_test_scal<view_type_a_ll, view_type_b_ll, Device>(13);
-    Test::impl_test_scal<view_type_a_ll, view_type_b_ll, Device>(1024);
-    // Test::impl_test_scal<view_type_a_ll, view_type_b_ll, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB *, flare::LayoutLeft, Device> tensor_type_b_ll;
+    Test::impl_test_scal<tensor_type_a_ll, tensor_type_b_ll, Device>(0);
+    Test::impl_test_scal<tensor_type_a_ll, tensor_type_b_ll, Device>(13);
+    Test::impl_test_scal<tensor_type_a_ll, tensor_type_b_ll, Device>(1024);
+    // Test::impl_test_scal<tensor_type_a_ll, tensor_type_b_ll, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA *, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB *, flare::LayoutRight, Device> view_type_b_lr;
-    Test::impl_test_scal<view_type_a_lr, view_type_b_lr, Device>(0);
-    Test::impl_test_scal<view_type_a_lr, view_type_b_lr, Device>(13);
-    Test::impl_test_scal<view_type_a_lr, view_type_b_lr, Device>(1024);
-    // Test::impl_test_scal<view_type_a_lr, view_type_b_lr, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB *, flare::LayoutRight, Device> tensor_type_b_lr;
+    Test::impl_test_scal<tensor_type_a_lr, tensor_type_b_lr, Device>(0);
+    Test::impl_test_scal<tensor_type_a_lr, tensor_type_b_lr, Device>(13);
+    Test::impl_test_scal<tensor_type_a_lr, tensor_type_b_lr, Device>(1024);
+    // Test::impl_test_scal<tensor_type_a_lr, tensor_type_b_lr, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA *, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB *, flare::LayoutStride, Device> view_type_b_ls;
-    Test::impl_test_scal<view_type_a_ls, view_type_b_ls, Device>(0);
-    Test::impl_test_scal<view_type_a_ls, view_type_b_ls, Device>(13);
-    Test::impl_test_scal<view_type_a_ls, view_type_b_ls, Device>(1024);
-    // Test::impl_test_scal<view_type_a_ls, view_type_b_ls, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB *, flare::LayoutStride, Device> tensor_type_b_ls;
+    Test::impl_test_scal<tensor_type_a_ls, tensor_type_b_ls, Device>(0);
+    Test::impl_test_scal<tensor_type_a_ls, tensor_type_b_ls, Device>(13);
+    Test::impl_test_scal<tensor_type_a_ls, tensor_type_b_ls, Device>(1024);
+    // Test::impl_test_scal<tensor_type_a_ls, tensor_type_b_ls, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_scal<view_type_a_ls, view_type_b_ll, Device>(1024);
-    Test::impl_test_scal<view_type_a_ll, view_type_b_ls, Device>(1024);
+    Test::impl_test_scal<tensor_type_a_ls, tensor_type_b_ll, Device>(1024);
+    Test::impl_test_scal<tensor_type_a_ll, tensor_type_b_ls, Device>(1024);
 #endif
 
     return 1;
@@ -418,35 +418,35 @@ int test_scal() {
 template<class ScalarA, class ScalarB, class Device>
 int test_scal_mv() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA **, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB **, flare::LayoutLeft, Device> view_type_b_ll;
-    Test::impl_test_scal_mv<view_type_a_ll, view_type_b_ll, Device>(0, 5);
-    Test::impl_test_scal_mv<view_type_a_ll, view_type_b_ll, Device>(13, 5);
-    Test::impl_test_scal_mv<view_type_a_ll, view_type_b_ll, Device>(1024, 5);
-    // Test::impl_test_scal_mv<view_type_a_ll, view_type_b_ll, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB **, flare::LayoutLeft, Device> tensor_type_b_ll;
+    Test::impl_test_scal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(0, 5);
+    Test::impl_test_scal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(13, 5);
+    Test::impl_test_scal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(1024, 5);
+    // Test::impl_test_scal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA **, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB **, flare::LayoutRight, Device> view_type_b_lr;
-    Test::impl_test_scal_mv<view_type_a_lr, view_type_b_lr, Device>(0, 5);
-    Test::impl_test_scal_mv<view_type_a_lr, view_type_b_lr, Device>(13, 5);
-    Test::impl_test_scal_mv<view_type_a_lr, view_type_b_lr, Device>(1024, 5);
-    // Test::impl_test_scal_mv<view_type_a_lr, view_type_b_lr, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB **, flare::LayoutRight, Device> tensor_type_b_lr;
+    Test::impl_test_scal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(0, 5);
+    Test::impl_test_scal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(13, 5);
+    Test::impl_test_scal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(1024, 5);
+    // Test::impl_test_scal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA **, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB **, flare::LayoutStride, Device> view_type_b_ls;
-    Test::impl_test_scal_mv<view_type_a_ls, view_type_b_ls, Device>(0, 5);
-    Test::impl_test_scal_mv<view_type_a_ls, view_type_b_ls, Device>(13, 5);
-    Test::impl_test_scal_mv<view_type_a_ls, view_type_b_ls, Device>(1024, 5);
-    // Test::impl_test_scal_mv<view_type_a_ls, view_type_b_ls, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB **, flare::LayoutStride, Device> tensor_type_b_ls;
+    Test::impl_test_scal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(0, 5);
+    Test::impl_test_scal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(13, 5);
+    Test::impl_test_scal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(1024, 5);
+    // Test::impl_test_scal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_scal_mv<view_type_a_ls, view_type_b_ll, Device>(1024, 5);
-    Test::impl_test_scal_mv<view_type_a_ll, view_type_b_ls, Device>(1024, 5);
+    Test::impl_test_scal_mv<tensor_type_a_ls, tensor_type_b_ll, Device>(1024, 5);
+    Test::impl_test_scal_mv<tensor_type_a_ll, tensor_type_b_ls, Device>(1024, 5);
 #endif
 
     return 1;
@@ -531,35 +531,35 @@ TEST_CASE_FIXTURE(TestCategory, "scal_mv_double_int") {
 template<class ScalarA, class ScalarB, class Device>
 int test_team_scal() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA *, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB *, flare::LayoutLeft, Device> view_type_b_ll;
-    Test::impl_test_team_scal<view_type_a_ll, view_type_b_ll, Device>(0);
-    Test::impl_test_team_scal<view_type_a_ll, view_type_b_ll, Device>(13);
-    Test::impl_test_team_scal<view_type_a_ll, view_type_b_ll, Device>(124);
-    // Test::impl_test_team_scal<view_type_a_ll, view_type_b_ll, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB *, flare::LayoutLeft, Device> tensor_type_b_ll;
+    Test::impl_test_team_scal<tensor_type_a_ll, tensor_type_b_ll, Device>(0);
+    Test::impl_test_team_scal<tensor_type_a_ll, tensor_type_b_ll, Device>(13);
+    Test::impl_test_team_scal<tensor_type_a_ll, tensor_type_b_ll, Device>(124);
+    // Test::impl_test_team_scal<tensor_type_a_ll, tensor_type_b_ll, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA *, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB *, flare::LayoutRight, Device> view_type_b_lr;
-    Test::impl_test_team_scal<view_type_a_lr, view_type_b_lr, Device>(0);
-    Test::impl_test_team_scal<view_type_a_lr, view_type_b_lr, Device>(13);
-    Test::impl_test_team_scal<view_type_a_lr, view_type_b_lr, Device>(124);
-    // Test::impl_test_team_scal<view_type_a_lr, view_type_b_lr, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB *, flare::LayoutRight, Device> tensor_type_b_lr;
+    Test::impl_test_team_scal<tensor_type_a_lr, tensor_type_b_lr, Device>(0);
+    Test::impl_test_team_scal<tensor_type_a_lr, tensor_type_b_lr, Device>(13);
+    Test::impl_test_team_scal<tensor_type_a_lr, tensor_type_b_lr, Device>(124);
+    // Test::impl_test_team_scal<tensor_type_a_lr, tensor_type_b_lr, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA *, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB *, flare::LayoutStride, Device> view_type_b_ls;
-    Test::impl_test_team_scal<view_type_a_ls, view_type_b_ls, Device>(0);
-    Test::impl_test_team_scal<view_type_a_ls, view_type_b_ls, Device>(13);
-    Test::impl_test_team_scal<view_type_a_ls, view_type_b_ls, Device>(124);
-    // Test::impl_test_team_scal<view_type_a_ls, view_type_b_ls, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB *, flare::LayoutStride, Device> tensor_type_b_ls;
+    Test::impl_test_team_scal<tensor_type_a_ls, tensor_type_b_ls, Device>(0);
+    Test::impl_test_team_scal<tensor_type_a_ls, tensor_type_b_ls, Device>(13);
+    Test::impl_test_team_scal<tensor_type_a_ls, tensor_type_b_ls, Device>(124);
+    // Test::impl_test_team_scal<tensor_type_a_ls, tensor_type_b_ls, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_team_scal<view_type_a_ls, view_type_b_ll, Device>(124);
-    Test::impl_test_team_scal<view_type_a_ll, view_type_b_ls, Device>(124);
+    Test::impl_test_team_scal<tensor_type_a_ls, tensor_type_b_ll, Device>(124);
+    Test::impl_test_team_scal<tensor_type_a_ll, tensor_type_b_ls, Device>(124);
 #endif
 
     return 1;
@@ -568,38 +568,38 @@ int test_team_scal() {
 template<class ScalarA, class ScalarB, class Device>
 int test_team_scal_mv() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA **, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB **, flare::LayoutLeft, Device> view_type_b_ll;
-    Test::impl_test_team_scal_mv<view_type_a_ll, view_type_b_ll, Device>(0, 5);
-    Test::impl_test_team_scal_mv<view_type_a_ll, view_type_b_ll, Device>(13, 5);
-    Test::impl_test_team_scal_mv<view_type_a_ll, view_type_b_ll, Device>(124, 5);
-    // Test::impl_test_team_scal_mv<view_type_a_ll, view_type_b_ll,
+    typedef flare::Tensor<ScalarA **, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB **, flare::LayoutLeft, Device> tensor_type_b_ll;
+    Test::impl_test_team_scal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(0, 5);
+    Test::impl_test_team_scal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(13, 5);
+    Test::impl_test_team_scal_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(124, 5);
+    // Test::impl_test_team_scal_mv<tensor_type_a_ll, tensor_type_b_ll,
     // Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA **, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB **, flare::LayoutRight, Device> view_type_b_lr;
-    Test::impl_test_team_scal_mv<view_type_a_lr, view_type_b_lr, Device>(0, 5);
-    Test::impl_test_team_scal_mv<view_type_a_lr, view_type_b_lr, Device>(13, 5);
-    Test::impl_test_team_scal_mv<view_type_a_lr, view_type_b_lr, Device>(124, 5);
-    // Test::impl_test_team_scal_mv<view_type_a_lr, view_type_b_lr,
+    typedef flare::Tensor<ScalarA **, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB **, flare::LayoutRight, Device> tensor_type_b_lr;
+    Test::impl_test_team_scal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(0, 5);
+    Test::impl_test_team_scal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(13, 5);
+    Test::impl_test_team_scal_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(124, 5);
+    // Test::impl_test_team_scal_mv<tensor_type_a_lr, tensor_type_b_lr,
     // Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA **, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB **, flare::LayoutStride, Device> view_type_b_ls;
-    Test::impl_test_team_scal_mv<view_type_a_ls, view_type_b_ls, Device>(0, 5);
-    Test::impl_test_team_scal_mv<view_type_a_ls, view_type_b_ls, Device>(13, 5);
-    Test::impl_test_team_scal_mv<view_type_a_ls, view_type_b_ls, Device>(124, 5);
-    // Test::impl_test_team_scal_mv<view_type_a_ls, view_type_b_ls,
+    typedef flare::Tensor<ScalarA **, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB **, flare::LayoutStride, Device> tensor_type_b_ls;
+    Test::impl_test_team_scal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(0, 5);
+    Test::impl_test_team_scal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(13, 5);
+    Test::impl_test_team_scal_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(124, 5);
+    // Test::impl_test_team_scal_mv<tensor_type_a_ls, tensor_type_b_ls,
     // Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_team_scal_mv<view_type_a_ls, view_type_b_ll, Device>(124, 5);
-    Test::impl_test_team_scal_mv<view_type_a_ll, view_type_b_ls, Device>(124, 5);
+    Test::impl_test_team_scal_mv<tensor_type_a_ls, tensor_type_b_ll, Device>(124, 5);
+    Test::impl_test_team_scal_mv<tensor_type_a_ll, tensor_type_b_ls, Device>(124, 5);
 #endif
 
     return 1;

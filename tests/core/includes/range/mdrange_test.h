@@ -26,10 +26,10 @@ namespace Test {
         template<typename ExecSpace>
         struct TestMDRange_ReduceArray_2D {
             using DataType = int;
-            using ViewType_2 = typename flare::View<DataType **, ExecSpace>;
-            using HostViewType_2 = typename ViewType_2::HostMirror;
+            using TensorType_2 = typename flare::Tensor<DataType **, ExecSpace>;
+            using HostTensorType_2 = typename TensorType_2::HostMirror;
 
-            ViewType_2 input_view;
+            TensorType_2 input_tensor;
 
             using scalar_type = double;
             using value_type = scalar_type[];
@@ -37,15 +37,15 @@ namespace Test {
 
             TestMDRange_ReduceArray_2D(const int N0, const int N1,
                                        const unsigned array_size)
-                    : input_view("input_view", N0, N1), value_count(array_size) {}
+                    : input_tensor("input_tensor", N0, N1), value_count(array_size) {}
 
             FLARE_INLINE_FUNCTION
-            void operator()(const int i, const int j) const { input_view(i, j) = 1; }
+            void operator()(const int i, const int j) const { input_tensor(i, j) = 1; }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, value_type lsum) const {
-                lsum[0] += input_view(i, j) * 2;  //+=6 each time if InitTag => N0*N1*6
-                lsum[1] += input_view(i, j);      //+=3 each time if InitTag => N0*N1*3
+                lsum[0] += input_tensor(i, j) * 2;  //+=6 each time if InitTag => N0*N1*6
+                lsum[1] += input_tensor(i, j);      //+=3 each time if InitTag => N0*N1*3
             }
 
             // tagged operators
@@ -54,7 +54,7 @@ namespace Test {
 
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j) const {
-                input_view(i, j) = 3;
+                input_tensor(i, j) = 3;
             }
 
             static void test_arrayreduce2(const int N0, const int N1) {
@@ -77,7 +77,7 @@ namespace Test {
 
                     TestMDRange_ReduceArray_2D functor(N0, N1, array_size);
 
-                    parallel_for(range_init, functor);  // Init the view to 3's
+                    parallel_for(range_init, functor);  // Init the tensor to 3's
 
                     double sums[array_size];
                     flare::fence("Fence before accessing result on the host");
@@ -96,10 +96,10 @@ namespace Test {
         template<typename ExecSpace>
         struct TestMDRange_ReduceArray_3D {
             using DataType = int;
-            using ViewType_3 = typename flare::View<DataType ***, ExecSpace>;
-            using HostViewType_3 = typename ViewType_3::HostMirror;
+            using TensorType_3 = typename flare::Tensor<DataType ***, ExecSpace>;
+            using HostTensorType_3 = typename TensorType_3::HostMirror;
 
-            ViewType_3 input_view;
+            TensorType_3 input_tensor;
 
             using scalar_type = double;
             using value_type = scalar_type[];
@@ -107,7 +107,7 @@ namespace Test {
 
             TestMDRange_ReduceArray_3D(const int N0, const int N1, const int N2,
                                        const unsigned array_size)
-                    : input_view("input_view", N0, N1, N2), value_count(array_size) {}
+                    : input_tensor("input_tensor", N0, N1, N2), value_count(array_size) {}
 
             FLARE_INLINE_FUNCTION
             void init(scalar_type dst[]) const {
@@ -125,15 +125,15 @@ namespace Test {
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k) const {
-                input_view(i, j, k) = 1;
+                input_tensor(i, j, k) = 1;
             }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k,
                             value_type lsum) const {
                 lsum[0] +=
-                        input_view(i, j, k) * 2;     //+=6 each time if InitTag => N0*N1*N2*6
-                lsum[1] += input_view(i, j, k);  //+=3 each time if InitTag => N0*N1*N2*3
+                        input_tensor(i, j, k) * 2;     //+=6 each time if InitTag => N0*N1*N2*6
+                lsum[1] += input_tensor(i, j, k);  //+=3 each time if InitTag => N0*N1*N2*3
             }
 
             // tagged operators
@@ -143,7 +143,7 @@ namespace Test {
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j,
                             const int k) const {
-                input_view(i, j, k) = 3;
+                input_tensor(i, j, k) = 3;
             }
 
             static void test_arrayreduce3(const int N0, const int N1, const int N2) {
@@ -167,7 +167,7 @@ namespace Test {
 
                     TestMDRange_ReduceArray_3D functor(N0, N1, N2, array_size);
 
-                    parallel_for(range_init, functor);  // Init the view to 3's
+                    parallel_for(range_init, functor);  // Init the tensor to 3's
 
                     double sums[array_size];
                     parallel_reduce(range, functor, sums);
@@ -181,21 +181,21 @@ namespace Test {
         template<typename ExecSpace>
         struct TestMDRange_2D {
             using DataType = int;
-            using ViewType = typename flare::View<DataType **, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType **, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             using value_type = double;
 
             TestMDRange_2D(const DataType N0, const DataType N1)
-                    : input_view("input_view", N0, N1) {}
+                    : input_tensor("input_tensor", N0, N1) {}
 
             FLARE_INLINE_FUNCTION
-            void operator()(const int i, const int j) const { input_view(i, j) = 1; }
+            void operator()(const int i, const int j) const { input_tensor(i, j) = 1; }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, value_type &lsum) const {
-                lsum += input_view(i, j) * 2;
+                lsum += input_tensor(i, j) * 2;
             }
 
             // tagged operators
@@ -204,14 +204,14 @@ namespace Test {
 
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j) const {
-                input_view(i, j) = 3;
+                input_tensor(i, j) = 3;
             }
 
             // reduction tagged operators
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j,
                             value_type &lsum) const {
-                lsum += input_view(i, j) * 3;
+                lsum += input_tensor(i, j) * 3;
             }
 
             static void test_reduce2(const int N0, const int N1) {
@@ -295,7 +295,7 @@ namespace Test {
 
                     REQUIRE_EQ(sum, 2 * (N0 - s0) * (N1 - s1));
                 }
-                // Test with reducers - scalar view
+                // Test with reducers - scalar tensor
                 {
                     using range_type =
                             typename flare::MDRangePolicy<ExecSpace, flare::Rank<2>,
@@ -307,13 +307,13 @@ namespace Test {
                     parallel_for(range, functor);
 
                     value_type sum = 0.0;
-                    flare::View<value_type, flare::HostSpace> sum_view("sum_view");
-                    sum_view() = sum;
-                    flare::Sum<value_type> reducer_view(sum_view);
+                    flare::Tensor<value_type, flare::HostSpace> sum_tensor("sum_tensor");
+                    sum_tensor() = sum;
+                    flare::Sum<value_type> reducer_tensor(sum_tensor);
 
-                    parallel_reduce(range, functor, reducer_view);
+                    parallel_reduce(range, functor, reducer_tensor);
                     flare::fence();
-                    sum = sum_view();
+                    sum = sum_tensor();
 
                     REQUIRE_EQ(sum, 2 * N0 * N1);
                 }
@@ -325,7 +325,7 @@ namespace Test {
                                     flare::IndexType<int>>;
                     range_type range({{1, 1}}, {{N0, N1}}, {{3, 3}});
 
-                    flare::View<double **, ExecSpace> v_in("v_in", N0, N1);
+                    flare::Tensor<double **, ExecSpace> v_in("v_in", N0, N1);
 
                     parallel_for(
                             "rank2-init-lambda", range, FLARE_LAMBDA(const int i, const int j) {
@@ -361,12 +361,12 @@ namespace Test {
                     parallel_for(range, functor);
 
                     // check parallel_for results correct with InitTag
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j) {
-                            if (h_view(i, j) != 3) {
+                            if (h_tensor(i, j) != 3) {
                                 ++counter;
                             }
                         }
@@ -495,18 +495,18 @@ namespace Test {
                     range_type range(point_type{{s0, s1}}, point_type{{N0, N1}},
                                      tile_type{{3, 3}});
 
-                    TestMDRange_2D::ViewType v("v", N0, N1);
+                    TestMDRange_2D::TensorType v("v", N0, N1);
 
                     parallel_for(
                             range, FLARE_LAMBDA(const int i, const int j) { v(i, j) = 3; });
 
-                    TestMDRange_2D::HostViewType h_view = flare::create_mirror_view(v);
-                    flare::deep_copy(h_view, v);
+                    TestMDRange_2D::HostTensorType h_tensor = flare::create_mirror_tensor(v);
+                    flare::deep_copy(h_tensor, v);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
                         for (int j = s1; j < N1; ++j) {
-                            if (h_view(i, j) != 3) {
+                            if (h_tensor(i, j) != 3) {
                                 ++counter;
                             }
                         }
@@ -537,13 +537,13 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
                         for (int j = s1; j < N1; ++j) {
-                            if (h_view(i, j) != 3) {
+                            if (h_tensor(i, j) != 3) {
                                 ++counter;
                             }
                         }
@@ -570,13 +570,13 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j) {
-                            if (h_view(i, j) != 3) {
+                            if (h_tensor(i, j) != 3) {
                                 ++counter;
                             }
                         }
@@ -601,13 +601,13 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j) {
-                            if (h_view(i, j) != 3) {
+                            if (h_tensor(i, j) != 3) {
                                 ++counter;
                             }
                         }
@@ -635,13 +635,13 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j) {
-                            if (h_view(i, j) != 1) {
+                            if (h_tensor(i, j) != 1) {
                                 ++counter;
                             }
                         }
@@ -666,13 +666,13 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j) {
-                            if (h_view(i, j) != 1) {
+                            if (h_tensor(i, j) != 1) {
                                 ++counter;
                             }
                         }
@@ -697,13 +697,13 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j) {
-                            if (h_view(i, j) != 1) {
+                            if (h_tensor(i, j) != 1) {
                                 ++counter;
                             }
                         }
@@ -728,13 +728,13 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j) {
-                            if (h_view(i, j) != 1) {
+                            if (h_tensor(i, j) != 1) {
                                 ++counter;
                             }
                         }
@@ -759,13 +759,13 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j) {
-                            if (h_view(i, j) != 1) {
+                            if (h_tensor(i, j) != 1) {
                                 ++counter;
                             }
                         }
@@ -790,13 +790,13 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j) {
-                            if (h_view(i, j) != 1) {
+                            if (h_tensor(i, j) != 1) {
                                 ++counter;
                             }
                         }
@@ -814,23 +814,23 @@ namespace Test {
         template<typename ExecSpace>
         struct TestMDRange_3D {
             using DataType = int;
-            using ViewType = typename flare::View<DataType ***, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType ***, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             using value_type = double;
 
             TestMDRange_3D(const DataType N0, const DataType N1, const DataType N2)
-                    : input_view("input_view", N0, N1, N2) {}
+                    : input_tensor("input_tensor", N0, N1, N2) {}
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k) const {
-                input_view(i, j, k) = 1;
+                input_tensor(i, j, k) = 1;
             }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, double &lsum) const {
-                lsum += input_view(i, j, k) * 2;
+                lsum += input_tensor(i, j, k) * 2;
             }
 
             // tagged operators
@@ -840,14 +840,14 @@ namespace Test {
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j,
                             const int k) const {
-                input_view(i, j, k) = 3;
+                input_tensor(i, j, k) = 3;
             }
 
             // reduction tagged operators
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j, const int k,
                             value_type &lsum) const {
-                lsum += input_view(i, j, k) * 3;
+                lsum += input_tensor(i, j, k) * 3;
             }
 
             static void test_reduce3(const int N0, const int N1, const int N2) {
@@ -929,7 +929,7 @@ namespace Test {
 
                     REQUIRE_EQ(sum, 2 * N0 * N1 * N2);
                 }
-                // Test with reducers - scalar view
+                // Test with reducers - scalar tensor
                 {
                     using range_type =
                             typename flare::MDRangePolicy<ExecSpace, flare::Rank<3>,
@@ -941,13 +941,13 @@ namespace Test {
                     parallel_for(range, functor);
 
                     value_type sum = 0.0;
-                    flare::View<value_type, flare::HostSpace> sum_view("sum_view");
-                    sum_view() = sum;
-                    flare::Sum<value_type> reducer_view(sum_view);
+                    flare::Tensor<value_type, flare::HostSpace> sum_tensor("sum_tensor");
+                    sum_tensor() = sum;
+                    flare::Sum<value_type> reducer_tensor(sum_tensor);
 
-                    parallel_reduce(range, functor, reducer_view);
+                    parallel_reduce(range, functor, reducer_tensor);
                     flare::fence();
-                    sum = sum_view();
+                    sum = sum_tensor();
 
                     REQUIRE_EQ(sum, 2 * N0 * N1 * N2);
                 }
@@ -960,7 +960,7 @@ namespace Test {
 
                     range_type range({{1, 1, 1}}, {{N0, N1, N2}}, {{3, 3, 3}});
 
-                    flare::View<double ***, ExecSpace> v_in("v_in", N0, N1, N2);
+                    flare::Tensor<double ***, ExecSpace> v_in("v_in", N0, N1, N2);
 
                     parallel_for(
                             "rank3-init-lambda", range,
@@ -1003,13 +1003,13 @@ namespace Test {
                     parallel_for(range, functor);
 
                     // check parallel_for results correct with InitTag
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k) {
-                                if (h_view(i, j, k) != 3) {
+                                if (h_tensor(i, j, k) != 3) {
                                     ++counter;
                                 }
                             }
@@ -1139,21 +1139,21 @@ namespace Test {
                     range_type range(point_type{{s0, s1, s2}}, point_type{{N0, N1, N2}},
                                      tile_type{{3, 3, 3}});
 
-                    TestMDRange_3D::ViewType v("v", N0, N1, N2);
+                    TestMDRange_3D::TensorType v("v", N0, N1, N2);
 
                     parallel_for(
                             range, FLARE_LAMBDA(const int i, const int j, const int k) {
                                 v(i, j, k) = 3;
                             });
 
-                    TestMDRange_3D::HostViewType h_view = flare::create_mirror_view(v);
-                    flare::deep_copy(h_view, v);
+                    TestMDRange_3D::HostTensorType h_tensor = flare::create_mirror_tensor(v);
+                    flare::deep_copy(h_tensor, v);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
                         for (int j = s1; j < N1; ++j)
                             for (int k = s2; k < N2; ++k) {
-                                if (h_view(i, j, k) != 3) {
+                                if (h_tensor(i, j, k) != 3) {
                                     ++counter;
                                 }
                             }
@@ -1179,14 +1179,14 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k) {
-                                if (h_view(i, j, k) != 1) {
+                                if (h_tensor(i, j, k) != 1) {
                                     ++counter;
                                 }
                             }
@@ -1215,14 +1215,14 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
                         for (int j = s1; j < N1; ++j)
                             for (int k = s2; k < N2; ++k) {
-                                if (h_view(i, j, k) != 3) {
+                                if (h_tensor(i, j, k) != 3) {
                                     ++counter;
                                 }
                             }
@@ -1251,14 +1251,14 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k) {
-                                if (h_view(i, j, k) != 1) {
+                                if (h_tensor(i, j, k) != 1) {
                                     ++counter;
                                 }
                             }
@@ -1283,14 +1283,14 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k) {
-                                if (h_view(i, j, k) != 1) {
+                                if (h_tensor(i, j, k) != 1) {
                                     ++counter;
                                 }
                             }
@@ -1315,14 +1315,14 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k) {
-                                if (h_view(i, j, k) != 1) {
+                                if (h_tensor(i, j, k) != 1) {
                                     ++counter;
                                 }
                             }
@@ -1347,14 +1347,14 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k) {
-                                if (h_view(i, j, k) != 1) {
+                                if (h_tensor(i, j, k) != 1) {
                                     ++counter;
                                 }
                             }
@@ -1379,14 +1379,14 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k) {
-                                if (h_view(i, j, k) != 1) {
+                                if (h_tensor(i, j, k) != 1) {
                                     ++counter;
                                 }
                             }
@@ -1411,14 +1411,14 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k) {
-                                if (h_view(i, j, k) != 1) {
+                                if (h_tensor(i, j, k) != 1) {
                                     ++counter;
                                 }
                             }
@@ -1435,25 +1435,25 @@ namespace Test {
         template<typename ExecSpace>
         struct TestMDRange_4D {
             using DataType = int;
-            using ViewType = typename flare::View<DataType ****, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType ****, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             using value_type = double;
 
             TestMDRange_4D(const DataType N0, const DataType N1, const DataType N2,
                            const DataType N3)
-                    : input_view("input_view", N0, N1, N2, N3) {}
+                    : input_tensor("input_tensor", N0, N1, N2, N3) {}
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l) const {
-                input_view(i, j, k, l) = 1;
+                input_tensor(i, j, k, l) = 1;
             }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             double &lsum) const {
-                lsum += input_view(i, j, k, l) * 2;
+                lsum += input_tensor(i, j, k, l) * 2;
             }
 
             // tagged operators
@@ -1463,14 +1463,14 @@ namespace Test {
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j, const int k,
                             const int l) const {
-                input_view(i, j, k, l) = 3;
+                input_tensor(i, j, k, l) = 3;
             }
 
             // reduction tagged operators
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j, const int k,
                             const int l, value_type &lsum) const {
-                lsum += input_view(i, j, k, l) * 3;
+                lsum += input_tensor(i, j, k, l) * 3;
             }
 
             static void test_reduce4(const int N0, const int N1, const int N2,
@@ -1556,7 +1556,7 @@ namespace Test {
                     REQUIRE_EQ(sum, 2 * N0 * N1 * N2 * N3);
                 }
 
-                // Test with reducers - scalar view
+                // Test with reducers - scalar tensor
                 {
                     using range_type =
                             typename flare::MDRangePolicy<ExecSpace, flare::Rank<4>,
@@ -1568,13 +1568,13 @@ namespace Test {
                     parallel_for(range, functor);
 
                     value_type sum = 0.0;
-                    flare::View<value_type, flare::HostSpace> sum_view("sum_view");
-                    sum_view() = sum;
-                    flare::Sum<value_type> reducer_view(sum_view);
+                    flare::Tensor<value_type, flare::HostSpace> sum_tensor("sum_tensor");
+                    sum_tensor() = sum;
+                    flare::Sum<value_type> reducer_tensor(sum_tensor);
 
-                    parallel_reduce(range, functor, reducer_view);
+                    parallel_reduce(range, functor, reducer_tensor);
                     flare::fence();
-                    sum = sum_view();
+                    sum = sum_tensor();
 
                     REQUIRE_EQ(sum, 2 * N0 * N1 * N2 * N3);
                 }
@@ -1588,7 +1588,7 @@ namespace Test {
 
                     range_type range({{1, 1, 1, 1}}, {{N0, N1, N2, N3}}, {{3, 3, 3, 3}});
 
-                    flare::View<double ****, ExecSpace> v_in("v_in", N0, N1, N2, N3);
+                    flare::Tensor<double ****, ExecSpace> v_in("v_in", N0, N1, N2, N3);
 
                     parallel_for(
                             "rank4-init-lambda", range,
@@ -1626,14 +1626,14 @@ namespace Test {
                     parallel_for(range, functor);
 
                     // check parallel_for results correct with InitTag
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 3) {
+                                    if (h_tensor(i, j, k, l) != 3) {
                                         ++counter;
                                     }
                                 }
@@ -1766,21 +1766,21 @@ namespace Test {
                     range_type range(point_type{{s0, s1, s2, s3}},
                                      point_type{{N0, N1, N2, N3}}, tile_type{{3, 3, 3, 3}});
 
-                    TestMDRange_4D::ViewType v("v", N0, N1, N2, N3);
+                    TestMDRange_4D::TensorType v("v", N0, N1, N2, N3);
 
                     parallel_for(
                             range, FLARE_LAMBDA(const int i, const int j, const int k,
                                                 const int l) { v(i, j, k, l) = 3; });
 
-                    TestMDRange_4D::HostViewType h_view = flare::create_mirror_view(v);
-                    flare::deep_copy(h_view, v);
+                    TestMDRange_4D::HostTensorType h_tensor = flare::create_mirror_tensor(v);
+                    flare::deep_copy(h_tensor, v);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
                         for (int j = s1; j < N1; ++j)
                             for (int k = s2; k < N2; ++k)
                                 for (int l = s3; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 3) {
+                                    if (h_tensor(i, j, k, l) != 3) {
                                         ++counter;
                                     }
                                 }
@@ -1806,15 +1806,15 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 1) {
+                                    if (h_tensor(i, j, k, l) != 1) {
                                         ++counter;
                                     }
                                 }
@@ -1844,15 +1844,15 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
                         for (int j = s1; j < N1; ++j)
                             for (int k = s2; k < N2; ++k)
                                 for (int l = s3; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 3) {
+                                    if (h_tensor(i, j, k, l) != 3) {
                                         ++counter;
                                     }
                                 }
@@ -1881,15 +1881,15 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 1) {
+                                    if (h_tensor(i, j, k, l) != 1) {
                                         ++counter;
                                     }
                                 }
@@ -1915,15 +1915,15 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 1) {
+                                    if (h_tensor(i, j, k, l) != 1) {
                                         ++counter;
                                     }
                                 }
@@ -1949,15 +1949,15 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 1) {
+                                    if (h_tensor(i, j, k, l) != 1) {
                                         ++counter;
                                     }
                                 }
@@ -1983,15 +1983,15 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 1) {
+                                    if (h_tensor(i, j, k, l) != 1) {
                                         ++counter;
                                     }
                                 }
@@ -2017,15 +2017,15 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 1) {
+                                    if (h_tensor(i, j, k, l) != 1) {
                                         ++counter;
                                     }
                                 }
@@ -2051,15 +2051,15 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l) {
-                                    if (h_view(i, j, k, l) != 1) {
+                                    if (h_tensor(i, j, k, l) != 1) {
                                         ++counter;
                                     }
                                 }
@@ -2076,26 +2076,26 @@ namespace Test {
         template<typename ExecSpace>
         struct TestMDRange_5D {
             using DataType = int;
-            using ViewType = typename flare::View<DataType *****, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType *****, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             using value_type = double;
 
             TestMDRange_5D(const DataType N0, const DataType N1, const DataType N2,
                            const DataType N3, const DataType N4)
-                    : input_view("input_view", N0, N1, N2, N3, N4) {}
+                    : input_tensor("input_tensor", N0, N1, N2, N3, N4) {}
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             const int m) const {
-                input_view(i, j, k, l, m) = 1;
+                input_tensor(i, j, k, l, m) = 1;
             }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             const int m, value_type &lsum) const {
-                lsum += input_view(i, j, k, l, m) * 2;
+                lsum += input_tensor(i, j, k, l, m) * 2;
             }
 
             // tagged operators
@@ -2105,14 +2105,14 @@ namespace Test {
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j, const int k,
                             const int l, const int m) const {
-                input_view(i, j, k, l, m) = 3;
+                input_tensor(i, j, k, l, m) = 3;
             }
 
             // reduction tagged operators
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j, const int k,
                             const int l, const int m, value_type &lsum) const {
-                lsum += input_view(i, j, k, l, m) * 3;
+                lsum += input_tensor(i, j, k, l, m) * 3;
             }
 
             static void test_reduce5(const int N0, const int N1, const int N2,
@@ -2205,7 +2205,7 @@ namespace Test {
                     REQUIRE_EQ(sum, 2 * N0 * N1 * N2 * N3 * N4);
                 }
 
-                // Test with reducers - scalar view
+                // Test with reducers - scalar tensor
                 {
                     using range_type =
                             typename flare::MDRangePolicy<ExecSpace, flare::Rank<5>,
@@ -2218,13 +2218,13 @@ namespace Test {
                     parallel_for(range, functor);
 
                     value_type sum = 0.0;
-                    flare::View<value_type, flare::HostSpace> sum_view("sum_view");
-                    sum_view() = sum;
-                    flare::Sum<value_type> reducer_view(sum_view);
+                    flare::Tensor<value_type, flare::HostSpace> sum_tensor("sum_tensor");
+                    sum_tensor() = sum;
+                    flare::Sum<value_type> reducer_tensor(sum_tensor);
 
-                    parallel_reduce(range, functor, reducer_view);
+                    parallel_reduce(range, functor, reducer_tensor);
                     flare::fence();
-                    sum = sum_view();
+                    sum = sum_tensor();
 
                     REQUIRE_EQ(sum, 2 * N0 * N1 * N2 * N3 * N4);
                 }
@@ -2239,7 +2239,7 @@ namespace Test {
                     range_type range({{1, 1, 1, 1, 1}}, {{N0, N1, N2, N3, N4}},
                                      {{3, 3, 3, 2, 2}});
 
-                    flare::View<double *****, ExecSpace> v_in("v_in", N0, N1, N2, N3, N4);
+                    flare::Tensor<double *****, ExecSpace> v_in("v_in", N0, N1, N2, N3, N4);
 
                     parallel_for(
                             "rank5-init-lambda", range,
@@ -2281,15 +2281,15 @@ namespace Test {
                     parallel_for(range, functor);
 
                     // check parallel_for results correct with InitTag
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 3) {
+                                        if (h_tensor(i, j, k, l, m) != 3) {
                                             ++counter;
                                         }
                                     }
@@ -2329,15 +2329,15 @@ namespace Test {
                                      point_type{{N0, N1, N2, N3, N4}},
                                      tile_type{{3, 3, 3, 3, 1}});
 
-                    TestMDRange_5D::ViewType v("v", N0, N1, N2, N3, N4);
+                    TestMDRange_5D::TensorType v("v", N0, N1, N2, N3, N4);
 
                     parallel_for(
                             range,
                             FLARE_LAMBDA(const int i, const int j, const int k, const int l,
                                          const int m) { v(i, j, k, l, m) = 3; });
 
-                    TestMDRange_5D::HostViewType h_view = flare::create_mirror_view(v);
-                    flare::deep_copy(h_view, v);
+                    TestMDRange_5D::HostTensorType h_tensor = flare::create_mirror_tensor(v);
+                    flare::deep_copy(h_tensor, v);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
@@ -2345,7 +2345,7 @@ namespace Test {
                             for (int k = s2; k < N2; ++k)
                                 for (int l = s3; l < N3; ++l)
                                     for (int m = s4; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 3) {
+                                        if (h_tensor(i, j, k, l, m) != 3) {
                                             ++counter;
                                         }
                                     }
@@ -2372,8 +2372,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -2381,7 +2381,7 @@ namespace Test {
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 1) {
+                                        if (h_tensor(i, j, k, l, m) != 1) {
                                             ++counter;
                                         }
                                     }
@@ -2415,8 +2415,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
@@ -2424,7 +2424,7 @@ namespace Test {
                             for (int k = s2; k < N2; ++k)
                                 for (int l = s3; l < N3; ++l)
                                     for (int m = s4; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 3) {
+                                        if (h_tensor(i, j, k, l, m) != 3) {
                                             ++counter;
                                         }
                                     }
@@ -2454,8 +2454,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -2463,7 +2463,7 @@ namespace Test {
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 1) {
+                                        if (h_tensor(i, j, k, l, m) != 1) {
                                             ++counter;
                                         }
                                     }
@@ -2490,8 +2490,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -2499,7 +2499,7 @@ namespace Test {
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 1) {
+                                        if (h_tensor(i, j, k, l, m) != 1) {
                                             ++counter;
                                         }
                                     }
@@ -2526,8 +2526,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -2535,7 +2535,7 @@ namespace Test {
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 1) {
+                                        if (h_tensor(i, j, k, l, m) != 1) {
                                             ++counter;
                                         }
                                     }
@@ -2562,8 +2562,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -2571,7 +2571,7 @@ namespace Test {
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 1) {
+                                        if (h_tensor(i, j, k, l, m) != 1) {
                                             ++counter;
                                         }
                                     }
@@ -2598,8 +2598,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -2607,7 +2607,7 @@ namespace Test {
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 1) {
+                                        if (h_tensor(i, j, k, l, m) != 1) {
                                             ++counter;
                                         }
                                     }
@@ -2634,8 +2634,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -2643,7 +2643,7 @@ namespace Test {
                             for (int k = 0; k < N2; ++k)
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m) {
-                                        if (h_view(i, j, k, l, m) != 1) {
+                                        if (h_tensor(i, j, k, l, m) != 1) {
                                             ++counter;
                                         }
                                     }
@@ -2660,26 +2660,26 @@ namespace Test {
         template<typename ExecSpace>
         struct TestMDRange_6D {
             using DataType = int;
-            using ViewType = typename flare::View<DataType ******, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType ******, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             using value_type = double;
 
             TestMDRange_6D(const DataType N0, const DataType N1, const DataType N2,
                            const DataType N3, const DataType N4, const DataType N5)
-                    : input_view("input_view", N0, N1, N2, N3, N4, N5) {}
+                    : input_tensor("input_tensor", N0, N1, N2, N3, N4, N5) {}
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             const int m, const int n) const {
-                input_view(i, j, k, l, m, n) = 1;
+                input_tensor(i, j, k, l, m, n) = 1;
             }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             const int m, const int n, value_type &lsum) const {
-                lsum += input_view(i, j, k, l, m, n) * 2;
+                lsum += input_tensor(i, j, k, l, m, n) * 2;
             }
 
             // tagged operators
@@ -2689,7 +2689,7 @@ namespace Test {
             FLARE_INLINE_FUNCTION
             void operator()(const InitTag &, const int i, const int j, const int k,
                             const int l, const int m, const int n) const {
-                input_view(i, j, k, l, m, n) = 3;
+                input_tensor(i, j, k, l, m, n) = 3;
             }
 
             // reduction tagged operators
@@ -2697,7 +2697,7 @@ namespace Test {
             void operator()(const InitTag &, const int i, const int j, const int k,
                             const int l, const int m, const int n,
                             value_type &lsum) const {
-                lsum += input_view(i, j, k, l, m, n) * 3;
+                lsum += input_tensor(i, j, k, l, m, n) * 3;
             }
 
             static void test_reduce6(const int N0, const int N1, const int N2,
@@ -2829,7 +2829,7 @@ namespace Test {
                     REQUIRE_EQ(sum, 2 * N0 * N1 * N2 * N3 * N4 * N5);
                 }
 
-                // Test with reducers - scalar view
+                // Test with reducers - scalar tensor
                 {
 #if defined(FLARE_COMPILER_INTEL)
                                                                                                                                             // Launchbounds causes hang with intel compilers
@@ -2853,13 +2853,13 @@ namespace Test {
                     parallel_for(range, functor);
 
                     value_type sum = 0.0;
-                    flare::View<value_type, flare::HostSpace> sum_view("sum_view");
-                    sum_view() = sum;
-                    flare::Sum<value_type> reducer_view(sum_view);
+                    flare::Tensor<value_type, flare::HostSpace> sum_tensor("sum_tensor");
+                    sum_tensor() = sum;
+                    flare::Sum<value_type> reducer_tensor(sum_tensor);
 
-                    parallel_reduce(range, functor, reducer_view);
+                    parallel_reduce(range, functor, reducer_tensor);
                     flare::fence();
-                    sum = sum_view();
+                    sum = sum_tensor();
 
                     REQUIRE_EQ(sum, 2 * N0 * N1 * N2 * N3 * N4 * N5);
                 }
@@ -2882,7 +2882,7 @@ namespace Test {
                     range_type range({{1, 1, 1, 1, 1, 1}}, {{N0, N1, N2, N3, N4, N5}},
                                      {{3, 3, 3, 2, 2, 1}});
 
-                    flare::View<double ******, ExecSpace> v_in("v_in", N0, N1, N2, N3, N4,
+                    flare::Tensor<double ******, ExecSpace> v_in("v_in", N0, N1, N2, N3, N4,
                                                                N5);
 
                     parallel_for(
@@ -2936,8 +2936,8 @@ namespace Test {
                     parallel_for(range, functor);
 
                     // check parallel_for results correct with InitTag
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
                         for (int j = 0; j < N1; ++j)
@@ -2945,7 +2945,7 @@ namespace Test {
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m)
                                         for (int n = 0; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 3) {
+                                            if (h_tensor(i, j, k, l, m, n) != 3) {
                                                 ++counter;
                                             }
                                         }
@@ -2995,15 +2995,15 @@ namespace Test {
                                      point_type{{N0, N1, N2, N3, N4, N5}},
                                      tile_type{{3, 3, 3, 3, 1, 1}});
 
-                    TestMDRange_6D::ViewType v("v", N0, N1, N2, N3, N4, N5);
+                    TestMDRange_6D::TensorType v("v", N0, N1, N2, N3, N4, N5);
 
                     parallel_for(
                             range,
                             FLARE_LAMBDA(const int i, const int j, const int k, const int l,
                                          const int m, const int n) { v(i, j, k, l, m, n) = 3; });
 
-                    TestMDRange_6D::HostViewType h_view = flare::create_mirror_view(v);
-                    flare::deep_copy(h_view, v);
+                    TestMDRange_6D::HostTensorType h_tensor = flare::create_mirror_tensor(v);
+                    flare::deep_copy(h_tensor, v);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
@@ -3012,7 +3012,7 @@ namespace Test {
                                 for (int l = s3; l < N3; ++l)
                                     for (int m = s4; m < N4; ++m)
                                         for (int n = s5; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 3) {
+                                            if (h_tensor(i, j, k, l, m, n) != 3) {
                                                 ++counter;
                                             }
                                         }
@@ -3047,8 +3047,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -3057,7 +3057,7 @@ namespace Test {
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m)
                                         for (int n = 0; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 1) {
+                                            if (h_tensor(i, j, k, l, m, n) != 1) {
                                                 ++counter;
                                             }
                                         }
@@ -3101,8 +3101,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = s0; i < N0; ++i)
@@ -3111,7 +3111,7 @@ namespace Test {
                                 for (int l = s3; l < N3; ++l)
                                     for (int m = s4; m < N4; ++m)
                                         for (int n = s5; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 3) {
+                                            if (h_tensor(i, j, k, l, m, n) != 3) {
                                                 ++counter;
                                             }
                                         }
@@ -3150,8 +3150,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -3160,7 +3160,7 @@ namespace Test {
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m)
                                         for (int n = 0; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 1) {
+                                            if (h_tensor(i, j, k, l, m, n) != 1) {
                                                 ++counter;
                                             }
                                         }
@@ -3197,8 +3197,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -3207,7 +3207,7 @@ namespace Test {
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m)
                                         for (int n = 0; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 1) {
+                                            if (h_tensor(i, j, k, l, m, n) != 1) {
                                                 ++counter;
                                             }
                                         }
@@ -3244,8 +3244,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -3254,7 +3254,7 @@ namespace Test {
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m)
                                         for (int n = 0; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 1) {
+                                            if (h_tensor(i, j, k, l, m, n) != 1) {
                                                 ++counter;
                                             }
                                         }
@@ -3290,8 +3290,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -3300,7 +3300,7 @@ namespace Test {
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m)
                                         for (int n = 0; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 1) {
+                                            if (h_tensor(i, j, k, l, m, n) != 1) {
                                                 ++counter;
                                             }
                                         }
@@ -3337,8 +3337,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -3347,7 +3347,7 @@ namespace Test {
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m)
                                         for (int n = 0; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 1) {
+                                            if (h_tensor(i, j, k, l, m, n) != 1) {
                                                 ++counter;
                                             }
                                         }
@@ -3384,8 +3384,8 @@ namespace Test {
 
                     parallel_for(range, functor);
 
-                    HostViewType h_view = flare::create_mirror_view(functor.input_view);
-                    flare::deep_copy(h_view, functor.input_view);
+                    HostTensorType h_tensor = flare::create_mirror_tensor(functor.input_tensor);
+                    flare::deep_copy(h_tensor, functor.input_tensor);
 
                     int counter = 0;
                     for (int i = 0; i < N0; ++i)
@@ -3394,7 +3394,7 @@ namespace Test {
                                 for (int l = 0; l < N3; ++l)
                                     for (int m = 0; m < N4; ++m)
                                         for (int n = 0; n < N5; ++n) {
-                                            if (h_view(i, j, k, l, m, n) != 1) {
+                                            if (h_tensor(i, j, k, l, m, n) != 1) {
                                                 ++counter;
                                             }
                                         }
@@ -3413,29 +3413,29 @@ namespace Test {
             using value_type = double;
 
             using DataType = int;
-            using ViewType = typename flare::View<DataType **, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType **, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             DataType lower_offset[2];
 
             TestMDRange_2D_NegIdx(const DataType L0, const DataType L1, const DataType N0,
                                   const DataType N1)
-                    : input_view("input_view", N0 - L0, N1 - L1) {
+                    : input_tensor("input_tensor", N0 - L0, N1 - L1) {
                 lower_offset[0] = L0;
                 lower_offset[1] = L1;
             }
 
-            // When using negative indices, must offset View appropriately as views cannot
+            // When using negative indices, must offset Tensor appropriately as tensors cannot
             // take a negative index
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j) const {
-                input_view(i - lower_offset[0], j - lower_offset[1]) = 1;
+                input_tensor(i - lower_offset[0], j - lower_offset[1]) = 1;
             }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, value_type &lsum) const {
-                lsum += input_view(i - lower_offset[0], j - lower_offset[1]) * 2;
+                lsum += input_tensor(i - lower_offset[0], j - lower_offset[1]) * 2;
             }
 
             static void test_2D_negidx(const int N0, const int N1) {
@@ -3470,32 +3470,32 @@ namespace Test {
             using value_type = double;
 
             using DataType = int;
-            using ViewType = typename flare::View<DataType ***, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType ***, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             DataType lower_offset[3];
 
             TestMDRange_3D_NegIdx(const DataType L0, const DataType L1, const DataType L2,
                                   const DataType N0, const DataType N1, const DataType N2)
-                    : input_view("input_view", N0 - L0, N1 - L1, N2 - L2) {
+                    : input_tensor("input_tensor", N0 - L0, N1 - L1, N2 - L2) {
                 lower_offset[0] = L0;
                 lower_offset[1] = L1;
                 lower_offset[2] = L2;
             }
 
-            // When using negative indices, must offset View appropriately as views cannot
+            // When using negative indices, must offset Tensor appropriately as tensors cannot
             // take a negative index
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k) const {
-                input_view(i - lower_offset[0], j - lower_offset[1], k - lower_offset[2]) =
+                input_tensor(i - lower_offset[0], j - lower_offset[1], k - lower_offset[2]) =
                         1;
             }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k,
                             value_type &lsum) const {
-                lsum += input_view(i - lower_offset[0], j - lower_offset[1],
+                lsum += input_tensor(i - lower_offset[0], j - lower_offset[1],
                                    k - lower_offset[2]) *
                         2;
             }
@@ -3534,34 +3534,34 @@ namespace Test {
             using value_type = double;
 
             using DataType = int;
-            using ViewType = typename flare::View<DataType ****, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType ****, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             DataType lower_offset[4];
 
             TestMDRange_4D_NegIdx(const DataType L0, const DataType L1, const DataType L2,
                                   const DataType L3, const DataType N0, const DataType N1,
                                   const DataType N2, const DataType N3)
-                    : input_view("input_view", N0 - L0, N1 - L1, N2 - L2, N3 - L3) {
+                    : input_tensor("input_tensor", N0 - L0, N1 - L1, N2 - L2, N3 - L3) {
                 lower_offset[0] = L0;
                 lower_offset[1] = L1;
                 lower_offset[2] = L2;
                 lower_offset[3] = L3;
             }
 
-            // When using negative indices, must offset View appropriately as views cannot
+            // When using negative indices, must offset Tensor appropriately as tensors cannot
             // take a negative index
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l) const {
-                input_view(i - lower_offset[0], j - lower_offset[1], k - lower_offset[2],
+                input_tensor(i - lower_offset[0], j - lower_offset[1], k - lower_offset[2],
                            l - lower_offset[3]) = 1;
             }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             value_type &lsum) const {
-                lsum += input_view(i - lower_offset[0], j - lower_offset[1],
+                lsum += input_tensor(i - lower_offset[0], j - lower_offset[1],
                                    k - lower_offset[2], l - lower_offset[3]) *
                         2;
             }
@@ -3601,17 +3601,17 @@ namespace Test {
             using value_type = double;
 
             using DataType = int;
-            using ViewType = typename flare::View<DataType *****, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType *****, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             DataType lower_offset[5];
 
             TestMDRange_5D_NegIdx(const DataType L0, const DataType L1, const DataType L2,
                                   const DataType L3, const DataType L4, const DataType N0,
                                   const DataType N1, const DataType N2, const DataType N3,
                                   const DataType N4)
-                    : input_view("input_view", N0 - L0, N1 - L1, N2 - L2, N3 - L3, N4 - L4) {
+                    : input_tensor("input_tensor", N0 - L0, N1 - L1, N2 - L2, N3 - L3, N4 - L4) {
                 lower_offset[0] = L0;
                 lower_offset[1] = L1;
                 lower_offset[2] = L2;
@@ -3619,19 +3619,19 @@ namespace Test {
                 lower_offset[4] = L4;
             }
 
-            // When using negative indices, must offset View appropriately as views cannot
+            // When using negative indices, must offset Tensor appropriately as tensors cannot
             // take a negative index
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             const int m) const {
-                input_view(i - lower_offset[0], j - lower_offset[1], k - lower_offset[2],
+                input_tensor(i - lower_offset[0], j - lower_offset[1], k - lower_offset[2],
                            l - lower_offset[3], m - lower_offset[4]) = 1;
             }
 
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             const int m, value_type &lsum) const {
-                lsum += input_view(i - lower_offset[0], j - lower_offset[1],
+                lsum += input_tensor(i - lower_offset[0], j - lower_offset[1],
                                    k - lower_offset[2], l - lower_offset[3],
                                    m - lower_offset[4]) *
                         2;
@@ -3675,17 +3675,17 @@ namespace Test {
             using value_type = double;
 
             using DataType = int;
-            using ViewType = typename flare::View<DataType ******, ExecSpace>;
-            using HostViewType = typename ViewType::HostMirror;
+            using TensorType = typename flare::Tensor<DataType ******, ExecSpace>;
+            using HostTensorType = typename TensorType::HostMirror;
 
-            ViewType input_view;
+            TensorType input_tensor;
             DataType lower_offset[6];
 
             TestMDRange_6D_NegIdx(const DataType L0, const DataType L1, const DataType L2,
                                   const DataType L3, const DataType L4, const DataType L5,
                                   const DataType N0, const DataType N1, const DataType N2,
                                   const DataType N3, const DataType N4, const DataType N5)
-                    : input_view("input_view", N0 - L0, N1 - L1, N2 - L2, N3 - L3, N4 - L4,
+                    : input_tensor("input_tensor", N0 - L0, N1 - L1, N2 - L2, N3 - L3, N4 - L4,
                                  N5 - L5) {
                 lower_offset[0] = L0;
                 lower_offset[1] = L1;
@@ -3695,12 +3695,12 @@ namespace Test {
                 lower_offset[5] = L5;
             }
 
-            // When using negative indices, must offset View appropriately as views cannot
+            // When using negative indices, must offset Tensor appropriately as tensors cannot
             // take a negative index
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             const int m, const int n) const {
-                input_view(i - lower_offset[0], j - lower_offset[1], k - lower_offset[2],
+                input_tensor(i - lower_offset[0], j - lower_offset[1], k - lower_offset[2],
                            l - lower_offset[3], m - lower_offset[4], n - lower_offset[5]) =
                         1;
             }
@@ -3708,7 +3708,7 @@ namespace Test {
             FLARE_INLINE_FUNCTION
             void operator()(const int i, const int j, const int k, const int l,
                             const int m, const int n, value_type &lsum) const {
-                lsum += input_view(i - lower_offset[0], j - lower_offset[1],
+                lsum += input_tensor(i - lower_offset[0], j - lower_offset[1],
                                    k - lower_offset[2], l - lower_offset[3],
                                    m - lower_offset[4], n - lower_offset[5]) *
                         2;

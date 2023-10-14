@@ -24,8 +24,8 @@ namespace TestAtomicOperations {
 template <class T, class DEVICE_TYPE>
 struct ZeroFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = typename flare::View<T, execution_space>;
-  using h_type          = typename flare::View<T, execution_space>::HostMirror;
+  using type            = typename flare::Tensor<T, execution_space>;
+  using h_type          = typename flare::Tensor<T, execution_space>::HostMirror;
 
   type data;
 
@@ -40,8 +40,8 @@ struct ZeroFunctor {
 template <class T, class DEVICE_TYPE>
 struct InitFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = typename flare::View<T, execution_space>;
-  using h_type          = typename flare::View<T, execution_space>::HostMirror;
+  using type            = typename flare::Tensor<T, execution_space>;
+  using h_type          = typename flare::Tensor<T, execution_space>::HostMirror;
 
   type data;
   T init_value;
@@ -58,7 +58,7 @@ struct InitFunctor {
 template <class T, class DEVICE_TYPE>
 struct LoadStoreFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -103,7 +103,7 @@ bool LoadStoreAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct MaxFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -176,7 +176,7 @@ bool MaxAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct MinFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -247,7 +247,7 @@ bool MinAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct IncFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -317,7 +317,7 @@ bool IncAtomicTest(T i0) {
 template <class T, class DEVICE_TYPE>
 struct WrappingIncFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -393,7 +393,7 @@ bool WrappingIncAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct DecFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -463,7 +463,7 @@ bool DecAtomicTest(T i0) {
 template <class T, class DEVICE_TYPE>
 struct WrappingDecFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -540,7 +540,7 @@ bool WrappingDecAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct MulFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -611,7 +611,7 @@ bool MulAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct DivFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -683,7 +683,7 @@ bool DivAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct ModFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -754,7 +754,7 @@ bool ModAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct AndFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -828,7 +828,7 @@ bool AndAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct OrFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -902,7 +902,7 @@ bool OrAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct XorFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -973,7 +973,7 @@ bool XorAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct LShiftFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;
@@ -1044,7 +1044,7 @@ bool LShiftAtomicTest(T i0, T i1) {
 template <class T, class DEVICE_TYPE>
 struct RShiftFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
   T i0;

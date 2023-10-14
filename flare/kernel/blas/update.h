@@ -27,21 +27,21 @@ namespace flare::blas {
     /// This function is non-blocking and thread-safe
     ///
     /// \tparam execution_space a flare execution space where the kernel will run.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.
-    /// \tparam YMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam YMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as XMV.
-    /// \tparam ZMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam ZMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as XMV and YMV, and it must make sense to add up
     ///   the entries of XMV and YMV and assign them to the entries of
     ///   ZMV.
     ///
     /// \param space [in] the execution space instance on which the kernel will run.
     /// \param alpha [in] scaling parameter for X
-    /// \param X [in] input view of type XMV
+    /// \param X [in] input tensor of type XMV
     /// \param beta [in] scaling parameter for Y
-    /// \param Y [in] input view of type YMV
+    /// \param Y [in] input tensor of type YMV
     /// \param gamma [in] scaling parameter for Z
-    /// \param Z [in/out] view of type ZMV in which the results will be stored.
+    /// \param Z [in/out] tensor of type ZMV in which the results will be stored.
     template <class execution_space, class XMV, class YMV, class ZMV>
     void update(const execution_space& space,
                 const typename XMV::non_const_value_type& alpha, const XMV& X,
@@ -50,15 +50,15 @@ namespace flare::blas {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::update: execution_space must be a valid flare "
                       "execution space.");
-        static_assert(flare::is_view<XMV>::value,
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::update: "
-                      "X is not a flare::View.");
-        static_assert(flare::is_view<YMV>::value,
+                      "X is not a flare::Tensor.");
+        static_assert(flare::is_tensor<YMV>::value,
                       "flare::blas::update: "
-                      "Y is not a flare::View.");
-        static_assert(flare::is_view<ZMV>::value,
+                      "Y is not a flare::Tensor.");
+        static_assert(flare::is_tensor<ZMV>::value,
                       "flare::blas::update: "
-                      "Z is not a flare::View.");
+                      "Z is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
@@ -97,22 +97,22 @@ namespace flare::blas {
             flare::detail::throw_runtime_exception(os.str());
         }
 
-        // Create unmanaged versions of the input Views.  XMV, YMV, and ZMV
+        // Create unmanaged versions of the input Tensors.  XMV, YMV, and ZMV
         // may be rank 1 or rank 2, but they must all have the same rank.
 
-        using XMV_Internal = flare::View<
+        using XMV_Internal = flare::Tensor<
                 typename std::conditional<XMV::rank == 1, typename XMV::const_value_type*,
                         typename XMV::const_value_type**>::type,
                 typename flare::detail::GetUnifiedLayout<XMV>::array_layout,
                 typename XMV::device_type, flare::MemoryTraits<flare::Unmanaged> >;
 
-        using YMV_Internal = flare::View<
+        using YMV_Internal = flare::Tensor<
                 typename std::conditional<YMV::rank == 1, typename YMV::const_value_type*,
                         typename YMV::const_value_type**>::type,
                 typename flare::detail::GetUnifiedLayout<YMV>::array_layout,
                 typename YMV::device_type, flare::MemoryTraits<flare::Unmanaged> >;
 
-        using ZMV_Internal = flare::View<
+        using ZMV_Internal = flare::Tensor<
                 typename std::conditional<ZMV::rank == 1,
                         typename ZMV::non_const_value_type*,
                         typename ZMV::non_const_value_type**>::type,
@@ -134,20 +134,20 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue
     /// associated with the execution space of ZMV.
     ///
-    /// \tparam XMV 1-D or 2-D flare::View specialization.
-    /// \tparam YMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam YMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as XMV.
-    /// \tparam ZMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam ZMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as XMV and YMV, and it must make sense to add up
     ///   the entries of XMV and YMV and assign them to the entries of
     ///   ZMV.
     ///
     /// \param alpha [in] scaling parameter for X
-    /// \param X [in] input view of type XMV
+    /// \param X [in] input tensor of type XMV
     /// \param beta [in] scaling parameter for Y
-    /// \param Y [in] input view of type YMV
+    /// \param Y [in] input tensor of type YMV
     /// \param gamma [in] scaling parameter for Z
-    /// \param Z [in/out] view of type ZMV in which the results will be stored.
+    /// \param Z [in/out] tensor of type ZMV in which the results will be stored.
     template <class XMV, class YMV, class ZMV>
     void update(const typename XMV::non_const_value_type& alpha, const XMV& X,
                 const typename YMV::non_const_value_type& beta, const YMV& Y,

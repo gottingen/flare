@@ -22,15 +22,15 @@ namespace IsSortedUntil {
 
 namespace KE = flare::experimental;
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type = typename ViewType::value_type;
-  using exe_space  = typename ViewType::execution_space;
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type = typename TensorType::value_type;
+  using exe_space  = typename TensorType::execution_space;
 
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -94,33 +94,33 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewType>
-auto compute_gold(ViewType view, const std::string& name) {
+template <class TensorType>
+auto compute_gold(TensorType tensor, const std::string& name) {
   if (name == "empty") {
-    return KE::end(view);
+    return KE::end(tensor);
   } else if (name == "one-element") {
-    return KE::end(view);
+    return KE::end(tensor);
   } else if (name == "two-elements-a") {
-    return KE::end(view);
+    return KE::end(tensor);
   } else if (name == "two-elements-b") {
-    return KE::begin(view) + 1;
+    return KE::begin(tensor) + 1;
   } else if (name == "small-a") {
-    return KE::end(view);
+    return KE::end(tensor);
   } else if (name == "small-b") {
-    return KE::begin(view) + 6;
+    return KE::begin(tensor) + 6;
   } else if (name == "medium-a") {
-    return KE::end(view);
+    return KE::end(tensor);
   } else if (name == "medium-b") {
-    return KE::begin(view) + 4;
+    return KE::begin(tensor) + 4;
   } else if (name == "large-a") {
-    return KE::end(view);
+    return KE::end(tensor);
   } else if (name == "large-b") {
-    return KE::begin(view) + 156;
+    return KE::begin(tensor) + 156;
   } else {
     throw std::runtime_error("invalid choice");
   }
@@ -129,21 +129,21 @@ auto compute_gold(ViewType view, const std::string& name) {
 template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
 
   // std::cout << "is-sorted-until: " << name << ", " <<
-  // view_tag_to_string(Tag{})
+  // tensor_tag_to_string(Tag{})
   //           << std::endl;
 
-  auto view = create_view<ValueType>(Tag{}, view_ext, "is_sorted_until");
-  fill_view(view, name);
-  const auto gold = compute_gold(view, name);
+  auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "is_sorted_until");
+  fill_tensor(tensor, name);
+  const auto gold = compute_gold(tensor, name);
 
-  auto r1 = KE::is_sorted_until(exespace(), KE::begin(view), KE::end(view));
+  auto r1 = KE::is_sorted_until(exespace(), KE::begin(tensor), KE::end(tensor));
   auto r2 =
-      KE::is_sorted_until("label", exespace(), KE::begin(view), KE::end(view));
-  auto r3 = KE::is_sorted_until(exespace(), view);
-  auto r4 = KE::is_sorted_until("label", exespace(), view);
+      KE::is_sorted_until("label", exespace(), KE::begin(tensor), KE::end(tensor));
+  auto r3 = KE::is_sorted_until(exespace(), tensor);
+  auto r4 = KE::is_sorted_until("label", exespace(), tensor);
   REQUIRE_EQ(r1, gold);
   REQUIRE_EQ(r2, gold);
   REQUIRE_EQ(r3, gold);
@@ -151,11 +151,11 @@ void run_single_scenario(const InfoType& scenario_info) {
 
   CustomLessThanComparator<ValueType, ValueType> comp;
   auto r5 =
-      KE::is_sorted_until(exespace(), KE::cbegin(view), KE::cend(view), comp);
-  auto r6 = KE::is_sorted_until("label", exespace(), KE::cbegin(view),
-                                KE::cend(view), comp);
-  auto r7 = KE::is_sorted_until(exespace(), view, comp);
-  auto r8 = KE::is_sorted_until("label", exespace(), view, comp);
+      KE::is_sorted_until(exespace(), KE::cbegin(tensor), KE::cend(tensor), comp);
+  auto r6 = KE::is_sorted_until("label", exespace(), KE::cbegin(tensor),
+                                KE::cend(tensor), comp);
+  auto r7 = KE::is_sorted_until(exespace(), tensor, comp);
+  auto r8 = KE::is_sorted_until("label", exespace(), tensor, comp);
 
   REQUIRE_EQ(r1, gold);
   REQUIRE_EQ(r2, gold);
@@ -173,7 +173,7 @@ void run_is_sorted_until_all_scenarios() {
       {"medium-a", 1003},    {"medium-b", 1003}, {"large-a", 101513},
       {"large-b", 101513}};
 
-  std::cout << "is_sorted_until: " << view_tag_to_string(Tag{})
+  std::cout << "is_sorted_until: " << tensor_tag_to_string(Tag{})
             << ", all overloads \n";
 
   for (const auto& it : scenarios) {

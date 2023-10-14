@@ -35,33 +35,33 @@ namespace flare::blas {
     /// This function is non-blocking and thread safe.
     ///
     /// \tparam execution_space a flare execution space where the kernel will run.
-    /// \tparam AV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.
-    /// \tparam BV 1-D or 2-D flare::View specialization.
-    /// \tparam YMV 1-D or 2-D flare::View specialization. It must have
+    /// \tparam AV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam BV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam YMV 1-D or 2-D flare::Tensor specialization. It must have
     ///   the same rank as XMV.
     ///
     /// \param space [in] the execution space instance on which the kernel will run.
-    /// \param a [in] view of type AV, scaling parameter for X.
-    /// \param X [in] input view of type XMV.
-    /// \param b [in] view of type BV, scaling parameter for Y.
-    /// \param Y [in/out] view of type YMV in which the results will be stored.
+    /// \param a [in] tensor of type AV, scaling parameter for X.
+    /// \param X [in] input tensor of type XMV.
+    /// \param b [in] tensor of type BV, scaling parameter for Y.
+    /// \param Y [in/out] tensor of type YMV in which the results will be stored.
     template<class execution_space, class AV, class XMV, class BV, class YMV>
     void axpby(const execution_space &space, const AV &a, const XMV &X, const BV &b,
                const YMV &Y) {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::axpby: execution_space must be a valid flare "
                       "execution space.");
-        static_assert(flare::is_view<XMV>::value,
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::axpby: "
-                      "X is not a flare::View.");
+                      "X is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
                 "flare::blas::axpby: XMV must be accessible from execution_space");
-        static_assert(flare::is_view<YMV>::value,
+        static_assert(flare::is_tensor<YMV>::value,
                       "flare::blas::axpby: "
-                      "Y is not a flare::View.");
+                      "Y is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename YMV::memory_space>::accessible,
@@ -93,20 +93,20 @@ namespace flare::blas {
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         YMV, UnifiedXLayout>::array_layout;
 
-        // Create unmanaged versions of the input Views.  XMV and YMV may be
-        // rank 1 or rank 2.  AV and BV may be either rank-1 Views, or
+        // Create unmanaged versions of the input Tensors.  XMV and YMV may be
+        // rank 1 or rank 2.  AV and BV may be either rank-1 Tensors, or
         // scalar values.
-        using XMV_Internal = flare::View<typename XMV::const_data_type,
+        using XMV_Internal = flare::Tensor<typename XMV::const_data_type,
                 UnifiedXLayout, typename XMV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >;
-        using YMV_Internal = flare::View<typename YMV::non_const_data_type,
+        using YMV_Internal = flare::Tensor<typename YMV::non_const_data_type,
                 UnifiedYLayout, typename YMV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >;
         using AV_Internal =
-                typename flare::detail::GetUnifiedScalarViewType<AV, XMV_Internal,
+                typename flare::detail::GetUnifiedScalarTensorType<AV, XMV_Internal,
                         true>::type;
         using BV_Internal =
-                typename flare::detail::GetUnifiedScalarViewType<BV, YMV_Internal,
+                typename flare::detail::GetUnifiedScalarTensorType<BV, YMV_Internal,
                         true>::type;
 
         AV_Internal a_internal = a;
@@ -125,16 +125,16 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue
     /// associated with the execution space of XMV.
     ///
-    /// \tparam AV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.
-    /// \tparam BV 1-D or 2-D flare::View specialization.
-    /// \tparam YMV 1-D or 2-D flare::View specialization. It must have
+    /// \tparam AV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam BV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam YMV 1-D or 2-D flare::Tensor specialization. It must have
     ///   the same rank as XMV.
     ///
-    /// \param a [in] view of type AV, scaling parameter for X.
-    /// \param X [in] input view of type XMV.
-    /// \param b [in] view of type BV, scaling parameter for Y.
-    /// \param Y [in/out] view of type YMV in which the results will be stored.
+    /// \param a [in] tensor of type AV, scaling parameter for X.
+    /// \param X [in] input tensor of type XMV.
+    /// \param b [in] tensor of type BV, scaling parameter for Y.
+    /// \param Y [in/out] tensor of type YMV in which the results will be stored.
     template<class AV, class XMV, class BV, class YMV>
     void axpby(const AV &a, const XMV &X, const BV &b, const YMV &Y) {
         axpby(typename XMV::execution_space{}, a, X, b, Y);
@@ -145,15 +145,15 @@ namespace flare::blas {
     /// This function is non-blocking and thread-safe
     ///
     /// \tparam execution_space a flare execution space where the kernel will run.
-    /// \tparam AV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.
-    /// \tparam YMV 1-D or 2-D flare::View specialization. It must have
+    /// \tparam AV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam YMV 1-D or 2-D flare::Tensor specialization. It must have
     ///   the same rank as XMV.
     ///
     /// \param space [in] the execution space instance on which the kernel will run.
-    /// \param a [in] view of type AV, scaling parameter for X.
-    /// \param X [in] input view of type XMV.
-    /// \param Y [in/out] view of type YMV in which the results will be stored.
+    /// \param a [in] tensor of type AV, scaling parameter for X.
+    /// \param X [in] input tensor of type XMV.
+    /// \param Y [in/out] tensor of type YMV in which the results will be stored.
     template<class execution_space, class AV, class XMV, class YMV>
     void axpy(const execution_space &space, const AV &a, const XMV &X,
               const YMV &Y) {
@@ -167,14 +167,14 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue
     /// associated with the execution space of XMV.
     ///
-    /// \tparam AV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.
-    /// \tparam YMV 1-D or 2-D flare::View specialization. It must have
+    /// \tparam AV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam YMV 1-D or 2-D flare::Tensor specialization. It must have
     ///   the same rank as XMV.
     ///
-    /// \param a [in] view of type AV, scaling parameter for X.
-    /// \param X [in] input view of type XMV.
-    /// \param Y [in/out] view of type YMV in which the results will be stored.
+    /// \param a [in] tensor of type AV, scaling parameter for X.
+    /// \param X [in] input tensor of type XMV.
+    /// \param Y [in/out] tensor of type YMV in which the results will be stored.
     template<class AV, class XMV, class YMV>
     void axpy(const AV &a, const XMV &X, const YMV &Y) {
         axpy(typename XMV::execution_space{}, a, X, Y);
@@ -186,10 +186,10 @@ namespace flare::blas {
     template<class scalar_type, class XMV, class YMV>
     FLARE_FUNCTION void serial_axpy(const scalar_type alpha, const XMV X, YMV Y) {
 #if (FLARE_DEBUG_LEVEL > 0)
-        static_assert(flare::is_view<XMV>::value,
-                      "flare::blas::serial_axpy: XMV is not a flare::View");
-        static_assert(flare::is_view<YMV>::value,
-                      "flare::blas::serial_axpy: YMV is not a flare::View");
+        static_assert(flare::is_tensor<XMV>::value,
+                      "flare::blas::serial_axpy: XMV is not a flare::Tensor");
+        static_assert(flare::is_tensor<YMV>::value,
+                      "flare::blas::serial_axpy: YMV is not a flare::Tensor");
         static_assert(XMV::rank == 1 || XMV::rank == 2,
                       "flare::blas::serial_axpy: XMV must have rank 1 or 2.");
         static_assert(

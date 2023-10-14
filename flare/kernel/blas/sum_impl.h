@@ -32,8 +32,8 @@ namespace flare::blas::detail {
 
     /// \brief 2-norm (squared) functor for single vectors.
     ///
-    /// \tparam RV 0-D output View
-    /// \tparam XV 1-D input View
+    /// \tparam RV 0-D output Tensor
+    /// \tparam XV 1-D input Tensor
     /// \tparam SizeType Index type.  Use int (32 bits) if possible.
     template <class RV, class XV, class SizeType = typename XV::size_type>
     struct V_Sum_Functor {
@@ -46,12 +46,12 @@ namespace flare::blas::detail {
         typename XV::const_type m_x;
 
         V_Sum_Functor(const XV& x) : m_x(x) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::blas::detail::V_Sum_Functor: "
-                          "R is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "R is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::detail::V_Sum_Functor: "
-                          "X is not a flare::View.");
+                          "X is not a flare::Tensor.");
             static_assert(std::is_same<typename RV::value_type,
                                   typename RV::non_const_value_type>::value,
                           "flare::blas::detail::V_Sum_Functor: R is const.  "
@@ -103,7 +103,7 @@ namespace flare::blas::detail {
     };
 
     /// \brief Compute the 2-norm (or its square) of the single vector (1-D
-    ///   View) X, and store the result in the 0-D View r.
+    ///   Tensor) X, and store the result in the 0-D Tensor r.
     template <class execution_space, class RV, class XV, class SizeType>
     void V_Sum_Invoke(const execution_space& space, const RV& r, const XV& X) {
         const SizeType numRows = static_cast<SizeType>(X.extent(0));
@@ -115,8 +115,8 @@ namespace flare::blas::detail {
     }
 
     /// \brief Compute the 2-norms (or their square) of the columns of the
-    ///   multivector (2-D View) X, and store result(s) in the 1-D View r.
-    /// Main version: the result view is accessible from execution space, so it can
+    ///   multivector (2-D Tensor) X, and store result(s) in the 1-D Tensor r.
+    /// Main version: the result tensor is accessible from execution space, so it can
     /// be computed in-place
     template <class execution_space, class RV, class XV, class size_type>
     void MV_Sum_Invoke(
@@ -144,7 +144,7 @@ namespace flare::blas::detail {
                 Sum_MV_Functor<execution_space, RV, XV, size_type>(r, x, teamsPerVec));
     }
 
-    // Version for when a temporary result view is needed (implemented in terms of
+    // Version for when a temporary result tensor is needed (implemented in terms of
     // the other version)
     template <class execution_space, class RV, class XV, class size_type>
     void MV_Sum_Invoke(
@@ -152,9 +152,9 @@ namespace flare::blas::detail {
             typename std::enable_if<!flare::SpaceAccessibility<
                     execution_space, typename RV::memory_space>::accessible>::type* =
             nullptr) {
-        flare::View<typename RV::non_const_value_type*, typename XV::memory_space>
+        flare::Tensor<typename RV::non_const_value_type*, typename XV::memory_space>
                 tempResult(
-                flare::view_alloc(flare::WithoutInitializing, "Sum temp result"),
+                flare::tensor_alloc(flare::WithoutInitializing, "Sum temp result"),
                 r.extent(0));
         MV_Sum_Invoke<execution_space, decltype(tempResult), XV, size_type>(
                 space, tempResult, x);
@@ -169,18 +169,18 @@ namespace flare::blas::detail {
         static void sum(const execution_space& space, const RMV& R, const XMV& X);
     };
 
-    //! Full specialization of Sum for single vectors (1-D Views).
+    //! Full specialization of Sum for single vectors (1-D Tensors).
     template <class execution_space, class RMV, class XMV>
     struct Sum<execution_space, RMV, XMV, 1> {
         typedef typename XMV::size_type size_type;
 
         static void sum(const execution_space& space, const RMV& R, const XMV& X) {
-            static_assert(flare::is_view<RMV>::value,
+            static_assert(flare::is_tensor<RMV>::value,
                           "flare::blas::detail::"
-                          "Sum<1-D>: RMV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Sum<1-D>: RMV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Sum<1-D>: XMV is not a flare::View.");
+                          "Sum<1-D>: XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 0,
                           "flare::blas::detail::Sum<1-D>: "
                           "RMV is not rank 0.");
@@ -206,12 +206,12 @@ namespace flare::blas::detail {
         typedef typename XMV::size_type size_type;
 
         static void sum(const execution_space& space, const RV& R, const XMV& X) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::blas::detail::"
-                          "Sum<2-D>: RV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Sum<2-D>: RV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Sum<2-D>: XMV is not a flare::View.");
+                          "Sum<2-D>: XMV is not a flare::Tensor.");
             static_assert(RV::rank == 1,
                           "flare::blas::detail::Sum<2-D>: "
                           "RV is not rank 1.");
@@ -223,8 +223,8 @@ namespace flare::blas::detail {
             const size_type numRows = X.extent(0);
             const size_type numCols = X.extent(1);
             if (numCols == flare::ArithTraits<size_type>::one()) {
-                auto R0 = flare::subview(R, 0);
-                auto X0 = flare::subview(X, flare::ALL(), 0);
+                auto R0 = flare::subtensor(R, 0);
+                auto X0 = flare::subtensor(X, flare::ALL(), 0);
                 if (numRows < static_cast<size_type>(INT_MAX)) {
                     V_Sum_Invoke<execution_space, decltype(R0), decltype(X0), int>(space,
                                                                                    R0, X0);
@@ -254,9 +254,9 @@ namespace flare::blas::detail {
 //
 #define FLARE_BLAS_SUM_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE)  \
   template struct Sum<EXEC_SPACE,                                             \
-                      flare::View<SCALAR, LAYOUT, flare::HostSpace,         \
+                      flare::Tensor<SCALAR, LAYOUT, flare::HostSpace,         \
                                    flare::MemoryTraits<flare::Unmanaged> >, \
-                      flare::View<const SCALAR*, LAYOUT,                     \
+                      flare::Tensor<const SCALAR*, LAYOUT,                     \
                                    flare::Device<EXEC_SPACE, MEM_SPACE>,     \
                                    flare::MemoryTraits<flare::Unmanaged> >, \
                       1>;
@@ -270,11 +270,11 @@ namespace flare::blas::detail {
                                          MEM_SPACE)                  \
   template struct Sum<                                               \
       EXEC_SPACE,                                                    \
-      flare::View<SCALAR*, LAYOUT,                                  \
+      flare::Tensor<SCALAR*, LAYOUT,                                  \
                    flare::Device<flare::DefaultHostExecutionSpace, \
                                   flare::HostSpace>,                \
                    flare::MemoryTraits<flare::Unmanaged> >,        \
-      flare::View<const SCALAR**, LAYOUT,                           \
+      flare::Tensor<const SCALAR**, LAYOUT,                           \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,            \
                    flare::MemoryTraits<flare::Unmanaged> >,        \
       2>;

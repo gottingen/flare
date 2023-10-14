@@ -26,31 +26,31 @@ namespace flare::blas {
     /// This function is non-blocking and thread-safe
     ///
     /// \tparam execution_space a flare execution space where the kernel will run.
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization. It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization. It must have
     ///   the same rank as RMV.
-    /// \tparam AV 1-D or 2-D flare::View specialization.
+    /// \tparam AV 1-D or 2-D flare::Tensor specialization.
     ///
     /// \param space [in] the execution space instance on which the kernel will run.
-    /// \param R [in/out] view of type RMV in which the results will be stored.
-    /// \param a [in] view of type AV, scaling parameter for X.
-    /// \param X [in] input view of type XMV.
+    /// \param R [in/out] tensor of type RMV in which the results will be stored.
+    /// \param a [in] tensor of type AV, scaling parameter for X.
+    /// \param X [in] input tensor of type XMV.
     template <class execution_space, class RMV, class AV, class XMV>
     void scal(const execution_space& space, const RMV& R, const AV& a,
               const XMV& X) {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::scal: execution_space must be a valid flare "
                       "execution space");
-        static_assert(flare::is_view<RMV>::value,
+        static_assert(flare::is_tensor<RMV>::value,
                       "flare::blas::scal: "
-                      "R is not a flare::View.");
+                      "R is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename RMV::memory_space>::accessible,
                 "flare::blas::scal: RMV must be accessible from execution_space.");
-        static_assert(flare::is_view<XMV>::value,
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::scal: "
-                      "X is not a flare::View.");
+                      "X is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
@@ -86,17 +86,17 @@ namespace flare::blas {
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         XMV, UnifiedRLayout>::array_layout;
 
-        // Create unmanaged versions of the input Views.  RMV and XMV may be
-        // rank 1 or rank 2.  AV may be either a rank-1 View, or a scalar
+        // Create unmanaged versions of the input Tensors.  RMV and XMV may be
+        // rank 1 or rank 2.  AV may be either a rank-1 Tensor, or a scalar
         // value.
-        using RMV_Internal = flare::View<typename RMV::non_const_data_type,
+        using RMV_Internal = flare::Tensor<typename RMV::non_const_data_type,
                 UnifiedRLayout, typename RMV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >;
-        using XMV_Internal = flare::View<typename XMV::const_data_type,
+        using XMV_Internal = flare::Tensor<typename XMV::const_data_type,
                 UnifiedXLayout, typename XMV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >;
         using AV_Internal =
-                typename flare::detail::GetUnifiedScalarViewType<AV, XMV_Internal,
+                typename flare::detail::GetUnifiedScalarTensorType<AV, XMV_Internal,
                         true>::type;
 
         RMV_Internal R_internal = R;
@@ -113,14 +113,14 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue
     /// associated with the execution space of YMV.
     ///
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization. It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization. It must have
     ///   the same rank as RMV.
-    /// \tparam AV 1-D or 2-D flare::View specialization.
+    /// \tparam AV 1-D or 2-D flare::Tensor specialization.
     ///
-    /// \param R [in/out] view of type RMV in which the results will be stored.
-    /// \param a [in] view of type AV, scaling parameter for X.
-    /// \param X [in] input view of type XMV.
+    /// \param R [in/out] tensor of type RMV in which the results will be stored.
+    /// \param a [in] tensor of type AV, scaling parameter for X.
+    /// \param X [in] input tensor of type XMV.
     template <class RMV, class AV, class XMV>
     void scal(const RMV& R, const AV& a, const XMV& X) {
         scal(typename RMV::execution_space{}, R, a, X);
@@ -131,9 +131,9 @@ namespace flare::blas {
     ///
 
     struct SerialScale {
-        template <typename ScalarType, typename AViewType>
+        template <typename ScalarType, typename ATensorType>
         FLARE_INLINE_FUNCTION static int invoke(const ScalarType alpha,
-                                                 const AViewType& A) {
+                                                 const ATensorType& A) {
             return flare::blas::detail::SerialScaleInternal::invoke(
                     A.extent(0), A.extent(1), alpha, A.data(), A.stride_0(), A.stride_1());
         }
@@ -145,10 +145,10 @@ namespace flare::blas {
 
     template <typename MemberType>
     struct TeamScale {
-        template <typename ScalarType, typename AViewType>
+        template <typename ScalarType, typename ATensorType>
         FLARE_INLINE_FUNCTION static int invoke(const MemberType& member,
                                                  const ScalarType alpha,
-                                                 const AViewType& A) {
+                                                 const ATensorType& A) {
             return flare::blas::detail::TeamScaleInternal::invoke(member, A.extent(0), A.extent(1),
                                                    alpha, A.data(), A.stride_0(),
                                                    A.stride_1());
@@ -161,10 +161,10 @@ namespace flare::blas {
 
     template <typename MemberType>
     struct TeamVectorScale {
-        template <typename ScalarType, typename AViewType>
+        template <typename ScalarType, typename ATensorType>
         FLARE_INLINE_FUNCTION static int invoke(const MemberType& member,
                                                  const ScalarType alpha,
-                                                 const AViewType& A) {
+                                                 const ATensorType& A) {
             return flare::blas::detail::TeamVectorScaleInternal::invoke(member, A.extent(0),
                                                          A.extent(1), alpha, A.data(),
                                                          A.stride_0(), A.stride_1());

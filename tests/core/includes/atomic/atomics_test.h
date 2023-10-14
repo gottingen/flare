@@ -133,8 +133,8 @@ std::ostream& operator<<(std::ostream& os, const SuperScalar<N>& dt) {
 template <class T, class DEVICE_TYPE>
 struct ZeroFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = typename flare::View<T, execution_space>;
-  using h_type          = typename flare::View<T, execution_space>::HostMirror;
+  using type            = typename flare::Tensor<T, execution_space>;
+  using h_type          = typename flare::Tensor<T, execution_space>::HostMirror;
 
   type data;
 
@@ -149,7 +149,7 @@ struct ZeroFunctor {
 template <class T, class DEVICE_TYPE>
 struct AddFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
 
@@ -160,7 +160,7 @@ struct AddFunctor {
 template <class T, class DEVICE_TYPE>
 struct AddFunctorReduce {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
 
@@ -219,7 +219,7 @@ T AddLoopSerial(int loop) {
 template <class T, class DEVICE_TYPE>
 struct CASFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
 
@@ -239,7 +239,7 @@ struct CASFunctor {
 template <class T, class DEVICE_TYPE>
 struct CASFunctorReduce {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data;
 
@@ -314,7 +314,7 @@ T CASLoopSerial(int loop) {
 template <class T, class DEVICE_TYPE>
 struct ExchFunctor {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data, data2;
 
@@ -328,7 +328,7 @@ struct ExchFunctor {
 template <class T, class DEVICE_TYPE>
 struct ExchFunctorReduce {
   using execution_space = DEVICE_TYPE;
-  using type            = flare::View<T, execution_space>;
+  using type            = flare::Tensor<T, execution_space>;
 
   type data, data2;
 
@@ -554,7 +554,7 @@ struct TpetraUseCase {
   };
 
   using T = int;
-  flare::View<T, TEST_EXECSPACE> d_{"lbl"};
+  flare::Tensor<T, TEST_EXECSPACE> d_{"lbl"};
   FLARE_FUNCTION void operator()(int i) const {
     // 0, -1, 2, -3, ...
     auto v_i = static_cast<T>(i);

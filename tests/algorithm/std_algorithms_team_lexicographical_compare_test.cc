@@ -21,7 +21,7 @@ namespace TeamLexicographicalCompare {
 
 namespace KE = flare::experimental;
 
-enum class TestCaseType { ViewsAreEqual, FirstIsLess, FirstIsGreater };
+enum class TestCaseType { TensorsAreEqual, FirstIsLess, FirstIsGreater };
 
 template <class ValueType>
 struct LessFunctor {
@@ -31,21 +31,21 @@ struct LessFunctor {
   }
 };
 
-template <class DataViewType, class CompViewType, class ResultsViewType,
+template <class DatATensorType, class CompTensorType, class ResultsTensorType,
           class BinaryCompType>
 struct TestFunctorA {
-  DataViewType m_dataView;
-  CompViewType m_compView;
-  ResultsViewType m_resultsView;
+  DatATensorType m_dataTensor;
+  CompTensorType m_compTensor;
+  ResultsTensorType m_resultsTensor;
   int m_apiPick;
   BinaryCompType m_binaryComp;
 
-  TestFunctorA(const DataViewType dataView, const CompViewType compView,
-               const ResultsViewType resultsView, int apiPick,
+  TestFunctorA(const DatATensorType dataTensor, const CompTensorType compTensor,
+               const ResultsTensorType resultsTensor, int apiPick,
                BinaryCompType binaryComp)
-      : m_dataView(dataView),
-        m_compView(compView),
-        m_resultsView(resultsView),
+      : m_dataTensor(dataTensor),
+        m_compTensor(compTensor),
+        m_resultsTensor(resultsTensor),
         m_apiPick(apiPick),
         m_binaryComp(binaryComp) {}
 
@@ -53,11 +53,11 @@ struct TestFunctorA {
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto rowIndex = member.league_rank();
 
-    auto rowData         = flare::subview(m_dataView, rowIndex, flare::ALL());
+    auto rowData         = flare::subtensor(m_dataTensor, rowIndex, flare::ALL());
     const auto dataBegin = KE::cbegin(rowData);
     const auto dataEnd   = KE::cend(rowData);
 
-    auto rowComp         = flare::subview(m_compView, rowIndex, flare::ALL());
+    auto rowComp         = flare::subtensor(m_compTensor, rowIndex, flare::ALL());
     const auto compBegin = KE::cbegin(rowComp);
     const auto compEnd   = KE::cend(rowComp);
 
@@ -66,7 +66,7 @@ struct TestFunctorA {
         const bool result = KE::lexicographical_compare(
             member, dataBegin, dataEnd, compBegin, compEnd);
         flare::single(flare::PerTeam(member),
-                       [=, *this]() { m_resultsView(rowIndex) = result; });
+                       [=, *this]() { m_resultsTensor(rowIndex) = result; });
         break;
       }
 
@@ -74,7 +74,7 @@ struct TestFunctorA {
         const bool result =
             KE::lexicographical_compare(member, rowData, rowComp);
         flare::single(flare::PerTeam(member),
-                       [=, *this]() { m_resultsView(rowIndex) = result; });
+                       [=, *this]() { m_resultsTensor(rowIndex) = result; });
         break;
       }
 
@@ -82,7 +82,7 @@ struct TestFunctorA {
         const bool result = KE::lexicographical_compare(
             member, dataBegin, dataEnd, compBegin, compEnd, m_binaryComp);
         flare::single(flare::PerTeam(member),
-                       [=, *this]() { m_resultsView(rowIndex) = result; });
+                       [=, *this]() { m_resultsTensor(rowIndex) = result; });
         break;
       }
 
@@ -90,7 +90,7 @@ struct TestFunctorA {
         const bool result =
             KE::lexicographical_compare(member, rowData, rowComp, m_binaryComp);
         flare::single(flare::PerTeam(member),
-                       [=, *this]() { m_resultsView(rowIndex) = result; });
+                       [=, *this]() { m_resultsTensor(rowIndex) = result; });
         break;
       }
     }
@@ -101,56 +101,56 @@ template <class LayoutTag, class ValueType>
 void test_A(const TestCaseType testCase, std::size_t numTeams,
             std::size_t numCols, int apiId) {
   /* description:
-     use a rank-2 view randomly filled with values,
+     use a rank-2 tensor randomly filled with values,
      and run a team-level lexicographical_compare
    */
 
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range.
   constexpr ValueType lowerBound = 5;
   constexpr ValueType upperBound = 523;
   const auto bounds              = make_bounds(lowerBound, upperBound);
 
-  auto [dataView, dataViewBeforeOp_h] = create_random_view_and_host_clone(
-      LayoutTag{}, numTeams, numCols, bounds, "dataView");
+  auto [dataTensor, dataTensorBeforeOp_h] = create_random_tensor_and_host_clone(
+      LayoutTag{}, numTeams, numCols, bounds, "dataTensor");
 
-  // create a view to compare it with dataView. If testCase == ViewsAreEqual,
-  // compView is a copy of dataView. If testCase == FirstIsLess, we want the
-  // dataView to be lexicographically less (and compView - greater). If testCase
-  // == FirstIsGreater, we want the dataView to be lexicographically greater
-  // (and compView - less).
-  auto compEqualView   = create_deep_copyable_compatible_clone(dataView);
-  auto compEqualView_h = create_mirror_view(flare::HostSpace(), compEqualView);
-  flare::deep_copy(compEqualView_h, dataViewBeforeOp_h);
+  // create a tensor to compare it with dataTensor. If testCase == TensorsAreEqual,
+  // compTensor is a copy of dataTensor. If testCase == FirstIsLess, we want the
+  // dataTensor to be lexicographically less (and compTensor - greater). If testCase
+  // == FirstIsGreater, we want the dataTensor to be lexicographically greater
+  // (and compTensor - less).
+  auto compEqualTensor   = create_deep_copyable_compatible_clone(dataTensor);
+  auto compEqualTensor_h = create_mirror_tensor(flare::HostSpace(), compEqualTensor);
+  flare::deep_copy(compEqualTensor_h, dataTensorBeforeOp_h);
   const auto middle = numCols / 2;
   switch (testCase) {
-    case TestCaseType::ViewsAreEqual: {
+    case TestCaseType::TensorsAreEqual: {
       // Do nothing - deep_copy was already done
       break;
     }
 
     case TestCaseType::FirstIsLess: {
-      for (std::size_t i = 0; i < compEqualView_h.extent(0); ++i) {
-        compEqualView_h(i, middle) += 1;
+      for (std::size_t i = 0; i < compEqualTensor_h.extent(0); ++i) {
+        compEqualTensor_h(i, middle) += 1;
       }
 
       break;
     }
 
     case TestCaseType::FirstIsGreater: {
-      for (std::size_t i = 0; i < compEqualView_h.extent(0); ++i) {
-        compEqualView_h(i, middle) -= 1;
+      for (std::size_t i = 0; i < compEqualTensor_h.extent(0); ++i) {
+        compEqualTensor_h(i, middle) -= 1;
       }
 
       break;
     }
   }
 
-  flare::deep_copy(compEqualView, compEqualView_h);
+  flare::deep_copy(compEqualTensor, compEqualTensor_h);
 
   // -----------------------------------------------
   // launch flare kernel
@@ -158,26 +158,26 @@ void test_A(const TestCaseType testCase, std::size_t numTeams,
   using space_t = flare::DefaultExecutionSpace;
   flare::TeamPolicy<space_t> policy(numTeams, flare::AUTO());
 
-  // create the view to store results of equal()
-  flare::View<bool*> resultsView("resultsView", numTeams);
+  // create the tensor to store results of equal()
+  flare::Tensor<bool*> resultsTensor("resultsTensor", numTeams);
 
   LessFunctor<ValueType> binaryComp{};
 
   // use CTAD for functor
-  TestFunctorA fnc(dataView, compEqualView, resultsView, apiId, binaryComp);
+  TestFunctorA fnc(dataTensor, compEqualTensor, resultsTensor, apiId, binaryComp);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // run cpp-std kernel and check
   // -----------------------------------------------
-  auto resultsView_h = create_host_space_copy(resultsView);
+  auto resultsTensor_h = create_host_space_copy(resultsTensor);
 
-  for (std::size_t i = 0; i < dataView.extent(0); ++i) {
-    auto rowData = flare::subview(dataViewBeforeOp_h, i, flare::ALL());
+  for (std::size_t i = 0; i < dataTensor.extent(0); ++i) {
+    auto rowData = flare::subtensor(dataTensorBeforeOp_h, i, flare::ALL());
     const auto dataBegin = KE::cbegin(rowData);
     const auto dataEnd   = KE::cend(rowData);
 
-    auto rowComp         = flare::subview(compEqualView_h, i, flare::ALL());
+    auto rowComp         = flare::subtensor(compEqualTensor_h, i, flare::ALL());
     const auto compBegin = KE::cbegin(rowComp);
     const auto compEnd   = KE::cend(rowComp);
 
@@ -188,16 +188,16 @@ void test_A(const TestCaseType testCase, std::size_t numTeams,
                                                          compBegin, compEnd);
 
         switch (testCase) {
-          case TestCaseType::ViewsAreEqual:
+          case TestCaseType::TensorsAreEqual:
           case TestCaseType::FirstIsGreater: {
-            REQUIRE_FALSE(resultsView_h(i));
-            REQUIRE_EQ(result, resultsView_h(i));
+            REQUIRE_FALSE(resultsTensor_h(i));
+            REQUIRE_EQ(result, resultsTensor_h(i));
             break;
           }
 
           case TestCaseType::FirstIsLess: {
-            REQUIRE(resultsView_h(i));
-            REQUIRE_EQ(result, resultsView_h(i));
+            REQUIRE(resultsTensor_h(i));
+            REQUIRE_EQ(result, resultsTensor_h(i));
             break;
           }
         }
@@ -211,16 +211,16 @@ void test_A(const TestCaseType testCase, std::size_t numTeams,
             dataBegin, dataEnd, compBegin, compEnd, binaryComp);
 
         switch (testCase) {
-          case TestCaseType::ViewsAreEqual:
+          case TestCaseType::TensorsAreEqual:
           case TestCaseType::FirstIsGreater: {
-            REQUIRE_FALSE(resultsView_h(i));
-            REQUIRE_EQ(result, resultsView_h(i));
+            REQUIRE_FALSE(resultsTensor_h(i));
+            REQUIRE_EQ(result, resultsTensor_h(i));
             break;
           }
 
           case TestCaseType::FirstIsLess: {
-            REQUIRE(resultsView_h(i));
-            REQUIRE_EQ(result, resultsView_h(i));
+            REQUIRE(resultsTensor_h(i));
+            REQUIRE_EQ(result, resultsTensor_h(i));
             break;
           }
         }
@@ -242,21 +242,21 @@ void run_all_scenarios(const TestCaseType testCase) {
   }
 }
 
-TEST_CASE("std_algorithms_lexicographical_compare_team_test, views_are_equal") {
-  constexpr TestCaseType testCaseType = TestCaseType::ViewsAreEqual;
+TEST_CASE("std_algorithms_lexicographical_compare_team_test, tensors_are_equal") {
+  constexpr TestCaseType testCaseType = TestCaseType::TensorsAreEqual;
   run_all_scenarios<DynamicTag, double>(testCaseType);
   run_all_scenarios<StridedTwoRowsTag, int>(testCaseType);
   run_all_scenarios<StridedThreeRowsTag, unsigned>(testCaseType);
 }
 
-TEST_CASE("std_algorithms_lexicographical_compare_team_test, first_view_is_less") {
+TEST_CASE("std_algorithms_lexicographical_compare_team_test, first_tensor_is_less") {
   constexpr TestCaseType testCaseType = TestCaseType::FirstIsLess;
   run_all_scenarios<DynamicTag, double>(testCaseType);
   run_all_scenarios<StridedTwoRowsTag, int>(testCaseType);
   run_all_scenarios<StridedThreeRowsTag, unsigned>(testCaseType);
 }
 
-TEST_CASE("std_algorithms_lexicographical_compare_team_test, first_view_is_greater") {
+TEST_CASE("std_algorithms_lexicographical_compare_team_test, first_tensor_is_greater") {
   constexpr TestCaseType testCaseType = TestCaseType::FirstIsGreater;
   run_all_scenarios<DynamicTag, double>(testCaseType);
   run_all_scenarios<StridedTwoRowsTag, int>(testCaseType);

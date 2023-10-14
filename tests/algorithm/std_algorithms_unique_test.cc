@@ -36,14 +36,14 @@ struct UnifDist<int> {
   int operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -140,14 +140,14 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ResultIt, class ViewType1, class ViewType2, class... Args>
+template <class ResultIt, class TensorType1, class TensorType2, class... Args>
 void verify_data(const std::string& name, ResultIt my_result_it,
-                 ViewType1 view_test, ViewType2 data_v_h, Args... args) {
+                 TensorType1 tensor_test, TensorType2 data_v_h, Args... args) {
   // run std unique on host data
   auto std_r = std::unique(KE::begin(data_v_h), KE::end(data_v_h), args...);
 
@@ -155,28 +155,28 @@ void verify_data(const std::string& name, ResultIt my_result_it,
   // check the returned iterator is correct
   //
   const auto std_diff = (std::size_t)(std_r - KE::begin(data_v_h));
-  const auto my_diff  = (std::size_t)(my_result_it - KE::begin(view_test));
+  const auto my_diff  = (std::size_t)(my_result_it - KE::begin(tensor_test));
   REQUIRE_EQ(my_diff, std_diff);
 
   //
-  // check the data in the view
+  // check the data in the tensor
   //
   // Note that we need to stop after std_diff because
   // after that values are unspecified, see std::unique
-  auto view_test_h = create_host_space_copy(view_test);
+  auto tensor_test_h = create_host_space_copy(tensor_test);
   for (std::size_t i = 0; i < std_diff; ++i) {
     // std::cout << "i = " << i
-    // 		<< " my  = " << view_test_h(i) << " "
+    // 		<< " my  = " << tensor_test_h(i) << " "
     // 		<< " std = " << data_v_h(i)
     // 		<< '\n';
-    REQUIRE_EQ(view_test_h(i), data_v_h(i));
+    REQUIRE_EQ(tensor_test_h(i), data_v_h(i));
   }
 
   if (name == "medium-b") {
-    using value_type = typename ViewType1::value_type;
+    using value_type = typename TensorType1::value_type;
     REQUIRE_EQ(my_diff, (std::size_t)2);
-    REQUIRE_EQ(view_test_h(0), (value_type)22);
-    REQUIRE_EQ(view_test_h(1), (value_type)44);
+    REQUIRE_EQ(tensor_test_h(0), (value_type)22);
+    REQUIRE_EQ(tensor_test_h(1), (value_type)44);
   }
 }
 
@@ -186,7 +186,7 @@ std::string value_type_to_string(double) { return "double"; }
 template <class Tag, class ValueType>
 void print_scenario_details(const std::string& name) {
   std::cout << "unique: default predicate: " << name << ", "
-            << view_tag_to_string(Tag{}) << " "
+            << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << '\n';
 }
 
@@ -194,62 +194,62 @@ template <class Tag, class ValueType, class Predicate>
 void print_scenario_details(const std::string& name, Predicate pred) {
   (void)pred;
   std::cout << "unique: custom  predicate: " << name << ", "
-            << view_tag_to_string(Tag{}) << " "
+            << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << '\n';
 }
 
 template <class Tag, class ValueType, class InfoType, class... Args>
 void run_single_scenario(const InfoType& scenario_info, Args... args) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // print_scenario_details<Tag, ValueType>(name, args...);
 
-  auto test_view = create_view<ValueType>(Tag{}, view_ext, "unique_test_view");
+  auto test_tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "unique_test_tensor");
 
   {
-    fill_view(test_view, name);
+    fill_tensor(test_tensor, name);
     // make host copy BEFORE running unique on it since unique modifies it
-    auto data_h = create_host_space_copy(test_view);
+    auto data_h = create_host_space_copy(test_tensor);
 
     // run unique
-    auto rit = KE::unique(exespace(), KE::begin(test_view), KE::end(test_view),
+    auto rit = KE::unique(exespace(), KE::begin(test_tensor), KE::end(test_tensor),
                           args...);
     // verify
-    verify_data(name, rit, test_view, data_h, args...);
+    verify_data(name, rit, test_tensor, data_h, args...);
   }
 
   {
-    fill_view(test_view, name);
+    fill_tensor(test_tensor, name);
     // make host copy BEFORE running unique on it since unique modifies it
-    auto data_h = create_host_space_copy(test_view);
+    auto data_h = create_host_space_copy(test_tensor);
 
     // run unique
-    auto rit = KE::unique("label", exespace(), KE::begin(test_view),
-                          KE::end(test_view), args...);
+    auto rit = KE::unique("label", exespace(), KE::begin(test_tensor),
+                          KE::end(test_tensor), args...);
     // verify
-    verify_data(name, rit, test_view, data_h, args...);
+    verify_data(name, rit, test_tensor, data_h, args...);
   }
 
   {
-    fill_view(test_view, name);
+    fill_tensor(test_tensor, name);
     // make host copy BEFORE running unique on it since unique modifies it
-    auto data_h = create_host_space_copy(test_view);
+    auto data_h = create_host_space_copy(test_tensor);
 
     // run unique
-    auto rit = KE::unique(exespace(), test_view, args...);
+    auto rit = KE::unique(exespace(), test_tensor, args...);
     // verify
-    verify_data(name, rit, test_view, data_h, args...);
+    verify_data(name, rit, test_tensor, data_h, args...);
   }
 
   {
-    fill_view(test_view, name);
+    fill_tensor(test_tensor, name);
     // make host copy BEFORE running unique on it since unique modifies it
-    auto data_h = create_host_space_copy(test_view);
+    auto data_h = create_host_space_copy(test_tensor);
 
     // run unique
-    auto rit = KE::unique("label", exespace(), test_view, args...);
+    auto rit = KE::unique("label", exespace(), test_tensor, args...);
     // verify
-    verify_data(name, rit, test_view, data_h, args...);
+    verify_data(name, rit, test_tensor, data_h, args...);
   }
 
   flare::fence();

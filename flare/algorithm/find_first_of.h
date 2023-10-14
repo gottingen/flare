@@ -53,15 +53,15 @@ template <
     typename DataType2, typename... Properties2,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto find_first_of(const ExecutionSpace& ex,
-                   const ::flare::View<DataType1, Properties1...>& view,
-                   const ::flare::View<DataType2, Properties2...>& s_view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(s_view);
+                   const ::flare::Tensor<DataType1, Properties1...>& tensor,
+                   const ::flare::Tensor<DataType2, Properties2...>& s_tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(s_tensor);
 
   namespace KE = ::flare::experimental;
   return detail::find_first_of_exespace_impl(
-      "flare::find_first_of_view_api_default", ex, KE::begin(view),
-      KE::end(view), KE::begin(s_view), KE::end(s_view));
+      "flare::find_first_of_tensor_api_default", ex, KE::begin(tensor),
+      KE::end(tensor), KE::begin(s_tensor), KE::end(s_tensor));
 }
 
 template <
@@ -69,15 +69,15 @@ template <
     typename DataType2, typename... Properties2,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto find_first_of(const std::string& label, const ExecutionSpace& ex,
-                   const ::flare::View<DataType1, Properties1...>& view,
-                   const ::flare::View<DataType2, Properties2...>& s_view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(s_view);
+                   const ::flare::Tensor<DataType1, Properties1...>& tensor,
+                   const ::flare::Tensor<DataType2, Properties2...>& s_tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(s_tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::find_first_of_exespace_impl(label, ex, KE::begin(view),
-                                           KE::end(view), KE::begin(s_view),
-                                           KE::end(s_view));
+  return detail::find_first_of_exespace_impl(label, ex, KE::begin(tensor),
+                                           KE::end(tensor), KE::begin(s_tensor),
+                                           KE::end(s_tensor));
 }
 
 // overload set 2: binary predicate passed
@@ -111,16 +111,16 @@ template <
     typename DataType2, typename... Properties2, typename BinaryPredicateType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto find_first_of(const ExecutionSpace& ex,
-                   const ::flare::View<DataType1, Properties1...>& view,
-                   const ::flare::View<DataType2, Properties2...>& s_view,
+                   const ::flare::Tensor<DataType1, Properties1...>& tensor,
+                   const ::flare::Tensor<DataType2, Properties2...>& s_tensor,
                    const BinaryPredicateType& pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(s_view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(s_tensor);
 
   namespace KE = ::flare::experimental;
   return detail::find_first_of_exespace_impl(
-      "flare::find_first_of_view_api_default", ex, KE::begin(view),
-      KE::end(view), KE::begin(s_view), KE::end(s_view), pred);
+      "flare::find_first_of_tensor_api_default", ex, KE::begin(tensor),
+      KE::end(tensor), KE::begin(s_tensor), KE::end(s_tensor), pred);
 }
 
 template <
@@ -128,16 +128,16 @@ template <
     typename DataType2, typename... Properties2, typename BinaryPredicateType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto find_first_of(const std::string& label, const ExecutionSpace& ex,
-                   const ::flare::View<DataType1, Properties1...>& view,
-                   const ::flare::View<DataType2, Properties2...>& s_view,
+                   const ::flare::Tensor<DataType1, Properties1...>& tensor,
+                   const ::flare::Tensor<DataType2, Properties2...>& s_tensor,
                    const BinaryPredicateType& pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(s_view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(s_tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::find_first_of_exespace_impl(label, ex, KE::begin(view),
-                                           KE::end(view), KE::begin(s_view),
-                                           KE::end(s_view), pred);
+  return detail::find_first_of_exespace_impl(label, ex, KE::begin(tensor),
+                                           KE::end(tensor), KE::begin(s_tensor),
+                                           KE::end(s_tensor), pred);
 }
 
 //
@@ -164,15 +164,15 @@ template <typename TeamHandleType, typename DataType1, typename... Properties1,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto find_first_of(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view,
-    const ::flare::View<DataType2, Properties2...>& s_view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(s_view);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor,
+    const ::flare::Tensor<DataType2, Properties2...>& s_tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(s_tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::find_first_of_team_impl(teamHandle, KE::begin(view),
-                                       KE::end(view), KE::begin(s_view),
-                                       KE::end(s_view));
+  return detail::find_first_of_team_impl(teamHandle, KE::begin(tensor),
+                                       KE::end(tensor), KE::begin(s_tensor),
+                                       KE::end(s_tensor));
 }
 
 // overload set 2: binary predicate passed
@@ -196,16 +196,16 @@ template <typename TeamHandleType, typename DataType1, typename... Properties1,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto find_first_of(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view,
-    const ::flare::View<DataType2, Properties2...>& s_view,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor,
+    const ::flare::Tensor<DataType2, Properties2...>& s_tensor,
     const BinaryPredicateType& pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(s_view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(s_tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::find_first_of_team_impl(teamHandle, KE::begin(view),
-                                       KE::end(view), KE::begin(s_view),
-                                       KE::end(s_view), pred);
+  return detail::find_first_of_team_impl(teamHandle, KE::begin(tensor),
+                                       KE::end(tensor), KE::begin(s_tensor),
+                                       KE::end(s_tensor), pred);
 }
 
 }  // namespace experimental

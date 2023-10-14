@@ -24,9 +24,9 @@ namespace experimental {
 template <>
 class UniqueToken<Threads, UniqueTokenScope::Instance> {
  private:
-  using buffer_type = flare::View<uint32_t *, flare::HostSpace>;
+  using buffer_type = flare::Tensor<uint32_t *, flare::HostSpace>;
   int m_count;
-  buffer_type m_buffer_view;
+  buffer_type m_buffer_tensor;
   uint32_t volatile *m_buffer;
 
  public:
@@ -38,20 +38,20 @@ class UniqueToken<Threads, UniqueTokenScope::Instance> {
   /// This object should not be shared between instances
   UniqueToken(execution_space const & = execution_space()) noexcept
       : m_count(::flare::Threads::impl_thread_pool_size()),
-        m_buffer_view(buffer_type()),
+        m_buffer_tensor(buffer_type()),
         m_buffer(nullptr) {}
 
   UniqueToken(size_type max_size, execution_space const & = execution_space())
       : m_count(max_size > ::flare::Threads::impl_thread_pool_size()
                     ? ::flare::Threads::impl_thread_pool_size()
                     : max_size),
-        m_buffer_view(
+        m_buffer_tensor(
             max_size > ::flare::Threads::impl_thread_pool_size()
                 ? buffer_type()
-                : buffer_type("UniqueToken::m_buffer_view",
+                : buffer_type("UniqueToken::m_buffer_tensor",
                               ::flare::detail::concurrent_bitset::buffer_bound(
                                   m_count))),
-        m_buffer(m_buffer_view.data()) {}
+        m_buffer(m_buffer_tensor.data()) {}
 
   /// \brief upper bound for acquired values, i.e. 0 <= value < size()
   FLARE_INLINE_FUNCTION

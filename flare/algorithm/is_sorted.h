@@ -37,21 +37,21 @@ bool is_sorted(const std::string& label, const ExecutionSpace& ex,
 
 template <class ExecutionSpace, class DataType, class... Properties>
 bool is_sorted(const ExecutionSpace& ex,
-               const ::flare::View<DataType, Properties...>& view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+               const ::flare::Tensor<DataType, Properties...>& tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::is_sorted_impl("flare::is_sorted_view_api_default", ex,
-                              KE::cbegin(view), KE::cend(view));
+  return detail::is_sorted_impl("flare::is_sorted_tensor_api_default", ex,
+                              KE::cbegin(tensor), KE::cend(tensor));
 }
 
 template <class ExecutionSpace, class DataType, class... Properties>
 bool is_sorted(const std::string& label, const ExecutionSpace& ex,
-               const ::flare::View<DataType, Properties...>& view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+               const ::flare::Tensor<DataType, Properties...>& tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::is_sorted_impl(label, ex, KE::cbegin(view), KE::cend(view));
+  return detail::is_sorted_impl(label, ex, KE::cbegin(tensor), KE::cend(tensor));
 }
 
 template <class ExecutionSpace, class IteratorType, class ComparatorType>
@@ -70,25 +70,25 @@ bool is_sorted(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType, class... Properties,
           class ComparatorType>
 bool is_sorted(const ExecutionSpace& ex,
-               const ::flare::View<DataType, Properties...>& view,
+               const ::flare::Tensor<DataType, Properties...>& tensor,
                ComparatorType comp) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::is_sorted_impl("flare::is_sorted_view_api_default", ex,
-                              KE::cbegin(view), KE::cend(view),
+  return detail::is_sorted_impl("flare::is_sorted_tensor_api_default", ex,
+                              KE::cbegin(tensor), KE::cend(tensor),
                               std::move(comp));
 }
 
 template <class ExecutionSpace, class DataType, class... Properties,
           class ComparatorType>
 bool is_sorted(const std::string& label, const ExecutionSpace& ex,
-               const ::flare::View<DataType, Properties...>& view,
+               const ::flare::Tensor<DataType, Properties...>& tensor,
                ComparatorType comp) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::is_sorted_impl(label, ex, KE::cbegin(view), KE::cend(view),
+  return detail::is_sorted_impl(label, ex, KE::cbegin(tensor), KE::cend(tensor),
                               std::move(comp));
 }
 

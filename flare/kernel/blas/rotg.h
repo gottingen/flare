@@ -35,40 +35,40 @@ namespace flare::blas {
     /// \param c [out] cosine value associated with the
     ///          rotation
     /// \param s [out] sine value associated with the rotation
-    template <class execution_space, class SViewType, class MViewType>
-    void rotg(execution_space const& space, SViewType const& a, SViewType const& b,
-              MViewType const& c, SViewType const& s) {
-        static_assert(SViewType::rank == 0,
-                      "rotg: the inputs need to be rank 0 views");
-        static_assert(MViewType::rank == 0,
-                      "rotg: the inputs need to be rank 0 views");
+    template <class execution_space, class STensorType, class MTensorType>
+    void rotg(execution_space const& space, STensorType const& a, STensorType const& b,
+              MTensorType const& c, STensorType const& s) {
+        static_assert(STensorType::rank == 0,
+                      "rotg: the inputs need to be rank 0 tensors");
+        static_assert(MTensorType::rank == 0,
+                      "rotg: the inputs need to be rank 0 tensors");
         static_assert(
-                !flare::ArithTraits<typename MViewType::value_type>::is_complex);
-        static_assert(
-                flare::SpaceAccessibility<execution_space,
-                        typename SViewType::memory_space>::accessible,
-                "rotg: execution_space cannot access data in SViewType");
+                !flare::ArithTraits<typename MTensorType::value_type>::is_complex);
         static_assert(
                 flare::SpaceAccessibility<execution_space,
-                        typename MViewType::memory_space>::accessible,
-                "rotg: execution_space cannot access data in MViewType");
+                        typename STensorType::memory_space>::accessible,
+                "rotg: execution_space cannot access data in STensorType");
+        static_assert(
+                flare::SpaceAccessibility<execution_space,
+                        typename MTensorType::memory_space>::accessible,
+                "rotg: execution_space cannot access data in MTensorType");
 
-        using SView_Internal = flare::View<
-                typename SViewType::value_type,
-                typename flare::detail::GetUnifiedLayout<SViewType>::array_layout,
-                flare::Device<execution_space, typename SViewType::memory_space>,
+        using STensor_Internal = flare::Tensor<
+                typename STensorType::value_type,
+                typename flare::detail::GetUnifiedLayout<STensorType>::array_layout,
+                flare::Device<execution_space, typename STensorType::memory_space>,
                 flare::MemoryTraits<flare::Unmanaged>>;
-        using MView_Internal = flare::View<
-                typename MViewType::value_type,
-                typename flare::detail::GetUnifiedLayout<MViewType>::array_layout,
-                flare::Device<execution_space, typename MViewType::memory_space>,
+        using MTensor_Internal = flare::Tensor<
+                typename MTensorType::value_type,
+                typename flare::detail::GetUnifiedLayout<MTensorType>::array_layout,
+                flare::Device<execution_space, typename MTensorType::memory_space>,
                 flare::MemoryTraits<flare::Unmanaged>>;
 
-        SView_Internal a_(a), b_(b), s_(s);
-        MView_Internal c_(c);
+        STensor_Internal a_(a), b_(b), s_(s);
+        MTensor_Internal c_(c);
 
         flare::Profiling::pushRegion("flare::blas::rotg");
-        flare::blas::detail::Rotg<execution_space, SView_Internal, MView_Internal>::rotg(space, a, b,
+        flare::blas::detail::Rotg<execution_space, STensor_Internal, MTensor_Internal>::rotg(space, a, b,
                                                                           c, s);
         flare::Profiling::popRegion();
     }

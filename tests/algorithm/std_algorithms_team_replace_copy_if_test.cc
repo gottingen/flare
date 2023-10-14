@@ -32,22 +32,22 @@ struct GreaterThanValueFunctor {
   bool operator()(ValueType val) const { return (val > m_val); }
 };
 
-template <class SourceViewType, class DestViewType, class DistancesViewType,
+template <class SourceTensorType, class DestTensorType, class DistancesTensorType,
           class ValueType>
 struct TestFunctorA {
-  SourceViewType m_sourceView;
-  DestViewType m_destView;
-  DistancesViewType m_distancesView;
+  SourceTensorType m_sourceTensor;
+  DestTensorType m_destTensor;
+  DistancesTensorType m_distancesTensor;
   ValueType m_threshold;
   ValueType m_newValue;
   int m_apiPick;
 
-  TestFunctorA(const SourceViewType sourceView, const DestViewType destView,
-               const DistancesViewType distancesView, ValueType threshold,
+  TestFunctorA(const SourceTensorType sourceTensor, const DestTensorType destTensor,
+               const DistancesTensorType distancesTensor, ValueType threshold,
                ValueType newVal, int apiPick)
-      : m_sourceView(sourceView),
-        m_destView(destView),
-        m_distancesView(distancesView),
+      : m_sourceTensor(sourceTensor),
+        m_destTensor(destTensor),
+        m_distancesTensor(distancesTensor),
         m_threshold(threshold),
         m_newValue(newVal),
         m_apiPick(apiPick) {}
@@ -55,27 +55,27 @@ struct TestFunctorA {
   template <class MemberType>
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
-    auto myRowViewFrom =
-        flare::subview(m_sourceView, myRowIndex, flare::ALL());
-    auto myRowViewDest = flare::subview(m_destView, myRowIndex, flare::ALL());
+    auto myRowTensorFrom =
+        flare::subtensor(m_sourceTensor, myRowIndex, flare::ALL());
+    auto myRowTensorDest = flare::subtensor(m_destTensor, myRowIndex, flare::ALL());
 
     GreaterThanValueFunctor predicate(m_threshold);
 
     if (m_apiPick == 0) {
       auto it = KE::replace_copy_if(
-          member, KE::begin(myRowViewFrom), KE::end(myRowViewFrom),
-          KE::begin(myRowViewDest), predicate, m_newValue);
+          member, KE::begin(myRowTensorFrom), KE::end(myRowTensorFrom),
+          KE::begin(myRowTensorDest), predicate, m_newValue);
 
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) =
-            KE::distance(KE::begin(myRowViewDest), it);
+        m_distancesTensor(myRowIndex) =
+            KE::distance(KE::begin(myRowTensorDest), it);
       });
     } else if (m_apiPick == 1) {
-      auto it = KE::replace_copy_if(member, myRowViewFrom, myRowViewDest,
+      auto it = KE::replace_copy_if(member, myRowTensorFrom, myRowTensorDest,
                                     predicate, m_newValue);
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) =
-            KE::distance(KE::begin(myRowViewDest), it);
+        m_distancesTensor(myRowIndex) =
+            KE::distance(KE::begin(myRowTensorDest), it);
       });
     }
   }
@@ -84,9 +84,9 @@ struct TestFunctorA {
 template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   /* description:
-     use a rank-2 view randomly filled with values,
+     use a rank-2 tensor randomly filled with values,
      and run a team-level replace_copy_if where the values strictly
-     greater than a threshold are replaced/copied into a new view
+     greater than a threshold are replaced/copied into a new tensor
      with a new value, while those <= threshold are copied but unchanged
    */
 
@@ -96,52 +96,52 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range
-  auto [sourceView, cloneOfSourceViewBeforeOp_h] =
-      create_random_view_and_host_clone(
+  auto [sourceTensor, cloneOfSourceTensorBeforeOp_h] =
+      create_random_tensor_and_host_clone(
           LayoutTag{}, numTeams, numCols,
-          flare::pair<ValueType, ValueType>{5, 523}, "sourceView");
+          flare::pair<ValueType, ValueType>{5, 523}, "sourceTensor");
 
   // -----------------------------------------------
   // launch flare kernel
   // -----------------------------------------------
   using space_t = flare::DefaultExecutionSpace;
   flare::TeamPolicy<space_t> policy(numTeams, flare::AUTO());
-  // create the destination view
-  flare::View<ValueType**> destView("destView", numTeams, numCols);
+  // create the destination tensor
+  flare::Tensor<ValueType**> destTensor("destTensor", numTeams, numCols);
 
   // replace_copy_if returns an iterator so to verify that it is correct
   // each team stores the distance of the returned iterator from the
   // beginning of the interval that team operates on and then we check
   // that these distances match the std result
-  flare::View<std::size_t*> distancesView("distancesView", numTeams);
+  flare::Tensor<std::size_t*> distancesTensor("distancesTensor", numTeams);
 
   // use CTAD for functor
-  TestFunctorA fnc(sourceView, destView, distancesView, threshold, newVal,
+  TestFunctorA fnc(sourceTensor, destTensor, distancesTensor, threshold, newVal,
                    apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // run cpp-std kernel and check
   // -----------------------------------------------
-  auto distancesView_h = create_host_space_copy(distancesView);
-  flare::View<ValueType**, flare::HostSpace> stdDestView("stdDestView",
+  auto distancesTensor_h = create_host_space_copy(distancesTensor);
+  flare::Tensor<ValueType**, flare::HostSpace> stdDestTensor("stdDestTensor",
                                                            numTeams, numCols);
   GreaterThanValueFunctor predicate(threshold);
-  for (std::size_t i = 0; i < sourceView.extent(0); ++i) {
+  for (std::size_t i = 0; i < sourceTensor.extent(0); ++i) {
     auto rowFrom =
-        flare::subview(cloneOfSourceViewBeforeOp_h, i, flare::ALL());
-    auto rowDest = flare::subview(stdDestView, i, flare::ALL());
+        flare::subtensor(cloneOfSourceTensorBeforeOp_h, i, flare::ALL());
+    auto rowDest = flare::subtensor(stdDestTensor, i, flare::ALL());
     auto it      = std::replace_copy_if(KE::cbegin(rowFrom), KE::cend(rowFrom),
                                    KE::begin(rowDest), predicate, newVal);
     const std::size_t stdDistance = KE::distance(KE::begin(rowDest), it);
-    REQUIRE_EQ(stdDistance, distancesView_h(i));
+    REQUIRE_EQ(stdDistance, distancesTensor_h(i));
   }
 
-  auto dataViewAfterOp_h = create_host_space_copy(destView);
-  expect_equal_host_views(stdDestView, dataViewAfterOp_h);
+  auto dataTensorAfterOp_h = create_host_space_copy(destTensor);
+  expect_equal_host_tensors(stdDestTensor, dataTensorAfterOp_h);
 }
 
 template <class LayoutTag, class ValueType>

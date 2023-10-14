@@ -49,7 +49,7 @@ template <
     class UnaryFunctorType,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 UnaryFunctorType for_each(const std::string& label, const ExecutionSpace& ex,
-                          const ::flare::View<DataType, Properties...>& v,
+                          const ::flare::Tensor<DataType, Properties...>& v,
                           UnaryFunctorType functor) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
@@ -63,12 +63,12 @@ template <
     class UnaryFunctorType,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 UnaryFunctorType for_each(const ExecutionSpace& ex,
-                          const ::flare::View<DataType, Properties...>& v,
+                          const ::flare::Tensor<DataType, Properties...>& v,
                           UnaryFunctorType functor) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   namespace KE = ::flare::experimental;
-  return detail::for_each_exespace_impl("flare::for_each_view_api_default", ex,
+  return detail::for_each_exespace_impl("flare::for_each_tensor_api_default", ex,
                                       KE::begin(v), KE::end(v),
                                       std::move(functor));
 }
@@ -92,7 +92,7 @@ template <class TeamHandleType, class DataType, class... Properties,
           std::enable_if_t<flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION UnaryFunctorType
 for_each(const TeamHandleType& teamHandle,
-         const ::flare::View<DataType, Properties...>& v,
+         const ::flare::Tensor<DataType, Properties...>& v,
          UnaryFunctorType functor) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 

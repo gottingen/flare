@@ -38,22 +38,22 @@ void generate(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType, class... Properties,
           class Generator>
 void generate(const ExecutionSpace& ex,
-              const ::flare::View<DataType, Properties...>& view,
+              const ::flare::Tensor<DataType, Properties...>& tensor,
               Generator g) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
-  detail::generate_impl("flare::generate_view_api_default", ex, begin(view),
-                      end(view), std::move(g));
+  detail::generate_impl("flare::generate_tensor_api_default", ex, begin(tensor),
+                      end(tensor), std::move(g));
 }
 
 template <class ExecutionSpace, class DataType, class... Properties,
           class Generator>
 void generate(const std::string& label, const ExecutionSpace& ex,
-              const ::flare::View<DataType, Properties...>& view,
+              const ::flare::Tensor<DataType, Properties...>& tensor,
               Generator g) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
-  detail::generate_impl(label, ex, begin(view), end(view), std::move(g));
+  detail::generate_impl(label, ex, begin(tensor), end(tensor), std::move(g));
 }
 
 }  // namespace experimental

@@ -24,7 +24,7 @@ namespace experimental {
 
 template <class ExecutionSpace, class InputIteratorType,
           class OutputIteratorType>
-std::enable_if_t<!::flare::is_view<InputIteratorType>::value,
+std::enable_if_t<!::flare::is_tensor<InputIteratorType>::value,
                  OutputIteratorType>
 adjacent_difference(const ExecutionSpace& ex, InputIteratorType first_from,
                     InputIteratorType last_from,
@@ -41,7 +41,7 @@ adjacent_difference(const ExecutionSpace& ex, InputIteratorType first_from,
 
 template <class ExecutionSpace, class InputIteratorType,
           class OutputIteratorType, class BinaryOp>
-std::enable_if_t<!::flare::is_view<InputIteratorType>::value,
+std::enable_if_t<!::flare::is_tensor<InputIteratorType>::value,
                  OutputIteratorType>
 adjacent_difference(const ExecutionSpace& ex, InputIteratorType first_from,
                     InputIteratorType last_from, OutputIteratorType first_dest,
@@ -53,7 +53,7 @@ adjacent_difference(const ExecutionSpace& ex, InputIteratorType first_from,
 
 template <class ExecutionSpace, class InputIteratorType,
           class OutputIteratorType>
-std::enable_if_t<!::flare::is_view<InputIteratorType>::value,
+std::enable_if_t<!::flare::is_tensor<InputIteratorType>::value,
                  OutputIteratorType>
 adjacent_difference(const std::string& label, const ExecutionSpace& ex,
                     InputIteratorType first_from, InputIteratorType last_from,
@@ -69,7 +69,7 @@ adjacent_difference(const std::string& label, const ExecutionSpace& ex,
 
 template <class ExecutionSpace, class InputIteratorType,
           class OutputIteratorType, class BinaryOp>
-std::enable_if_t<!::flare::is_view<InputIteratorType>::value,
+std::enable_if_t<!::flare::is_tensor<InputIteratorType>::value,
                  OutputIteratorType>
 adjacent_difference(const std::string& label, const ExecutionSpace& ex,
                     InputIteratorType first_from, InputIteratorType last_from,
@@ -82,75 +82,75 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto adjacent_difference(
     const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view_from,
-    const ::flare::View<DataType2, Properties2...>& view_dest) {
+    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest) {
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
 
-  using view_type1  = ::flare::View<DataType1, Properties1...>;
-  using view_type2  = ::flare::View<DataType2, Properties2...>;
-  using value_type1 = typename view_type1::value_type;
-  using value_type2 = typename view_type2::value_type;
+  using tensor_type1  = ::flare::Tensor<DataType1, Properties1...>;
+  using tensor_type2  = ::flare::Tensor<DataType2, Properties2...>;
+  using value_type1 = typename tensor_type1::value_type;
+  using value_type2 = typename tensor_type2::value_type;
   using binary_op =
       detail::StdAdjacentDifferenceDefaultBinaryOpFunctor<value_type1,
                                                         value_type2>;
   return detail::adjacent_difference_impl(
-      "flare::adjacent_difference_view_api", ex, KE::cbegin(view_from),
-      KE::cend(view_from), KE::begin(view_dest), binary_op());
+      "flare::adjacent_difference_tensor_api", ex, KE::cbegin(tensor_from),
+      KE::cend(tensor_from), KE::begin(tensor_dest), binary_op());
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class BinaryOp>
 auto adjacent_difference(
     const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view_from,
-    const ::flare::View<DataType2, Properties2...>& view_dest,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
     BinaryOp bin_op) {
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   return detail::adjacent_difference_impl(
-      "flare::adjacent_difference_view_api", ex, KE::cbegin(view_from),
-      KE::cend(view_from), KE::begin(view_dest), bin_op);
+      "flare::adjacent_difference_tensor_api", ex, KE::cbegin(tensor_from),
+      KE::cend(tensor_from), KE::begin(tensor_dest), bin_op);
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto adjacent_difference(
     const std::string& label, const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view_from,
-    const ::flare::View<DataType2, Properties2...>& view_dest) {
+    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest) {
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
 
-  using view_type1  = ::flare::View<DataType1, Properties1...>;
-  using view_type2  = ::flare::View<DataType2, Properties2...>;
-  using value_type1 = typename view_type1::value_type;
-  using value_type2 = typename view_type2::value_type;
+  using tensor_type1  = ::flare::Tensor<DataType1, Properties1...>;
+  using tensor_type2  = ::flare::Tensor<DataType2, Properties2...>;
+  using value_type1 = typename tensor_type1::value_type;
+  using value_type2 = typename tensor_type2::value_type;
   using binary_op =
       detail::StdAdjacentDifferenceDefaultBinaryOpFunctor<value_type1,
                                                         value_type2>;
 
-  return detail::adjacent_difference_impl(label, ex, KE::cbegin(view_from),
-                                        KE::cend(view_from),
-                                        KE::begin(view_dest), binary_op());
+  return detail::adjacent_difference_impl(label, ex, KE::cbegin(tensor_from),
+                                        KE::cend(tensor_from),
+                                        KE::begin(tensor_dest), binary_op());
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class BinaryOp>
 auto adjacent_difference(
     const std::string& label, const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view_from,
-    const ::flare::View<DataType2, Properties2...>& view_dest,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
     BinaryOp bin_op) {
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
-  return detail::adjacent_difference_impl(label, ex, KE::cbegin(view_from),
-                                        KE::cend(view_from),
-                                        KE::begin(view_dest), bin_op);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
+  return detail::adjacent_difference_impl(label, ex, KE::cbegin(tensor_from),
+                                        KE::cend(tensor_from),
+                                        KE::begin(tensor_dest), bin_op);
 }
 
 }  // namespace experimental

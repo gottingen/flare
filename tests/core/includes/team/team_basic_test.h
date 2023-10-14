@@ -91,7 +91,7 @@ struct TestTeamForAggregate {
   using team_policy_t  = flare::TeamPolicy<ExecutionSpace>;
   using member_t       = typename team_policy_t::member_type;
   using memory_space   = typename ExecutionSpace::memory_space;
-  using results_type   = flare::View<double*, memory_space>;
+  using results_type   = flare::Tensor<double*, memory_space>;
 
   static constexpr double INIT_VALUE   = -1.0;
   static constexpr double EXPECT_VALUE = 1.0;

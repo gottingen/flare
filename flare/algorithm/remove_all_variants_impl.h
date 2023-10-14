@@ -89,7 +89,7 @@ IteratorType remove_if_impl(const std::string& label, const ExecutionSpace& ex,
     // note that the tmp buffer is just large enought to store
     // all elements to keep, because ideally we do not need/want one
     // as large as the original range.
-    // To allocate the right tmp view, we need a call to count_if.
+    // To allocate the right tmp tensor, we need a call to count_if.
     // We could just do a "safe" allocation of a buffer as
     // large as (last-first), but I think a call to count_if is more afforable.
 
@@ -100,11 +100,11 @@ IteratorType remove_if_impl(const std::string& label, const ExecutionSpace& ex,
     const auto keep_count =
         flare::experimental::distance(first, last) - remove_count;
 
-    // create helper tmp view
+    // create helper tmp tensor
     using value_type    = typename IteratorType::value_type;
-    using tmp_view_type = flare::View<value_type*, ExecutionSpace>;
-    tmp_view_type tmp_view("std_remove_if_tmp_view", keep_count);
-    using tmp_readwrite_iterator_type = decltype(begin(tmp_view));
+    using tmp_tensor_type = flare::Tensor<value_type*, ExecutionSpace>;
+    tmp_tensor_type tmp_tensor("std_remove_if_tmp_tensor", keep_count);
+    using tmp_readwrite_iterator_type = decltype(begin(tmp_tensor));
 
     // in stage 1, *move* all elements to keep from original range to tmp
     // we use similar impl as copy_if except that we *move* rather than copy
@@ -117,7 +117,7 @@ IteratorType remove_if_impl(const std::string& label, const ExecutionSpace& ex,
     index_type scan_count        = 0;
     ::flare::parallel_scan(
         label, RangePolicy<ExecutionSpace>(ex, 0, scan_num_elements),
-        func1_type(first, begin(tmp_view), pred), scan_count);
+        func1_type(first, begin(tmp_tensor), pred), scan_count);
 
     // scan_count should be equal to keep_count
     assert(scan_count == keep_count);
@@ -129,8 +129,8 @@ IteratorType remove_if_impl(const std::string& label, const ExecutionSpace& ex,
                                  IteratorType>;
     ::flare::parallel_for(
         "remove_if_stage2_parfor",
-        RangePolicy<ExecutionSpace>(ex, 0, tmp_view.extent(0)),
-        func2_type(begin(tmp_view), first));
+        RangePolicy<ExecutionSpace>(ex, 0, tmp_tensor.extent(0)),
+        func2_type(begin(tmp_tensor), first));
     ex.fence("flare::remove_if: fence after stage2");
 
     // return

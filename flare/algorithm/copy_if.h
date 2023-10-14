@@ -42,12 +42,12 @@ OutputIterator copy_if(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class Predicate>
 auto copy_if(const ExecutionSpace& ex,
-             const ::flare::View<DataType1, Properties1...>& source,
-             ::flare::View<DataType2, Properties2...>& dest, Predicate pred) {
+             const ::flare::Tensor<DataType1, Properties1...>& source,
+             ::flare::Tensor<DataType2, Properties2...>& dest, Predicate pred) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
-  return detail::copy_if_impl("flare::copy_if_view_api_default", ex,
+  return detail::copy_if_impl("flare::copy_if_tensor_api_default", ex,
                             cbegin(source), cend(source), begin(dest),
                             std::move(pred));
 }
@@ -55,8 +55,8 @@ auto copy_if(const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class Predicate>
 auto copy_if(const std::string& label, const ExecutionSpace& ex,
-             const ::flare::View<DataType1, Properties1...>& source,
-             ::flare::View<DataType2, Properties2...>& dest, Predicate pred) {
+             const ::flare::Tensor<DataType1, Properties1...>& source,
+             ::flare::Tensor<DataType2, Properties2...>& dest, Predicate pred) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 

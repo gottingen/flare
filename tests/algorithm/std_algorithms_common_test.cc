@@ -18,24 +18,24 @@
 namespace Test {
 namespace stdalgos {
 
-std::string view_tag_to_string(DynamicTag) { return "dynamic_view"; }
+std::string tensor_tag_to_string(DynamicTag) { return "dynamic_tensor"; }
 
-std::string view_tag_to_string(DynamicLayoutLeftTag) {
-  return "dynamic_layout_left_view";
+std::string tensor_tag_to_string(DynamicLayoutLeftTag) {
+  return "dynamic_layout_left_tensor";
 }
 
-std::string view_tag_to_string(DynamicLayoutRightTag) {
-  return "dynamic_layout_right_view";
+std::string tensor_tag_to_string(DynamicLayoutRightTag) {
+  return "dynamic_layout_right_tensor";
 }
 
-std::string view_tag_to_string(StridedTwoTag) { return "stride2_view"; }
+std::string tensor_tag_to_string(StridedTwoTag) { return "stride2_tensor"; }
 
-std::string view_tag_to_string(StridedThreeTag) { return "stride3_view"; }
+std::string tensor_tag_to_string(StridedThreeTag) { return "stride3_tensor"; }
 
-std::string view_tag_to_string(StridedTwoRowsTag) { return "stride2rows_view"; }
+std::string tensor_tag_to_string(StridedTwoRowsTag) { return "stride2rows_tensor"; }
 
-std::string view_tag_to_string(StridedThreeRowsTag) {
-  return "stride3rows_view";
+std::string tensor_tag_to_string(StridedThreeRowsTag) {
+  return "stride3rows_tensor";
 }
 
 }  // namespace stdalgos

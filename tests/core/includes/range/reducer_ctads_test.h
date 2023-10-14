@@ -29,13 +29,13 @@ struct TestReducerCTADS {
   static CustomComparator comparator;
 
   struct TestSum {
-    static flare::View<scalar_type, memspace> view;
-    static flare::View<scalar_type, memspace,
+    static flare::Tensor<scalar_type, memspace> tensor;
+    static flare::Tensor<scalar_type, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::Sum<scalar_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::Sum(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::Sum(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::Sum(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::Sum(std::move(rt)))>);
@@ -44,13 +44,13 @@ struct TestReducerCTADS {
   };
 
   struct TestProd {
-    static flare::View<scalar_type, memspace> view;
-    static flare::View<scalar_type, memspace,
+    static flare::Tensor<scalar_type, memspace> tensor;
+    static flare::Tensor<scalar_type, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::Prod<scalar_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::Prod(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::Prod(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::Prod(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::Prod(std::move(rt)))>);
@@ -59,13 +59,13 @@ struct TestReducerCTADS {
   };
 
   struct TestMin {
-    static flare::View<scalar_type, memspace> view;
-    static flare::View<scalar_type, memspace,
+    static flare::Tensor<scalar_type, memspace> tensor;
+    static flare::Tensor<scalar_type, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::Min<scalar_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::Min(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::Min(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::Min(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::Min(std::move(rt)))>);
@@ -74,13 +74,13 @@ struct TestReducerCTADS {
   };
 
   struct TestMax {
-    static flare::View<scalar_type, memspace> view;
-    static flare::View<scalar_type, memspace,
+    static flare::Tensor<scalar_type, memspace> tensor;
+    static flare::Tensor<scalar_type, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::Max<scalar_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::Max(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::Max(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::Max(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::Max(std::move(rt)))>);
@@ -89,13 +89,13 @@ struct TestReducerCTADS {
   };
 
   struct TestLAnd {
-    static flare::View<scalar_type, memspace> view;
-    static flare::View<scalar_type, memspace,
+    static flare::Tensor<scalar_type, memspace> tensor;
+    static flare::Tensor<scalar_type, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::LAnd<scalar_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::LAnd(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::LAnd(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::LAnd(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::LAnd(std::move(rt)))>);
@@ -104,13 +104,13 @@ struct TestReducerCTADS {
   };
 
   struct TestLOr {
-    static flare::View<scalar_type, memspace> view;
-    static flare::View<scalar_type, memspace,
+    static flare::Tensor<scalar_type, memspace> tensor;
+    static flare::Tensor<scalar_type, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::LOr<scalar_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::LOr(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::LOr(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::LOr(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::LOr(std::move(rt)))>);
@@ -119,13 +119,13 @@ struct TestReducerCTADS {
   };
 
   struct TestBAnd {
-    static flare::View<scalar_type, memspace> view;
-    static flare::View<scalar_type, memspace,
+    static flare::Tensor<scalar_type, memspace> tensor;
+    static flare::Tensor<scalar_type, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::BAnd<scalar_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::BAnd(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::BAnd(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::BAnd(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::BAnd(std::move(rt)))>);
@@ -134,13 +134,13 @@ struct TestReducerCTADS {
   };
 
   struct TestBOr {
-    static flare::View<scalar_type, memspace> view;
-    static flare::View<scalar_type, memspace,
+    static flare::Tensor<scalar_type, memspace> tensor;
+    static flare::Tensor<scalar_type, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::BOr<scalar_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::BOr(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::BOr(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::BOr(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::BOr(std::move(rt)))>);
@@ -149,14 +149,14 @@ struct TestReducerCTADS {
   };
 
   struct TestMinLoc {
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace>
-        view;
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace,
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace>
+        tensor;
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MinLoc<scalar_type, index_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::MinLoc(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::MinLoc(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::MinLoc(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::MinLoc(std::move(rt)))>);
@@ -165,14 +165,14 @@ struct TestReducerCTADS {
   };
 
   struct TestMaxLoc {
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace>
-        view;
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace,
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace>
+        tensor;
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MaxLoc<scalar_type, index_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::MaxLoc(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::MaxLoc(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::MaxLoc(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::MaxLoc(std::move(rt)))>);
@@ -181,13 +181,13 @@ struct TestReducerCTADS {
   };
 
   struct TestMinMax {
-    static flare::View<flare::MinMaxScalar<scalar_type>, memspace> view;
-    static flare::View<flare::MinMaxScalar<scalar_type>, memspace,
+    static flare::Tensor<flare::MinMaxScalar<scalar_type>, memspace> tensor;
+    static flare::Tensor<flare::MinMaxScalar<scalar_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MinMax<scalar_type, memspace> rt;
 
-    static_assert(std::is_same_v<decltype(rt), decltype(flare::MinMax(view))>);
+    static_assert(std::is_same_v<decltype(rt), decltype(flare::MinMax(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::MinMax(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::MinMax(std::move(rt)))>);
@@ -196,16 +196,16 @@ struct TestReducerCTADS {
   };
 
   struct TestMinMaxLoc {
-    static flare::View<flare::MinMaxLocScalar<scalar_type, index_type>,
+    static flare::Tensor<flare::MinMaxLocScalar<scalar_type, index_type>,
                         memspace>
-        view;
-    static flare::View<flare::MinMaxLocScalar<scalar_type, index_type>,
+        tensor;
+    static flare::Tensor<flare::MinMaxLocScalar<scalar_type, index_type>,
                         memspace, flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MinMaxLoc<scalar_type, index_type, memspace> rt;
 
     static_assert(
-        std::is_same_v<decltype(rt), decltype(flare::MinMaxLoc(view))>);
+        std::is_same_v<decltype(rt), decltype(flare::MinMaxLoc(tensor))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::MinMaxLoc(rt))>);
     static_assert(std::is_same_v<decltype(rt),
@@ -215,15 +215,15 @@ struct TestReducerCTADS {
   };
 
   struct TestMaxFirstLoc {
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace>
-        view;
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace,
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace>
+        tensor;
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MaxFirstLoc<scalar_type, index_type, memspace> rt;
 
     static_assert(
-        std::is_same_v<decltype(rt), decltype(flare::MaxFirstLoc(view))>);
+        std::is_same_v<decltype(rt), decltype(flare::MaxFirstLoc(tensor))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::MaxFirstLoc(rt))>);
     static_assert(std::is_same_v<decltype(rt),
@@ -233,9 +233,9 @@ struct TestReducerCTADS {
   };
 
   struct TestMaxFirstLocCustomComparator {
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace>
-        view;
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace,
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace>
+        tensor;
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MaxFirstLocCustomComparator<scalar_type, index_type,
@@ -244,7 +244,7 @@ struct TestReducerCTADS {
 
     static_assert(std::is_same_v<decltype(rt),
                                  decltype(flare::MaxFirstLocCustomComparator(
-                                     view, comparator))>);
+                                     tensor, comparator))>);
     static_assert(
         std::is_same_v<decltype(rt),
                        decltype(flare::MaxFirstLocCustomComparator(rt))>);
@@ -257,15 +257,15 @@ struct TestReducerCTADS {
   };
 
   struct TestMinFirstLoc {
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace>
-        view;
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace,
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace>
+        tensor;
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MinFirstLoc<scalar_type, index_type, memspace> rt;
 
     static_assert(
-        std::is_same_v<decltype(rt), decltype(flare::MinFirstLoc(view))>);
+        std::is_same_v<decltype(rt), decltype(flare::MinFirstLoc(tensor))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::MinFirstLoc(rt))>);
     static_assert(std::is_same_v<decltype(rt),
@@ -275,9 +275,9 @@ struct TestReducerCTADS {
   };
 
   struct TestMinFirstLocCustomComparator {
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace>
-        view;
-    static flare::View<flare::ValLocScalar<scalar_type, index_type>, memspace,
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace>
+        tensor;
+    static flare::Tensor<flare::ValLocScalar<scalar_type, index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MinFirstLocCustomComparator<scalar_type, index_type,
@@ -286,7 +286,7 @@ struct TestReducerCTADS {
 
     static_assert(std::is_same_v<decltype(rt),
                                  decltype(flare::MinFirstLocCustomComparator(
-                                     view, comparator))>);
+                                     tensor, comparator))>);
     static_assert(
         std::is_same_v<decltype(rt),
                        decltype(flare::MinFirstLocCustomComparator(rt))>);
@@ -299,16 +299,16 @@ struct TestReducerCTADS {
   };
 
   struct TestMinMaxFirstLastLoc {
-    static flare::View<flare::MinMaxLocScalar<scalar_type, index_type>,
+    static flare::Tensor<flare::MinMaxLocScalar<scalar_type, index_type>,
                         memspace>
-        view;
-    static flare::View<flare::MinMaxLocScalar<scalar_type, index_type>,
+        tensor;
+    static flare::Tensor<flare::MinMaxLocScalar<scalar_type, index_type>,
                         memspace, flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MinMaxFirstLastLoc<scalar_type, index_type, memspace> rt;
 
     static_assert(std::is_same_v<decltype(rt),
-                                 decltype(flare::MinMaxFirstLastLoc(view))>);
+                                 decltype(flare::MinMaxFirstLastLoc(tensor))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::MinMaxFirstLastLoc(rt))>);
     static_assert(
@@ -320,10 +320,10 @@ struct TestReducerCTADS {
   };
 
   struct TestMinMaxFirstLastLocCustomComparator {
-    static flare::View<flare::MinMaxLocScalar<scalar_type, index_type>,
+    static flare::Tensor<flare::MinMaxLocScalar<scalar_type, index_type>,
                         memspace>
-        view;
-    static flare::View<flare::MinMaxLocScalar<scalar_type, index_type>,
+        tensor;
+    static flare::Tensor<flare::MinMaxLocScalar<scalar_type, index_type>,
                         memspace, flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::MinMaxFirstLastLocCustomComparator<
@@ -333,7 +333,7 @@ struct TestReducerCTADS {
     static_assert(
         std::is_same_v<decltype(rt),
                        decltype(flare::MinMaxFirstLastLocCustomComparator(
-                           view, comparator))>);
+                           tensor, comparator))>);
     static_assert(std::is_same_v<
                   decltype(rt),
                   decltype(flare::MinMaxFirstLastLocCustomComparator(rt))>);
@@ -348,14 +348,14 @@ struct TestReducerCTADS {
   };
 
   struct TestFirstLoc {
-    static flare::View<flare::FirstLocScalar<index_type>, memspace> view;
-    static flare::View<flare::FirstLocScalar<index_type>, memspace,
+    static flare::Tensor<flare::FirstLocScalar<index_type>, memspace> tensor;
+    static flare::Tensor<flare::FirstLocScalar<index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::FirstLoc<index_type, memspace> rt;
 
     static_assert(
-        std::is_same_v<decltype(rt), decltype(flare::FirstLoc(view))>);
+        std::is_same_v<decltype(rt), decltype(flare::FirstLoc(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::FirstLoc(rt))>);
     static_assert(std::is_same_v<decltype(rt),
                                  decltype(flare::FirstLoc(std::move(rt)))>);
@@ -364,14 +364,14 @@ struct TestReducerCTADS {
   };
 
   struct TestLastLoc {
-    static flare::View<flare::LastLocScalar<index_type>, memspace> view;
-    static flare::View<flare::LastLocScalar<index_type>, memspace,
+    static flare::Tensor<flare::LastLocScalar<index_type>, memspace> tensor;
+    static flare::Tensor<flare::LastLocScalar<index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::LastLoc<index_type, memspace> rt;
 
     static_assert(
-        std::is_same_v<decltype(rt), decltype(flare::LastLoc(view))>);
+        std::is_same_v<decltype(rt), decltype(flare::LastLoc(tensor))>);
     static_assert(std::is_same_v<decltype(rt), decltype(flare::LastLoc(rt))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::LastLoc(std::move(rt)))>);
@@ -380,14 +380,14 @@ struct TestReducerCTADS {
   };
 
   struct TestStdIsPartitioned {
-    static flare::View<flare::StdIsPartScalar<index_type>, memspace> view;
-    static flare::View<flare::StdIsPartScalar<index_type>, memspace,
+    static flare::Tensor<flare::StdIsPartScalar<index_type>, memspace> tensor;
+    static flare::Tensor<flare::StdIsPartScalar<index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::StdIsPartitioned<index_type, memspace> rt;
 
     static_assert(
-        std::is_same_v<decltype(rt), decltype(flare::StdIsPartitioned(view))>);
+        std::is_same_v<decltype(rt), decltype(flare::StdIsPartitioned(tensor))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::StdIsPartitioned(rt))>);
     static_assert(
@@ -398,14 +398,14 @@ struct TestReducerCTADS {
   };
 
   struct TestStdPartitionPoint {
-    static flare::View<flare::StdPartPointScalar<index_type>, memspace> view;
-    static flare::View<flare::StdPartPointScalar<index_type>, memspace,
+    static flare::Tensor<flare::StdPartPointScalar<index_type>, memspace> tensor;
+    static flare::Tensor<flare::StdPartPointScalar<index_type>, memspace,
                         flare::MemoryTraits<flare::Unmanaged>>
         unmanaged;
     static flare::StdPartitionPoint<index_type, memspace> rt;
 
     static_assert(std::is_same_v<decltype(rt),
-                                 decltype(flare::StdPartitionPoint(view))>);
+                                 decltype(flare::StdPartitionPoint(tensor))>);
     static_assert(
         std::is_same_v<decltype(rt), decltype(flare::StdPartitionPoint(rt))>);
     static_assert(

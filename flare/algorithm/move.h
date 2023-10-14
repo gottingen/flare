@@ -48,12 +48,12 @@ template <
     typename DataType2, typename... Properties2,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto move(const ExecutionSpace& ex,
-          const ::flare::View<DataType1, Properties1...>& source,
-          ::flare::View<DataType2, Properties2...>& dest) {
+          const ::flare::Tensor<DataType1, Properties1...>& source,
+          ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
-  return detail::move_exespace_impl("flare::move_view_api_default", ex,
+  return detail::move_exespace_impl("flare::move_tensor_api_default", ex,
                                   begin(source), end(source), begin(dest));
 }
 
@@ -62,8 +62,8 @@ template <
     typename DataType2, typename... Properties2,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto move(const std::string& label, const ExecutionSpace& ex,
-          const ::flare::View<DataType1, Properties1...>& source,
-          ::flare::View<DataType2, Properties2...>& dest) {
+          const ::flare::Tensor<DataType1, Properties1...>& source,
+          ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
@@ -90,8 +90,8 @@ template <typename TeamHandleType, typename DataType1, typename... Properties1,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto move(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& source,
-    ::flare::View<DataType2, Properties2...>& dest) {
+    const ::flare::Tensor<DataType1, Properties1...>& source,
+    ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 

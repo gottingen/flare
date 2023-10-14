@@ -142,7 +142,7 @@ namespace flare::detail {
     template<class T>
     FLARE_INLINE_FUNCTION auto _get_value_from_combined_reducer_ctor_arg(
             T &&arg) noexcept
-    -> std::enable_if_t<!is_view<std::decay_t<T>>::value &&
+    -> std::enable_if_t<!is_tensor<std::decay_t<T>>::value &&
                         !is_reducer<std::decay_t<T>>::value,
             std::decay_t<T>> {
         return arg;
@@ -151,7 +151,7 @@ namespace flare::detail {
     template<class T>
     FLARE_INLINE_FUNCTION auto _get_value_from_combined_reducer_ctor_arg(
             T &&) noexcept ->
-    typename std::enable_if_t<is_view<std::decay_t<T>>::value ||
+    typename std::enable_if_t<is_tensor<std::decay_t<T>>::value ||
                               is_reducer<std::decay_t<T>>::value,
             std::decay_t<T>>::value_type {
         return typename std::decay_t<T>::value_type{};
@@ -170,11 +170,11 @@ namespace flare::detail {
         using value_type =
                 CombinedReducerValueImpl<std::integer_sequence<size_t, Idxs...>,
                         typename Reducers::value_type...>;
-        using result_view_type =
-                flare::View<value_type, Space, flare::MemoryUnmanaged>;
+        using result_tensor_type =
+                flare::Tensor<value_type, Space, flare::MemoryUnmanaged>;
 
     private:
-        result_view_type m_value_view;
+        result_tensor_type m_value_tensor;
 
     public:
         FLARE_DEFAULTED_FUNCTION constexpr CombinedReducerImpl() = default;
@@ -198,7 +198,7 @@ namespace flare::detail {
                 value_type &value, ReducersDeduced &&... reducers) noexcept
                 : CombinedReducerStorageImpl<Idxs, Reducers>((ReducersDeduced &&)
                                                                      reducers)...,
-                m_value_view( &
+                m_value_tensor( &
 
         value) {}
 
@@ -216,7 +216,7 @@ namespace flare::detail {
                     ...);
         }
 
-        FLARE_FUNCTION auto &reference() const { return *m_value_view.data(); }
+        FLARE_FUNCTION auto &reference() const { return *m_value_tensor.data(); }
 
         // TODO figure out if we also need to call through to final
 
@@ -230,19 +230,19 @@ namespace flare::detail {
         }
 
         FLARE_FUNCTION
-        constexpr result_view_type const &view() const noexcept {
-            return m_value_view;
+        constexpr result_tensor_type const &tensor() const noexcept {
+            return m_value_tensor;
         }
 
-        template<class ExecutionSpace, int Idx, class View>
+        template<class ExecutionSpace, int Idx, class Tensor>
         static void write_one_value_back(
-                const ExecutionSpace &exec_space, View const &view,
-                typename View::const_value_type &value) noexcept {
-            if (flare::SpaceAccessibility<typename View::memory_space,
+                const ExecutionSpace &exec_space, Tensor const &tensor,
+                typename Tensor::const_value_type &value) noexcept {
+            if (flare::SpaceAccessibility<typename Tensor::memory_space,
                     Space>::assignable)
-                view() = value;
+                tensor() = value;
             else
-                flare::deep_copy(exec_space, view, value);
+                flare::deep_copy(exec_space, tensor, value);
         }
 
         template<class ExecutionSpace>
@@ -250,16 +250,16 @@ namespace flare::detail {
                 const ExecutionSpace &exec_space, value_type const &value,
                 Reducers const &... reducers_that_reference_original_values) noexcept {
             (write_one_value_back<ExecutionSpace, Idxs>(
-                    exec_space, reducers_that_reference_original_values.view(),
+                    exec_space, reducers_that_reference_original_values.tensor(),
                     value.template get<Idxs, typename Reducers::value_type>()),
 
                     ...);
         }
 
-        template<int Idx, class View>
+        template<int Idx, class Tensor>
         FLARE_FUNCTION static void write_one_value_back_on_device(
-                View const &inputView, typename View::const_value_type &value) noexcept {
-            *inputView.data() = value;
+                Tensor const &inputTensor, typename Tensor::const_value_type &value) noexcept {
+            *inputTensor.data() = value;
         }
 
         template<typename... CombinedReducers>
@@ -267,7 +267,7 @@ namespace flare::detail {
                 value_type const &value,
                 CombinedReducers const &... reducers_that_reference_original_values) noexcept {
             (write_one_value_back_on_device<Idxs>(
-                    reducers_that_reference_original_values.view(),
+                    reducers_that_reference_original_values.tensor(),
                     value.template get<Idxs, typename CombinedReducers::value_type>()),
                     ...);
         }
@@ -392,7 +392,7 @@ namespace flare::detail {
         return arg_reducer;
     }
 
-    // Two purposes: SFINAE-safety for the `View` case and laziness for the return
+    // Two purposes: SFINAE-safety for the `Tensor` case and laziness for the return
     // value otherwise to prevent extra instantiations of the flare::Sum template
     template<class Space, class T, class Enable = void>
     struct _wrap_with_flare_sum {
@@ -401,7 +401,7 @@ namespace flare::detail {
 
     template<class Space, class T>
     struct _wrap_with_flare_sum<Space, T,
-            std::enable_if_t<flare::is_view<T>::value>> {
+            std::enable_if_t<flare::is_tensor<T>::value>> {
         using type = flare::Sum<typename T::value_type, typename T::memory_space>;
     };
 
@@ -420,18 +420,18 @@ namespace flare::detail {
     // decltype expressions in return statements (and, even though every compiler
     // is supposed to, GCC is the only one that does dependent alias template
     // substitution correctly and tries to do the mangling, aparently).
-    template<class Space, class ReferenceOrViewOrReducer, class = void>
+    template<class Space, class ReferenceOrTensorOrReducer, class = void>
     struct _reducer_from_arg {
         using type = decltype(detail::_make_reducer_from_arg<Space>(
-                std::declval<ReferenceOrViewOrReducer &&>()));
+                std::declval<ReferenceOrTensorOrReducer &&>()));
     };
-    template<class Space, class ReferenceOrViewOrReducer>
+    template<class Space, class ReferenceOrTensorOrReducer>
     using _reducer_from_arg_t =
-            typename _reducer_from_arg<Space, ReferenceOrViewOrReducer>::type;
+            typename _reducer_from_arg<Space, ReferenceOrTensorOrReducer>::type;
 
-    template<class Space, class... ReferencesOrViewsOrReducers>
+    template<class Space, class... ReferencesOrTensorsOrReducers>
     FLARE_INLINE_FUNCTION constexpr auto make_combined_reducer_value(
-            ReferencesOrViewsOrReducers &&... args) {
+            ReferencesOrTensorsOrReducers &&... args) {
         //----------------------------------------
         // This is a bit round-about and we should make sure it doesn't have
         // any performance implications. Basically, we make a reducer out of anything
@@ -439,35 +439,35 @@ namespace flare::detail {
         // compilers should figure out what's going on, but we should double-check
         // that.
         return CombinedReducerValueImpl<
-                std::make_index_sequence<sizeof...(ReferencesOrViewsOrReducers)>,
+                std::make_index_sequence<sizeof...(ReferencesOrTensorsOrReducers)>,
                 typename _reducer_from_arg_t<Space,
-                        ReferencesOrViewsOrReducers>::value_type...>{
+                        ReferencesOrTensorsOrReducers>::value_type...>{
                 // This helper function is now poorly named after refactoring.
-                _get_value_from_combined_reducer_ctor_arg((ReferencesOrViewsOrReducers &&)
+                _get_value_from_combined_reducer_ctor_arg((ReferencesOrTensorsOrReducers &&)
                                                                   args)...};
     }
 
-    template<class Space, class ValueType, class... ReferencesOrViewsOrReducers>
+    template<class Space, class ValueType, class... ReferencesOrTensorsOrReducers>
     FLARE_INLINE_FUNCTION constexpr auto make_combined_reducer(
-            ValueType &value, ReferencesOrViewsOrReducers &&... args) {
+            ValueType &value, ReferencesOrTensorsOrReducers &&... args) {
         //----------------------------------------
         // This is doing more or less the same thing of making every argument into
         // a reducer, just in a different place than in `make_combined_reducer_value`,
         // so we should probably eventually make this read a little more similarly
         using reducer_type = CombinedReducer<
-                Space, _reducer_from_arg_t<Space, ReferencesOrViewsOrReducers>...>;
+                Space, _reducer_from_arg_t<Space, ReferencesOrTensorsOrReducers>...>;
         return reducer_type(value,
-                            _reducer_from_arg_t<Space, ReferencesOrViewsOrReducers>{
-                                    (ReferencesOrViewsOrReducers &&) args}...);
+                            _reducer_from_arg_t<Space, ReferencesOrTensorsOrReducers>{
+                                    (ReferencesOrTensorsOrReducers &&) args}...);
     }
 
-    template<class Space, class Functor, class... ReferencesOrViewsOrReducers>
+    template<class Space, class Functor, class... ReferencesOrTensorsOrReducers>
     FLARE_INLINE_FUNCTION constexpr auto make_wrapped_combined_functor(
-            Functor const &functor, ReferencesOrViewsOrReducers &&...) {
+            Functor const &functor, ReferencesOrTensorsOrReducers &&...) {
         //----------------------------------------
         return CombinedReductionFunctorWrapper<
                 Functor, Space,
-                _reducer_from_arg_t<Space, ReferencesOrViewsOrReducers>...>(functor);
+                _reducer_from_arg_t<Space, ReferencesOrTensorsOrReducers>...>(functor);
     }
 
     template<typename FunctorType>
@@ -543,7 +543,7 @@ namespace flare {
                 combined_reducer_type>::
         fence(
                 policy.space(),
-                "flare::parallel_reduce: fence due to result being value, not view",
+                "flare::parallel_reduce: fence due to result being value, not tensor",
                 combined_reducer);
         combined_reducer.write_value_back_to_original_references(
                 policy.space(), value,

@@ -48,20 +48,20 @@ struct UnifDist<int> {
   int operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_zero(ViewType view) {
-  flare::parallel_for(view.extent(0), FillZeroFunctor<ViewType>(view));
+template <class TensorType>
+void fill_zero(TensorType tensor) {
+  flare::parallel_for(tensor.extent(0), FillZeroFunctor<TensorType>(tensor));
 }
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type = typename ViewType::value_type;
-  using exe_space  = typename ViewType::execution_space;
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type = typename TensorType::value_type;
+  using exe_space  = typename TensorType::execution_space;
 
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   UnifDist<value_type> randObj;
 
@@ -117,9 +117,9 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
 // I had to write my own because std::transform_inclusive_scan is ONLY found
@@ -150,45 +150,45 @@ void my_host_transform_inclusive_scan(it1 first, it1 last, it2 dest,
   }
 }
 
-template <class ViewType1, class ViewType2, class... Args>
-void verify_data(ViewType1 data_view,  // contains data
-                 ViewType2 test_view,  // the view to test
+template <class TensorType1, class TensorType2, class... Args>
+void verify_data(TensorType1 data_tensor,  // contains data
+                 TensorType2 test_tensor,  // the tensor to test
                  Args... args /* by value on purpose*/) {
-  //! always careful because views might not be deep copyable
+  //! always careful because tensors might not be deep copyable
 
-  auto data_view_dc = create_deep_copyable_compatible_clone(data_view);
-  auto data_view_h =
-      create_mirror_view_and_copy(flare::HostSpace(), data_view_dc);
+  auto data_tensor_dc = create_deep_copyable_compatible_clone(data_tensor);
+  auto data_tensor_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), data_tensor_dc);
 
-  using gold_view_value_type = typename ViewType2::value_type;
-  flare::View<gold_view_value_type*, flare::HostSpace> gold_h(
-      "goldh", data_view.extent(0));
-  my_host_transform_inclusive_scan(KE::cbegin(data_view_h),
-                                   KE::cend(data_view_h), KE::begin(gold_h),
+  using gold_tensor_value_type = typename TensorType2::value_type;
+  flare::Tensor<gold_tensor_value_type*, flare::HostSpace> gold_h(
+      "goldh", data_tensor.extent(0));
+  my_host_transform_inclusive_scan(KE::cbegin(data_tensor_h),
+                                   KE::cend(data_tensor_h), KE::begin(gold_h),
                                    args...);
 
-  auto test_view_dc = create_deep_copyable_compatible_clone(test_view);
-  auto test_view_h =
-      create_mirror_view_and_copy(flare::HostSpace(), test_view_dc);
-  if (test_view_h.extent(0) > 0) {
-    for (std::size_t i = 0; i < test_view_h.extent(0); ++i) {
-      // std::cout << i << " " << std::setprecision(15) << data_view_h(i) << " "
-      //           << gold_h(i) << " " << test_view_h(i) << " "
-      //           << std::abs(gold_h(i) - test_view_h(i)) << std::endl;
+  auto test_tensor_dc = create_deep_copyable_compatible_clone(test_tensor);
+  auto test_tensor_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), test_tensor_dc);
+  if (test_tensor_h.extent(0) > 0) {
+    for (std::size_t i = 0; i < test_tensor_h.extent(0); ++i) {
+      // std::cout << i << " " << std::setprecision(15) << data_tensor_h(i) << " "
+      //           << gold_h(i) << " " << test_tensor_h(i) << " "
+      //           << std::abs(gold_h(i) - test_tensor_h(i)) << std::endl;
 
-      if (std::is_same<gold_view_value_type, int>::value) {
-        REQUIRE_EQ(gold_h(i), test_view_h(i));
+      if (std::is_same<gold_tensor_value_type, int>::value) {
+        REQUIRE_EQ(gold_h(i), test_tensor_h(i));
       } else {
-        const auto error = std::abs(gold_h(i) - test_view_h(i));
+        const auto error = std::abs(gold_h(i) - test_tensor_h(i));
         if (error > 1e-10) {
-          std::cout << i << " " << std::setprecision(15) << data_view_h(i)
-                    << " " << gold_h(i) << " " << test_view_h(i) << " "
-                    << std::abs(gold_h(i) - test_view_h(i)) << std::endl;
+          std::cout << i << " " << std::setprecision(15) << data_tensor_h(i)
+                    << " " << gold_h(i) << " " << test_tensor_h(i) << " "
+                    << std::abs(gold_h(i) - test_tensor_h(i)) << std::endl;
         }
         REQUIRE_LT(error, 1e-10);
       }
     }
-    // std::cout << " last el: " << test_view_h(test_view_h.extent(0)-1) <<
+    // std::cout << " last el: " << test_tensor_h(test_tensor_h.extent(0)-1) <<
     // std::endl;
   }
 }
@@ -215,7 +215,7 @@ void print_scenario_details(const std::string& name, BopT bop, UopT uop) {
   (void)bop;
   (void)uop;
   std::cout << "transform_inclusive_scan: " << name << ", "
-            << view_tag_to_string(Tag{}) << std::endl;
+            << tensor_tag_to_string(Tag{}) << std::endl;
 }
 
 template <class Tag, class BopT, class UopT, class ValueType>
@@ -224,7 +224,7 @@ void print_scenario_details(const std::string& name, BopT bop, UopT uop,
   (void)bop;
   (void)uop;
   std::cout << "transform_inclusive_scan: " << name << ", "
-            << view_tag_to_string(Tag{}) << ", "
+            << tensor_tag_to_string(Tag{}) << ", "
             << "init = " << init_value << std::endl;
 }
 
@@ -232,47 +232,47 @@ template <class Tag, class ValueType, class InfoType, class... Args>
 void run_single_scenario(const InfoType& scenario_info,
                          Args... args /* by value on purpose*/) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // print_scenario_details<Tag>(name, args...);
 
-  auto view_dest =
-      create_view<ValueType>(Tag{}, view_ext, "transform_inclusive_scan");
-  auto view_from =
-      create_view<ValueType>(Tag{}, view_ext, "transform_inclusive_scan");
-  fill_view(view_from, name);
+  auto tensor_dest =
+      create_tensor<ValueType>(Tag{}, tensor_ext, "transform_inclusive_scan");
+  auto tensor_from =
+      create_tensor<ValueType>(Tag{}, tensor_ext, "transform_inclusive_scan");
+  fill_tensor(tensor_from, name);
 
   {
-    fill_zero(view_dest);
-    auto r = KE::transform_inclusive_scan(exespace(), KE::cbegin(view_from),
-                                          KE::cend(view_from),
-                                          KE::begin(view_dest), args...);
-    REQUIRE_EQ(r, KE::end(view_dest));
-    verify_data(view_from, view_dest, args...);
+    fill_zero(tensor_dest);
+    auto r = KE::transform_inclusive_scan(exespace(), KE::cbegin(tensor_from),
+                                          KE::cend(tensor_from),
+                                          KE::begin(tensor_dest), args...);
+    REQUIRE_EQ(r, KE::end(tensor_dest));
+    verify_data(tensor_from, tensor_dest, args...);
   }
 
   {
-    fill_zero(view_dest);
+    fill_zero(tensor_dest);
     auto r = KE::transform_inclusive_scan(
-        "label", exespace(), KE::cbegin(view_from), KE::cend(view_from),
-        KE::begin(view_dest), args...);
-    REQUIRE_EQ(r, KE::end(view_dest));
-    verify_data(view_from, view_dest, args...);
+        "label", exespace(), KE::cbegin(tensor_from), KE::cend(tensor_from),
+        KE::begin(tensor_dest), args...);
+    REQUIRE_EQ(r, KE::end(tensor_dest));
+    verify_data(tensor_from, tensor_dest, args...);
   }
 
   {
-    fill_zero(view_dest);
+    fill_zero(tensor_dest);
     auto r =
-        KE::transform_inclusive_scan(exespace(), view_from, view_dest, args...);
-    REQUIRE_EQ(r, KE::end(view_dest));
-    verify_data(view_from, view_dest, args...);
+        KE::transform_inclusive_scan(exespace(), tensor_from, tensor_dest, args...);
+    REQUIRE_EQ(r, KE::end(tensor_dest));
+    verify_data(tensor_from, tensor_dest, args...);
   }
 
   {
-    fill_zero(view_dest);
-    auto r = KE::transform_inclusive_scan("label", exespace(), view_from,
-                                          view_dest, args...);
-    REQUIRE_EQ(r, KE::end(view_dest));
-    verify_data(view_from, view_dest, args...);
+    fill_zero(tensor_dest);
+    auto r = KE::transform_inclusive_scan("label", exespace(), tensor_from,
+                                          tensor_dest, args...);
+    REQUIRE_EQ(r, KE::end(tensor_dest));
+    verify_data(tensor_from, tensor_dest, args...);
   }
 
   flare::fence();
@@ -348,24 +348,24 @@ TEST_CASE("std_algorithms_numeric_ops_test, transform_inclusive_scan_functor") {
   };
 
   int dummy       = 0;
-  using view_type = flare::View<int*, exespace>;
-  view_type dummy_view("dummy_view", 0);
+  using tensor_type = flare::Tensor<int*, exespace>;
+  tensor_type dummy_tensor("dummy_tensor", 0);
   using unary_op_type =
       KE::detail::StdNumericScanIdentityReferenceUnaryFunctor<int>;
   {
     using functor_type = KE::detail::TransformInclusiveScanNoInitValueFunctor<
-        exespace, int, int, view_type, view_type, MultiplyFunctor<int>,
+        exespace, int, int, tensor_type, tensor_type, MultiplyFunctor<int>,
         unary_op_type>;
-    functor_type functor(dummy_view, dummy_view, {}, {});
+    functor_type functor(dummy_tensor, dummy_tensor, {}, {});
 
     test_lambda(functor);
   }
 
   {
     using functor_type = KE::detail::TransformInclusiveScanWithInitValueFunctor<
-        exespace, int, int, view_type, view_type, MultiplyFunctor<int>,
+        exespace, int, int, tensor_type, tensor_type, MultiplyFunctor<int>,
         unary_op_type>;
-    functor_type functor(dummy_view, dummy_view, {}, {}, dummy);
+    functor_type functor(dummy_tensor, dummy_tensor, {}, {}, dummy);
 
     test_lambda(functor);
   }

@@ -108,14 +108,14 @@ std::size_t scratch_count(const std::size_t size) {
 
 }  // namespace
 
-flare::View<uint32_t *, flare::CudaSpace> cuda_global_unique_token_locks(
+flare::Tensor<uint32_t *, flare::CudaSpace> cuda_global_unique_token_locks(
     bool deallocate) {
-  static flare::View<uint32_t *, flare::CudaSpace> locks =
-      flare::View<uint32_t *, flare::CudaSpace>();
+  static flare::Tensor<uint32_t *, flare::CudaSpace> locks =
+      flare::Tensor<uint32_t *, flare::CudaSpace>();
   if (!deallocate && locks.extent(0) == 0)
-    locks = flare::View<uint32_t *, flare::CudaSpace>(
+    locks = flare::Tensor<uint32_t *, flare::CudaSpace>(
         "flare::UniqueToken<Cuda>::m_locks", flare::Cuda().concurrency());
-  if (deallocate) locks = flare::View<uint32_t *, flare::CudaSpace>();
+  if (deallocate) locks = flare::Tensor<uint32_t *, flare::CudaSpace>();
   return locks;
 }
 

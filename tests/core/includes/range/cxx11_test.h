@@ -20,13 +20,13 @@ namespace TestCXX11 {
 
     template<class DeviceType>
     struct FunctorAddTest {
-        using view_type = flare::View<double **, DeviceType>;
+        using tensor_type = flare::Tensor<double **, DeviceType>;
         using execution_space = DeviceType;
         using team_member = typename flare::TeamPolicy<execution_space>::member_type;
 
-        view_type a_, b_;
+        tensor_type a_, b_;
 
-        FunctorAddTest(view_type &a, view_type &b) : a_(a), b_(b) {}
+        FunctorAddTest(tensor_type &a, tensor_type &b) : a_(a), b_(b) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const int &i) const {
@@ -55,12 +55,12 @@ namespace TestCXX11 {
     double AddTestFunctor() {
         using policy_type = flare::TeamPolicy<DeviceType>;
 
-        flare::View<double **, DeviceType> a("A", 100, 5);
-        flare::View<double **, DeviceType> b("B", 100, 5);
-        typename flare::View<double **, DeviceType>::HostMirror h_a =
-                flare::create_mirror_view(a);
-        typename flare::View<double **, DeviceType>::HostMirror h_b =
-                flare::create_mirror_view(b);
+        flare::Tensor<double **, DeviceType> a("A", 100, 5);
+        flare::Tensor<double **, DeviceType> b("B", 100, 5);
+        typename flare::Tensor<double **, DeviceType>::HostMirror h_a =
+                flare::create_mirror_tensor(a);
+        typename flare::Tensor<double **, DeviceType>::HostMirror h_b =
+                flare::create_mirror_tensor(b);
 
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 5; j++) {
@@ -91,12 +91,12 @@ namespace TestCXX11 {
 
     template<class DeviceType, bool PWRTest>
     double AddTestLambda() {
-        flare::View<double **, DeviceType> a("A", 100, 5);
-        flare::View<double **, DeviceType> b("B", 100, 5);
-        typename flare::View<double **, DeviceType>::HostMirror h_a =
-                flare::create_mirror_view(a);
-        typename flare::View<double **, DeviceType>::HostMirror h_b =
-                flare::create_mirror_view(b);
+        flare::Tensor<double **, DeviceType> a("A", 100, 5);
+        flare::Tensor<double **, DeviceType> b("B", 100, 5);
+        typename flare::Tensor<double **, DeviceType>::HostMirror h_a =
+                flare::create_mirror_tensor(a);
+        typename flare::Tensor<double **, DeviceType>::HostMirror h_b =
+                flare::create_mirror_tensor(b);
 
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 5; j++) {
@@ -155,14 +155,14 @@ namespace TestCXX11 {
 
     template<class DeviceType>
     struct FunctorReduceTest {
-        using view_type = flare::View<double **, DeviceType>;
+        using tensor_type = flare::Tensor<double **, DeviceType>;
         using execution_space = DeviceType;
         using value_type = double;
         using team_member = typename flare::TeamPolicy<execution_space>::member_type;
 
-        view_type a_;
+        tensor_type a_;
 
-        FunctorReduceTest(view_type &a) : a_(a) {}
+        FunctorReduceTest(tensor_type &a) : a_(a) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const int &i, value_type &sum) const {
@@ -198,12 +198,12 @@ namespace TestCXX11 {
     template<class DeviceType, bool PWRTest>
     double ReduceTestFunctor() {
         using policy_type = flare::TeamPolicy<DeviceType>;
-        using view_type = flare::View<double **, DeviceType>;
+        using tensor_type = flare::Tensor<double **, DeviceType>;
         using unmanaged_result =
-                flare::View<double, flare::HostSpace, flare::MemoryUnmanaged>;
+                flare::Tensor<double, flare::HostSpace, flare::MemoryUnmanaged>;
 
-        view_type a("A", 100, 5);
-        typename view_type::HostMirror h_a = flare::create_mirror_view(a);
+        tensor_type a("A", 100, 5);
+        typename tensor_type::HostMirror h_a = flare::create_mirror_tensor(a);
 
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 5; j++) {
@@ -231,12 +231,12 @@ namespace TestCXX11 {
     template<class DeviceType, bool PWRTest>
     double ReduceTestLambda() {
         using policy_type = flare::TeamPolicy<DeviceType>;
-        using view_type = flare::View<double **, DeviceType>;
+        using tensor_type = flare::Tensor<double **, DeviceType>;
         using unmanaged_result =
-                flare::View<double, flare::HostSpace, flare::MemoryUnmanaged>;
+                flare::Tensor<double, flare::HostSpace, flare::MemoryUnmanaged>;
 
-        view_type a("A", 100, 5);
-        typename view_type::HostMirror h_a = flare::create_mirror_view(a);
+        tensor_type a("A", 100, 5);
+        typename tensor_type::HostMirror h_a = flare::create_mirror_tensor(a);
 
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 5; j++) {

@@ -135,46 +135,46 @@ namespace flare::detail {
         }
 
         template <typename idx_array_type>
-        inline void flare_write_1Dview_to_file(idx_array_type view, const char *filename) {
+        inline void flare_write_1Dtensor_to_file(idx_array_type tensor, const char *filename) {
             typedef typename idx_array_type::HostMirror host_type;
             // typedef typename idx_array_type::size_type idx;
-            host_type host_view = flare::create_mirror_view(view);
-            flare::deep_copy(host_view, view);
+            host_type host_tensor = flare::create_mirror_tensor(tensor);
+            flare::deep_copy(host_tensor, tensor);
             flare::fence();
             std::ofstream myFile(filename, std::ios::out);
-            for (size_t i = 0; i < view.extent(0); ++i) {
-                myFile << host_view(i) << std::endl;
+            for (size_t i = 0; i < tensor.extent(0); ++i) {
+                myFile << host_tensor(i) << std::endl;
             }
             myFile.close();
         }
 
         template <typename idx_array_type>
-        inline void flare_read_1Dview_from_file(idx_array_type &view,
+        inline void flare_read_1DTensor_from_file(idx_array_type &tensor,
                                              const char *filename) {
             typedef typename idx_array_type::HostMirror host_type;
             // typedef typename idx_array_type::size_type idx;
-            host_type host_view = flare::create_mirror_view(view);
+            host_type host_tensor = flare::create_mirror_tensor(tensor);
             std::ifstream myFile(filename, std::ios::in);
 
-            for (size_t i = 0; i < view.extent(0); ++i) {
-                myFile >> host_view(i);
+            for (size_t i = 0; i < tensor.extent(0); ++i) {
+                myFile >> host_tensor(i);
             }
             myFile.close();
-            flare::deep_copy(view, host_view);
+            flare::deep_copy(tensor, host_tensor);
             flare::fence();
         }
 
         template <typename idx_array_type>
-        inline void flare_write_2Dview_to_file(idx_array_type view, const char *filename) {
+        inline void flare_write_2DTensor_to_file(idx_array_type tensor, const char *filename) {
             typedef typename idx_array_type::HostMirror host_type;
             // typedef typename idx_array_type::size_type idx;
-            host_type host_view = flare::create_mirror_view(view);
-            flare::deep_copy(host_view, view);
+            host_type host_tensor = flare::create_mirror_tensor(tensor);
+            flare::deep_copy(host_tensor, tensor);
             flare::fence();
             std::ofstream myFile(filename, std::ios::out);
-            for (size_t i = 0; i < view.extent(0); ++i) {
-                for (size_t j = 0; j < view.extent(1); ++j) {
-                    myFile << host_view(i, j) << " ";
+            for (size_t i = 0; i < tensor.extent(0); ++i) {
+                for (size_t j = 0; j < tensor.extent(1); ++j) {
+                    myFile << host_tensor(i, j) << " ";
                 }
                 myFile << std::endl;
             }
@@ -182,35 +182,35 @@ namespace flare::detail {
         }
 
         template <typename idx_array_type>
-        inline void flare_read_2Dview_from_file(idx_array_type &view,
+        inline void flare_read_2DTensor_from_file(idx_array_type &tensor,
                                              const char *filename) {
             typedef typename idx_array_type::HostMirror host_type;
             // typedef typename idx_array_type::size_type idx;
-            host_type host_view = flare::create_mirror_view(view);
+            host_type host_tensor = flare::create_mirror_tensor(tensor);
             std::ifstream myFile(filename, std::ios::in);
 
-            for (size_t i = 0; i < view.extent(0); ++i) {
-                for (size_t j = 0; j < view.extent(1); ++j) {
-                    myFile >> host_view(i, j);
+            for (size_t i = 0; i < tensor.extent(0); ++i) {
+                for (size_t j = 0; j < tensor.extent(1); ++j) {
+                    myFile >> host_tensor(i, j);
                 }
             }
             myFile.close();
-            flare::deep_copy(view, host_view);
+            flare::deep_copy(tensor, host_tensor);
             flare::fence();
         }
 
         template <typename idx_array_type>
-        inline void flare_write_3Dview_to_file(idx_array_type view, const char *filename) {
+        inline void flare_write_3DTensor_to_file(idx_array_type tensor, const char *filename) {
             typedef typename idx_array_type::HostMirror host_type;
             // typedef typename idx_array_type::size_type idx;
-            host_type host_view = flare::create_mirror_view(view);
-            flare::deep_copy(host_view, view);
+            host_type host_tensor = flare::create_mirror_tensor(tensor);
+            flare::deep_copy(host_tensor, tensor);
             flare::fence();
             std::ofstream myFile(filename, std::ios::out);
-            for (size_t i = 0; i < view.extent(0); ++i) {
-                for (size_t j = 0; j < view.extent(1); ++j) {
-                    for (size_t k = 0; k < view.extent(2); ++k) {
-                        myFile << host_view(i, j, k) << " ";
+            for (size_t i = 0; i < tensor.extent(0); ++i) {
+                for (size_t j = 0; j < tensor.extent(1); ++j) {
+                    for (size_t k = 0; k < tensor.extent(2); ++k) {
+                        myFile << host_tensor(i, j, k) << " ";
                     }
                     myFile << std::endl;
                 }
@@ -220,22 +220,22 @@ namespace flare::detail {
         }
 
         template <typename idx_array_type>
-        inline void flare_read_3Dview_from_file(idx_array_type &view,
+        inline void flare_read_3DTensor_from_file(idx_array_type &tensor,
                                              const char *filename) {
             typedef typename idx_array_type::HostMirror host_type;
             // typedef typename idx_array_type::size_type idx;
-            host_type host_view = flare::create_mirror_view(view);
+            host_type host_tensor = flare::create_mirror_tensor(tensor);
             std::ifstream myFile(filename, std::ios::in);
 
-            for (size_t i = 0; i < view.extent(0); ++i) {
-                for (size_t j = 0; j < view.extent(1); ++j) {
-                    for (size_t k = 0; k < view.extent(2); ++k) {
-                        myFile >> host_view(i, j, k);
+            for (size_t i = 0; i < tensor.extent(0); ++i) {
+                for (size_t j = 0; j < tensor.extent(1); ++j) {
+                    for (size_t k = 0; k < tensor.extent(2); ++k) {
+                        myFile >> host_tensor(i, j, k);
                     }
                 }
             }
             myFile.close();
-            flare::deep_copy(view, host_view);
+            flare::deep_copy(tensor, host_tensor);
             flare::fence();
         }
 

@@ -26,35 +26,35 @@ namespace {
 namespace SortWithComp {
 
 template <class LayoutTagType, class ValueType>
-auto create_random_view_and_host_clone(
+auto create_random_tensor_and_host_clone(
     LayoutTagType LayoutTag, std::size_t n,
     flare::pair<ValueType, ValueType> bounds, const std::string& label,
     std::size_t seedIn = 12371) {
   using namespace ::Test::stdalgos;
 
   // construct in memory space associated with default exespace
-  auto dataView = create_view<ValueType>(LayoutTag, n, label);
+  auto dataTensor = create_tensor<ValueType>(LayoutTag, n, label);
 
-  // dataView might not be deep copyable (e.g. strided layout) so to
-  // randomize it, we make a new view that is for sure deep copyable,
+  // dataTensor might not be deep copyable (e.g. strided layout) so to
+  // randomize it, we make a new tensor that is for sure deep copyable,
   // modify it on the host, deep copy to device and then launch
-  // a kernel to copy to dataView
-  auto dataView_dc =
-      create_deep_copyable_compatible_view_with_same_extent(dataView);
-  auto dataView_dc_h = create_mirror_view(flare::HostSpace(), dataView_dc);
+  // a kernel to copy to dataTensor
+  auto dataTensor_dc =
+      create_deep_copyable_compatible_tensor_with_same_extent(dataTensor);
+  auto dataTensor_dc_h = create_mirror_tensor(flare::HostSpace(), dataTensor_dc);
 
-  // randomly fill the view
+  // randomly fill the tensor
   flare::Random_XorShift64_Pool<flare::DefaultHostExecutionSpace> pool(
       seedIn);
-  flare::fill_random(dataView_dc_h, pool, bounds.first, bounds.second);
+  flare::fill_random(dataTensor_dc_h, pool, bounds.first, bounds.second);
 
-  // copy to dataView_dc and then to dataView
-  flare::deep_copy(dataView_dc, dataView_dc_h);
+  // copy to dataTensor_dc and then to dataTensor
+  flare::deep_copy(dataTensor_dc, dataTensor_dc_h);
   // use CTAD
-  CopyFunctor F1(dataView_dc, dataView);
-  flare::parallel_for("copy", dataView.extent(0), F1);
+  CopyFunctor F1(dataTensor_dc, dataTensor);
+  flare::parallel_for("copy", dataTensor.extent(0), F1);
 
-  return std::make_pair(dataView, dataView_dc_h);
+  return std::make_pair(dataTensor, dataTensor_dc_h);
 }
 
 template <class T>
@@ -75,28 +75,28 @@ void run_all_scenarios(int api)
   const std::vector<std::size_t> my_scenarios = {0, 1, 2, 9, 1003, 51513};
   for (std::size_t N : my_scenarios)
   {
-    auto [dataView, dataViewBeforeOp_h] = create_random_view_and_host_clone(
+    auto [dataTensor, dataTensorBeforeOp_h] = create_random_tensor_and_host_clone(
         Tag{}, N, flare::pair<ValueType, ValueType>{-1045, 565},
-        "dataView");
+        "dataTensor");
 
     namespace KE = flare::experimental;
 
     if (api == 0) {
-      flare::sort(dataView, comp_t{});
-      std::sort(KE::begin(dataViewBeforeOp_h), KE::end(dataViewBeforeOp_h),
+      flare::sort(dataTensor, comp_t{});
+      std::sort(KE::begin(dataTensorBeforeOp_h), KE::end(dataTensorBeforeOp_h),
                 comp_t{});
     }
 
     else if (api == 1) {
       auto exespace = ExecutionSpace();
-      flare::sort(exespace, dataView, comp_t{});
-      std::sort(KE::begin(dataViewBeforeOp_h), KE::end(dataViewBeforeOp_h),
+      flare::sort(exespace, dataTensor, comp_t{});
+      std::sort(KE::begin(dataTensorBeforeOp_h), KE::end(dataTensorBeforeOp_h),
                 comp_t{});
       exespace.fence();
     }
 
-    auto dataView_h = Test::stdalgos::create_host_space_copy(dataView);
-    Test::stdalgos::compare_views(dataViewBeforeOp_h, dataView_h);
+    auto dataTensor_h = Test::stdalgos::create_host_space_copy(dataTensor);
+    Test::stdalgos::compare_tensors(dataTensorBeforeOp_h, dataTensor_h);
 
     // To actually check that flare::sort used the custom
     // comparator MyComp, we should have a result in non-ascending order.
@@ -105,7 +105,7 @@ void run_all_scenarios(int api)
     // Note: std::is_sorted returns true for ranges of length one,
     // so this check makes sense only when N >= 2.
     if (N >= 2){
-      REQUIRE_FALSE(std::is_sorted( KE::cbegin(dataView_h), KE::cend(dataView_h)));
+      REQUIRE_FALSE(std::is_sorted( KE::cbegin(dataTensor_h), KE::cend(dataTensor_h)));
     }
   }
 }

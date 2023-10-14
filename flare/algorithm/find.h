@@ -47,12 +47,12 @@ template <
     typename T,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto find(const ExecutionSpace& ex,
-          const ::flare::View<DataType, Properties...>& view, const T& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+          const ::flare::Tensor<DataType, Properties...>& tensor, const T& value) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::find_exespace_impl("flare::find_view_api_default", ex,
-                                  KE::begin(view), KE::end(view), value);
+  return detail::find_exespace_impl("flare::find_tensor_api_default", ex,
+                                  KE::begin(tensor), KE::end(tensor), value);
 }
 
 template <
@@ -60,11 +60,11 @@ template <
     typename T,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto find(const std::string& label, const ExecutionSpace& ex,
-          const ::flare::View<DataType, Properties...>& view, const T& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+          const ::flare::Tensor<DataType, Properties...>& tensor, const T& value) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::find_exespace_impl(label, ex, KE::begin(view), KE::end(view),
+  return detail::find_exespace_impl(label, ex, KE::begin(tensor), KE::end(tensor),
                                   value);
 }
 
@@ -85,12 +85,12 @@ template <typename TeamHandleType, typename DataType, typename... Properties,
           typename T,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto find(const TeamHandleType& teamHandle,
-                          const ::flare::View<DataType, Properties...>& view,
+                          const ::flare::Tensor<DataType, Properties...>& tensor,
                           const T& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   namespace KE = ::flare::experimental;
-  return detail::find_team_impl(teamHandle, KE::begin(view), KE::end(view),
+  return detail::find_team_impl(teamHandle, KE::begin(tensor), KE::end(tensor),
                               value);
 }
 

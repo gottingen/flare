@@ -23,14 +23,14 @@ namespace Test {
 
         struct CudaStreamScratchTestFunctor {
             using team_t = flare::TeamPolicy<flare::Cuda>::member_type;
-            using scratch_t = flare::View<int64_t *, flare::Cuda::scratch_memory_space>;
+            using scratch_t = flare::Tensor<int64_t *, flare::Cuda::scratch_memory_space>;
 
-            flare::View<int64_t, flare::CudaSpace, flare::MemoryTraits<flare::Atomic>>
+            flare::Tensor<int64_t, flare::CudaSpace, flare::MemoryTraits<flare::Atomic>>
                     counter;
             int N, M;
 
             CudaStreamScratchTestFunctor(
-                    flare::View<int64_t, flare::CudaSpace> counter_, int N_, int M_)
+                    flare::Tensor<int64_t, flare::CudaSpace> counter_, int N_, int M_)
                     : counter(counter_), N(N_), M(M_) {}
 
             FLARE_FUNCTION
@@ -51,11 +51,11 @@ namespace Test {
         };
 
         void cuda_stream_scratch_test_one(
-                int N, int T, int M_base, flare::View<int64_t, flare::CudaSpace> counter,
+                int N, int T, int M_base, flare::Tensor<int64_t, flare::CudaSpace> counter,
                 flare::Cuda cuda, int tid) {
             int M = M_base + tid * 5;
             flare::TeamPolicy<flare::Cuda> p(cuda, T, 64);
-            using scratch_t = flare::View<int64_t *, flare::Cuda::scratch_memory_space>;
+            using scratch_t = flare::Tensor<int64_t *, flare::Cuda::scratch_memory_space>;
 
             int bytes = scratch_t::shmem_size(M);
 
@@ -67,7 +67,7 @@ namespace Test {
 
         void cuda_stream_scratch_test(
                 int N, int T, int M_base,
-                flare::View<int64_t, flare::CudaSpace> counter) {
+                flare::Tensor<int64_t, flare::CudaSpace> counter) {
             int K = 4;
             cudaStream_t stream[4];
             flare::Cuda cuda[4];
@@ -109,7 +109,7 @@ namespace Test {
         int T = 10;
         int M_base = 150;
 
-        flare::View<int64_t, flare::CudaSpace> counter("C");
+        flare::Tensor<int64_t, flare::CudaSpace> counter("C");
 
         detail::cuda_stream_scratch_test(N, T, M_base, counter);
 

@@ -25,17 +25,17 @@
 template<class Scalar, class ExecutionSpace>
 int test_rot() {
     using mag_type = typename flare::ArithTraits<Scalar>::mag_type;
-    using vector_type = flare::View<Scalar *, ExecutionSpace>;
-    using scalar_type = flare::View<mag_type, ExecutionSpace>;
-    using vector_ref_type = flare::View<Scalar *, flare::HostSpace>;
+    using vector_type = flare::Tensor<Scalar *, ExecutionSpace>;
+    using scalar_type = flare::Tensor<mag_type, ExecutionSpace>;
+    using vector_ref_type = flare::Tensor<Scalar *, flare::HostSpace>;
 
     vector_type X("X", 4), Y("Y", 4);
     vector_ref_type Xref("Xref", 4), Yref("Yref", 4);
     scalar_type c("c"), s("s");
 
     // Initialize inputs
-    typename vector_type::HostMirror X_h = flare::create_mirror_view(X);
-    typename vector_type::HostMirror Y_h = flare::create_mirror_view(Y);
+    typename vector_type::HostMirror X_h = flare::create_mirror_tensor(X);
+    typename vector_type::HostMirror Y_h = flare::create_mirror_tensor(Y);
     X_h(0) = 0.6;
     X_h(1) = 0.1;
     X_h(2) = -0.5;

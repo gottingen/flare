@@ -68,9 +68,9 @@ namespace flare::blas::detail {
 #define FLARE_BLAS_SWAP_SPEC_INST(SCALAR, LAYOUT, EXECSPACE, MEMSPACE) \
   template struct Swap<                                                     \
       EXECSPACE,                                                            \
-      flare::View<SCALAR*, LAYOUT, flare::Device<EXECSPACE, MEMSPACE>,    \
+      flare::Tensor<SCALAR*, LAYOUT, flare::Device<EXECSPACE, MEMSPACE>,    \
                    flare::MemoryTraits<flare::Unmanaged>>,                \
-      flare::View<SCALAR*, LAYOUT, flare::Device<EXECSPACE, MEMSPACE>,    \
+      flare::Tensor<SCALAR*, LAYOUT, flare::Device<EXECSPACE, MEMSPACE>,    \
                    flare::MemoryTraits<flare::Unmanaged>>>;
 
 #endif  // FLARE_KERNEL_BLAS_SWAP_IMPL_H_

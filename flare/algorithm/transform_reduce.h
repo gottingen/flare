@@ -47,21 +47,21 @@ ValueType transform_reduce(const std::string& label, const ExecutionSpace& ex,
       label, ex, first1, last1, first2, std::move(init_reduction_value));
 }
 
-// overload1 accepting views
+// overload1 accepting tensors
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class ValueType>
 ValueType transform_reduce(
     const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& first_view,
-    const ::flare::View<DataType2, Properties2...>& second_view,
+    const ::flare::Tensor<DataType1, Properties1...>& first_tensor,
+    const ::flare::Tensor<DataType2, Properties2...>& second_tensor,
     ValueType init_reduction_value) {
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(first_view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(second_view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(first_tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(second_tensor);
 
   return detail::transform_reduce_default_functors_impl(
       "flare::transform_reduce_default_functors_iterator_api", ex,
-      KE::cbegin(first_view), KE::cend(first_view), KE::cbegin(second_view),
+      KE::cbegin(first_tensor), KE::cend(first_tensor), KE::cbegin(second_tensor),
       std::move(init_reduction_value));
 }
 
@@ -69,16 +69,16 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class ValueType>
 ValueType transform_reduce(
     const std::string& label, const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& first_view,
-    const ::flare::View<DataType2, Properties2...>& second_view,
+    const ::flare::Tensor<DataType1, Properties1...>& first_tensor,
+    const ::flare::Tensor<DataType2, Properties2...>& second_tensor,
     ValueType init_reduction_value) {
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(first_view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(second_view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(first_tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(second_tensor);
 
   return detail::transform_reduce_default_functors_impl(
-      label, ex, KE::cbegin(first_view), KE::cend(first_view),
-      KE::cbegin(second_view), std::move(init_reduction_value));
+      label, ex, KE::cbegin(first_tensor), KE::cend(first_tensor),
+      KE::cbegin(second_tensor), std::move(init_reduction_value));
 }
 
 //
@@ -125,26 +125,26 @@ ValueType transform_reduce(const std::string& label, const ExecutionSpace& ex,
       std::move(joiner), std::move(transformer));
 }
 
-// accepting views
+// accepting tensors
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class ValueType,
           class BinaryJoinerType, class BinaryTransform>
 ValueType transform_reduce(
     const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& first_view,
-    const ::flare::View<DataType2, Properties2...>& second_view,
+    const ::flare::Tensor<DataType1, Properties1...>& first_tensor,
+    const ::flare::Tensor<DataType2, Properties2...>& second_tensor,
     ValueType init_reduction_value, BinaryJoinerType joiner,
     BinaryTransform transformer) {
   namespace KE = ::flare::experimental;
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
 
-  detail::static_assert_is_admissible_to_flare_std_algorithms(first_view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(second_view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(first_tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(second_tensor);
 
   return detail::transform_reduce_custom_functors_impl(
-      "flare::transform_reduce_custom_functors_view_api", ex,
-      KE::cbegin(first_view), KE::cend(first_view), KE::cbegin(second_view),
+      "flare::transform_reduce_custom_functors_tensor_api", ex,
+      KE::cbegin(first_tensor), KE::cend(first_tensor), KE::cbegin(second_tensor),
       std::move(init_reduction_value), std::move(joiner),
       std::move(transformer));
 }
@@ -154,20 +154,20 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class BinaryJoinerType, class BinaryTransform>
 ValueType transform_reduce(
     const std::string& label, const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& first_view,
-    const ::flare::View<DataType2, Properties2...>& second_view,
+    const ::flare::Tensor<DataType1, Properties1...>& first_tensor,
+    const ::flare::Tensor<DataType2, Properties2...>& second_tensor,
     ValueType init_reduction_value, BinaryJoinerType joiner,
     BinaryTransform transformer) {
   namespace KE = ::flare::experimental;
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
 
-  detail::static_assert_is_admissible_to_flare_std_algorithms(first_view);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(second_view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(first_tensor);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(second_tensor);
 
   return detail::transform_reduce_custom_functors_impl(
-      label, ex, KE::cbegin(first_view), KE::cend(first_view),
-      KE::cbegin(second_view), std::move(init_reduction_value),
+      label, ex, KE::cbegin(first_tensor), KE::cend(first_tensor),
+      KE::cbegin(second_tensor), std::move(init_reduction_value),
       std::move(joiner), std::move(transformer));
 }
 
@@ -209,11 +209,11 @@ transform_reduce(const std::string& label, const ExecutionSpace& ex,
       std::move(joiner), std::move(transformer));
 }
 
-// accepting views
+// accepting tensors
 template <class ExecutionSpace, class DataType, class... Properties,
           class ValueType, class BinaryJoinerType, class UnaryTransform>
 ValueType transform_reduce(const ExecutionSpace& ex,
-                           const ::flare::View<DataType, Properties...>& view,
+                           const ::flare::Tensor<DataType, Properties...>& tensor,
                            ValueType init_reduction_value,
                            BinaryJoinerType joiner,
                            UnaryTransform transformer) {
@@ -221,18 +221,18 @@ ValueType transform_reduce(const ExecutionSpace& ex,
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
 
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   return detail::transform_reduce_custom_functors_impl(
-      "flare::transform_reduce_custom_functors_view_api", ex, KE::cbegin(view),
-      KE::cend(view), std::move(init_reduction_value), std::move(joiner),
+      "flare::transform_reduce_custom_functors_tensor_api", ex, KE::cbegin(tensor),
+      KE::cend(tensor), std::move(init_reduction_value), std::move(joiner),
       std::move(transformer));
 }
 
 template <class ExecutionSpace, class DataType, class... Properties,
           class ValueType, class BinaryJoinerType, class UnaryTransform>
 ValueType transform_reduce(const std::string& label, const ExecutionSpace& ex,
-                           const ::flare::View<DataType, Properties...>& view,
+                           const ::flare::Tensor<DataType, Properties...>& tensor,
                            ValueType init_reduction_value,
                            BinaryJoinerType joiner,
                            UnaryTransform transformer) {
@@ -240,10 +240,10 @@ ValueType transform_reduce(const std::string& label, const ExecutionSpace& ex,
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
 
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   return detail::transform_reduce_custom_functors_impl(
-      label, ex, KE::cbegin(view), KE::cend(view),
+      label, ex, KE::cbegin(tensor), KE::cend(tensor),
       std::move(init_reduction_value), std::move(joiner),
       std::move(transformer));
 }

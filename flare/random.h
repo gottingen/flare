@@ -192,14 +192,14 @@ namespace flare {
 
     //Additional Functions:
 
-    //Fills view with random numbers in the range [0,range)
-    template<class ViewType, class PoolType>
-    void fill_random(ViewType view, PoolType pool, ViewType::value_type range);
+    //Fills tensor with random numbers in the range [0,range)
+    template<class TensorType, class PoolType>
+    void fill_random(TensorType tensor, PoolType pool, TensorType::value_type range);
 
-    //Fills view with random numbers in the range [start,end)
-    template<class ViewType, class PoolType>
-    void fill_random(ViewType view, PoolType pool,
-                     ViewType::value_type start, ViewType::value_type end);
+    //Fills tensor with random numbers in the range [start,end)
+    template<class TensorType, class PoolType>
+    void fill_random(TensorType tensor, PoolType pool,
+                     TensorType::value_type start, TensorType::value_type end);
 
 */
 // clang-format on
@@ -557,8 +557,8 @@ struct Random_XorShift1024_State {
   FLARE_DEFAULTED_FUNCTION
   Random_XorShift1024_State() = default;
 
-  template <class StateViewType>
-  FLARE_FUNCTION Random_XorShift1024_State(const StateViewType& v,
+  template <class StateTensorType>
+  FLARE_FUNCTION Random_XorShift1024_State(const StateTensorType& v,
                                             int state_idx) {
     for (int i = 0; i < 16; i++) state_[i] = v(state_idx, i);
   }
@@ -577,8 +577,8 @@ struct Random_XorShift1024_State<false> {
   FLARE_FUNCTION
   Random_XorShift1024_State() : state_(nullptr), stride_(1){};
 
-  template <class StateViewType>
-  FLARE_FUNCTION Random_XorShift1024_State(const StateViewType& v,
+  template <class StateTensorType>
+  FLARE_FUNCTION Random_XorShift1024_State(const StateTensorType& v,
                                             int state_idx)
       : state_(&v(state_idx, 0)), stride_(v.stride_1()) {}
 
@@ -599,9 +599,9 @@ struct Random_XorShift1024_UseCArrayState<flare::Cuda> : std::false_type {};
 
 template <class DeviceType>
 struct Random_UniqueIndex {
-  using locks_view_type = View<int**, DeviceType>;
+  using locks_tensor_type = Tensor<int**, DeviceType>;
   FLARE_FUNCTION
-  static int get_state_idx(const locks_view_type) {
+  static int get_state_idx(const locks_tensor_type) {
     FLARE_IF_ON_HOST(
         (return DeviceType::execution_space::impl_hardware_thread_id();))
 
@@ -616,11 +616,11 @@ struct Random_UniqueIndex {
 template <class MemorySpace>
 struct Random_UniqueIndex<
     flare::Device<FLARE_IMPL_EXECUTION_SPACE_CUDA, MemorySpace>> {
-  using locks_view_type =
-      View<int**, flare::Device<FLARE_IMPL_EXECUTION_SPACE_CUDA,
+  using locks_tensor_type =
+      Tensor<int**, flare::Device<FLARE_IMPL_EXECUTION_SPACE_CUDA,
                                  MemorySpace>>;
   FLARE_FUNCTION
-  static int get_state_idx(const locks_view_type& locks_) {
+  static int get_state_idx(const locks_tensor_type& locks_) {
     FLARE_IF_ON_DEVICE((
         const int i_offset =
             (threadIdx.x * blockDim.y + threadIdx.y) * blockDim.z + threadIdx.z;
@@ -799,8 +799,8 @@ class Random_XorShift64_Pool {
 
  private:
   using execution_space = typename device_type::execution_space;
-  using locks_type      = View<int**, device_type>;
-  using state_data_type = View<uint64_t**, device_type>;
+  using locks_type      = Tensor<int**, device_type>;
+  using state_data_type = Tensor<uint64_t**, device_type>;
 
   locks_type locks_      = {};
   state_data_type state_ = {};
@@ -831,9 +831,9 @@ class Random_XorShift64_Pool {
                              padding_);
 
     typename state_data_type::HostMirror h_state =
-        flare::create_mirror_view(flare::WithoutInitializing, state_);
+        flare::create_mirror_tensor(flare::WithoutInitializing, state_);
     typename locks_type::HostMirror h_lock =
-        flare::create_mirror_view(flare::WithoutInitializing, locks_);
+        flare::create_mirror_tensor(flare::WithoutInitializing, locks_);
 
     // Execute on the HostMirror's default execution space.
     Random_XorShift64<typename state_data_type::HostMirror::execution_space>
@@ -1034,13 +1034,13 @@ class Random_XorShift1024_Pool {
 
  private:
   using execution_space = typename device_type::execution_space;
-  using locks_type      = View<int**, device_type>;
-  using int_view_type   = View<int**, device_type>;
-  using state_data_type = View<uint64_t * [16], device_type>;
+  using locks_type      = Tensor<int**, device_type>;
+  using int_tensor_type   = Tensor<int**, device_type>;
+  using state_data_type = Tensor<uint64_t * [16], device_type>;
 
   locks_type locks_      = {};
   state_data_type state_ = {};
-  int_view_type p_       = {};
+  int_tensor_type p_       = {};
   int num_states_        = {};
   int padding_           = {};
   friend class Random_XorShift1024<DeviceType>;
@@ -1066,14 +1066,14 @@ class Random_XorShift1024_Pool {
     locks_ =
         locks_type("flare::Random_XorShift1024::locks", num_states_, padding_);
     state_ = state_data_type("flare::Random_XorShift1024::state", num_states_);
-    p_ = int_view_type("flare::Random_XorShift1024::p", num_states_, padding_);
+    p_ = int_tensor_type("flare::Random_XorShift1024::p", num_states_, padding_);
 
     typename state_data_type::HostMirror h_state =
-        flare::create_mirror_view(flare::WithoutInitializing, state_);
+        flare::create_mirror_tensor(flare::WithoutInitializing, state_);
     typename locks_type::HostMirror h_lock =
-        flare::create_mirror_view(flare::WithoutInitializing, locks_);
-    typename int_view_type::HostMirror h_p =
-        flare::create_mirror_view(flare::WithoutInitializing, p_);
+        flare::create_mirror_tensor(flare::WithoutInitializing, locks_);
+    typename int_tensor_type::HostMirror h_p =
+        flare::create_mirror_tensor(flare::WithoutInitializing, p_);
 
     // Execute on the HostMirror's default execution space.
     Random_XorShift64<typename state_data_type::HostMirror::execution_space>
@@ -1122,23 +1122,23 @@ class Random_XorShift1024_Pool {
 
 namespace detail {
 
-template <class ViewType, class RandomPool, int loops, int rank,
+template <class TensorType, class RandomPool, int loops, int rank,
           class IndexType>
 struct fill_random_functor_begin_end;
 
-template <class ViewType, class RandomPool, int loops, class IndexType>
-struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 0,
+template <class TensorType, class RandomPool, int loops, class IndexType>
+struct fill_random_functor_begin_end<TensorType, RandomPool, loops, 0,
                                      IndexType> {
-  ViewType a;
+  TensorType a;
   RandomPool rand_pool;
-  typename ViewType::const_value_type begin, end;
+  typename TensorType::const_value_type begin, end;
 
   using Rand = rand<typename RandomPool::generator_type,
-                    typename ViewType::non_const_value_type>;
+                    typename TensorType::non_const_value_type>;
 
-  fill_random_functor_begin_end(ViewType a_, RandomPool rand_pool_,
-                                typename ViewType::const_value_type begin_,
-                                typename ViewType::const_value_type end_)
+  fill_random_functor_begin_end(TensorType a_, RandomPool rand_pool_,
+                                typename TensorType::const_value_type begin_,
+                                typename TensorType::const_value_type end_)
       : a(a_), rand_pool(rand_pool_), begin(begin_), end(end_) {}
 
   FLARE_INLINE_FUNCTION
@@ -1149,19 +1149,19 @@ struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 0,
   }
 };
 
-template <class ViewType, class RandomPool, int loops, class IndexType>
-struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 1,
+template <class TensorType, class RandomPool, int loops, class IndexType>
+struct fill_random_functor_begin_end<TensorType, RandomPool, loops, 1,
                                      IndexType> {
-  ViewType a;
+  TensorType a;
   RandomPool rand_pool;
-  typename ViewType::const_value_type begin, end;
+  typename TensorType::const_value_type begin, end;
 
   using Rand = rand<typename RandomPool::generator_type,
-                    typename ViewType::non_const_value_type>;
+                    typename TensorType::non_const_value_type>;
 
-  fill_random_functor_begin_end(ViewType a_, RandomPool rand_pool_,
-                                typename ViewType::const_value_type begin_,
-                                typename ViewType::const_value_type end_)
+  fill_random_functor_begin_end(TensorType a_, RandomPool rand_pool_,
+                                typename TensorType::const_value_type begin_,
+                                typename TensorType::const_value_type end_)
       : a(a_), rand_pool(rand_pool_), begin(begin_), end(end_) {}
 
   FLARE_INLINE_FUNCTION
@@ -1176,19 +1176,19 @@ struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 1,
   }
 };
 
-template <class ViewType, class RandomPool, int loops, class IndexType>
-struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 2,
+template <class TensorType, class RandomPool, int loops, class IndexType>
+struct fill_random_functor_begin_end<TensorType, RandomPool, loops, 2,
                                      IndexType> {
-  ViewType a;
+  TensorType a;
   RandomPool rand_pool;
-  typename ViewType::const_value_type begin, end;
+  typename TensorType::const_value_type begin, end;
 
   using Rand = rand<typename RandomPool::generator_type,
-                    typename ViewType::non_const_value_type>;
+                    typename TensorType::non_const_value_type>;
 
-  fill_random_functor_begin_end(ViewType a_, RandomPool rand_pool_,
-                                typename ViewType::const_value_type begin_,
-                                typename ViewType::const_value_type end_)
+  fill_random_functor_begin_end(TensorType a_, RandomPool rand_pool_,
+                                typename TensorType::const_value_type begin_,
+                                typename TensorType::const_value_type end_)
       : a(a_), rand_pool(rand_pool_), begin(begin_), end(end_) {}
 
   FLARE_INLINE_FUNCTION
@@ -1205,19 +1205,19 @@ struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 2,
   }
 };
 
-template <class ViewType, class RandomPool, int loops, class IndexType>
-struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 3,
+template <class TensorType, class RandomPool, int loops, class IndexType>
+struct fill_random_functor_begin_end<TensorType, RandomPool, loops, 3,
                                      IndexType> {
-  ViewType a;
+  TensorType a;
   RandomPool rand_pool;
-  typename ViewType::const_value_type begin, end;
+  typename TensorType::const_value_type begin, end;
 
   using Rand = rand<typename RandomPool::generator_type,
-                    typename ViewType::non_const_value_type>;
+                    typename TensorType::non_const_value_type>;
 
-  fill_random_functor_begin_end(ViewType a_, RandomPool rand_pool_,
-                                typename ViewType::const_value_type begin_,
-                                typename ViewType::const_value_type end_)
+  fill_random_functor_begin_end(TensorType a_, RandomPool rand_pool_,
+                                typename TensorType::const_value_type begin_,
+                                typename TensorType::const_value_type end_)
       : a(a_), rand_pool(rand_pool_), begin(begin_), end(end_) {}
 
   FLARE_INLINE_FUNCTION
@@ -1235,19 +1235,19 @@ struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 3,
   }
 };
 
-template <class ViewType, class RandomPool, int loops, class IndexType>
-struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 4,
+template <class TensorType, class RandomPool, int loops, class IndexType>
+struct fill_random_functor_begin_end<TensorType, RandomPool, loops, 4,
                                      IndexType> {
-  ViewType a;
+  TensorType a;
   RandomPool rand_pool;
-  typename ViewType::const_value_type begin, end;
+  typename TensorType::const_value_type begin, end;
 
   using Rand = rand<typename RandomPool::generator_type,
-                    typename ViewType::non_const_value_type>;
+                    typename TensorType::non_const_value_type>;
 
-  fill_random_functor_begin_end(ViewType a_, RandomPool rand_pool_,
-                                typename ViewType::const_value_type begin_,
-                                typename ViewType::const_value_type end_)
+  fill_random_functor_begin_end(TensorType a_, RandomPool rand_pool_,
+                                typename TensorType::const_value_type begin_,
+                                typename TensorType::const_value_type end_)
       : a(a_), rand_pool(rand_pool_), begin(begin_), end(end_) {}
 
   FLARE_INLINE_FUNCTION
@@ -1266,19 +1266,19 @@ struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 4,
   }
 };
 
-template <class ViewType, class RandomPool, int loops, class IndexType>
-struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 5,
+template <class TensorType, class RandomPool, int loops, class IndexType>
+struct fill_random_functor_begin_end<TensorType, RandomPool, loops, 5,
                                      IndexType> {
-  ViewType a;
+  TensorType a;
   RandomPool rand_pool;
-  typename ViewType::const_value_type begin, end;
+  typename TensorType::const_value_type begin, end;
 
   using Rand = rand<typename RandomPool::generator_type,
-                    typename ViewType::non_const_value_type>;
+                    typename TensorType::non_const_value_type>;
 
-  fill_random_functor_begin_end(ViewType a_, RandomPool rand_pool_,
-                                typename ViewType::const_value_type begin_,
-                                typename ViewType::const_value_type end_)
+  fill_random_functor_begin_end(TensorType a_, RandomPool rand_pool_,
+                                typename TensorType::const_value_type begin_,
+                                typename TensorType::const_value_type end_)
       : a(a_), rand_pool(rand_pool_), begin(begin_), end(end_) {}
 
   FLARE_INLINE_FUNCTION
@@ -1299,19 +1299,19 @@ struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 5,
   }
 };
 
-template <class ViewType, class RandomPool, int loops, class IndexType>
-struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 6,
+template <class TensorType, class RandomPool, int loops, class IndexType>
+struct fill_random_functor_begin_end<TensorType, RandomPool, loops, 6,
                                      IndexType> {
-  ViewType a;
+  TensorType a;
   RandomPool rand_pool;
-  typename ViewType::const_value_type begin, end;
+  typename TensorType::const_value_type begin, end;
 
   using Rand = rand<typename RandomPool::generator_type,
-                    typename ViewType::non_const_value_type>;
+                    typename TensorType::non_const_value_type>;
 
-  fill_random_functor_begin_end(ViewType a_, RandomPool rand_pool_,
-                                typename ViewType::const_value_type begin_,
-                                typename ViewType::const_value_type end_)
+  fill_random_functor_begin_end(TensorType a_, RandomPool rand_pool_,
+                                typename TensorType::const_value_type begin_,
+                                typename TensorType::const_value_type end_)
       : a(a_), rand_pool(rand_pool_), begin(begin_), end(end_) {}
 
   FLARE_INLINE_FUNCTION
@@ -1334,19 +1334,19 @@ struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 6,
   }
 };
 
-template <class ViewType, class RandomPool, int loops, class IndexType>
-struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 7,
+template <class TensorType, class RandomPool, int loops, class IndexType>
+struct fill_random_functor_begin_end<TensorType, RandomPool, loops, 7,
                                      IndexType> {
-  ViewType a;
+  TensorType a;
   RandomPool rand_pool;
-  typename ViewType::const_value_type begin, end;
+  typename TensorType::const_value_type begin, end;
 
   using Rand = rand<typename RandomPool::generator_type,
-                    typename ViewType::non_const_value_type>;
+                    typename TensorType::non_const_value_type>;
 
-  fill_random_functor_begin_end(ViewType a_, RandomPool rand_pool_,
-                                typename ViewType::const_value_type begin_,
-                                typename ViewType::const_value_type end_)
+  fill_random_functor_begin_end(TensorType a_, RandomPool rand_pool_,
+                                typename TensorType::const_value_type begin_,
+                                typename TensorType::const_value_type end_)
       : a(a_), rand_pool(rand_pool_), begin(begin_), end(end_) {}
 
   FLARE_INLINE_FUNCTION
@@ -1371,19 +1371,19 @@ struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 7,
   }
 };
 
-template <class ViewType, class RandomPool, int loops, class IndexType>
-struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 8,
+template <class TensorType, class RandomPool, int loops, class IndexType>
+struct fill_random_functor_begin_end<TensorType, RandomPool, loops, 8,
                                      IndexType> {
-  ViewType a;
+  TensorType a;
   RandomPool rand_pool;
-  typename ViewType::const_value_type begin, end;
+  typename TensorType::const_value_type begin, end;
 
   using Rand = rand<typename RandomPool::generator_type,
-                    typename ViewType::non_const_value_type>;
+                    typename TensorType::non_const_value_type>;
 
-  fill_random_functor_begin_end(ViewType a_, RandomPool rand_pool_,
-                                typename ViewType::const_value_type begin_,
-                                typename ViewType::const_value_type end_)
+  fill_random_functor_begin_end(TensorType a_, RandomPool rand_pool_,
+                                typename TensorType::const_value_type begin_,
+                                typename TensorType::const_value_type end_)
       : a(a_), rand_pool(rand_pool_), begin(begin_), end(end_) {}
 
   FLARE_INLINE_FUNCTION
@@ -1410,51 +1410,51 @@ struct fill_random_functor_begin_end<ViewType, RandomPool, loops, 8,
   }
 };
 
-template <class ExecutionSpace, class ViewType, class RandomPool,
+template <class ExecutionSpace, class TensorType, class RandomPool,
           class IndexType = int64_t>
-void fill_random(const ExecutionSpace& exec, ViewType a, RandomPool g,
-                 typename ViewType::const_value_type begin,
-                 typename ViewType::const_value_type end) {
+void fill_random(const ExecutionSpace& exec, TensorType a, RandomPool g,
+                 typename TensorType::const_value_type begin,
+                 typename TensorType::const_value_type end) {
   int64_t LDA = a.extent(0);
   if (LDA > 0)
     parallel_for(
         "flare::fill_random",
         flare::RangePolicy<ExecutionSpace>(exec, 0, (LDA + 127) / 128),
-        detail::fill_random_functor_begin_end<ViewType, RandomPool, 128,
-                                            ViewType::rank, IndexType>(
+        detail::fill_random_functor_begin_end<TensorType, RandomPool, 128,
+                                            TensorType::rank, IndexType>(
             a, g, begin, end));
 }
 
 }  // namespace detail
 
-template <class ExecutionSpace, class ViewType, class RandomPool,
+template <class ExecutionSpace, class TensorType, class RandomPool,
           class IndexType = int64_t>
-void fill_random(const ExecutionSpace& exec, ViewType a, RandomPool g,
-                 typename ViewType::const_value_type begin,
-                 typename ViewType::const_value_type end) {
-  detail::apply_to_view_of_static_rank(
+void fill_random(const ExecutionSpace& exec, TensorType a, RandomPool g,
+                 typename TensorType::const_value_type begin,
+                 typename TensorType::const_value_type end) {
+  detail::apply_to_tensor_of_static_rank(
       [&](auto dst) { flare::detail::fill_random(exec, dst, g, begin, end); },
       a);
 }
 
-template <class ExecutionSpace, class ViewType, class RandomPool,
+template <class ExecutionSpace, class TensorType, class RandomPool,
           class IndexType = int64_t>
-void fill_random(const ExecutionSpace& exec, ViewType a, RandomPool g,
-                 typename ViewType::const_value_type range) {
+void fill_random(const ExecutionSpace& exec, TensorType a, RandomPool g,
+                 typename TensorType::const_value_type range) {
   fill_random(exec, a, g, 0, range);
 }
 
-template <class ViewType, class RandomPool, class IndexType = int64_t>
-void fill_random(ViewType a, RandomPool g,
-                 typename ViewType::const_value_type begin,
-                 typename ViewType::const_value_type end) {
-  fill_random(typename ViewType::execution_space{}, a, g, begin, end);
+template <class TensorType, class RandomPool, class IndexType = int64_t>
+void fill_random(TensorType a, RandomPool g,
+                 typename TensorType::const_value_type begin,
+                 typename TensorType::const_value_type end) {
+  fill_random(typename TensorType::execution_space{}, a, g, begin, end);
 }
 
-template <class ViewType, class RandomPool, class IndexType = int64_t>
-void fill_random(ViewType a, RandomPool g,
-                 typename ViewType::const_value_type range) {
-  fill_random(typename ViewType::execution_space{}, a, g, 0, range);
+template <class TensorType, class RandomPool, class IndexType = int64_t>
+void fill_random(TensorType a, RandomPool g,
+                 typename TensorType::const_value_type range) {
+  fill_random(typename TensorType::execution_space{}, a, g, 0, range);
 }
 
 }  // namespace flare

@@ -23,9 +23,9 @@ namespace flare::blas::detail {
 
     /// \brief Functor for entry-wise multiply of multivectors.
     ///
-    /// \tparam CMV 2-D flare::View
-    /// \tparam AV 1-D flare::View
-    /// \tparam BMV 2-D flare::View
+    /// \tparam CMV 2-D flare::Tensor
+    /// \tparam AV 1-D flare::Tensor
+    /// \tparam BMV 2-D flare::Tensor
     /// \tparam scalar_ab 0 if ab is zero, else nonzero (preferably 2).
     /// \tparam scalar_c 0 if c is zero, else nonzero (preferably 2).
     /// \tparam SizeType Index type for iterating over rows.
@@ -78,9 +78,9 @@ namespace flare::blas::detail {
 
     /// \brief Functor for entry-wise multiply of vectors.
     ///
-    /// \tparam CV 1-D flare::View
-    /// \tparam AV 1-D flare::View
-    /// \tparam BV 1-D flare::View
+    /// \tparam CV 1-D flare::Tensor
+    /// \tparam AV 1-D flare::Tensor
+    /// \tparam BV 1-D flare::Tensor
     /// \tparam scalar_ab 0 if ab is zero, else nonzero (preferably 2).
     /// \tparam scalar_c 0 if c is zero, else nonzero (preferably 2).
     /// \tparam SizeType Index type for iterating over rows.
@@ -123,9 +123,9 @@ namespace flare::blas::detail {
     /// \brief Implementation of entry-wise multiply of vectors, that
     ///   dispatches to the right functor invocation.
     ///
-    /// \tparam CV 1-D flare::View
-    /// \tparam AV 1-D flare::View
-    /// \tparam BV 1-D flare::View
+    /// \tparam CV 1-D flare::Tensor
+    /// \tparam AV 1-D flare::Tensor
+    /// \tparam BV 1-D flare::Tensor
     /// \tparam SizeType Index type for iterating over rows.
     ///
     /// C(i) = c * C(i) + ab * A(i) * B(i), subject to the usual BLAS
@@ -136,7 +136,7 @@ namespace flare::blas::detail {
                         typename AV::const_value_type& ab, const AV& A,
                         const BV& B) {
         using flare::ALL;
-        using flare::subview;
+        using flare::subtensor;
         typedef flare::ArithTraits<typename AV::non_const_value_type> ATA;
         typedef flare::ArithTraits<typename CV::non_const_value_type> ATC;
 
@@ -170,9 +170,9 @@ namespace flare::blas::detail {
     ///   dispatches to the right functor invocation (or calls
     ///   V_Mult_Generic if C and B have one column).
     ///
-    /// \tparam CMV 2-D flare::View
-    /// \tparam AV 1-D flare::View
-    /// \tparam BMV 2-D flare::View
+    /// \tparam CMV 2-D flare::Tensor
+    /// \tparam AV 1-D flare::Tensor
+    /// \tparam BMV 2-D flare::Tensor
     /// \tparam SizeType Index type for iterating over rows.
     ///
     /// C(i,j) = c * C(i,j) + ab * A(i) * B(i,j), subject to the usual
@@ -186,8 +186,8 @@ namespace flare::blas::detail {
         typedef flare::ArithTraits<typename CMV::non_const_value_type> ATC;
 
         if (C.extent(1) == 1) {
-            auto C_0 = flare::subview(C, flare::ALL(), 0);
-            auto B_0 = flare::subview(B, flare::ALL(), 0);
+            auto C_0 = flare::subtensor(C, flare::ALL(), 0);
+            auto B_0 = flare::subtensor(B, flare::ALL(), 0);
             typedef decltype(C_0) CV;
             typedef decltype(B_0) BV;
 
@@ -244,7 +244,7 @@ namespace flare::blas::detail {
                          const XMV& X);
     };
 
-    // Partial specialization for YMV, AV, and XMV rank-2 Views.
+    // Partial specialization for YMV, AV, and XMV rank-2 Tensors.
     template <class execution_space, class YMV, class AV, class XMV>
     struct Mult<execution_space, YMV, AV, XMV, 2> {
         typedef typename YMV::size_type size_type;
@@ -254,15 +254,15 @@ namespace flare::blas::detail {
         static void mult(const execution_space& space, const YMV_scalar& gamma,
                          const YMV& Y, const XMV_scalar& alpha, const AV& A,
                          const XMV& X) {
-            static_assert(flare::is_view<YMV>::value,
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::Impl::"
-                          "Mult<rank 2>::mult: Y is not a flare::View.");
-            static_assert(flare::is_view<AV>::value,
+                          "Mult<rank 2>::mult: Y is not a flare::Tensor.");
+            static_assert(flare::is_tensor<AV>::value,
                           "flare::blas::Impl::"
-                          "Mult<rank 2>::mult: A is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Mult<rank 2>::mult: A is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::Impl::"
-                          "Mult<rank 2>::mult: X is not a flare::View.");
+                          "Mult<rank 2>::mult: X is not a flare::Tensor.");
             static_assert(std::is_same<typename YMV::value_type,
                                   typename YMV::non_const_value_type>::value,
                           "flare::blas::Impl::Mult<rank 2>::mult: Y is const.  "
@@ -293,7 +293,7 @@ namespace flare::blas::detail {
         }
     };
 
-    // Partial specialization for YV, AV, and XV rank-1 Views.
+    // Partial specialization for YV, AV, and XV rank-1 Tensors.
     template <class execution_space, class YV, class AV, class XV>
     struct Mult<execution_space, YV, AV, XV, 1> {
         typedef typename YV::size_type size_type;
@@ -303,16 +303,16 @@ namespace flare::blas::detail {
         static void mult(const execution_space& space, const YV_scalar& gamma,
                          const YV& Y, const XV_scalar& alpha, const AV& A,
                          const XV& X) {
-            // YV, AV, and XV must be flare::View specializations.
-            static_assert(flare::is_view<YV>::value,
+            // YV, AV, and XV must be flare::Tensor specializations.
+            static_assert(flare::is_tensor<YV>::value,
                           "flare::blas::Impl::"
-                          "Mult<rank 1>::mult: Y is not a flare::View.");
-            static_assert(flare::is_view<AV>::value,
+                          "Mult<rank 1>::mult: Y is not a flare::Tensor.");
+            static_assert(flare::is_tensor<AV>::value,
                           "flare::blas::Impl::"
-                          "Mult<rank 1>::mult: A is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "Mult<rank 1>::mult: A is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::Impl::"
-                          "Mult<rank 1>::mult: X is not a flare::View.");
+                          "Mult<rank 1>::mult: X is not a flare::Tensor.");
             // XV must be nonconst (else it can't be an output argument).
             static_assert(std::is_same<typename YV::value_type,
                                   typename YV::non_const_value_type>::value,
@@ -341,12 +341,12 @@ namespace flare::blas::detail {
 #define FLARE_BLAS_MULT_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE) \
   template struct Mult<                                                       \
       EXEC_SPACE,                                                             \
-      flare::View<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
+      flare::Tensor<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
-      flare::View<const SCALAR*, LAYOUT,                                     \
+      flare::Tensor<const SCALAR*, LAYOUT,                                     \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                     \
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
-      flare::View<const SCALAR*, LAYOUT,                                     \
+      flare::Tensor<const SCALAR*, LAYOUT,                                     \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                     \
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
       1>;
@@ -355,12 +355,12 @@ namespace flare::blas::detail {
                                           MEM_SPACE)                        \
   template struct Mult<                                                     \
       EXEC_SPACE,                                                           \
-      flare::View<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<const SCALAR*, LAYOUT,                                   \
+      flare::Tensor<const SCALAR*, LAYOUT,                                   \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<const SCALAR**, LAYOUT,                                  \
+      flare::Tensor<const SCALAR**, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
       2>;

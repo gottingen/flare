@@ -48,13 +48,13 @@ template <
     typename DataType2, typename... Properties2,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto reverse_copy(const ExecutionSpace& ex,
-                  const ::flare::View<DataType1, Properties1...>& source,
-                  ::flare::View<DataType2, Properties2...>& dest) {
+                  const ::flare::Tensor<DataType1, Properties1...>& source,
+                  ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
   return detail::reverse_copy_exespace_impl(
-      "flare::reverse_copy_view_api_default", ex, cbegin(source), cend(source),
+      "flare::reverse_copy_tensor_api_default", ex, cbegin(source), cend(source),
       begin(dest));
 }
 
@@ -63,8 +63,8 @@ template <
     typename DataType2, typename... Properties2,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto reverse_copy(const std::string& label, const ExecutionSpace& ex,
-                  const ::flare::View<DataType1, Properties1...>& source,
-                  ::flare::View<DataType2, Properties2...>& dest) {
+                  const ::flare::Tensor<DataType1, Properties1...>& source,
+                  ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
@@ -92,8 +92,8 @@ template <typename TeamHandleType, typename DataType1, typename... Properties1,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto reverse_copy(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& source,
-    ::flare::View<DataType2, Properties2...>& dest) {
+    const ::flare::Tensor<DataType1, Properties1...>& source,
+    ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 

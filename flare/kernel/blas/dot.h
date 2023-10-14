@@ -26,13 +26,13 @@ namespace flare::blas {
     ///
     /// \tparam execution_space the flare execution space where the kernel
     ///         will be executed.
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
-    /// \tparam YVector Type of the second vector y; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
+    /// \tparam YVector Type of the second vector y; a 1-D flare::Tensor.
     ///
     /// \param space [in] an execution space instance that may specify
     ///                   in which stream/queue the kernel will be executed.
-    /// \param x [in] Input 1-D View.
-    /// \param y [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
+    /// \param y [in] Input 1-D Tensor.
     ///
     /// \return The dot product result; a single value.
     template <class execution_space, class XVector, class YVector,
@@ -44,14 +44,14 @@ namespace flare::blas {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::dot: execution_space must be a valid flare "
                       "execution space.");
-        static_assert(flare::is_view<XVector>::value,
-                      "flare::blas::dot: XVector must be a flare::View.");
+        static_assert(flare::is_tensor<XVector>::value,
+                      "flare::blas::dot: XVector must be a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XVector::memory_space>::accessible,
                 "flare::blas::dot: XVector must be accessible from execution_space");
-        static_assert(flare::is_view<YVector>::value,
-                      "flare::blas::dot: YVector must be a flare::View.");
+        static_assert(flare::is_tensor<YVector>::value,
+                      "flare::blas::dot: YVector must be a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename YVector::memory_space>::accessible,
@@ -71,11 +71,11 @@ namespace flare::blas {
             flare::detail::throw_runtime_exception(os.str());
         }
 
-        using XVector_Internal = flare::View<
+        using XVector_Internal = flare::Tensor<
                 typename XVector::const_value_type*,
                 typename flare::detail::GetUnifiedLayout<XVector>::array_layout,
                 typename XVector::device_type, flare::MemoryTraits<flare::Unmanaged>>;
-        using YVector_Internal = flare::View<
+        using YVector_Internal = flare::Tensor<
                 typename YVector::const_value_type*,
                 typename flare::detail::GetUnifiedLayout<YVector>::array_layout,
                 typename YVector::device_type, flare::MemoryTraits<flare::Unmanaged>>;
@@ -89,10 +89,10 @@ namespace flare::blas {
         using result_type =
                 typename flare::blas::detail::DotAccumulatingScalar<dot_type>::type;
         using RVector_Internal =
-                flare::View<dot_type, default_layout, flare::HostSpace,
+                flare::Tensor<dot_type, default_layout, flare::HostSpace,
                 flare::MemoryTraits<flare::Unmanaged>>;
         using RVector_Result =
-                flare::View<result_type, default_layout, flare::HostSpace,
+                flare::Tensor<result_type, default_layout, flare::HostSpace,
                 flare::MemoryTraits<flare::Unmanaged>>;
 
         result_type result{};
@@ -121,11 +121,11 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue associated
     /// with the execution space of XVector.
     ///
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
-    /// \tparam YVector Type of the second vector y; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
+    /// \tparam YVector Type of the second vector y; a 1-D flare::Tensor.
     ///
-    /// \param x [in] Input 1-D View.
-    /// \param y [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
+    /// \param y [in] Input 1-D Tensor.
     ///
     /// \return The dot product result; a single value.
     template <class XVector, class YVector>
@@ -141,20 +141,20 @@ namespace flare::blas {
     ///
     /// \tparam execution_space the flare execution space where the kernel
     ///         will be executed.
-    /// \tparam RV 0-D resp. 1-D output View
-    /// \tparam XMV 1-D resp. 2-D input View
-    /// \tparam YMV 1-D resp. 2-D input View
+    /// \tparam RV 0-D resp. 1-D output Tensor
+    /// \tparam XMV 1-D resp. 2-D input Tensor
+    /// \tparam YMV 1-D resp. 2-D input Tensor
     ///
     /// \param space [in] an execution space instance that may specify
     ///                   in which stream/queue the kernel will be executed.
-    /// \param R [out] Output 1-D or 0-D View to which to write results.
-    /// \param X [in] Input 2-D or 1-D View.
-    /// \param Y [in] Input 2-D or 1-D View.
+    /// \param R [out] Output 1-D or 0-D Tensor to which to write results.
+    /// \param X [in] Input 2-D or 1-D Tensor.
+    /// \param Y [in] Input 2-D or 1-D Tensor.
     ///
     /// This function implements a few different use cases:
     /// <ul>
     /// <li> If X and Y are both 1-D, then this is a single dot product.
-    ///   R must be 0-D (a View of a single value). </li>
+    ///   R must be 0-D (a Tensor of a single value). </li>
     /// <li> If X and Y are both 2-D, then this function computes their
     ///   dot products columnwise.  R must be 1-D. </li>
     /// <li> If X is 2-D and Y is 1-D, then this function computes the dot
@@ -169,23 +169,23 @@ namespace flare::blas {
     ///   version of dot() in blas.h.
     template <class execution_space, class RV, class XMV, class YMV>
     void dot(const execution_space& space, const RV& R, const XMV& X, const YMV& Y,
-             typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
+             typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::dot: excution_space must be a valid flare "
                       "execution space.");
-        static_assert(flare::is_view<RV>::value,
+        static_assert(flare::is_tensor<RV>::value,
                       "flare::blas::dot: "
-                      "R is not a flare::View.");
-        static_assert(flare::is_view<XMV>::value,
+                      "R is not a flare::Tensor.");
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::dot: "
-                      "X is not a flare::View.");
+                      "X is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
                 "flare::blas::dot: XMV must be accessible from execution_space.");
-        static_assert(flare::is_view<YMV>::value,
+        static_assert(flare::is_tensor<YMV>::value,
                       "flare::blas::dot: "
-                      "Y is not a flare::View.");
+                      "Y is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename YMV::memory_space>::accessible,
@@ -236,26 +236,26 @@ namespace flare::blas {
             flare::detail::throw_runtime_exception(os.str());
         }
 
-        // Create unmanaged versions of the input Views.
+        // Create unmanaged versions of the input Tensors.
         using UnifiedXLayout =
                 typename flare::detail::GetUnifiedLayout<XMV>::array_layout;
         using UnifiedRVLayout =
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         RV, UnifiedXLayout>::array_layout;
 
-        typedef flare::View<typename std::conditional<
+        typedef flare::Tensor<typename std::conditional<
                 RV::rank == 0, typename RV::non_const_value_type,
                 typename RV::non_const_value_type*>::type,
                 UnifiedRVLayout, typename RV::device_type,
                 flare::MemoryTraits<flare::Unmanaged>>
                 RV_Internal;
-        typedef flare::View<
+        typedef flare::Tensor<
                 typename std::conditional<XMV::rank == 1, typename XMV::const_value_type*,
                         typename XMV::const_value_type**>::type,
                 UnifiedXLayout, typename XMV::device_type,
                 flare::MemoryTraits<flare::Unmanaged>>
                 XMV_Internal;
-        typedef flare::View<
+        typedef flare::Tensor<
                 typename std::conditional<YMV::rank == 1, typename YMV::const_value_type*,
                         typename YMV::const_value_type**>::type,
                 typename flare::detail::GetUnifiedLayout<YMV>::array_layout,
@@ -276,18 +276,18 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue associated
     /// with the execution space of XVM.
     ///
-    /// \tparam RV 0-D resp. 1-D output View
-    /// \tparam XMV 1-D resp. 2-D input View
-    /// \tparam YMV 1-D resp. 2-D input View
+    /// \tparam RV 0-D resp. 1-D output Tensor
+    /// \tparam XMV 1-D resp. 2-D input Tensor
+    /// \tparam YMV 1-D resp. 2-D input Tensor
     ///
-    /// \param R [out] Output 1-D or 0-D View to which to write results.
-    /// \param X [in] Input 2-D or 1-D View.
-    /// \param Y [in] Input 2-D or 1-D View.
+    /// \param R [out] Output 1-D or 0-D Tensor to which to write results.
+    /// \param X [in] Input 2-D or 1-D Tensor.
+    /// \param Y [in] Input 2-D or 1-D Tensor.
     ///
     /// This function implements a few different use cases:
     /// <ul>
     /// <li> If X and Y are both 1-D, then this is a single dot product.
-    ///   R must be 0-D (a View of a single value). </li>
+    ///   R must be 0-D (a Tensor of a single value). </li>
     /// <li> If X and Y are both 2-D, then this function computes their
     ///   dot products columnwise.  R must be 1-D. </li>
     /// <li> If X is 2-D and Y is 1-D, then this function computes the dot
@@ -302,7 +302,7 @@ namespace flare::blas {
     ///   version of dot() in blas.h.
     template <class RV, class XMV, class YMV>
     void dot(const RV& R, const XMV& X, const YMV& Y,
-             typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
+             typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
         dot(typename XMV::execution_space{}, R, X, Y);
     }
 }  // namespace flare::blas

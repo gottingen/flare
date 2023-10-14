@@ -593,7 +593,7 @@ private:
     static DOCTEST_CONSTEXPR size_type len  = 24;      //!OCLINT avoid private static members
     static DOCTEST_CONSTEXPR size_type last = len - 1; //!OCLINT avoid private static members
 
-    struct view // len should be more than sizeof(view) - because of the final byte for flags
+    struct tensor // len should be more than sizeof(tensor) - because of the final byte for flags
     {
         char*    ptr;
         size_type size;
@@ -603,7 +603,7 @@ private:
     union
     {
         char buf[len]; // NOLINT(*-avoid-c-arrays)
-        view data;
+        tensor data;
     };
 
     char* allocate(size_type sz);

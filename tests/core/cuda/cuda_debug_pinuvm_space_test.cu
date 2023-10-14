@@ -19,12 +19,12 @@
 
 namespace Test {
 
-template <class View>
+template <class Tensor>
 struct CopyFunctor {
-  View a;
-  View b;
+  Tensor a;
+  Tensor b;
 
-  CopyFunctor(int N) : a(View("A", N)), b(View("B", N)) {}
+  CopyFunctor(int N) : a(Tensor("A", N)), b(Tensor("B", N)) {}
 
   FLARE_INLINE_FUNCTION
   void operator()(int i) const { a(i) = b(i); }
@@ -51,29 +51,29 @@ TEST_CASE("cuda, debug_pin_um_to_host") {
   int N = 10000000;
   int R = 100;
   {
-    CopyFunctor<flare::View<int*, flare::CudaSpace>> f(N);
+    CopyFunctor<flare::Tensor<int*, flare::CudaSpace>> f(N);
     time_cuda_space = f.time_copy(R);
   }
   {
-    CopyFunctor<flare::View<int*, flare::CudaHostPinnedSpace>> f(N);
+    CopyFunctor<flare::Tensor<int*, flare::CudaHostPinnedSpace>> f(N);
     time_cuda_host_pinned_space = f.time_copy(R);
   }
   {
-    CopyFunctor<flare::View<int*, flare::CudaUVMSpace>> f(N);
+    CopyFunctor<flare::Tensor<int*, flare::CudaUVMSpace>> f(N);
     time_cuda_uvm_space_not_pinned_1 = f.time_copy(R);
   }
   {
 #ifdef FLARE_IMPL_DEBUG_CUDA_PIN_UVM_TO_HOST
     flare_impl_cuda_set_pin_uvm_to_host(true);
 #endif
-    CopyFunctor<flare::View<int*, flare::CudaUVMSpace>> f(N);
+    CopyFunctor<flare::Tensor<int*, flare::CudaUVMSpace>> f(N);
     time_cuda_uvm_space_pinned = f.time_copy(R);
 #ifdef FLARE_IMPL_DEBUG_CUDA_PIN_UVM_TO_HOST
     flare_impl_cuda_set_pin_uvm_to_host(false);
 #endif
   }
   {
-    CopyFunctor<flare::View<int*, flare::CudaUVMSpace>> f(N);
+    CopyFunctor<flare::Tensor<int*, flare::CudaUVMSpace>> f(N);
     time_cuda_uvm_space_not_pinned_2 = f.time_copy(R);
   }
   bool uvm_approx_cuda_1 =

@@ -73,15 +73,15 @@ namespace flare::blas::detail {
                   Y_(Y),
                   gamma_(gamma),
                   Z_(Z) {
-            static_assert(flare::is_view<XMV>::value,
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::Impl::"
-                          "MV_Update_Functor: X is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "MV_Update_Functor: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::Impl::"
-                          "MV_Update_Functor: Y is not a flare::View.");
-            static_assert(flare::is_view<ZMV>::value,
+                          "MV_Update_Functor: Y is not a flare::Tensor.");
+            static_assert(flare::is_tensor<ZMV>::value,
                           "flare::blas::Impl::"
-                          "MV_Update_Functor: Z is not a flare::View.");
+                          "MV_Update_Functor: Z is not a flare::Tensor.");
             static_assert(std::is_same<typename ZMV::value_type,
                                   typename ZMV::non_const_value_type>::value,
                           "flare::blas::Impl::MV_Update_Functor: Z is const.  "
@@ -190,15 +190,15 @@ namespace flare::blas::detail {
                   Y_(Y),
                   gamma_(gamma),
                   Z_(Z) {
-            static_assert(flare::is_view<XV>::value,
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::Impl::"
-                          "V_Update_Functor: X is not a flare::View.");
-            static_assert(flare::is_view<YV>::value,
+                          "V_Update_Functor: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YV>::value,
                           "flare::blas::Impl::"
-                          "V_Update_Functor: Y is not a flare::View.");
-            static_assert(flare::is_view<ZV>::value,
+                          "V_Update_Functor: Y is not a flare::Tensor.");
+            static_assert(flare::is_tensor<ZV>::value,
                           "flare::blas::Impl::"
-                          "V_Update_Functor: Z is not a flare::View.");
+                          "V_Update_Functor: Z is not a flare::Tensor.");
             static_assert(std::is_same<typename ZV::value_type,
                                   typename ZV::non_const_value_type>::value,
                           "flare::blas::Impl::V_Update_Functor: Z is const.  "
@@ -279,15 +279,15 @@ namespace flare::blas::detail {
                            const YMV& Y,
                            const typename ZMV::non_const_value_type& gamma,
                            const ZMV& Z, int a = 2, int b = 2, int c = 2) {
-        static_assert(flare::is_view<XMV>::value,
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::Impl::"
-                      "MV_Update_Generic: X is not a flare::View.");
-        static_assert(flare::is_view<YMV>::value,
+                      "MV_Update_Generic: X is not a flare::Tensor.");
+        static_assert(flare::is_tensor<YMV>::value,
                       "flare::blas::Impl::"
-                      "MV_Update_Generic: Y is not a flare::View.");
-        static_assert(flare::is_view<ZMV>::value,
+                      "MV_Update_Generic: Y is not a flare::Tensor.");
+        static_assert(flare::is_tensor<ZMV>::value,
                       "flare::blas::Impl::"
-                      "MV_Update_Generic: Z is not a flare::View.");
+                      "MV_Update_Generic: Z is not a flare::Tensor.");
         static_assert(std::is_same<typename ZMV::value_type,
                               typename ZMV::non_const_value_type>::value,
                       "flare::blas::Impl::MV_Update_Generic: Z is const.  "
@@ -380,15 +380,15 @@ namespace flare::blas::detail {
                           const YV& Y,
                           const typename ZV::non_const_value_type& gamma,
                           const ZV& Z, int a = 2, int b = 2, int c = 2) {
-        static_assert(flare::is_view<XV>::value,
+        static_assert(flare::is_tensor<XV>::value,
                       "flare::blas::Impl::"
-                      "V_Update_Generic: X is not a flare::View.");
-        static_assert(flare::is_view<YV>::value,
+                      "V_Update_Generic: X is not a flare::Tensor.");
+        static_assert(flare::is_tensor<YV>::value,
                       "flare::blas::Impl::"
-                      "V_Update_Generic: Y is not a flare::View.");
-        static_assert(flare::is_view<ZV>::value,
+                      "V_Update_Generic: Y is not a flare::Tensor.");
+        static_assert(flare::is_tensor<ZV>::value,
                       "flare::blas::Impl::"
-                      "V_Update_Generic: Z is not a flare::View.");
+                      "V_Update_Generic: Z is not a flare::Tensor.");
         static_assert(std::is_same<typename ZV::value_type,
                               typename ZV::non_const_value_type>::value,
                       "flare::blas::Impl::V_Update_Generic: Z is const.  "
@@ -483,7 +483,7 @@ namespace flare::blas::detail {
                            const ZMV& Z);
     };
 
-    // Partial specialization for XMV, YMV, and ZMV rank-2 Views.
+    // Partial specialization for XMV, YMV, and ZMV rank-2 Tensors.
     template <class execution_space, class XMV, class YMV, class ZMV>
     struct Update<execution_space, XMV, YMV, ZMV, 2> {
         typedef typename XMV::size_type size_type;
@@ -498,15 +498,15 @@ namespace flare::blas::detail {
                            const YMV& Y,
                            const typename ZMV::non_const_value_type& gamma,
                            const ZMV& Z) {
-            static_assert(flare::is_view<XMV>::value,
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::Impl::"
-                          "Update<rank 2>::update: X is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "Update<rank 2>::update: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::Impl::"
-                          "Update<rank 2>::update: Y is not a flare::View.");
-            static_assert(flare::is_view<ZMV>::value,
+                          "Update<rank 2>::update: Y is not a flare::Tensor.");
+            static_assert(flare::is_tensor<ZMV>::value,
                           "flare::blas::Impl::"
-                          "Update<rank 2>::update: Z is not a flare::View.");
+                          "Update<rank 2>::update: Z is not a flare::Tensor.");
             static_assert(std::is_same<typename ZMV::value_type,
                                   typename ZMV::non_const_value_type>::value,
                           "flare::blas::Impl::Update<rank 2>::update: Z is const.  "
@@ -546,9 +546,9 @@ namespace flare::blas::detail {
             if (numCols == static_cast<size_type>(1)) {
                 // Special case: ZMV has rank 2, but only 1 column.
                 // Dispatch to the rank-1 version for better performance.
-                auto X_0 = flare::subview(X, flare::ALL(), 0);
-                auto Y_0 = flare::subview(Y, flare::ALL(), 0);
-                auto Z_0 = flare::subview(Z, flare::ALL(), 0);
+                auto X_0 = flare::subtensor(X, flare::ALL(), 0);
+                auto Y_0 = flare::subtensor(Y, flare::ALL(), 0);
+                auto Z_0 = flare::subtensor(Z, flare::ALL(), 0);
 
                 if (numRows * numCols < static_cast<size_type>(INT_MAX)) {
                     typedef int index_type;
@@ -576,7 +576,7 @@ namespace flare::blas::detail {
         }
     };
 
-    // Partial specialization for XV, YV, and ZV rank-1 Views.
+    // Partial specialization for XV, YV, and ZV rank-1 Tensors.
     template <class execution_space, class XV, class YV, class ZV>
     struct Update<execution_space, XV, YV, ZV, 1> {
         typedef typename XV::size_type size_type;
@@ -590,16 +590,16 @@ namespace flare::blas::detail {
                            const YV& Y,
                            const typename ZV::non_const_value_type& gamma,
                            const ZV& Z) {
-            // XV, YV, and ZV must be flare::View specializations.
-            static_assert(flare::is_view<XV>::value,
+            // XV, YV, and ZV must be flare::Tensor specializations.
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::Impl::"
-                          "Update<rank 1>::update: X is not a flare::View.");
-            static_assert(flare::is_view<YV>::value,
+                          "Update<rank 1>::update: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YV>::value,
                           "flare::blas::Impl::"
-                          "Update<rank 1>::update: Y is not a flare::View.");
-            static_assert(flare::is_view<ZV>::value,
+                          "Update<rank 1>::update: Y is not a flare::Tensor.");
+            static_assert(flare::is_tensor<ZV>::value,
                           "flare::blas::Impl::"
-                          "Update<rank 1>::update: Z is not a flare::View.");
+                          "Update<rank 1>::update: Z is not a flare::Tensor.");
             // ZV must be nonconst (else it can't be an output argument).
             static_assert(std::is_same<typename ZV::value_type,
                                   typename ZV::non_const_value_type>::value,
@@ -654,13 +654,13 @@ namespace flare::blas::detail {
                                          MEM_SPACE)                        \
   template struct Update<                                                  \
       EXEC_SPACE,                                                          \
-      flare::View<const SCALAR*, LAYOUT,                                  \
+      flare::Tensor<const SCALAR*, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                  \
                    flare::MemoryTraits<flare::Unmanaged> >,              \
-      flare::View<const SCALAR*, LAYOUT,                                  \
+      flare::Tensor<const SCALAR*, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                  \
                    flare::MemoryTraits<flare::Unmanaged> >,              \
-      flare::View<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,              \
       1>;
 
@@ -669,13 +669,13 @@ namespace flare::blas::detail {
                                             MEM_SPACE)                      \
   template struct Update<                                                   \
       EXEC_SPACE,                                                           \
-      flare::View<const SCALAR**, LAYOUT,                                  \
+      flare::Tensor<const SCALAR**, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<const SCALAR**, LAYOUT,                                  \
+      flare::Tensor<const SCALAR**, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
       2>;
 

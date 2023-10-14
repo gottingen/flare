@@ -68,18 +68,18 @@ template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto max_element(const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v) {
+                 const ::flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   return detail::min_or_max_element_exespace_impl<MaxFirstLoc>(
-      "flare::max_element_view_api_default", ex, begin(v), end(v));
+      "flare::max_element_tensor_api_default", ex, begin(v), end(v));
 }
 
 template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto max_element(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v) {
+                 const ::flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   return detail::min_or_max_element_exespace_impl<MaxFirstLoc>(label, ex,
@@ -91,12 +91,12 @@ template <
     typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto max_element(const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v,
+                 const ::flare::Tensor<DataType, Properties...>& v,
                  ComparatorType comp) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   return detail::min_or_max_element_exespace_impl<MaxFirstLocCustomComparator>(
-      "flare::max_element_view_api_default", ex, begin(v), end(v),
+      "flare::max_element_tensor_api_default", ex, begin(v), end(v),
       std::move(comp));
 }
 
@@ -105,7 +105,7 @@ template <
     typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto max_element(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v,
+                 const ::flare::Tensor<DataType, Properties...>& v,
                  ComparatorType comp) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
@@ -130,7 +130,7 @@ template <typename TeamHandleType, typename DataType, typename... Properties,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto max_element(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType, Properties...>& v) {
+    const ::flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   return detail::min_or_max_element_team_impl<MaxFirstLoc>(teamHandle, begin(v),
@@ -152,7 +152,7 @@ template <typename TeamHandleType, typename DataType, typename ComparatorType,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto max_element(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType, Properties...>& v, ComparatorType comp) {
+    const ::flare::Tensor<DataType, Properties...>& v, ComparatorType comp) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
   return detail::min_or_max_element_team_impl<MaxFirstLocCustomComparator>(
       teamHandle, begin(v), end(v), std::move(comp));

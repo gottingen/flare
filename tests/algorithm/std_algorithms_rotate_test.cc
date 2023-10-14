@@ -47,14 +47,14 @@ struct UnifDist<double> {
   double operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -119,32 +119,32 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewType, class ResultIt, class ViewHostType>
-void verify_data(ResultIt result_it, ViewType view, ViewHostType data_view_host,
+template <class TensorType, class ResultIt, class TensorHostType>
+void verify_data(ResultIt result_it, TensorType tensor, TensorHostType data_tensor_host,
                  std::size_t rotation_point) {
   // run std::rotate
-  auto n_it = KE::begin(data_view_host) + rotation_point;
+  auto n_it = KE::begin(data_tensor_host) + rotation_point;
   auto std_rit =
-      std::rotate(KE::begin(data_view_host), n_it, KE::end(data_view_host));
+      std::rotate(KE::begin(data_tensor_host), n_it, KE::end(data_tensor_host));
 
   // make sure results match
-  const auto my_diff  = result_it - KE::begin(view);
-  const auto std_diff = std_rit - KE::begin(data_view_host);
+  const auto my_diff  = result_it - KE::begin(tensor);
+  const auto std_diff = std_rit - KE::begin(data_tensor_host);
   REQUIRE_EQ(my_diff, std_diff);
 
-  // check views match
-  auto view_h           = create_host_space_copy(view);
-  const std::size_t ext = view_h.extent(0);
+  // check tensors match
+  auto tensor_h           = create_host_space_copy(tensor);
+  const std::size_t ext = tensor_h.extent(0);
   for (std::size_t i = 0; i < ext; ++i) {
-    REQUIRE_EQ(view_h(i), data_view_host[i]);
+    REQUIRE_EQ(tensor_h(i), data_tensor_host[i]);
     // std::cout << "i= " << i << " "
-    // 	      << "mine: " << view_h(i) << " "
-    // 	      << "std: " << data_view_host(i)
+    // 	      << "mine: " << tensor_h(i) << " "
+    // 	      << "std: " << data_tensor_host(i)
     // 	      << '\n';
   }
 }
@@ -157,7 +157,7 @@ void print_scenario_details(const std::string& name,
                             std::size_t rotation_point) {
   std::cout << "rotate: "
             << " at " << rotation_point << ", " << name << ", "
-            << view_tag_to_string(Tag{}) << ", "
+            << tensor_tag_to_string(Tag{}) << ", "
             << value_type_to_string(ValueType()) << std::endl;
 }
 
@@ -165,46 +165,46 @@ template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info,
                          std::size_t rotation_point) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // print_scenario_details<Tag, ValueType>(name, rotation_point);
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "rotate_data_view");
-    fill_view(view, name);
-    // create host copy BEFORE rotate or view will be modified
-    auto view_h = create_host_space_copy(view);
-    auto n_it   = KE::begin(view) + rotation_point;
-    auto rit    = KE::rotate(exespace(), KE::begin(view), n_it, KE::end(view));
-    verify_data(rit, view, view_h, rotation_point);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "rotate_data_tensor");
+    fill_tensor(tensor, name);
+    // create host copy BEFORE rotate or tensor will be modified
+    auto tensor_h = create_host_space_copy(tensor);
+    auto n_it   = KE::begin(tensor) + rotation_point;
+    auto rit    = KE::rotate(exespace(), KE::begin(tensor), n_it, KE::end(tensor));
+    verify_data(rit, tensor, tensor_h, rotation_point);
   }
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "rotate_data_view");
-    fill_view(view, name);
-    // create host copy BEFORE rotate or view will be modified
-    auto view_h = create_host_space_copy(view);
-    auto n_it   = KE::begin(view) + rotation_point;
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "rotate_data_tensor");
+    fill_tensor(tensor, name);
+    // create host copy BEFORE rotate or tensor will be modified
+    auto tensor_h = create_host_space_copy(tensor);
+    auto n_it   = KE::begin(tensor) + rotation_point;
     auto rit =
-        KE::rotate("label", exespace(), KE::begin(view), n_it, KE::end(view));
-    verify_data(rit, view, view_h, rotation_point);
+        KE::rotate("label", exespace(), KE::begin(tensor), n_it, KE::end(tensor));
+    verify_data(rit, tensor, tensor_h, rotation_point);
   }
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "rotate_data_view");
-    fill_view(view, name);
-    // create host copy BEFORE rotate or view will be modified
-    auto view_h = create_host_space_copy(view);
-    auto rit    = KE::rotate(exespace(), view, rotation_point);
-    // verify_data(rit, view, view_h, rotation_point);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "rotate_data_tensor");
+    fill_tensor(tensor, name);
+    // create host copy BEFORE rotate or tensor will be modified
+    auto tensor_h = create_host_space_copy(tensor);
+    auto rit    = KE::rotate(exespace(), tensor, rotation_point);
+    // verify_data(rit, tensor, tensor_h, rotation_point);
   }
 
   {
-    auto view = create_view<ValueType>(Tag{}, view_ext, "rotate_data_view");
-    fill_view(view, name);
-    // create host copy BEFORE rotate or view will be modified
-    auto view_h = create_host_space_copy(view);
-    auto rit    = KE::rotate("label", exespace(), view, rotation_point);
-    verify_data(rit, view, view_h, rotation_point);
+    auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "rotate_data_tensor");
+    fill_tensor(tensor, name);
+    // create host copy BEFORE rotate or tensor will be modified
+    auto tensor_h = create_host_space_copy(tensor);
+    auto rit    = KE::rotate("label", exespace(), tensor, rotation_point);
+    verify_data(rit, tensor, tensor_h, rotation_point);
   }
 
   flare::fence();
@@ -222,10 +222,10 @@ void run_all_scenarios() {
 
   for (const auto& it : scenarios) {
     for (const auto& it2 : rotation_points) {
-      // for each view scenario, we rotate at multiple points
-      // but only if the view has an extent that is >= rotation point
-      const auto view_ext = it.second;
-      if (view_ext >= it2) {
+      // for each tensor scenario, we rotate at multiple points
+      // but only if the tensor has an extent that is >= rotation point
+      const auto tensor_ext = it.second;
+      if (tensor_ext >= it2) {
         run_single_scenario<Tag, ValueType>(it, it2);
       }
     }

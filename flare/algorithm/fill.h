@@ -47,10 +47,10 @@ template <
     typename T,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 void fill(const ExecutionSpace& ex,
-          const ::flare::View<DataType, Properties...>& view, const T& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  detail::fill_exespace_impl("flare::fill_view_api_default", ex, begin(view),
-                           end(view), value);
+          const ::flare::Tensor<DataType, Properties...>& tensor, const T& value) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  detail::fill_exespace_impl("flare::fill_tensor_api_default", ex, begin(tensor),
+                           end(tensor), value);
 }
 
 template <
@@ -58,9 +58,9 @@ template <
     typename T,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 void fill(const std::string& label, const ExecutionSpace& ex,
-          const ::flare::View<DataType, Properties...>& view, const T& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  detail::fill_exespace_impl(label, ex, begin(view), end(view), value);
+          const ::flare::Tensor<DataType, Properties...>& tensor, const T& value) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  detail::fill_exespace_impl(label, ex, begin(tensor), end(tensor), value);
 }
 
 //
@@ -79,10 +79,10 @@ template <typename TeamHandleType, typename DataType, typename... Properties,
           typename T,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION void fill(const TeamHandleType& th,
-                          const ::flare::View<DataType, Properties...>& view,
+                          const ::flare::Tensor<DataType, Properties...>& tensor,
                           const T& value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  detail::fill_team_impl(th, begin(view), end(view), value);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  detail::fill_team_impl(th, begin(tensor), end(tensor), value);
 }
 
 }  // namespace experimental

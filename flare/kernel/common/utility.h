@@ -37,12 +37,12 @@ namespace flare::detail {
             return flare_get_suggested_vector_size(nr, nnz, exec_space);
         }
 
-        template <typename in_lno_view_t, typename out_lno_view_t, typename MyExecSpace>
-        void get_histogram(typename in_lno_view_t::size_type in_elements,
-                           in_lno_view_t in_view,
-                           out_lno_view_t histogram /*must be initialized with 0s*/) {
-            flare_get_histogram<in_lno_view_t, out_lno_view_t, MyExecSpace>(
-                    in_elements, in_view, histogram);
+        template <typename in_lno_tensor_t, typename out_lno_tensor_t, typename MyExecSpace>
+        void get_histogram(typename in_lno_tensor_t::size_type in_elements,
+                           in_lno_tensor_t in_tensor,
+                           out_lno_tensor_t histogram /*must be initialized with 0s*/) {
+            flare_get_histogram<in_lno_tensor_t, out_lno_tensor_t, MyExecSpace>(
+                    in_elements, in_tensor, histogram);
         }
 
         template <typename idx, typename ExecutionSpace>
@@ -129,21 +129,21 @@ namespace flare::detail {
             }
         };
 
-        template <typename in_lno_row_view_t, typename in_lno_nnz_view_t,
-                typename hashmap_t, typename out_lno_row_view_t, typename team_member>
+        template <typename in_lno_row_tensor_t, typename in_lno_nnz_tensor_t,
+                typename hashmap_t, typename out_lno_row_tensor_t, typename team_member>
         struct FillSymmetricEdgesHashMap {
-            typedef typename in_lno_row_view_t::value_type idx;
+            typedef typename in_lno_row_tensor_t::value_type idx;
             idx num_rows;
             idx nnz;
-            in_lno_row_view_t xadj;
-            in_lno_nnz_view_t adj;
+            in_lno_row_tensor_t xadj;
+            in_lno_nnz_tensor_t adj;
             hashmap_t umap;
-            out_lno_row_view_t pre_pps;
+            out_lno_row_tensor_t pre_pps;
             bool lower_only;
 
-            FillSymmetricEdgesHashMap(idx num_rows_, in_lno_row_view_t xadj_,
-                                      in_lno_nnz_view_t adj_, hashmap_t hashmap_,
-                                      out_lno_row_view_t pre_pps_)
+            FillSymmetricEdgesHashMap(idx num_rows_, in_lno_row_tensor_t xadj_,
+                                      in_lno_nnz_tensor_t adj_, hashmap_t hashmap_,
+                                      out_lno_row_tensor_t pre_pps_)
                     : num_rows(num_rows_),
                       nnz(adj_.extent(0)),
                       xadj(xadj_),
@@ -193,20 +193,20 @@ namespace flare::detail {
             }
         };
 
-        template <typename in_lno_row_view_t, typename in_lno_nnz_view_t,
-                typename hashmap_t, typename out_lno_row_view_t, typename team_member>
+        template <typename in_lno_row_tensor_t, typename in_lno_nnz_tensor_t,
+                typename hashmap_t, typename out_lno_row_tensor_t, typename team_member>
         struct FillSymmetricLowerEdgesHashMap {
-            typedef typename in_lno_row_view_t::value_type idx;
+            typedef typename in_lno_row_tensor_t::value_type idx;
             idx num_rows;
             idx nnz;
-            in_lno_row_view_t xadj;
-            in_lno_nnz_view_t adj;
+            in_lno_row_tensor_t xadj;
+            in_lno_nnz_tensor_t adj;
             hashmap_t umap;
-            out_lno_row_view_t pre_pps;
+            out_lno_row_tensor_t pre_pps;
 
-            FillSymmetricLowerEdgesHashMap(idx num_rows_, in_lno_row_view_t xadj_,
-                                           in_lno_nnz_view_t adj_, hashmap_t hashmap_,
-                                           out_lno_row_view_t pre_pps_,
+            FillSymmetricLowerEdgesHashMap(idx num_rows_, in_lno_row_tensor_t xadj_,
+                                           in_lno_nnz_tensor_t adj_, hashmap_t hashmap_,
+                                           out_lno_row_tensor_t pre_pps_,
                                            bool /* lower_only_ */ = false)
                     : num_rows(num_rows_),
                       nnz(adj_.extent(0)),
@@ -251,23 +251,23 @@ namespace flare::detail {
             }
         };
 
-        template <typename in_lno_row_view_t, typename in_lno_nnz_view_t,
-                typename hashmap_t, typename out_lno_row_view_t,
-                typename out_lno_nnz_view_t, typename team_member_t>
+        template <typename in_lno_row_tensor_t, typename in_lno_nnz_tensor_t,
+                typename hashmap_t, typename out_lno_row_tensor_t,
+                typename out_lno_nnz_tensor_t, typename team_member_t>
         struct FillSymmetricCRS_HashMap {
-            typedef typename in_lno_row_view_t::value_type idx;
+            typedef typename in_lno_row_tensor_t::value_type idx;
             idx num_rows;
             idx nnz;
-            in_lno_row_view_t xadj;
-            in_lno_nnz_view_t adj;
+            in_lno_row_tensor_t xadj;
+            in_lno_nnz_tensor_t adj;
             hashmap_t umap;
-            out_lno_row_view_t pre_pps;
-            out_lno_nnz_view_t sym_adj;
+            out_lno_row_tensor_t pre_pps;
+            out_lno_nnz_tensor_t sym_adj;
 
-            FillSymmetricCRS_HashMap(idx num_rows_, in_lno_row_view_t xadj_,
-                                     in_lno_nnz_view_t adj_, hashmap_t hashmap_,
-                                     out_lno_row_view_t pre_pps_,
-                                     out_lno_nnz_view_t sym_adj_)
+            FillSymmetricCRS_HashMap(idx num_rows_, in_lno_row_tensor_t xadj_,
+                                     in_lno_nnz_tensor_t adj_, hashmap_t hashmap_,
+                                     out_lno_row_tensor_t pre_pps_,
+                                     out_lno_nnz_tensor_t sym_adj_)
                     : num_rows(num_rows_),
                       nnz(adj_.extent(0)),
                       xadj(xadj_),
@@ -321,25 +321,25 @@ namespace flare::detail {
             }
         };
 
-        template <typename in_lno_row_view_t, typename in_lno_nnz_view_t,
-                typename hashmap_t, typename out_lno_nnz_view_t,
-                typename out_lno_row_view_t, typename team_member_t>
+        template <typename in_lno_row_tensor_t, typename in_lno_nnz_tensor_t,
+                typename hashmap_t, typename out_lno_nnz_tensor_t,
+                typename out_lno_row_tensor_t, typename team_member_t>
         struct FillSymmetricEdgeList_HashMap {
-            typedef typename in_lno_row_view_t::value_type idx;
+            typedef typename in_lno_row_tensor_t::value_type idx;
             idx num_rows;
             idx nnz;
-            in_lno_row_view_t xadj;
-            in_lno_nnz_view_t adj;
+            in_lno_row_tensor_t xadj;
+            in_lno_nnz_tensor_t adj;
             hashmap_t umap;
-            out_lno_nnz_view_t sym_src;
-            out_lno_nnz_view_t sym_dst;
-            out_lno_row_view_t pps;
+            out_lno_nnz_tensor_t sym_src;
+            out_lno_nnz_tensor_t sym_dst;
+            out_lno_row_tensor_t pps;
 
-            FillSymmetricEdgeList_HashMap(idx num_rows_, in_lno_row_view_t xadj_,
-                                          in_lno_nnz_view_t adj_, hashmap_t hashmap_,
-                                          out_lno_nnz_view_t sym_src_,
-                                          out_lno_nnz_view_t sym_dst_,
-                                          out_lno_row_view_t pps_)
+            FillSymmetricEdgeList_HashMap(idx num_rows_, in_lno_row_tensor_t xadj_,
+                                          in_lno_nnz_tensor_t adj_, hashmap_t hashmap_,
+                                          out_lno_nnz_tensor_t sym_src_,
+                                          out_lno_nnz_tensor_t sym_dst_,
+                                          out_lno_row_tensor_t pps_)
                     : num_rows(num_rows_),
                       nnz(adj_.extent(0)),
                       xadj(xadj_),
@@ -387,22 +387,22 @@ namespace flare::detail {
         };
 
         template <typename idx_array_type>
-        void print_1Dview(std::ostream &os, idx_array_type view, bool print_all = false,
+        void print_1DTensor(std::ostream &os, idx_array_type tensor, bool print_all = false,
                           const char *sep = " ") {
-            flare_print_1Dview(os, view, print_all, sep);
+            flare_print_1DTensor(os, tensor, print_all, sep);
         }
 
         template <typename idx_array_type>
-        void print_1Dview(idx_array_type view, bool print_all = false) {
-            flare_print_1Dview(view, print_all);
+        void print_1DTensor(idx_array_type tensor, bool print_all = false) {
+            flare_print_1DTensor(tensor, print_all);
         }
 
         template <typename lno_t, typename memory_space>
-        void print_1Dpointer(const lno_t *pview, size_t size, bool print_all = false) {
-            typedef flare::View<const lno_t *, memory_space, flare::MemoryUnmanaged>
+        void print_1Dpointer(const lno_t *ptensor, size_t size, bool print_all = false) {
+            typedef flare::Tensor<const lno_t *, memory_space, flare::MemoryUnmanaged>
                     um_array_type;
-            um_array_type view(pview, size);
-            flare_print_1Dview(view, print_all);
+            um_array_type tensor(ptensor, size);
+            flare_print_1DTensor(tensor, print_all);
         }
 
         template <typename forward_map_type, typename reverse_map_type>
@@ -505,10 +505,10 @@ namespace flare::detail {
         }
 
         template <typename out_array_type, typename in_array_type, typename MyExecSpace>
-        void modular_view(typename in_array_type::value_type num_elements,
+        void modular_tensor(typename in_array_type::value_type num_elements,
                           out_array_type out_arr, in_array_type in_arr,
                           int mod_factor_) {
-            flare_modular_view<out_array_type, in_array_type, MyExecSpace>(
+            flare_modular_tensor<out_array_type, in_array_type, MyExecSpace>(
                     num_elements, out_arr, in_arr, mod_factor_);
         }
 
@@ -627,12 +627,12 @@ namespace flare::detail {
             }
         };
 
-        template <typename from_view_t, typename to_view_t>
+        template <typename from_tensor_t, typename to_tensor_t>
         struct StridedCopy {
-            const from_view_t from;
-            to_view_t to;
+            const from_tensor_t from;
+            to_tensor_t to;
             const size_t stride;
-            StridedCopy(const from_view_t from_, to_view_t to_, size_t stride_)
+            StridedCopy(const from_tensor_t from_, to_tensor_t to_, size_t stride_)
                     : from(from_), to(to_), stride(stride_) {}
 
             FLARE_INLINE_FUNCTION
@@ -681,10 +681,10 @@ namespace flare::detail {
 
             typedef flare::RangePolicy<MyExecSpace> range_policy_t;
             reverse_map_xadj =
-                    reverse_array_type(flare::view_alloc(my_exec_space, "Reverse Map Xadj"),
+                    reverse_array_type(flare::tensor_alloc(my_exec_space, "Reverse Map Xadj"),
                                        num_reverse_elements + 1);
             reverse_map_adj = reverse_array_type(
-                    flare::view_alloc(my_exec_space, flare::WithoutInitializing,
+                    flare::tensor_alloc(my_exec_space, flare::WithoutInitializing,
                                        "REVERSE_ADJ"),
                     num_forward_elements);
 
@@ -700,7 +700,7 @@ namespace flare::detail {
                         << multiply_shift_for_scale;
 
                 reverse_array_type tmp_color_xadj(
-                        flare::view_alloc(my_exec_space, "TMP_REVERSE_XADJ"),
+                        flare::tensor_alloc(my_exec_space, "TMP_REVERSE_XADJ"),
                         tmp_reverse_size + 1);
 
                 Reverse_Map_Scale_Init<forward_array_type, reverse_array_type> rmi(
@@ -732,7 +732,7 @@ namespace flare::detail {
                 // atomic implementation.
             {
                 reverse_array_type tmp_color_xadj(
-                        flare::view_alloc(my_exec_space, flare::WithoutInitializing,
+                        flare::tensor_alloc(my_exec_space, flare::WithoutInitializing,
                                            "TMP_REVERSE_XADJ"),
                         num_reverse_elements + 1);
 
@@ -743,7 +743,7 @@ namespace flare::detail {
                                      range_policy_t(my_exec_space, 0, num_forward_elements),
                                      rmi);
                 my_exec_space.fence();
-                // print_1Dview(reverse_map_xadj);
+                // print_1DTensor(reverse_map_xadj);
 
                 inclusive_parallel_prefix_sum<reverse_array_type, MyExecSpace>(
                         my_exec_space, num_reverse_elements + 1, reverse_map_xadj);
@@ -975,13 +975,13 @@ namespace flare::detail {
             }
         };
 
-        template <typename in_lno_row_view_t, typename in_lno_nnz_view_t,
-                typename out_lno_nnz_view_t, typename MyExecSpace>
+        template <typename in_lno_row_tensor_t, typename in_lno_nnz_tensor_t,
+                typename out_lno_nnz_tensor_t, typename MyExecSpace>
         void symmetrize_and_get_lower_diagonal_edge_list(
-                typename in_lno_nnz_view_t::value_type num_rows_to_symmetrize,
-                in_lno_row_view_t xadj, in_lno_nnz_view_t adj, out_lno_nnz_view_t &sym_srcs,
-                out_lno_nnz_view_t &sym_dsts_) {
-            typedef typename in_lno_row_view_t::non_const_value_type idx;
+                typename in_lno_nnz_tensor_t::value_type num_rows_to_symmetrize,
+                in_lno_row_tensor_t xadj, in_lno_nnz_tensor_t adj, out_lno_nnz_tensor_t &sym_srcs,
+                out_lno_nnz_tensor_t &sym_dsts_) {
+            typedef typename in_lno_row_tensor_t::non_const_value_type idx;
 
             idx nnz = adj.extent(0);
 
@@ -997,15 +997,15 @@ namespace flare::detail {
             typedef flare::UnorderedMap<flare::pair<idx, idx>, void, MyExecSpace>
                     hashmap_t;
 
-            out_lno_nnz_view_t pre_pps_("pre_pps", num_rows_to_symmetrize + 1);
+            out_lno_nnz_tensor_t pre_pps_("pre_pps", num_rows_to_symmetrize + 1);
 
             idx num_symmetric_edges = 0;
             {
                 hashmap_t umap(nnz);
                 umap.clear();
                 umap.end_erase();
-                FillSymmetricLowerEdgesHashMap<in_lno_row_view_t, in_lno_nnz_view_t,
-                        hashmap_t, out_lno_nnz_view_t, team_member_t>
+                FillSymmetricLowerEdgesHashMap<in_lno_row_tensor_t, in_lno_nnz_tensor_t,
+                        hashmap_t, out_lno_nnz_tensor_t, team_member_t>
                         fse(num_rows_to_symmetrize, xadj, adj, umap, pre_pps_);
 
                 int teamSizeMax = 0;
@@ -1027,34 +1027,34 @@ namespace flare::detail {
             }
 
             if (num_rows_to_symmetrize > 0)
-                exclusive_parallel_prefix_sum<out_lno_nnz_view_t, MyExecSpace>(
+                exclusive_parallel_prefix_sum<out_lno_nnz_tensor_t, MyExecSpace>(
                         num_rows_to_symmetrize + 1, pre_pps_);
             MyExecSpace().fence();
 
-            auto d_sym_edge_size = flare::subview(pre_pps_, num_rows_to_symmetrize);
-            auto h_sym_edge_size = flare::create_mirror_view(d_sym_edge_size);
+            auto d_sym_edge_size = flare::subtensor(pre_pps_, num_rows_to_symmetrize);
+            auto h_sym_edge_size = flare::create_mirror_tensor(d_sym_edge_size);
             flare::deep_copy(h_sym_edge_size, d_sym_edge_size);
             num_symmetric_edges = h_sym_edge_size();
             /*
-            typename out_lno_nnz_view_t::HostMirror h_sym_edge_size =
-            flare::create_mirror_view (pre_pps_);
+            typename out_lno_nnz_tensor_t::HostMirror h_sym_edge_size =
+            flare::create_mirror_tensor (pre_pps_);
 
             flare::deep_copy (h_sym_edge_size , pre_pps_);
             num_symmetric_edges = h_sym_edge_size(h_sym_edge_size.extent(0) - 1);
             */
 
-            sym_srcs = out_lno_nnz_view_t(
-                    flare::view_alloc(flare::WithoutInitializing, "sym_srcs"),
+            sym_srcs = out_lno_nnz_tensor_t(
+                    flare::tensor_alloc(flare::WithoutInitializing, "sym_srcs"),
                     num_symmetric_edges);
-            sym_dsts_ = out_lno_nnz_view_t(
-                    flare::view_alloc(flare::WithoutInitializing, "sym_dsts_"),
+            sym_dsts_ = out_lno_nnz_tensor_t(
+                    flare::tensor_alloc(flare::WithoutInitializing, "sym_dsts_"),
                     num_symmetric_edges);
             MyExecSpace().fence();
             {
                 hashmap_t umap(nnz);
-                FillSymmetricEdgeList_HashMap<in_lno_row_view_t, in_lno_nnz_view_t,
-                        hashmap_t, out_lno_nnz_view_t,
-                        out_lno_nnz_view_t, team_member_t>
+                FillSymmetricEdgeList_HashMap<in_lno_row_tensor_t, in_lno_nnz_tensor_t,
+                        hashmap_t, out_lno_nnz_tensor_t,
+                        out_lno_nnz_tensor_t, team_member_t>
                         FSCH(num_rows_to_symmetrize, xadj, adj, umap, sym_srcs, sym_dsts_,
                              pre_pps_);
 
@@ -1075,14 +1075,14 @@ namespace flare::detail {
             }
         }
 
-        template <typename in_lno_row_view_t, typename in_lno_nnz_view_t,
-                typename out_lno_row_view_t, typename out_lno_nnz_view_t,
+        template <typename in_lno_row_tensor_t, typename in_lno_nnz_tensor_t,
+                typename out_lno_row_tensor_t, typename out_lno_nnz_tensor_t,
                 typename MyExecSpace>
         void symmetrize_graph_symbolic_hashmap(
-                typename in_lno_row_view_t::value_type num_rows_to_symmetrize,
-                in_lno_row_view_t xadj, in_lno_nnz_view_t adj, out_lno_row_view_t &sym_xadj,
-                out_lno_nnz_view_t &sym_adj) {
-            typedef typename in_lno_row_view_t::non_const_value_type idx;
+                typename in_lno_row_tensor_t::value_type num_rows_to_symmetrize,
+                in_lno_row_tensor_t xadj, in_lno_nnz_tensor_t adj, out_lno_row_tensor_t &sym_xadj,
+                out_lno_nnz_tensor_t &sym_adj) {
+            typedef typename in_lno_row_tensor_t::non_const_value_type idx;
 
             idx nnz = adj.extent(0);
 
@@ -1098,15 +1098,15 @@ namespace flare::detail {
             typedef flare::UnorderedMap<flare::pair<idx, idx>, void, MyExecSpace>
                     hashmap_t;
 
-            out_lno_row_view_t pre_pps_("pre_pps", num_rows_to_symmetrize + 1);
+            out_lno_row_tensor_t pre_pps_("pre_pps", num_rows_to_symmetrize + 1);
 
             idx num_symmetric_edges = 0;
             {
                 hashmap_t umap(nnz);
                 umap.clear();
                 umap.end_erase();
-                FillSymmetricEdgesHashMap<in_lno_row_view_t, in_lno_nnz_view_t, hashmap_t,
-                        out_lno_row_view_t, team_member_t>
+                FillSymmetricEdgesHashMap<in_lno_row_tensor_t, in_lno_nnz_tensor_t, hashmap_t,
+                        out_lno_row_tensor_t, team_member_t>
                         fse(num_rows_to_symmetrize, xadj, adj, umap, pre_pps_);
 
                 int teamSizeMax = 0;
@@ -1126,30 +1126,30 @@ namespace flare::detail {
             }
 
             if (num_rows_to_symmetrize > 0)
-                exclusive_parallel_prefix_sum<out_lno_row_view_t, MyExecSpace>(
+                exclusive_parallel_prefix_sum<out_lno_row_tensor_t, MyExecSpace>(
                         num_rows_to_symmetrize + 1, pre_pps_);
             MyExecSpace().fence();
 
-            // out_lno_row_view_t d_sym_edge_size = flare::subview(pre_pps_,
+            // out_lno_row_tensor_t d_sym_edge_size = flare::subtensor(pre_pps_,
             // num_rows_to_symmetrize, num_rows_to_symmetrize );
-            typename out_lno_row_view_t::HostMirror h_sym_edge_size =
-                    flare::create_mirror_view(pre_pps_);
+            typename out_lno_row_tensor_t::HostMirror h_sym_edge_size =
+                    flare::create_mirror_tensor(pre_pps_);
 
             flare::deep_copy(h_sym_edge_size, pre_pps_);
             num_symmetric_edges = h_sym_edge_size(h_sym_edge_size.extent(0) - 1);
 
-            sym_adj = out_lno_nnz_view_t(
-                    flare::view_alloc(flare::WithoutInitializing, "sym_adj"),
+            sym_adj = out_lno_nnz_tensor_t(
+                    flare::tensor_alloc(flare::WithoutInitializing, "sym_adj"),
                     num_symmetric_edges);
             MyExecSpace().fence();
-            sym_xadj = out_lno_row_view_t(
-                    flare::view_alloc(flare::WithoutInitializing, "sym_xadj"),
+            sym_xadj = out_lno_row_tensor_t(
+                    flare::tensor_alloc(flare::WithoutInitializing, "sym_xadj"),
                     num_rows_to_symmetrize + 1);
             flare::deep_copy(sym_xadj, pre_pps_);
             {
                 hashmap_t umap(nnz);
-                FillSymmetricCRS_HashMap<in_lno_row_view_t, in_lno_nnz_view_t, hashmap_t,
-                        out_lno_row_view_t, out_lno_nnz_view_t,
+                FillSymmetricCRS_HashMap<in_lno_row_tensor_t, in_lno_nnz_tensor_t, hashmap_t,
+                        out_lno_row_tensor_t, out_lno_nnz_tensor_t,
                         team_member_t>
                         FSCH(num_rows_to_symmetrize, xadj, adj, umap, pre_pps_, sym_adj);
 
@@ -1177,68 +1177,68 @@ namespace flare::detail {
         }
 
         template <typename from_vector, typename to_vector>
-        struct CopyView {
+        struct CopyTensor {
             from_vector from;
             to_vector to;
 
-            CopyView(from_vector &from_, to_vector to_) : from(from_), to(to_) {}
+            CopyTensor(from_vector &from_, to_vector to_) : from(from_), to(to_) {}
 
             FLARE_INLINE_FUNCTION
             void operator()(const size_t &i) const { to(i) = from(i); }
         };
         template <typename from_vector, typename to_vector, typename MyExecSpace>
-        void copy_view(size_t num_elements, from_vector from, to_vector to) {
+        void copy_tensor(size_t num_elements, from_vector from, to_vector to) {
             typedef flare::RangePolicy<MyExecSpace> my_exec_space;
-            flare::parallel_for("flare::detail::CopyView",
+            flare::parallel_for("flare::detail::CopyTensor",
                                  my_exec_space(0, num_elements),
-                                 CopyView<from_vector, to_vector>(from, to));
+                                 CopyTensor<from_vector, to_vector>(from, to));
         }
 
-        template <typename from_view>
-        void safe_device_to_host_deep_copy(size_t num_elements, from_view from,
-                                           typename from_view::HostMirror to) {
-            typedef typename from_view::value_type scalar_t;
-            typedef typename from_view::device_type device_t;
+        template <typename from_tensor>
+        void safe_device_to_host_deep_copy(size_t num_elements, from_tensor from,
+                                           typename from_tensor::HostMirror to) {
+            typedef typename from_tensor::value_type scalar_t;
+            typedef typename from_tensor::device_type device_t;
 
-            typedef flare::View<scalar_t *, device_t> unstrided_from_view_t;
-            unstrided_from_view_t unstrided_from("unstrided", num_elements);
+            typedef flare::Tensor<scalar_t *, device_t> unstrided_from_tensor_t;
+            unstrided_from_tensor_t unstrided_from("unstrided", num_elements);
 
-            copy_view<from_view, unstrided_from_view_t,
+            copy_tensor<from_tensor, unstrided_from_tensor_t,
                     typename device_t::execution_space>(num_elements, from,
                                                         unstrided_from);
 
             flare::fence();
 
-            typedef typename unstrided_from_view_t::HostMirror host_unstrided_from_view_t;
-            host_unstrided_from_view_t h_unstrided_from =
-                    flare::create_mirror_view(unstrided_from);
+            typedef typename unstrided_from_tensor_t::HostMirror host_unstrided_from_tensor_t;
+            host_unstrided_from_tensor_t h_unstrided_from =
+                    flare::create_mirror_tensor(unstrided_from);
 
             flare::deep_copy(h_unstrided_from, unstrided_from);
             flare::fence();
 
-            copy_view<host_unstrided_from_view_t, typename from_view::HostMirror,
-                    typename host_unstrided_from_view_t::device_type::execution_space>(
+            copy_tensor<host_unstrided_from_tensor_t, typename from_tensor::HostMirror,
+                    typename host_unstrided_from_tensor_t::device_type::execution_space>(
                     num_elements, h_unstrided_from, to);
 
             flare::fence();
         }
 
-        template <typename to_view>
+        template <typename to_tensor>
         void safe_host_to_device_deep_copy(size_t num_elements,
-                                           typename to_view::HostMirror from,
-                                           to_view to) {
-            typedef typename to_view::value_type scalar_t;
-            typedef typename to_view::device_type device_t;
+                                           typename to_tensor::HostMirror from,
+                                           to_tensor to) {
+            typedef typename to_tensor::value_type scalar_t;
+            typedef typename to_tensor::device_type device_t;
 
-            typedef typename to_view::HostMirror::device_type h_device_t;
+            typedef typename to_tensor::HostMirror::device_type h_device_t;
 
-            typedef flare::View<scalar_t *, h_device_t> host_unstrided_view_t;
-            typedef flare::View<scalar_t *, device_t> device_unstrided_view_t;
+            typedef flare::Tensor<scalar_t *, h_device_t> host_unstrided_tensor_t;
+            typedef flare::Tensor<scalar_t *, device_t> device_unstrided_tensor_t;
 
-            host_unstrided_view_t host_unstrided_from("unstrided", num_elements);
-            device_unstrided_view_t device_unstrided_to("unstrided", num_elements);
+            host_unstrided_tensor_t host_unstrided_from("unstrided", num_elements);
+            device_unstrided_tensor_t device_unstrided_to("unstrided", num_elements);
 
-            copy_view<typename to_view::HostMirror, host_unstrided_view_t,
+            copy_tensor<typename to_tensor::HostMirror, host_unstrided_tensor_t,
                     typename h_device_t::execution_space>(num_elements, from,
                                                           host_unstrided_from);
 
@@ -1246,53 +1246,53 @@ namespace flare::detail {
             flare::deep_copy(device_unstrided_to, host_unstrided_from);
             flare::fence();
 
-            copy_view<device_unstrided_view_t, to_view,
+            copy_tensor<device_unstrided_tensor_t, to_tensor,
                     typename device_t::execution_space>(num_elements,
                                                         device_unstrided_to, to);
 
             flare::fence();
         }
 
-        template <typename view_type>
+        template <typename tensor_type>
         struct ReduceSumFunctor {
-            view_type view_to_reduce;
+            tensor_type tensor_to_reduce;
 
-            ReduceSumFunctor(view_type view_to_reduce_)
-                    : view_to_reduce(view_to_reduce_) {}
+            ReduceSumFunctor(tensor_type tensor_to_reduce_)
+                    : tensor_to_reduce(tensor_to_reduce_) {}
 
             void operator()(
                     const size_t &i,
-                    typename view_type::non_const_value_type &sum_reduction) const {
-                sum_reduction += view_to_reduce(i);
+                    typename tensor_type::non_const_value_type &sum_reduction) const {
+                sum_reduction += tensor_to_reduce(i);
             }
         };
 
-        template <typename view_type, typename MyExecSpace>
-        void view_reduce_sum(size_t num_elements, view_type view_to_reduce,
-                             typename view_type::non_const_value_type &sum_reduction) {
+        template <typename tensor_type, typename MyExecSpace>
+        void tensor_reduce_sum(size_t num_elements, tensor_type tensor_to_reduce,
+                             typename tensor_type::non_const_value_type &sum_reduction) {
             typedef flare::RangePolicy<MyExecSpace> my_exec_space;
             flare::parallel_reduce(
-                    "flare::detail::ViewReduceSum", my_exec_space(0, num_elements),
-                    ReduceSumFunctor<view_type>(view_to_reduce), sum_reduction);
+                    "flare::detail::TensorReduceSum", my_exec_space(0, num_elements),
+                    ReduceSumFunctor<tensor_type>(tensor_to_reduce), sum_reduction);
         }
 
-        template <typename view_type, typename MyExecSpace>
-        void view_reduce_max(size_t num_elements, view_type view_to_reduce,
-                             typename view_type::non_const_value_type &max_reduction) {
-            flare_view_reduce_max<view_type, MyExecSpace>(num_elements, view_to_reduce,
+        template <typename tensor_type, typename MyExecSpace>
+        void tensor_reduce_max(size_t num_elements, tensor_type tensor_to_reduce,
+                             typename tensor_type::non_const_value_type &max_reduction) {
+            flare_tensor_reduce_max<tensor_type, MyExecSpace>(num_elements, tensor_to_reduce,
                                                        max_reduction);
         }
 
         template <typename size_type>
         struct ReduceRowSizeFunctor {
-            const size_type *rowmap_view_begins;
-            const size_type *rowmap_view_ends;
+            const size_type *rowmap_tensor_begins;
+            const size_type *rowmap_tensor_ends;
             const size_type min_val;
             ReduceRowSizeFunctor(const size_type *rb, const size_type *re)
-                    : rowmap_view_begins(rb), rowmap_view_ends(re), min_val(0) {}
+                    : rowmap_tensor_begins(rb), rowmap_tensor_ends(re), min_val(0) {}
             FLARE_INLINE_FUNCTION
             void operator()(const size_t &i, size_type &max_reduction) const {
-                size_type val = rowmap_view_ends[i] - rowmap_view_begins[i];
+                size_type val = rowmap_tensor_ends[i] - rowmap_tensor_begins[i];
                 if (max_reduction < val) {
                     max_reduction = val;
                 }
@@ -1314,43 +1314,43 @@ namespace flare::detail {
             }
         };
 
-        // view has num_rows+1 elements.
+        // tensor has num_rows+1 elements.
         template <typename size_type, typename MyExecSpace>
-        void flare_view_reduce_max_row_size(MyExecSpace my_exec_space,
+        void flare_tensor_reduce_max_row_size(MyExecSpace my_exec_space,
                                          const size_t num_rows,
-                                         const size_type *rowmap_view_begins,
-                                         const size_type *rowmap_view_ends,
+                                         const size_type *rowmap_tensor_begins,
+                                         const size_type *rowmap_tensor_ends,
                                          size_type &max_row_size) {
             typedef flare::RangePolicy<MyExecSpace> range_policy_t;
             flare::parallel_reduce(
-                    "flare::detail::ViewReduceMaxRowSize",
+                    "flare::detail::TensorReduceMaxRowSize",
                     range_policy_t(my_exec_space, 0, num_rows),
-                    ReduceRowSizeFunctor<size_type>(rowmap_view_begins, rowmap_view_ends),
+                    ReduceRowSizeFunctor<size_type>(rowmap_tensor_begins, rowmap_tensor_ends),
                     max_row_size);
         }
 
-        // view has num_rows+1 elements.
+        // tensor has num_rows+1 elements.
         template <typename size_type, typename MyExecSpace>
-        void flare_view_reduce_max_row_size(const size_t num_rows,
-                                         const size_type *rowmap_view_begins,
-                                         const size_type *rowmap_view_ends,
+        void flare_tensor_reduce_max_row_size(const size_t num_rows,
+                                         const size_type *rowmap_tensor_begins,
+                                         const size_type *rowmap_tensor_ends,
                                          size_type &max_row_size) {
-            return flare_view_reduce_max_row_size(MyExecSpace(), num_rows,
-                                               rowmap_view_begins, rowmap_view_ends,
+            return flare_tensor_reduce_max_row_size(MyExecSpace(), num_rows,
+                                               rowmap_tensor_begins, rowmap_tensor_ends,
                                                max_row_size);
         }
 
-        template <typename view_type>
+        template <typename tensor_type>
         struct ReduceMaxRowFunctor {
-            view_type rowmap_view;
-            typedef typename view_type::non_const_value_type value_type;
+            tensor_type rowmap_tensor;
+            typedef typename tensor_type::non_const_value_type value_type;
             const value_type min_val;
-            ReduceMaxRowFunctor(view_type rowmap_view_)
-                    : rowmap_view(rowmap_view_), min_val(0) {}
+            ReduceMaxRowFunctor(tensor_type rowmap_tensor_)
+                    : rowmap_tensor(rowmap_tensor_), min_val(0) {}
 
             FLARE_INLINE_FUNCTION
             void operator()(const size_t &i, value_type &max_reduction) const {
-                value_type val = rowmap_view(i + 1) - rowmap_view(i);
+                value_type val = rowmap_tensor(i + 1) - rowmap_tensor(i);
                 if (max_reduction < val) {
                     max_reduction = val;
                 }
@@ -1372,29 +1372,29 @@ namespace flare::detail {
             }
         };
 
-// view has num_rows+1 elements.
-        template <typename view_type, typename MyExecSpace>
-        void view_reduce_maxsizerow(
-                size_t num_rows, view_type rowmap_view,
-                typename view_type::non_const_value_type &max_reduction) {
+// tensor has num_rows+1 elements.
+        template <typename tensor_type, typename MyExecSpace>
+        void tensor_reduce_maxsizerow(
+                size_t num_rows, tensor_type rowmap_tensor,
+                typename tensor_type::non_const_value_type &max_reduction) {
             typedef flare::RangePolicy<MyExecSpace> my_exec_space;
             flare::parallel_reduce(
-                    "flare::detail::ViewReduceMaxSizeRow", my_exec_space(0, num_rows),
-                    ReduceMaxRowFunctor<view_type>(rowmap_view), max_reduction);
+                    "flare::detail::TensorReduceMaxSizeRow", my_exec_space(0, num_rows),
+                    ReduceMaxRowFunctor<tensor_type>(rowmap_tensor), max_reduction);
         }
 
-        template <typename view_type1, typename view_type2>
+        template <typename tensor_type1, typename tensor_type2>
         struct IsEqualFunctor {
-            view_type1 view1;
-            view_type2 view2;
+            tensor_type1 tensor1;
+            tensor_type2 tensor2;
 
-            IsEqualFunctor(view_type1 view1_, view_type2 view2_)
-                    : view1(view1_), view2(view2_) {}
+            IsEqualFunctor(tensor_type1 tensor1_, tensor_type2 tensor2_)
+                    : tensor1(tensor1_), tensor2(tensor2_) {}
 
             FLARE_INLINE_FUNCTION
             void operator()(const size_t &i, int &is_equal) const {
-                if (view1(i) != view2(i)) {
-                    // std::cout << "i:" << i << "view1:" << view1(i) << " view2:" << view2(i)
+                if (tensor1(i) != tensor2(i)) {
+                    // std::cout << "i:" << i << "tensor1:" << tensor1(i) << " tensor2:" << tensor2(i)
                     // << std::endl; printf("i:%d v1:")
                     is_equal = 0;
                 }
@@ -1405,33 +1405,33 @@ namespace flare::detail {
             FLARE_INLINE_FUNCTION
             void init(int &dst) const { dst = 1; }
         };
-        template <typename view_type1, typename view_type2, typename MyExecSpace>
-        bool isSame(size_t num_elements, view_type1 view1, view_type2 view2) {
+        template <typename tensor_type1, typename tensor_type2, typename MyExecSpace>
+        bool isSame(size_t num_elements, tensor_type1 tensor1, tensor_type2 tensor2) {
             typedef flare::RangePolicy<MyExecSpace> my_exec_space;
             int issame = 1;
             flare::parallel_reduce(
                     "flare::detail::isSame", my_exec_space(0, num_elements),
-                    IsEqualFunctor<view_type1, view_type2>(view1, view2), issame);
+                    IsEqualFunctor<tensor_type1, tensor_type2>(tensor1, tensor2), issame);
             MyExecSpace().fence();
             return issame;
         }
 
-        template <typename a_view_t, typename b_view_t, typename size_type>
+        template <typename a_tensor_t, typename b_tensor_t, typename size_type>
         struct MaxHeap {
-            a_view_t heap_keys;
-            b_view_t heap_values;
+            a_tensor_t heap_keys;
+            b_tensor_t heap_values;
             size_type max_size;
             size_type current_size;
 
-            MaxHeap(a_view_t heap_keys_, b_view_t heap_values_, size_type max_size_)
+            MaxHeap(a_tensor_t heap_keys_, b_tensor_t heap_values_, size_type max_size_)
                     : heap_keys(heap_keys_),
                       heap_values(heap_values_),
                       max_size(max_size_),
                       current_size(0) {}
 
             FLARE_INLINE_FUNCTION
-            void insert(typename a_view_t::value_type &key,
-                        typename b_view_t::value_type &val) {
+            void insert(typename a_tensor_t::value_type &key,
+                        typename b_tensor_t::value_type &val) {
                 for (size_type i = 0; i < current_size; ++i) {
                     if (key == heap_keys(i)) {
                         heap_values(i) = heap_values(i) & val;
@@ -1443,23 +1443,23 @@ namespace flare::detail {
             }
         };
 
-        template <typename in_view_t, typename MyExecSpace>
+        template <typename in_tensor_t, typename MyExecSpace>
         struct InitScalar {
             typedef flare::TeamPolicy<MyExecSpace> team_policy_t;
             typedef typename team_policy_t::member_type team_member_t;
 
-            typedef typename in_view_t::non_const_value_type nnz_lno_t;
-            typedef typename in_view_t::size_type size_type;
+            typedef typename in_tensor_t::non_const_value_type nnz_lno_t;
+            typedef typename in_tensor_t::size_type size_type;
 
-            in_view_t view_to_init;
+            in_tensor_t tensor_to_init;
             size_type num_elements;
             size_type team_row_chunk_size;
             nnz_lno_t init_val;
 
-            InitScalar(size_type num_elements_, in_view_t view_to_init_,
+            InitScalar(size_type num_elements_, in_tensor_t tensor_to_init_,
                        size_type chunk_size_, nnz_lno_t init_val_)
                     : num_elements(num_elements_),
-                      view_to_init(view_to_init_),
+                      tensor_to_init(tensor_to_init_),
                       team_row_chunk_size(chunk_size_),
                       init_val(init_val_) {}
 
@@ -1474,23 +1474,23 @@ namespace flare::detail {
                         team_row_begin + team_row_chunk_size, num_elements);
                 flare::parallel_for(
                         flare::TeamThreadRange(teamMember, team_row_begin, team_row_end),
-                        [&](const nnz_lno_t &row_ind) { view_to_init[row_ind] = init_val; });
+                        [&](const nnz_lno_t &row_ind) { tensor_to_init[row_ind] = init_val; });
             }
         };
-        template <typename in_row_view_t, typename MyExecSpace>
-        void init_view_withscalar(
-                typename in_row_view_t::size_type num_elements, in_row_view_t arr,
-                typename in_row_view_t::size_type team_size,
-                typename in_row_view_t::non_const_value_type init_val) {
-            typename in_row_view_t::size_type chunk_size = num_elements / team_size;
-            typedef InitScalar<in_row_view_t, MyExecSpace> InitScalar_t;
+        template <typename in_row_tensor_t, typename MyExecSpace>
+        void init_tensor_withscalar(
+                typename in_row_tensor_t::size_type num_elements, in_row_tensor_t arr,
+                typename in_row_tensor_t::size_type team_size,
+                typename in_row_tensor_t::non_const_value_type init_val) {
+            typename in_row_tensor_t::size_type chunk_size = num_elements / team_size;
+            typedef InitScalar<in_row_tensor_t, MyExecSpace> InitScalar_t;
             InitScalar_t tm(num_elements, arr, chunk_size, init_val);
             typedef typename InitScalar_t::team_policy_t tcp_t;
             int vector_size = 1;
 
             flare::Timer timer1;
             flare::parallel_for(
-                    "flare::detail::InitViewWithScalar",
+                    "flare::detail::InitTensorWithScalar",
                     tcp_t(num_elements / chunk_size + 1, team_size, vector_size), tm);
             MyExecSpace().fence();
         }

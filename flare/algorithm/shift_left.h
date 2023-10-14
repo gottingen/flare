@@ -48,21 +48,21 @@ template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto shift_left(const ExecutionSpace& ex,
-                const ::flare::View<DataType, Properties...>& view,
-                typename decltype(begin(view))::difference_type n) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::shift_left_exespace_impl("flare::shift_left_view_api_default",
-                                        ex, begin(view), end(view), n);
+                const ::flare::Tensor<DataType, Properties...>& tensor,
+                typename decltype(begin(tensor))::difference_type n) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::shift_left_exespace_impl("flare::shift_left_tensor_api_default",
+                                        ex, begin(tensor), end(tensor), n);
 }
 
 template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto shift_left(const std::string& label, const ExecutionSpace& ex,
-                const ::flare::View<DataType, Properties...>& view,
-                typename decltype(begin(view))::difference_type n) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::shift_left_exespace_impl(label, ex, begin(view), end(view), n);
+                const ::flare::Tensor<DataType, Properties...>& tensor,
+                typename decltype(begin(tensor))::difference_type n) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::shift_left_exespace_impl(label, ex, begin(tensor), end(tensor), n);
 }
 
 //
@@ -82,10 +82,10 @@ template <typename TeamHandleType, typename DataType, typename... Properties,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto shift_left(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType, Properties...>& view,
-    typename decltype(begin(view))::difference_type n) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::shift_left_team_impl(teamHandle, begin(view), end(view), n);
+    const ::flare::Tensor<DataType, Properties...>& tensor,
+    typename decltype(begin(tensor))::difference_type n) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::shift_left_team_impl(teamHandle, begin(tensor), end(tensor), n);
 }
 
 }  // namespace experimental

@@ -23,7 +23,7 @@
 #include <flare/core_fwd.h>
 #include <flare/core/common/detection_idiom.h>
 #include <flare/core/policy/exec_policy.h>
-#include <flare/core/tensor/view.h>
+#include <flare/core/tensor/tensor.h>
 
 #include <flare/core/profile/tools.h>
 #include <flare/core/profile/tools_generic.h>
@@ -187,7 +187,7 @@ namespace flare {
     ///
     /// Here is the minimum required interface of a scan functor for a POD
     /// (plain old data) value type \c PodType.  That is, the result is a
-    /// View of zero or more PodType.  It is also possible for the result
+    /// Tensor of zero or more PodType.  It is also possible for the result
     /// to be an array of (same-sized) arrays of PodType, but we do not
     /// show the required interface for that here.
     /// \code
@@ -222,8 +222,8 @@ namespace flare {
     ///   using value_type = int;
     ///   using size_type = typename SpaceType::size_type;
     ///
-    ///   InclScanFunctor( flare::View<value_type*, execution_space> x
-    ///                  , flare::View<value_type*, execution_space> y ) : m_x(x),
+    ///   InclScanFunctor( flare::Tensor<value_type*, execution_space> x
+    ///                  , flare::Tensor<value_type*, execution_space> y ) : m_x(x),
     ///                  m_y(y) {}
     ///
     ///   void operator () (const size_type i, value_type& update, const bool
@@ -242,8 +242,8 @@ namespace flare {
     ///   }
     ///
     /// private:
-    ///   flare::View<value_type*, execution_space> m_x;
-    ///   flare::View<value_type*, execution_space> m_y;
+    ///   flare::Tensor<value_type*, execution_space> m_x;
+    ///   flare::Tensor<value_type*, execution_space> m_y;
     /// };
     /// \endcode
     ///
@@ -261,7 +261,7 @@ namespace flare {
     ///   using value_type = int;
     ///   using size_type = typename SpaceType::size_type;
     ///
-    ///   ExclScanFunctor (flare::View<value_type*, execution_space> x) : x_ (x) {}
+    ///   ExclScanFunctor (flare::Tensor<value_type*, execution_space> x) : x_ (x) {}
     ///
     ///   void operator () (const size_type i, value_type& update, const bool
     ///   final_pass) const {
@@ -280,7 +280,7 @@ namespace flare {
     ///   }
     ///
     /// private:
-    ///   flare::View<value_type*, execution_space> x_;
+    ///   flare::Tensor<value_type*, execution_space> x_;
     /// };
     /// \endcode
     ///
@@ -301,8 +301,8 @@ namespace flare {
     ///
     ///   // lastIndex_ is the last valid index (zero-based) of x.
     ///   // If x has length zero, then lastIndex_ won't be used anyway.
-    ///   OffsetScanFunctor( flare::View<value_type*, execution_space> x
-    ///                    , flare::View<value_type*, execution_space> y )
+    ///   OffsetScanFunctor( flare::Tensor<value_type*, execution_space> x
+    ///                    , flare::Tensor<value_type*, execution_space> y )
     ///      : m_x(x), m_y(y), last_index_ (x.dimension_0 () == 0 ? 0 :
     ///      x.dimension_0 () - 1)
     ///   {}
@@ -327,8 +327,8 @@ namespace flare {
     ///   }
     ///
     /// private:
-    ///   flare::View<value_type*, execution_space> m_x;
-    ///   flare::View<value_type*, execution_space> m_y;
+    ///   flare::Tensor<value_type*, execution_space> m_x;
+    ///   flare::Tensor<value_type*, execution_space> m_y;
     ///   const size_type last_index_;
     /// };
     /// \endcode
@@ -387,7 +387,7 @@ namespace flare {
         ExecutionPolicy inner_policy = policy;
         flare::Tools::detail::begin_parallel_scan(inner_policy, functor, str, kpID);
 
-        if constexpr (flare::is_view<ReturnType>::value) {
+        if constexpr (flare::is_tensor<ReturnType>::value) {
             flare::detail::shared_allocation_tracking_disable();
             detail::ParallelScanWithTotal<FunctorType, ExecutionPolicy,
                     typename ReturnType::value_type>
@@ -396,18 +396,18 @@ namespace flare {
             closure.execute();
         } else {
             flare::detail::shared_allocation_tracking_disable();
-            flare::View<ReturnType, flare::HostSpace> view(&return_value);
+            flare::Tensor<ReturnType, flare::HostSpace> tensor(&return_value);
             detail::ParallelScanWithTotal<FunctorType, ExecutionPolicy, ReturnType>
-                    closure(functor, inner_policy, view);
+                    closure(functor, inner_policy, tensor);
             flare::detail::shared_allocation_tracking_enable();
             closure.execute();
         }
 
         flare::Tools::detail::end_parallel_scan(inner_policy, functor, str, kpID);
 
-        if (!flare::is_view<ReturnType>::value)
+        if (!flare::is_tensor<ReturnType>::value)
             policy.space().fence(
-                    "flare::parallel_scan: fence due to result being a value, not a view");
+                    "flare::parallel_scan: fence due to result being a value, not a tensor");
     }
 
     template<class ExecutionPolicy, class FunctorType, class ReturnType>

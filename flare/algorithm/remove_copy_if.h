@@ -47,32 +47,32 @@ OutputIterator remove_copy_if(const std::string& label,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class UnaryPredicate>
 auto remove_copy_if(const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     const UnaryPredicate& pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
 
   return detail::remove_copy_if_impl(
       "flare::remove_copy_if_iterator_api_default", ex,
-      ::flare::experimental::cbegin(view_from),
-      ::flare::experimental::cend(view_from),
-      ::flare::experimental::begin(view_dest), pred);
+      ::flare::experimental::cbegin(tensor_from),
+      ::flare::experimental::cend(tensor_from),
+      ::flare::experimental::begin(tensor_dest), pred);
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class UnaryPredicate>
 auto remove_copy_if(const std::string& label, const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     const UnaryPredicate& pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
 
   return detail::remove_copy_if_impl(
-      label, ex, ::flare::experimental::cbegin(view_from),
-      ::flare::experimental::cend(view_from),
-      ::flare::experimental::begin(view_dest), pred);
+      label, ex, ::flare::experimental::cbegin(tensor_from),
+      ::flare::experimental::cend(tensor_from),
+      ::flare::experimental::begin(tensor_dest), pred);
 }
 
 }  // namespace experimental

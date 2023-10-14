@@ -26,10 +26,10 @@ class UniqueToken<OpenMP, UniqueTokenScope::Instance> {
   using size_type       = int;
 
  private:
-  using buffer_type = flare::View<uint32_t*, flare::HostSpace>;
+  using buffer_type = flare::Tensor<uint32_t*, flare::HostSpace>;
   execution_space m_exec;
   size_type m_count;
-  buffer_type m_buffer_view;
+  buffer_type m_buffer_tensor;
   uint32_t volatile* m_buffer;
 
  public:
@@ -39,16 +39,16 @@ class UniqueToken<OpenMP, UniqueTokenScope::Instance> {
   UniqueToken(execution_space const& exec = execution_space()) noexcept
       : m_exec(exec),
         m_count(m_exec.impl_thread_pool_size()),
-        m_buffer_view(buffer_type()),
+        m_buffer_tensor(buffer_type()),
         m_buffer(nullptr) {}
 
   UniqueToken(size_type max_size,
               execution_space const& exec = execution_space())
       : m_exec(exec),
         m_count(max_size),
-        m_buffer_view("UniqueToken::m_buffer_view",
+        m_buffer_tensor("UniqueToken::m_buffer_tensor",
                       ::flare::detail::concurrent_bitset::buffer_bound(m_count)),
-        m_buffer(m_buffer_view.data()) {}
+        m_buffer(m_buffer_tensor.data()) {}
 
   /// \brief upper bound for acquired values, i.e. 0 <= value < size()
   FLARE_INLINE_FUNCTION

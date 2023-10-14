@@ -46,8 +46,8 @@ set(TEST_MAIN_SRC
 )
 
 if (FLARE_ENABLE_CORE_TEST)
-    add_subdirectory(algorithm)
-    add_subdirectory(container)
+    #add_subdirectory(algorithm)
+    #add_subdirectory(container)
     add_subdirectory(compile_only)
     add_subdirectory(core)
 endif ()

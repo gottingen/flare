@@ -80,14 +80,14 @@ struct UnifDist<double> {
   double operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -175,9 +175,9 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
 template <class IteratorType, class BinaryPredicate>
@@ -208,7 +208,7 @@ std::string value_type_to_string(double) { return "double"; }
 template <class Tag, class ValueType>
 void print_scenario_details(const std::string& name) {
   std::cout << "adjacent_find: default predicate: " << name << ", "
-            << view_tag_to_string(Tag{}) << " "
+            << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << '\n';
 }
 
@@ -216,17 +216,17 @@ template <class Tag, class ValueType, class Predicate>
 void print_scenario_details(const std::string& name, Predicate pred) {
   (void)pred;
   std::cout << "adjacent_find: custom  predicate: " << name << ", "
-            << view_tag_to_string(Tag{}) << " "
+            << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << '\n';
 }
 
-template <class DiffType, class ViewType, class... Args>
-void verify(DiffType my_diff, ViewType view, Args... args) {
-  auto view_dc = create_deep_copyable_compatible_clone(view);
-  auto view_h  = create_mirror_view_and_copy(flare::HostSpace(), view_dc);
+template <class DiffType, class TensorType, class... Args>
+void verify(DiffType my_diff, TensorType tensor, Args... args) {
+  auto tensor_dc = create_deep_copyable_compatible_clone(tensor);
+  auto tensor_h  = create_mirror_tensor_and_copy(flare::HostSpace(), tensor_dc);
   auto std_r =
-      my_std_adjacent_find(KE::cbegin(view_h), KE::cend(view_h), args...);
-  const auto std_diff = std_r - KE::cbegin(view_h);
+      my_std_adjacent_find(KE::cbegin(tensor_h), KE::cend(tensor_h), args...);
+  const auto std_diff = std_r - KE::cbegin(tensor_h);
 
   REQUIRE_EQ(my_diff, std_diff);
 }
@@ -234,36 +234,36 @@ void verify(DiffType my_diff, ViewType view, Args... args) {
 template <class Tag, class ValueType, class InfoType, class... Args>
 void run_single_scenario(const InfoType& scenario_info, Args... args) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // print_scenario_details<Tag, ValueType>(name, args...);
 
-  auto view = create_view<ValueType>(Tag{}, view_ext, "adjacent_find_view");
-  fill_view(view, name);
+  auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "adjacent_find_tensor");
+  fill_tensor(tensor, name);
 
   {
-    auto res_it        = KE::adjacent_find(exespace(), KE::cbegin(view),
-                                    KE::cend(view), args...);
-    const auto my_diff = res_it - KE::cbegin(view);
-    verify(my_diff, view, args...);
+    auto res_it        = KE::adjacent_find(exespace(), KE::cbegin(tensor),
+                                    KE::cend(tensor), args...);
+    const auto my_diff = res_it - KE::cbegin(tensor);
+    verify(my_diff, tensor, args...);
   }
 
   {
-    auto res_it = KE::adjacent_find("label", exespace(), KE::cbegin(view),
-                                    KE::cend(view), args...);
-    const auto my_diff = res_it - KE::cbegin(view);
-    verify(my_diff, view, args...);
+    auto res_it = KE::adjacent_find("label", exespace(), KE::cbegin(tensor),
+                                    KE::cend(tensor), args...);
+    const auto my_diff = res_it - KE::cbegin(tensor);
+    verify(my_diff, tensor, args...);
   }
 
   {
-    auto res_it        = KE::adjacent_find(exespace(), view, args...);
-    const auto my_diff = res_it - KE::begin(view);
-    verify(my_diff, view, args...);
+    auto res_it        = KE::adjacent_find(exespace(), tensor, args...);
+    const auto my_diff = res_it - KE::begin(tensor);
+    verify(my_diff, tensor, args...);
   }
 
   {
-    auto res_it        = KE::adjacent_find("label", exespace(), view, args...);
-    const auto my_diff = res_it - KE::begin(view);
-    verify(my_diff, view, args...);
+    auto res_it        = KE::adjacent_find("label", exespace(), tensor, args...);
+    const auto my_diff = res_it - KE::begin(tensor);
+    verify(my_diff, tensor, args...);
   }
 
   flare::fence();

@@ -23,13 +23,13 @@ template <class Space, flare::experimental::UniqueTokenScope Scope>
 class TestUniqueToken {
  public:
   using execution_space = typename Space::execution_space;
-  using view_type       = flare::View<int*, execution_space>;
+  using tensor_type       = flare::Tensor<int*, execution_space>;
 
   flare::experimental::UniqueToken<execution_space, Scope> tokens;
 
-  view_type verify;
-  view_type counts;
-  view_type errors;
+  tensor_type verify;
+  tensor_type counts;
+  tensor_type errors;
 
   struct count_test_start_tag {};
   struct count_test_check_tag {};
@@ -89,8 +89,8 @@ class TestUniqueToken {
       flare::fence();
     }
 
-    typename view_type::HostMirror host_counts =
-        flare::create_mirror_view(self.counts);
+    typename tensor_type::HostMirror host_counts =
+        flare::create_mirror_tensor(self.counts);
 
     flare::deep_copy(host_counts, self.counts);
 
@@ -120,8 +120,8 @@ class TestUniqueToken {
       ASSERT_EQ(sum, int64_t(N) * R);
     }
 
-    typename view_type::HostMirror host_errors =
-        flare::create_mirror_view(self.errors);
+    typename tensor_type::HostMirror host_errors =
+        flare::create_mirror_tensor(self.errors);
 
     flare::deep_copy(host_errors, self.errors);
 
@@ -143,9 +143,9 @@ template <class Space>
 class TestAcquireTeamUniqueToken {
  public:
   using execution_space = typename Space::execution_space;
-  using view_type       = flare::View<int*, execution_space>;
-  using scratch_view =
-      flare::View<int, typename execution_space::scratch_memory_space,
+  using tensor_type       = flare::Tensor<int*, execution_space>;
+  using scratch_tensor =
+      flare::Tensor<int, typename execution_space::scratch_memory_space,
                    flare::MemoryUnmanaged>;
   using team_policy_type = flare::TeamPolicy<execution_space>;
   using team_member_type = typename team_policy_type::member_type;
@@ -153,15 +153,15 @@ class TestAcquireTeamUniqueToken {
 
   tokens_type tokens;
 
-  view_type verify;
-  view_type counts;
-  view_type errors;
+  tensor_type verify;
+  tensor_type counts;
+  tensor_type errors;
 
   FLARE_INLINE_FUNCTION
   void operator()(team_member_type team) const {
     flare::experimental::AcquireTeamUniqueToken<team_policy_type> token_val(
         tokens, team);
-    scratch_view team_rank_0_token_val(team.team_scratch(0));
+    scratch_tensor team_rank_0_token_val(team.team_scratch(0));
     const int32_t t = token_val.value();
 
     bool ok = true;
@@ -208,14 +208,14 @@ class TestAcquireTeamUniqueToken {
       team_policy.set_scratch_size(
           0, flare::PerTeam(flare::experimental::AcquireTeamUniqueToken<
                                  team_policy_type>::shmem_size() +
-                             scratch_view::shmem_size()));
+                             scratch_tensor::shmem_size()));
 
       flare::parallel_for(team_policy, self);
       flare::fence();
     }
 
-    typename view_type::HostMirror host_counts =
-        flare::create_mirror_view(self.counts);
+    typename tensor_type::HostMirror host_counts =
+        flare::create_mirror_tensor(self.counts);
 
     flare::deep_copy(host_counts, self.counts);
 
@@ -228,8 +228,8 @@ class TestAcquireTeamUniqueToken {
       }
     }
 
-    typename view_type::HostMirror host_errors =
-        flare::create_mirror_view(self.errors);
+    typename tensor_type::HostMirror host_errors =
+        flare::create_mirror_tensor(self.errors);
 
     flare::deep_copy(host_errors, self.errors);
 

@@ -29,9 +29,9 @@ template <class ExecSpace, class ScheduleType, class Property>
 struct TestRangeRequire {
   using value_type = int;  ///< alias required for the parallel_reduce
 
-  using view_type = flare::View<int *, ExecSpace>;
+  using tensor_type = flare::Tensor<int *, ExecSpace>;
 
-  view_type m_flags;
+  tensor_type m_flags;
 
   struct VerifyInitTag {};
   struct ResetTag {};
@@ -42,12 +42,12 @@ struct TestRangeRequire {
   int N;
   static const int offset = 13;
   TestRangeRequire(const size_t N_)
-      : m_flags(flare::view_alloc(flare::WithoutInitializing, "flags"), N_),
+      : m_flags(flare::tensor_alloc(flare::WithoutInitializing, "flags"), N_),
         N(N_) {}
 
   void test_for() {
-    typename view_type::HostMirror host_flags =
-        flare::create_mirror_view(m_flags);
+    typename tensor_type::HostMirror host_flags =
+        flare::create_mirror_tensor(m_flags);
 
     flare::parallel_for(
         flare::experimental::require(
@@ -220,9 +220,9 @@ struct TestRangeRequire {
     int const concurrency = ExecSpace().concurrency();
 
     {
-      flare::View<size_t *, ExecSpace, flare::MemoryTraits<flare::Atomic> >
+      flare::Tensor<size_t *, ExecSpace, flare::MemoryTraits<flare::Atomic> >
           count("Count", concurrency);
-      flare::View<int *, ExecSpace> a("A", N);
+      flare::Tensor<int *, ExecSpace> a("A", N);
 
       flare::parallel_for(
           policy_t(0, N), FLARE_LAMBDA(const int &i) {
@@ -258,9 +258,9 @@ struct TestRangeRequire {
     }
 
     {
-      flare::View<size_t *, ExecSpace, flare::MemoryTraits<flare::Atomic> >
+      flare::Tensor<size_t *, ExecSpace, flare::MemoryTraits<flare::Atomic> >
           count("Count", concurrency);
-      flare::View<int *, ExecSpace> a("A", N);
+      flare::Tensor<int *, ExecSpace> a("A", N);
 
       int sum = 0;
       flare::parallel_reduce(

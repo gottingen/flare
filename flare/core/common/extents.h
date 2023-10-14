@@ -50,7 +50,7 @@ struct AppendExtent<Extents<Exts...>, NewExtent> {
 
 namespace detail {
 
-namespace _parse_view_extents_impl {
+namespace _parse_tensor_extents_impl {
 
 template <class T>
 struct _all_remaining_extents_dynamic : std::true_type {};
@@ -97,11 +97,11 @@ struct _parse_impl<T[N], flare::experimental::Extents<ExtentSpec...>, void>
                                                           // narrowing cast
           > {};
 
-}  // end namespace _parse_view_extents_impl
+}  // end namespace _parse_tensor_extents_impl
 
 template <class DataType>
-struct ParseViewExtents {
-  using type = typename _parse_view_extents_impl ::_parse_impl<
+struct ParseTensorExtents {
+  using type = typename _parse_tensor_extents_impl ::_parse_impl<
       DataType, flare::experimental::Extents<>>::type;
 };
 

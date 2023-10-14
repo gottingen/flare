@@ -22,19 +22,19 @@
 namespace Test {
 
     template<class DeviceType>
-    void TestViewAggregate() {
+    void TestTensorAggregate() {
         using value_type = flare::Array<double, 32>;
         using analysis_1d =
-                flare::detail::ViewDataAnalysis<value_type *, flare::LayoutLeft,
+                flare::detail::TensorDataAnalysis<value_type *, flare::LayoutLeft,
                         value_type>;
 
         static_assert(
                 std::is_same<typename analysis_1d::specialize, flare::Array<> >::value,
                 "");
 
-        using a32_traits = flare::ViewTraits<value_type **, DeviceType>;
+        using a32_traits = flare::TensorTraits<value_type **, DeviceType>;
         using flat_traits =
-                flare::ViewTraits<typename a32_traits::scalar_array_type, DeviceType>;
+                flare::TensorTraits<typename a32_traits::scalar_array_type, DeviceType>;
 
         static_assert(
                 std::is_same<typename a32_traits::specialize, flare::Array<> >::value,
@@ -49,7 +49,7 @@ namespace Test {
         static_assert(flat_traits::rank_dynamic == 2, "");
         static_assert(flat_traits::dimension::N2 == 32, "");
 
-        using a32_type = flare::View<flare::Array<double, 32> **, DeviceType>;
+        using a32_type = flare::Tensor<flare::Array<double, 32> **, DeviceType>;
         using a32_flat_type = typename a32_type::array_type;
 
         static_assert(std::is_same<typename a32_type::value_type, value_type>::value,
@@ -105,7 +105,7 @@ namespace Test {
         }
     }
 
-    TEST_CASE("TEST_CATEGORY, view_aggregate") { TestViewAggregate<TEST_EXECSPACE>(); }
+    TEST_CASE("TEST_CATEGORY, tensor_aggregate") { TestTensorAggregate<TEST_EXECSPACE>(); }
 
 }  // namespace Test
 

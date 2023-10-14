@@ -47,7 +47,7 @@ namespace flare {
         };
 
     private:
-        using ints_type = flare::View<std::int32_t *, memory_space>;
+        using ints_type = flare::Tensor<std::int32_t *, memory_space>;
 
         // Let N = m_graph.numRows(), the total work
         // m_queue[  0 ..   N-1] = the ready queue
@@ -178,7 +178,7 @@ namespace flare {
 
         WorkGraphPolicy(const graph_type &arg_graph)
                 : m_graph(arg_graph),
-                  m_queue(view_alloc("queue", WithoutInitializing),
+                  m_queue(tensor_alloc("queue", WithoutInitializing),
                           arg_graph.numRows() * 2 + 2) {
             {  // Initialize
                 using policy_type = RangePolicy<std::int32_t, execution_space, TagInit>;

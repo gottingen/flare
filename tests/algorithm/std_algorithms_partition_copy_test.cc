@@ -37,14 +37,14 @@ namespace Test {
                 int operator()() { return m_dist(m_gen); }
             };
 
-            template<class ViewType>
-            void fill_view(ViewType dest_view, const std::string &name) {
-                using value_type = typename ViewType::value_type;
-                using exe_space = typename ViewType::execution_space;
-                const std::size_t ext = dest_view.extent(0);
-                using aux_view_t = flare::View<value_type *, exe_space>;
-                aux_view_t aux_view("aux_view", ext);
-                auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+            template<class TensorType>
+            void fill_tensor(TensorType dest_tensor, const std::string &name) {
+                using value_type = typename TensorType::value_type;
+                using exe_space = typename TensorType::execution_space;
+                const std::size_t ext = dest_tensor.extent(0);
+                using aux_tensor_t = flare::Tensor<value_type *, exe_space>;
+                aux_tensor_t aux_tensor("aux_tensor", ext);
+                auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
                 if (name == "empty") {
                     // no op
@@ -79,55 +79,55 @@ namespace Test {
                     throw std::runtime_error("invalid choice");
                 }
 
-                flare::deep_copy(aux_view, v_h);
-                CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-                flare::parallel_for("copy", dest_view.extent(0), F1);
+                flare::deep_copy(aux_tensor, v_h);
+                CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+                flare::parallel_for("copy", dest_tensor.extent(0), F1);
             }
 
-            template<class ViewTypeFrom, class ResultType, class ViewTypeDestTrue,
-                    class ViewTypeDestFalse, class PredType>
+            template<class TensorTypeFrom, class ResultType, class TensorTypeDestTrue,
+                    class TensorTypeDestFalse, class PredType>
             void verify_data(const std::string &name, ResultType my_result,
-                             ViewTypeFrom view_from, ViewTypeDestTrue view_dest_true,
-                             ViewTypeDestFalse view_dest_false, PredType pred) {
-                using value_type = typename ViewTypeFrom::value_type;
+                             TensorTypeFrom tensor_from, TensorTypeDestTrue tensor_dest_true,
+                             TensorTypeDestFalse tensor_dest_false, PredType pred) {
+                using value_type = typename TensorTypeFrom::value_type;
                 static_assert(
-                        std::is_same<value_type, typename ViewTypeDestTrue::value_type>::value,
+                        std::is_same<value_type, typename TensorTypeDestTrue::value_type>::value,
                         "");
                 static_assert(
-                        std::is_same<value_type, typename ViewTypeDestFalse::value_type>::value,
+                        std::is_same<value_type, typename TensorTypeDestFalse::value_type>::value,
                         "");
 
-                const std::size_t ext = view_from.extent(0);
+                const std::size_t ext = tensor_from.extent(0);
 
-                // create host clone of view_from and run std::partition_copy on it
-                auto view_from_h = create_host_space_copy(view_from);
+                // create host clone of tensor_from and run std::partition_copy on it
+                auto trnsor_from_h = create_host_space_copy(tensor_from);
                 std::vector<value_type> std_vec_true(ext, 0);
                 std::vector<value_type> std_vec_false(ext, 0);
                 auto std_result =
-                        std::partition_copy(KE::cbegin(view_from_h), KE::cend(view_from_h),
+                        std::partition_copy(KE::cbegin(trnsor_from_h), KE::cend(trnsor_from_h),
                                             std_vec_true.begin(), std_vec_false.begin(), pred);
                 const std::size_t std_diff_true = std_result.first - std_vec_true.begin();
                 const std::size_t std_diff_false = std_result.second - std_vec_false.begin();
-                const std::size_t my_diff_true = my_result.first - KE::begin(view_dest_true);
+                const std::size_t my_diff_true = my_result.first - KE::begin(tensor_dest_true);
                 const std::size_t my_diff_false =
-                        my_result.second - KE::begin(view_dest_false);
+                        my_result.second - KE::begin(tensor_dest_false);
                 REQUIRE_EQ(std_diff_true, my_diff_true);
                 REQUIRE_EQ(std_diff_false, my_diff_false);
 
-                auto view_dest_true_h = create_host_space_copy(view_dest_true);
+                auto tensor_dest_true_h = create_host_space_copy(tensor_dest_true);
                 for (std::size_t i = 0; i < std_diff_true; ++i) {
-                    REQUIRE_EQ(std_vec_true[i], view_dest_true_h(i));
+                    REQUIRE_EQ(std_vec_true[i], tensor_dest_true_h(i));
                     // std::cout << "i= " << i << " "
                     // 	      << " std_true = " << std_vec_true[i] << " "
-                    // 	      << " mine     = " << view_dest_true_h(i) << '\n';
+                    // 	      << " mine     = " << tensor_dest_true_h(i) << '\n';
                 }
 
-                auto view_dest_false_h = create_host_space_copy(view_dest_false);
+                auto tensor_dest_false_h = create_host_space_copy(tensor_dest_false);
                 for (std::size_t i = 0; i < std_diff_false; ++i) {
-                    REQUIRE_EQ(std_vec_false[i], view_dest_false_h(i));
+                    REQUIRE_EQ(std_vec_false[i], tensor_dest_false_h(i));
                     // std::cout << "i= " << i << " "
                     // 	      << " std_false = " << std_vec_false[i] << " "
-                    // 	      << " mine     = " << view_dest_false_h(i) << '\n';
+                    // 	      << " mine     = " << tensor_dest_false_h(i) << '\n';
                 }
 
                 if (name == "empty") {
@@ -161,59 +161,59 @@ namespace Test {
             template<class Tag, class ValueType, class InfoType>
             void run_single_scenario(const InfoType &scenario_info) {
                 const auto name = std::get<0>(scenario_info);
-                const std::size_t view_ext = std::get<1>(scenario_info);
+                const std::size_t tensor_ext = std::get<1>(scenario_info);
                 // std::cout << "partition_copy: " << name << ", " <<
-                // view_tag_to_string(Tag{})
+                // tensor_tag_to_string(Tag{})
                 //           << ", " << value_type_to_string(ValueType()) << std::endl;
 
-                auto view_from =
-                        create_view<ValueType>(Tag{}, view_ext, "partition_copy_from");
+                auto tensor_from =
+                        create_tensor<ValueType>(Tag{}, tensor_ext, "partition_copy_from");
                 IsEvenFunctor<ValueType> pred;
 
                 {
-                    auto view_dest_true =
-                            create_view<ValueType>(Tag{}, view_ext, "partition_copy_dest_true");
-                    auto view_dest_false =
-                            create_view<ValueType>(Tag{}, view_ext, "partition_copy_dest_false");
-                    fill_view(view_from, name);
+                    auto tensor_dest_true =
+                            create_tensor<ValueType>(Tag{}, tensor_ext, "partition_copy_dest_true");
+                    auto tensor_dest_false =
+                            create_tensor<ValueType>(Tag{}, tensor_ext, "partition_copy_dest_false");
+                    fill_tensor(tensor_from, name);
                     auto result = KE::partition_copy(
-                            exespace(), KE::cbegin(view_from), KE::cend(view_from),
-                            KE::begin(view_dest_true), KE::begin(view_dest_false), pred);
-                    verify_data(name, result, view_from, view_dest_true, view_dest_false, pred);
+                            exespace(), KE::cbegin(tensor_from), KE::cend(tensor_from),
+                            KE::begin(tensor_dest_true), KE::begin(tensor_dest_false), pred);
+                    verify_data(name, result, tensor_from, tensor_dest_true, tensor_dest_false, pred);
                 }
 
                 {
-                    auto view_dest_true =
-                            create_view<ValueType>(Tag{}, view_ext, "partition_copy_dest_true");
-                    auto view_dest_false =
-                            create_view<ValueType>(Tag{}, view_ext, "partition_copy_dest_false");
-                    fill_view(view_from, name);
+                    auto tensor_dest_true =
+                            create_tensor<ValueType>(Tag{}, tensor_ext, "partition_copy_dest_true");
+                    auto tensor_dest_false =
+                            create_tensor<ValueType>(Tag{}, tensor_ext, "partition_copy_dest_false");
+                    fill_tensor(tensor_from, name);
                     auto result = KE::partition_copy(
-                            "my_label", exespace(), KE::cbegin(view_from), KE::cend(view_from),
-                            KE::begin(view_dest_true), KE::begin(view_dest_false), pred);
-                    verify_data(name, result, view_from, view_dest_true, view_dest_false, pred);
+                            "my_label", exespace(), KE::cbegin(tensor_from), KE::cend(tensor_from),
+                            KE::begin(tensor_dest_true), KE::begin(tensor_dest_false), pred);
+                    verify_data(name, result, tensor_from, tensor_dest_true, tensor_dest_false, pred);
                 }
 
                 {
-                    auto view_dest_true =
-                            create_view<ValueType>(Tag{}, view_ext, "partition_copy_dest_true");
-                    auto view_dest_false =
-                            create_view<ValueType>(Tag{}, view_ext, "partition_copy_dest_false");
-                    fill_view(view_from, name);
-                    auto result = KE::partition_copy(exespace(), view_from, view_dest_true,
-                                                     view_dest_false, pred);
-                    verify_data(name, result, view_from, view_dest_true, view_dest_false, pred);
+                    auto tensor_dest_true =
+                            create_tensor<ValueType>(Tag{}, tensor_ext, "partition_copy_dest_true");
+                    auto tensor_dest_false =
+                            create_tensor<ValueType>(Tag{}, tensor_ext, "partition_copy_dest_false");
+                    fill_tensor(tensor_from, name);
+                    auto result = KE::partition_copy(exespace(), tensor_from, tensor_dest_true,
+                                                     tensor_dest_false, pred);
+                    verify_data(name, result, tensor_from, tensor_dest_true, tensor_dest_false, pred);
                 }
 
                 {
-                    auto view_dest_true =
-                            create_view<ValueType>(Tag{}, view_ext, "partition_copy_dest_true");
-                    auto view_dest_false =
-                            create_view<ValueType>(Tag{}, view_ext, "partition_copy_dest_false");
-                    fill_view(view_from, name);
-                    auto result = KE::partition_copy("my_label", exespace(), view_from,
-                                                     view_dest_true, view_dest_false, pred);
-                    verify_data(name, result, view_from, view_dest_true, view_dest_false, pred);
+                    auto tensor_dest_true =
+                            create_tensor<ValueType>(Tag{}, tensor_ext, "partition_copy_dest_true");
+                    auto tensor_dest_false =
+                            create_tensor<ValueType>(Tag{}, tensor_ext, "partition_copy_dest_false");
+                    fill_tensor(tensor_from, name);
+                    auto result = KE::partition_copy("my_label", exespace(), tensor_from,
+                                                     tensor_dest_true, tensor_dest_false, pred);
+                    verify_data(name, result, tensor_from, tensor_dest_true, tensor_dest_false, pred);
                 }
 
                 flare::fence();

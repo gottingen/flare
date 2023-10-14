@@ -51,14 +51,14 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class... Properties3, class PredicateType>
 auto partition_copy(
     const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view_from,
-    const ::flare::View<DataType2, Properties2...>& view_dest_true,
-    const ::flare::View<DataType3, Properties3...>& view_dest_false,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest_true,
+    const ::flare::Tensor<DataType3, Properties3...>& tensor_dest_false,
     PredicateType p) {
-  return detail::partition_copy_impl("flare::partition_copy_view_api_default",
-                                   ex, cbegin(view_from), cend(view_from),
-                                   begin(view_dest_true),
-                                   begin(view_dest_false), std::move(p));
+  return detail::partition_copy_impl("flare::partition_copy_tensor_api_default",
+                                   ex, cbegin(tensor_from), cend(tensor_from),
+                                   begin(tensor_dest_true),
+                                   begin(tensor_dest_false), std::move(p));
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
@@ -66,13 +66,13 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class... Properties3, class PredicateType>
 auto partition_copy(
     const std::string& label, const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view_from,
-    const ::flare::View<DataType2, Properties2...>& view_dest_true,
-    const ::flare::View<DataType3, Properties3...>& view_dest_false,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest_true,
+    const ::flare::Tensor<DataType3, Properties3...>& tensor_dest_false,
     PredicateType p) {
-  return detail::partition_copy_impl(label, ex, cbegin(view_from),
-                                   cend(view_from), begin(view_dest_true),
-                                   begin(view_dest_false), std::move(p));
+  return detail::partition_copy_impl(label, ex, cbegin(tensor_from),
+                                   cend(tensor_from), begin(tensor_dest_true),
+                                   begin(tensor_dest_false), std::move(p));
 }
 
 }  // namespace experimental

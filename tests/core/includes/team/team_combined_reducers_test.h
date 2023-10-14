@@ -25,7 +25,7 @@ struct TeamTeamCombinedReducer {
     auto policy = flare::TeamPolicy<TEST_EXECSPACE>(1, flare::AUTO);
     using team_member_type = decltype(policy)::member_type;
 
-    auto teamView = flare::View<int[4], TEST_EXECSPACE::memory_space>("view");
+    auto teamTensor = flare::Tensor<int[4], TEST_EXECSPACE::memory_space>("tensor");
 
     flare::parallel_for(
         policy, FLARE_LAMBDA(team_member_type const& team) {
@@ -44,26 +44,26 @@ struct TeamTeamCombinedReducer {
               teamResult0, teamResult1, teamResult2, teamResult3);
 
           flare::single(flare::PerTeam(team), [=]() {
-            teamView(0) = teamResult0;
-            teamView(1) = teamResult1;
-            teamView(2) = teamResult2;
-            teamView(3) = teamResult3;
+            teamTensor(0) = teamResult0;
+            teamTensor(1) = teamResult1;
+            teamTensor(2) = teamResult2;
+            teamTensor(3) = teamResult3;
           });
         });
 
-    auto hostView = flare::create_mirror_view_and_copy(
-        flare::DefaultHostExecutionSpace(), teamView);
+    auto hostTensor = flare::create_mirror_tensor_and_copy(
+        flare::DefaultHostExecutionSpace(), teamTensor);
 
     if (n == 0) {
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(0));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(1));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(2));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(3));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(0));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(1));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(2));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(3));
     } else {
-      EXPECT_EQ(n, hostView(0));
-      EXPECT_EQ((n * (n + 1) / 2), hostView(1));
-      EXPECT_EQ(n * n * (n + 1) / 2, hostView(2));
-      EXPECT_EQ(n * n, hostView(3));
+      EXPECT_EQ(n, hostTensor(0));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(1));
+      EXPECT_EQ(n * n * (n + 1) / 2, hostTensor(2));
+      EXPECT_EQ(n * n, hostTensor(3));
     }
   }
 
@@ -71,7 +71,7 @@ struct TeamTeamCombinedReducer {
     auto policy = flare::TeamPolicy<TEST_EXECSPACE>(1, flare::AUTO);
     using team_member_type = decltype(policy)::member_type;
 
-    auto teamView = flare::View<int[4], TEST_EXECSPACE::memory_space>("view");
+    auto teamTensor = flare::Tensor<int[4], TEST_EXECSPACE::memory_space>("tensor");
 
     flare::parallel_for(
         policy, FLARE_LAMBDA(team_member_type const& team) {
@@ -91,26 +91,26 @@ struct TeamTeamCombinedReducer {
               flare::Min<int>(teamResult2), flare::Max<int>(teamResult3));
 
           flare::single(flare::PerTeam(team), [=]() {
-            teamView(0) = teamResult0;
-            teamView(1) = teamResult1;
-            teamView(2) = teamResult2;
-            teamView(3) = teamResult3;
+            teamTensor(0) = teamResult0;
+            teamTensor(1) = teamResult1;
+            teamTensor(2) = teamResult2;
+            teamTensor(3) = teamResult3;
           });
         });
 
-    auto hostView = flare::create_mirror_view_and_copy(
-        flare::DefaultHostExecutionSpace(), teamView);
+    auto hostTensor = flare::create_mirror_tensor_and_copy(
+        flare::DefaultHostExecutionSpace(), teamTensor);
 
     if (n == 0) {
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(0));
-      EXPECT_EQ(flare::reduction_identity<int>::prod(), hostView(1));
-      EXPECT_EQ(flare::reduction_identity<int>::min(), hostView(2));
-      EXPECT_EQ(flare::reduction_identity<int>::max(), hostView(3));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(0));
+      EXPECT_EQ(flare::reduction_identity<int>::prod(), hostTensor(1));
+      EXPECT_EQ(flare::reduction_identity<int>::min(), hostTensor(2));
+      EXPECT_EQ(flare::reduction_identity<int>::max(), hostTensor(3));
     } else {
-      EXPECT_EQ((n * (n + 1) / 2), hostView(0));
-      EXPECT_EQ(std::pow(n, n), hostView(1));
-      EXPECT_EQ(1, hostView(2));
-      EXPECT_EQ(n, hostView(3));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(0));
+      EXPECT_EQ(std::pow(n, n), hostTensor(1));
+      EXPECT_EQ(1, hostTensor(2));
+      EXPECT_EQ(n, hostTensor(3));
     }
   }
 
@@ -118,7 +118,7 @@ struct TeamTeamCombinedReducer {
     auto policy = flare::TeamPolicy<TEST_EXECSPACE>(1, flare::AUTO);
     using team_member_type = decltype(policy)::member_type;
 
-    auto teamView = flare::View<int*, TEST_EXECSPACE::memory_space>("view", 4);
+    auto teamTensor = flare::Tensor<int*, TEST_EXECSPACE::memory_space>("tensor", 4);
 
     flare::parallel_for(
         policy, FLARE_LAMBDA(team_member_type const& team) {
@@ -138,26 +138,26 @@ struct TeamTeamCombinedReducer {
               flare::Max<int>(teamResult2), teamResult3);
 
           flare::single(flare::PerTeam(team), [=]() {
-            teamView(0) = teamResult0;
-            teamView(1) = teamResult1;
-            teamView(2) = teamResult2;
-            teamView(3) = teamResult3;
+            teamTensor(0) = teamResult0;
+            teamTensor(1) = teamResult1;
+            teamTensor(2) = teamResult2;
+            teamTensor(3) = teamResult3;
           });
         });
 
-    auto hostView = flare::create_mirror_view_and_copy(
-        flare::DefaultHostExecutionSpace(), teamView);
+    auto hostTensor = flare::create_mirror_tensor_and_copy(
+        flare::DefaultHostExecutionSpace(), teamTensor);
 
     if (n == 0) {
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(0));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(1));
-      EXPECT_EQ(flare::reduction_identity<int>::max(), hostView(2));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(3));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(0));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(1));
+      EXPECT_EQ(flare::reduction_identity<int>::max(), hostTensor(2));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(3));
     } else {
-      EXPECT_EQ((n * (n + 1) / 2), hostView(0));
-      EXPECT_EQ((n * (n + 1) / 2), hostView(1));
-      EXPECT_EQ(n, hostView(2));
-      EXPECT_EQ(n * n, hostView(3));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(0));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(1));
+      EXPECT_EQ(n, hostTensor(2));
+      EXPECT_EQ(n * n, hostTensor(3));
     }
   }
 
@@ -165,7 +165,7 @@ struct TeamTeamCombinedReducer {
     auto policy = flare::TeamPolicy<TEST_EXECSPACE>(1, flare::AUTO);
     using team_member_type = decltype(policy)::member_type;
 
-    auto teamView = flare::View<int[4], TEST_EXECSPACE::memory_space>("view");
+    auto teamTensor = flare::Tensor<int[4], TEST_EXECSPACE::memory_space>("tensor");
 
     flare::parallel_for(
         policy, FLARE_LAMBDA(team_member_type const& team) {
@@ -185,26 +185,26 @@ struct TeamTeamCombinedReducer {
                 },
                 teamResult0, teamResult1, teamResult2, teamResult3);
 
-            teamView(0) = teamResult0;
-            teamView(1) = teamResult1;
-            teamView(2) = teamResult2;
-            teamView(3) = teamResult3;
+            teamTensor(0) = teamResult0;
+            teamTensor(1) = teamResult1;
+            teamTensor(2) = teamResult2;
+            teamTensor(3) = teamResult3;
           });
         });
 
-    auto hostView = flare::create_mirror_view_and_copy(
-        flare::DefaultHostExecutionSpace(), teamView);
+    auto hostTensor = flare::create_mirror_tensor_and_copy(
+        flare::DefaultHostExecutionSpace(), teamTensor);
 
     if (n == 0) {
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(0));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(1));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(2));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(3));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(0));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(1));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(2));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(3));
     } else {
-      EXPECT_EQ(n, hostView(0));
-      EXPECT_EQ((n * (n + 1) / 2), hostView(1));
-      EXPECT_EQ(n * n * (n + 1) / 2, hostView(2));
-      EXPECT_EQ(n * n, hostView(3));
+      EXPECT_EQ(n, hostTensor(0));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(1));
+      EXPECT_EQ(n * n * (n + 1) / 2, hostTensor(2));
+      EXPECT_EQ(n * n, hostTensor(3));
     }
   }
 
@@ -212,7 +212,7 @@ struct TeamTeamCombinedReducer {
     auto policy = flare::TeamPolicy<TEST_EXECSPACE>(1, flare::AUTO);
     using team_member_type = decltype(policy)::member_type;
 
-    auto teamView = flare::View<int[4], TEST_EXECSPACE::memory_space>("view");
+    auto teamTensor = flare::Tensor<int[4], TEST_EXECSPACE::memory_space>("tensor");
 
     flare::parallel_for(
         policy, FLARE_LAMBDA(team_member_type const& team) {
@@ -233,26 +233,26 @@ struct TeamTeamCombinedReducer {
                 flare::Sum<int>(teamResult0), flare::Prod<int>(teamResult1),
                 flare::Min<int>(teamResult2), flare::Max<int>(teamResult3));
 
-            teamView(0) = teamResult0;
-            teamView(1) = teamResult1;
-            teamView(2) = teamResult2;
-            teamView(3) = teamResult3;
+            teamTensor(0) = teamResult0;
+            teamTensor(1) = teamResult1;
+            teamTensor(2) = teamResult2;
+            teamTensor(3) = teamResult3;
           });
         });
 
-    auto hostView = flare::create_mirror_view_and_copy(
-        flare::DefaultHostExecutionSpace(), teamView);
+    auto hostTensor = flare::create_mirror_tensor_and_copy(
+        flare::DefaultHostExecutionSpace(), teamTensor);
 
     if (n == 0) {
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(0));
-      EXPECT_EQ(flare::reduction_identity<int>::prod(), hostView(1));
-      EXPECT_EQ(flare::reduction_identity<int>::min(), hostView(2));
-      EXPECT_EQ(flare::reduction_identity<int>::max(), hostView(3));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(0));
+      EXPECT_EQ(flare::reduction_identity<int>::prod(), hostTensor(1));
+      EXPECT_EQ(flare::reduction_identity<int>::min(), hostTensor(2));
+      EXPECT_EQ(flare::reduction_identity<int>::max(), hostTensor(3));
     } else {
-      EXPECT_EQ((n * (n + 1) / 2), hostView(0));
-      EXPECT_EQ(std::pow(n, n), hostView(1));
-      EXPECT_EQ(1, hostView(2));
-      EXPECT_EQ(n, hostView(3));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(0));
+      EXPECT_EQ(std::pow(n, n), hostTensor(1));
+      EXPECT_EQ(1, hostTensor(2));
+      EXPECT_EQ(n, hostTensor(3));
     }
   }
 
@@ -260,7 +260,7 @@ struct TeamTeamCombinedReducer {
     auto policy = flare::TeamPolicy<TEST_EXECSPACE>(1, flare::AUTO);
     using team_member_type = decltype(policy)::member_type;
 
-    auto teamView = flare::View<int[4], TEST_EXECSPACE::memory_space>("view");
+    auto teamTensor = flare::Tensor<int[4], TEST_EXECSPACE::memory_space>("tensor");
 
     flare::parallel_for(
         policy, FLARE_LAMBDA(team_member_type const& team) {
@@ -281,26 +281,26 @@ struct TeamTeamCombinedReducer {
                 flare::Prod<int>(teamResult0), teamResult1,
                 flare::Min<int>(teamResult2), teamResult3);
 
-            teamView(0) = teamResult0;
-            teamView(1) = teamResult1;
-            teamView(2) = teamResult2;
-            teamView(3) = teamResult3;
+            teamTensor(0) = teamResult0;
+            teamTensor(1) = teamResult1;
+            teamTensor(2) = teamResult2;
+            teamTensor(3) = teamResult3;
           });
         });
 
-    auto hostView = flare::create_mirror_view_and_copy(
-        flare::DefaultHostExecutionSpace(), teamView);
+    auto hostTensor = flare::create_mirror_tensor_and_copy(
+        flare::DefaultHostExecutionSpace(), teamTensor);
 
     if (n == 0) {
-      EXPECT_EQ(flare::reduction_identity<int>::prod(), hostView(0));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(1));
-      EXPECT_EQ(flare::reduction_identity<int>::min(), hostView(2));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(3));
+      EXPECT_EQ(flare::reduction_identity<int>::prod(), hostTensor(0));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(1));
+      EXPECT_EQ(flare::reduction_identity<int>::min(), hostTensor(2));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(3));
     } else {
-      EXPECT_EQ(std::pow(n, n), hostView(0));
-      EXPECT_EQ((n * (n + 1) / 2), hostView(1));
-      EXPECT_EQ(1, hostView(2));
-      EXPECT_EQ(n * n, hostView(3));
+      EXPECT_EQ(std::pow(n, n), hostTensor(0));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(1));
+      EXPECT_EQ(1, hostTensor(2));
+      EXPECT_EQ(n * n, hostTensor(3));
     }
   }
 
@@ -308,7 +308,7 @@ struct TeamTeamCombinedReducer {
     auto policy = flare::TeamPolicy<TEST_EXECSPACE>(1, flare::AUTO);
     using team_member_type = decltype(policy)::member_type;
 
-    auto teamView = flare::View<int[4], TEST_EXECSPACE::memory_space>("view");
+    auto teamTensor = flare::Tensor<int[4], TEST_EXECSPACE::memory_space>("tensor");
 
     flare::parallel_for(
         policy, FLARE_LAMBDA(team_member_type const& team) {
@@ -327,26 +327,26 @@ struct TeamTeamCombinedReducer {
               teamResult0, teamResult1, teamResult2, teamResult3);
 
           flare::single(flare::PerTeam(team), [=]() {
-            teamView(0) = teamResult0;
-            teamView(1) = teamResult1;
-            teamView(2) = teamResult2;
-            teamView(3) = teamResult3;
+            teamTensor(0) = teamResult0;
+            teamTensor(1) = teamResult1;
+            teamTensor(2) = teamResult2;
+            teamTensor(3) = teamResult3;
           });
         });
 
-    auto hostView = flare::create_mirror_view_and_copy(
-        flare::DefaultHostExecutionSpace(), teamView);
+    auto hostTensor = flare::create_mirror_tensor_and_copy(
+        flare::DefaultHostExecutionSpace(), teamTensor);
 
     if (n == 0) {
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(0));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(1));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(2));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(3));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(0));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(1));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(2));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(3));
     } else {
-      EXPECT_EQ(n, hostView(0));
-      EXPECT_EQ((n * (n + 1) / 2), hostView(1));
-      EXPECT_EQ(n * n * (n + 1) / 2, hostView(2));
-      EXPECT_EQ(n * n, hostView(3));
+      EXPECT_EQ(n, hostTensor(0));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(1));
+      EXPECT_EQ(n * n * (n + 1) / 2, hostTensor(2));
+      EXPECT_EQ(n * n, hostTensor(3));
     }
   }
 
@@ -354,7 +354,7 @@ struct TeamTeamCombinedReducer {
     auto policy = flare::TeamPolicy<TEST_EXECSPACE>(1, flare::AUTO);
     using team_member_type = decltype(policy)::member_type;
 
-    auto teamView = flare::View<int[4], TEST_EXECSPACE::memory_space>("view");
+    auto teamTensor = flare::Tensor<int[4], TEST_EXECSPACE::memory_space>("tensor");
 
     flare::parallel_for(
         policy, FLARE_LAMBDA(team_member_type const& team) {
@@ -374,26 +374,26 @@ struct TeamTeamCombinedReducer {
               flare::Min<int>(teamResult2), flare::Max<int>(teamResult3));
 
           flare::single(flare::PerTeam(team), [=]() {
-            teamView(0) = teamResult0;
-            teamView(1) = teamResult1;
-            teamView(2) = teamResult2;
-            teamView(3) = teamResult3;
+            teamTensor(0) = teamResult0;
+            teamTensor(1) = teamResult1;
+            teamTensor(2) = teamResult2;
+            teamTensor(3) = teamResult3;
           });
         });
 
-    auto hostView = flare::create_mirror_view_and_copy(
-        flare::DefaultHostExecutionSpace(), teamView);
+    auto hostTensor = flare::create_mirror_tensor_and_copy(
+        flare::DefaultHostExecutionSpace(), teamTensor);
 
     if (n == 0) {
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(0));
-      EXPECT_EQ(flare::reduction_identity<int>::prod(), hostView(1));
-      EXPECT_EQ(flare::reduction_identity<int>::min(), hostView(2));
-      EXPECT_EQ(flare::reduction_identity<int>::max(), hostView(3));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(0));
+      EXPECT_EQ(flare::reduction_identity<int>::prod(), hostTensor(1));
+      EXPECT_EQ(flare::reduction_identity<int>::min(), hostTensor(2));
+      EXPECT_EQ(flare::reduction_identity<int>::max(), hostTensor(3));
     } else {
-      EXPECT_EQ((n * (n + 1) / 2), hostView(0));
-      EXPECT_EQ(std::pow(n, n), hostView(1));
-      EXPECT_EQ(1, hostView(2));
-      EXPECT_EQ(n, hostView(3));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(0));
+      EXPECT_EQ(std::pow(n, n), hostTensor(1));
+      EXPECT_EQ(1, hostTensor(2));
+      EXPECT_EQ(n, hostTensor(3));
     }
   }
 
@@ -401,7 +401,7 @@ struct TeamTeamCombinedReducer {
     auto policy = flare::TeamPolicy<TEST_EXECSPACE>(1, flare::AUTO);
     using team_member_type = decltype(policy)::member_type;
 
-    auto teamView = flare::View<int[4], TEST_EXECSPACE::memory_space>("view");
+    auto teamTensor = flare::Tensor<int[4], TEST_EXECSPACE::memory_space>("tensor");
 
     flare::parallel_for(
         policy, FLARE_LAMBDA(team_member_type const& team) {
@@ -421,26 +421,26 @@ struct TeamTeamCombinedReducer {
               flare::Max<int>(teamResult2), teamResult3);
 
           flare::single(flare::PerTeam(team), [=]() {
-            teamView(0) = teamResult0;
-            teamView(1) = teamResult1;
-            teamView(2) = teamResult2;
-            teamView(3) = teamResult3;
+            teamTensor(0) = teamResult0;
+            teamTensor(1) = teamResult1;
+            teamTensor(2) = teamResult2;
+            teamTensor(3) = teamResult3;
           });
         });
 
-    auto hostView = flare::create_mirror_view_and_copy(
-        flare::DefaultHostExecutionSpace(), teamView);
+    auto hostTensor = flare::create_mirror_tensor_and_copy(
+        flare::DefaultHostExecutionSpace(), teamTensor);
 
     if (n == 0) {
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(0));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(1));
-      EXPECT_EQ(flare::reduction_identity<int>::max(), hostView(2));
-      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostView(3));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(0));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(1));
+      EXPECT_EQ(flare::reduction_identity<int>::max(), hostTensor(2));
+      EXPECT_EQ(flare::reduction_identity<int>::sum(), hostTensor(3));
     } else {
-      EXPECT_EQ((n * (n + 1) / 2), hostView(0));
-      EXPECT_EQ((n * (n + 1) / 2), hostView(1));
-      EXPECT_EQ(n, hostView(2));
-      EXPECT_EQ(n * n, hostView(3));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(0));
+      EXPECT_EQ((n * (n + 1) / 2), hostTensor(1));
+      EXPECT_EQ(n, hostTensor(2));
+      EXPECT_EQ(n * n, hostTensor(3));
     }
   }
 };

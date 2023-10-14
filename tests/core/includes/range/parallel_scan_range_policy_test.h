@@ -29,10 +29,10 @@ namespace {
         // that the execution space can be deduced internally.
         using execution_space = TEST_EXECSPACE;
 
-        using ViewType = flare::View<ValueType *, execution_space>;
+        using TensorType = flare::Tensor<ValueType *, execution_space>;
 
-        ViewType prefix_results;
-        ViewType postfix_results;
+        TensorType prefix_results;
+        TensorType postfix_results;
 
         // Operator defining work done in parallel_scan.
         // Simple scan over [0,1,...,N-1].
@@ -59,14 +59,14 @@ namespace {
         template<typename... Args>
         void test_scan(const size_t work_size) {
             // Reset member data based on work_size
-            prefix_results = ViewType("prefix_results", work_size);
-            postfix_results = ViewType("postfix_results", work_size);
+            prefix_results = TensorType("prefix_results", work_size);
+            postfix_results = TensorType("postfix_results", work_size);
 
             // Lambda for checking errors from stored value at each index.
             auto check_scan_results = [&]() {
-                auto const prefix_h = flare::create_mirror_view_and_copy(
+                auto const prefix_h = flare::create_mirror_tensor_and_copy(
                         flare::HostSpace(), prefix_results);
-                auto const postfix_h = flare::create_mirror_view_and_copy(
+                auto const postfix_h = flare::create_mirror_tensor_and_copy(
                         flare::HostSpace(), postfix_results);
 
                 for (size_t i = 0; i < work_size; ++i) {
@@ -117,13 +117,13 @@ namespace {
                 }
 
                 // Input: work_count, functor
-                // Input/Output: return_view (host space)
+                // Input/Output: return_tensor (host space)
                 {
-                    flare::View<ValueType, flare::HostSpace> return_view("return_view");
-                    flare::parallel_scan(work_size, *this, return_view);
+                    flare::Tensor<ValueType, flare::HostSpace> return_tensor("return_tensor");
+                    flare::parallel_scan(work_size, *this, return_tensor);
                     check_scan_results();
                     REQUIRE_EQ(ValueType(work_size * (work_size - 1) / 2),
-                               return_view());  // sum( 0 .. N-1 )
+                               return_tensor());  // sum( 0 .. N-1 )
                 }
             } else {
                 // Construct RangePolicy for parallel_scan
@@ -159,14 +159,14 @@ namespace {
                 }
 
                 // Input: work_count, functor
-                // Input/Output: return_view (Device)
+                // Input/Output: return_tensor (Device)
                 {
-                    flare::View<ValueType, execution_space> return_view("return_view");
-                    flare::parallel_scan(policy, *this, return_view);
+                    flare::Tensor<ValueType, execution_space> return_tensor("return_tensor");
+                    flare::parallel_scan(policy, *this, return_tensor);
                     check_scan_results();
 
                     ValueType total;
-                    flare::deep_copy(total, return_view);
+                    flare::deep_copy(total, return_tensor);
                     REQUIRE_EQ(ValueType(work_size * (work_size - 1) / 2),
                                total);  // sum( 0 .. N-1 )
                 }

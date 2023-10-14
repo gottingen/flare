@@ -21,7 +21,7 @@
 
 namespace flare {
 
-template <class KeyViewType>
+template <class KeyTensorType>
 struct BinOp1D {
   int max_bins_ = {};
   double mul_   = {};
@@ -30,8 +30,8 @@ struct BinOp1D {
   BinOp1D() = delete;
 
   // Construct BinOp with number of bins, minimum value and maximum value
-  BinOp1D(int max_bins__, typename KeyViewType::const_value_type min,
-          typename KeyViewType::const_value_type max)
+  BinOp1D(int max_bins__, typename KeyTensorType::const_value_type min,
+          typename KeyTensorType::const_value_type max)
       : max_bins_(max_bins__ + 1),
         // Cast to double to avoid possible overflow when using integer
         mul_(static_cast<double>(max_bins__) /
@@ -40,7 +40,7 @@ struct BinOp1D {
     // For integral types the number of bins may be larger than the range
     // in which case we can exactly have one unique value per bin
     // and then don't need to sort bins.
-    if (std::is_integral<typename KeyViewType::const_value_type>::value &&
+    if (std::is_integral<typename KeyTensorType::const_value_type>::value &&
         (static_cast<double>(max) - static_cast<double>(min)) <=
             static_cast<double>(max_bins__)) {
       mul_ = 1.;
@@ -48,8 +48,8 @@ struct BinOp1D {
   }
 
   // Determine bin index from key value
-  template <class ViewType>
-  FLARE_INLINE_FUNCTION int bin(ViewType& keys, const int& i) const {
+  template <class TensorType>
+  FLARE_INLINE_FUNCTION int bin(TensorType& keys, const int& i) const {
     return static_cast<int>(mul_ * (static_cast<double>(keys(i)) - min_));
   }
 
@@ -58,14 +58,14 @@ struct BinOp1D {
   int max_bins() const { return max_bins_; }
 
   // Compare to keys within a bin if true new_val will be put before old_val
-  template <class ViewType, typename iType1, typename iType2>
-  FLARE_INLINE_FUNCTION bool operator()(ViewType& keys, iType1& i1,
+  template <class TensorType, typename iType1, typename iType2>
+  FLARE_INLINE_FUNCTION bool operator()(TensorType& keys, iType1& i1,
                                          iType2& i2) const {
     return keys(i1) < keys(i2);
   }
 };
 
-template <class KeyViewType>
+template <class KeyTensorType>
 struct BinOp3D {
   int max_bins_[3] = {};
   double mul_[3]   = {};
@@ -73,8 +73,8 @@ struct BinOp3D {
 
   BinOp3D() = delete;
 
-  BinOp3D(int max_bins__[], typename KeyViewType::const_value_type min[],
-          typename KeyViewType::const_value_type max[]) {
+  BinOp3D(int max_bins__[], typename KeyTensorType::const_value_type min[],
+          typename KeyTensorType::const_value_type max[]) {
     max_bins_[0] = max_bins__[0];
     max_bins_[1] = max_bins__[1];
     max_bins_[2] = max_bins__[2];
@@ -89,8 +89,8 @@ struct BinOp3D {
     min_[2] = static_cast<double>(min[2]);
   }
 
-  template <class ViewType>
-  FLARE_INLINE_FUNCTION int bin(ViewType& keys, const int& i) const {
+  template <class TensorType>
+  FLARE_INLINE_FUNCTION int bin(TensorType& keys, const int& i) const {
     return int((((int(mul_[0] * (keys(i, 0) - min_[0])) * max_bins_[1]) +
                  int(mul_[1] * (keys(i, 1) - min_[1]))) *
                 max_bins_[2]) +
@@ -100,8 +100,8 @@ struct BinOp3D {
   FLARE_INLINE_FUNCTION
   int max_bins() const { return max_bins_[0] * max_bins_[1] * max_bins_[2]; }
 
-  template <class ViewType, typename iType1, typename iType2>
-  FLARE_INLINE_FUNCTION bool operator()(ViewType& keys, iType1& i1,
+  template <class TensorType, typename iType1, typename iType2>
+  FLARE_INLINE_FUNCTION bool operator()(TensorType& keys, iType1& i1,
                                          iType2& i2) const {
     if (keys(i1, 0) > keys(i2, 0))
       return true;

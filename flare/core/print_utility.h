@@ -24,45 +24,45 @@
 
 namespace flare::detail {
 
-    template<typename in_lno_view_t, typename out_lno_view_t>
+    template<typename in_lno_tensor_t, typename out_lno_tensor_t>
     struct Histogram {
-        in_lno_view_t inview;
-        out_lno_view_t outview;
+        in_lno_tensor_t intensor;
+        out_lno_tensor_t outtensor;
 
-        Histogram(in_lno_view_t inview_, out_lno_view_t outview_)
-                : inview(inview_), outview(outview_) {}
+        Histogram(in_lno_tensor_t intensor_, out_lno_tensor_t outtensor_)
+                : intensor(intensor_), outtensor(outtensor_) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const size_t &ii) const {
-            typedef typename std::remove_reference<decltype(outview(0))>::type
+            typedef typename std::remove_reference<decltype(outtensor(0))>::type
                     atomic_incr_type;
-            flare::atomic_fetch_add(&(outview(inview(ii))), atomic_incr_type(1));
+            flare::atomic_fetch_add(&(outtensor(intensor(ii))), atomic_incr_type(1));
         }
     };
 
     /**
-     * \brief given an integer input view, it fills the histogram that
+     * \brief given an integer input tensor, it fills the histogram that
      * represents how many of each value exists.
-     * \param in_elements: number of the elements in input view.
-     * \param in_view: the input view. Has to be integer-like.
+     * \param in_elements: number of the elements in input tensor.
+     * \param in_tensor: the input tensor. Has to be integer-like.
      * \param histogram: the output histogram. User is responsible from initializing
-     * them with 0, and size must be big enough to hold all values in input view.
+     * them with 0, and size must be big enough to hold all values in input tensor.
      */
-    template<typename in_lno_view_t, typename out_lno_view_t, typename MyExecSpace>
+    template<typename in_lno_tensor_t, typename out_lno_tensor_t, typename MyExecSpace>
     inline void flare_get_histogram(
-            typename in_lno_view_t::size_type in_elements, in_lno_view_t in_view,
-            out_lno_view_t histogram /*must be initialized with 0s*/) {
+            typename in_lno_tensor_t::size_type in_elements, in_lno_tensor_t in_tensor,
+            out_lno_tensor_t histogram /*must be initialized with 0s*/) {
         typedef flare::RangePolicy <MyExecSpace> my_exec_space;
         flare::parallel_for(
                 "flare::detail::GetHistogram", my_exec_space(0, in_elements),
-                Histogram<in_lno_view_t, out_lno_view_t>(in_view, histogram));
+                Histogram<in_lno_tensor_t, out_lno_tensor_t>(in_tensor, histogram));
         MyExecSpace().fence();
     }
 
     /**
-     * \brief Prints the given 1D view.
+     * \brief Prints the given 1D tensor.
      * \param os: Stream to print to. To print to stdout use std::cout, stderr,
-     * std::cerr, or a file use an ofstream object. \param view: input view to
+     * std::cerr, or a file use an ofstream object. \param tensor: input tensor to
      * print. \param print_all: whether to print all elements or not. If it is
      * false, print print_size/2 first and last elements. \param sep: Element
      * separator. Default is a single space: " " \param print_size: Total elements
@@ -70,17 +70,17 @@ namespace flare::detail {
      * pritned. This parameter is not used if print_all is set to true.
      */
     template<typename idx_array_type>
-    inline std::enable_if_t<idx_array_type::rank <= 1> flare_print_1Dview(
-            std::ostream &os, idx_array_type view, bool print_all = false,
+    inline std::enable_if_t<idx_array_type::rank <= 1> flare_print_1DTensor(
+            std::ostream &os, idx_array_type tensor, bool print_all = false,
             const char *sep = " ", size_t print_size = 40) {
         typedef typename idx_array_type::HostMirror host_type;
         typedef typename idx_array_type::size_type idx;
-        host_type host_view = flare::create_mirror_view(view);
-        flare::deep_copy(host_view, view);
+        host_type host_tensor = flare::create_mirror_tensor(tensor);
+        flare::deep_copy(host_tensor, tensor);
         const auto print_range = [&](idx begin, idx end) {
-            for (idx i = begin; i < end; ++i) os << host_view.access(i) << sep;
+            for (idx i = begin; i < end; ++i) os << host_tensor.access(i) << sep;
         };
-        idx nr = host_view.extent(0);
+        idx nr = host_tensor.extent(0);
         if (print_all || nr <= print_size) {
             print_range(0, nr);
         } else {
@@ -97,34 +97,34 @@ namespace flare::detail {
      * rank-2 vectors same like rank-1 vectors and prints multi-vector dimensions.
      */
     template<typename idx_array_type>
-    inline std::enable_if_t<idx_array_type::rank >= 2> flare_print_1Dview(
-            std::ostream &os, idx_array_type view, bool print_all = false,
+    inline std::enable_if_t<idx_array_type::rank >= 2> flare_print_1DTensor(
+            std::ostream &os, idx_array_type tensor, bool print_all = false,
             const char *sep = " ", size_t print_size = 40) {
-        if (idx_array_type::rank == 2 && view.extent(1) == 1) {
-            flare_print_1Dview(os, subview(view, flare::ALL, 0), print_all, sep,
+        if (idx_array_type::rank == 2 && tensor.extent(1) == 1) {
+            flare_print_1DTensor(os, subtensor(tensor, flare::ALL, 0), print_all, sep,
                             print_size);
             return;
         }
-        os << "[" << view.extent(0);
+        os << "[" << tensor.extent(0);
         // ::rank is a flare::...::integral_constant, not appropriate for `i`
         for (int i = 1; i < int(idx_array_type::rank); ++i) {
-            os << "x" << view.extent(i);
+            os << "x" << tensor.extent(i);
         }
         os << " multi-vector]" << std::endl;
     }
 
     /**
-     * \brief Prints the given 1D view.
-     * \param view: input view to print.
+     * \brief Prints the given 1D tensor.
+     * \param tensor: input tensor to print.
      * \param print_all: whether to print all elements or not. If it is false,
      * only first and last 20 elements are printed.
      *
      * This interface is provided for backwards compatiblity.
      */
     template<typename idx_array_type>
-    inline void flare_print_1Dview(idx_array_type view, bool print_all = false,
+    inline void flare_print_1DTensor(idx_array_type tensor, bool print_all = false,
                                 size_t print_size = 40) {
-        flare_print_1Dview(std::cout, view, print_all, " ", print_size);
+        flare_print_1DTensor(std::cout, tensor, print_all, " ", print_size);
     }
 
 }  // namespace flare::detail

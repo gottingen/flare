@@ -23,19 +23,19 @@
 
 namespace Test {
 
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_teampolicy_rank_1(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
         auto subA =
-                flare::subview(A, 1, 1, 1, 1, 1, 1, flare::ALL(), flare::ALL());
+                flare::subtensor(A, 1, 1, 1, 1, 1, 1, flare::ALL(), flare::ALL());
         flare::deep_copy(subA, 10.0);
 
         using team_policy = flare::TeamPolicy<ExecSpace>;
@@ -46,8 +46,8 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subSrc = flare::subview(A, 1, 1, 1, 1, 1, 1, lid, flare::ALL());
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, 1, 1, lid, flare::ALL());
+                    auto subSrc = flare::subtensor(A, 1, 1, 1, 1, 1, 1, lid, flare::ALL());
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, 1, 1, lid, flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, subSrc);
                 });
 
@@ -71,7 +71,7 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, 1, 1, lid, flare::ALL());
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, 1, 1, lid, flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, 20.0);
                 });
 
@@ -86,18 +86,18 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_teampolicy_rank_2(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
-        auto subA = flare::subview(A, 1, 1, 1, 1, 1, flare::ALL(), flare::ALL(),
+        auto subA = flare::subtensor(A, 1, 1, 1, 1, 1, flare::ALL(), flare::ALL(),
                                    flare::ALL());
         flare::deep_copy(subA, 10.0);
 
@@ -109,9 +109,9 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subSrc = flare::subview(A, 1, 1, 1, 1, 1, lid, flare::ALL(),
+                    auto subSrc = flare::subtensor(A, 1, 1, 1, 1, 1, lid, flare::ALL(),
                                                  flare::ALL());
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, 1, lid, flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, 1, lid, flare::ALL(),
                                                  flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, subSrc);
                 });
@@ -136,7 +136,7 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, 1, lid, flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, 1, lid, flare::ALL(),
                                                  flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, 20.0);
                 });
@@ -152,18 +152,18 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_teampolicy_rank_3(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
-        auto subA = flare::subview(A, 1, 1, 1, 1, flare::ALL(), flare::ALL(),
+        auto subA = flare::subtensor(A, 1, 1, 1, 1, flare::ALL(), flare::ALL(),
                                    flare::ALL(), flare::ALL());
         flare::deep_copy(subA, 10.0);
 
@@ -175,9 +175,9 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subSrc = flare::subview(A, 1, 1, 1, 1, lid, flare::ALL(),
+                    auto subSrc = flare::subtensor(A, 1, 1, 1, 1, lid, flare::ALL(),
                                                  flare::ALL(), flare::ALL());
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, lid, flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, lid, flare::ALL(),
                                                  flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, subSrc);
                 });
@@ -202,7 +202,7 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, lid, flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, lid, flare::ALL(),
                                                  flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, 20.0);
                 });
@@ -218,18 +218,18 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_teampolicy_rank_4(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
-        auto subA = flare::subview(A, 1, 1, 1, flare::ALL(), flare::ALL(),
+        auto subA = flare::subtensor(A, 1, 1, 1, flare::ALL(), flare::ALL(),
                                    flare::ALL(), flare::ALL(), flare::ALL());
         flare::deep_copy(subA, 10.0);
 
@@ -242,10 +242,10 @@ namespace Test {
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
                     auto subSrc =
-                            flare::subview(A, 1, 1, 1, lid, flare::ALL(), flare::ALL(),
+                            flare::subtensor(A, 1, 1, 1, lid, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL());
                     auto subDst =
-                            flare::subview(B, 1, 1, 1, lid, flare::ALL(), flare::ALL(),
+                            flare::subtensor(B, 1, 1, 1, lid, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, subSrc);
                 });
@@ -271,7 +271,7 @@ namespace Test {
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
                     auto subDst =
-                            flare::subview(B, 1, 1, 1, lid, flare::ALL(), flare::ALL(),
+                            flare::subtensor(B, 1, 1, 1, lid, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, 20.0);
                 });
@@ -287,19 +287,19 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_teampolicy_rank_5(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
         auto subA =
-                flare::subview(A, 1, 1, flare::ALL(), flare::ALL(), flare::ALL(),
+                flare::subtensor(A, 1, 1, flare::ALL(), flare::ALL(), flare::ALL(),
                                flare::ALL(), flare::ALL(), flare::ALL());
         flare::deep_copy(subA, 10.0);
 
@@ -312,10 +312,10 @@ namespace Test {
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
                     auto subSrc =
-                            flare::subview(A, 1, 1, lid, flare::ALL(), flare::ALL(),
+                            flare::subtensor(A, 1, 1, lid, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL(), flare::ALL());
                     auto subDst =
-                            flare::subview(B, 1, 1, lid, flare::ALL(), flare::ALL(),
+                            flare::subtensor(B, 1, 1, lid, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, subSrc);
                 });
@@ -341,7 +341,7 @@ namespace Test {
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
                     auto subDst =
-                            flare::subview(B, 1, 1, lid, flare::ALL(), flare::ALL(),
+                            flare::subtensor(B, 1, 1, lid, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, 20.0);
                 });
@@ -357,18 +357,18 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_teampolicy_rank_6(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
-        auto subA = flare::subview(A, 1, flare::ALL(), flare::ALL(), flare::ALL(),
+        auto subA = flare::subtensor(A, 1, flare::ALL(), flare::ALL(), flare::ALL(),
                                    flare::ALL(), flare::ALL(), flare::ALL(),
                                    flare::ALL());
         flare::deep_copy(subA, 10.0);
@@ -381,10 +381,10 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subSrc = flare::subview(A, 1, lid, flare::ALL(), flare::ALL(),
+                    auto subSrc = flare::subtensor(A, 1, lid, flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL());
-                    auto subDst = flare::subview(B, 1, lid, flare::ALL(), flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, lid, flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, subSrc);
@@ -410,7 +410,7 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subDst = flare::subview(B, 1, lid, flare::ALL(), flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, lid, flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, 20.0);
@@ -427,15 +427,15 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_teampolicy_rank_7(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
         flare::deep_copy(A, 10.0);
@@ -448,10 +448,10 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subSrc = flare::subview(
+                    auto subSrc = flare::subtensor(
                             A, lid, flare::ALL(), flare::ALL(), flare::ALL(), flare::ALL(),
                             flare::ALL(), flare::ALL(), flare::ALL());
-                    auto subDst = flare::subview(
+                    auto subDst = flare::subtensor(
                             B, lid, flare::ALL(), flare::ALL(), flare::ALL(), flare::ALL(),
                             flare::ALL(), flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, subSrc);
@@ -477,7 +477,7 @@ namespace Test {
                 team_policy(N, flare::AUTO),
                 FLARE_LAMBDA(const member_type &teamMember) {
                     int lid = teamMember.league_rank();  // returns a number between 0 and N
-                    auto subDst = flare::subview(
+                    auto subDst = flare::subtensor(
                             B, lid, flare::ALL(), flare::ALL(), flare::ALL(), flare::ALL(),
                             flare::ALL(), flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(teamMember, subDst, 20.0);
@@ -494,26 +494,26 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_rangepolicy_rank_1(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
         auto subA =
-                flare::subview(A, 1, 1, 1, 1, 1, 1, flare::ALL(), flare::ALL());
+                flare::subtensor(A, 1, 1, 1, 1, 1, 1, flare::ALL(), flare::ALL());
         flare::deep_copy(subA, 10.0);
 
         // Deep Copy
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
-                    auto subSrc = flare::subview(A, 1, 1, 1, 1, 1, 1, i, flare::ALL());
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, 1, 1, i, flare::ALL());
+                    auto subSrc = flare::subtensor(A, 1, 1, 1, 1, 1, 1, i, flare::ALL());
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, 1, 1, i, flare::ALL());
                     flare::experimental::local_deep_copy(subDst, subSrc);
                 });
 
@@ -535,7 +535,7 @@ namespace Test {
 
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, 1, 1, i, flare::ALL());
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, 1, 1, i, flare::ALL());
                     flare::experimental::local_deep_copy(subDst, 20.0);
                 });
 
@@ -550,18 +550,18 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_rangepolicy_rank_2(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
-        auto subA = flare::subview(A, 1, 1, 1, 1, 1, flare::ALL(), flare::ALL(),
+        auto subA = flare::subtensor(A, 1, 1, 1, 1, 1, flare::ALL(), flare::ALL(),
                                    flare::ALL());
         flare::deep_copy(subA, 10.0);
 
@@ -569,9 +569,9 @@ namespace Test {
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
                     auto subSrc =
-                            flare::subview(A, 1, 1, 1, 1, 1, i, flare::ALL(), flare::ALL());
+                            flare::subtensor(A, 1, 1, 1, 1, 1, i, flare::ALL(), flare::ALL());
                     auto subDst =
-                            flare::subview(B, 1, 1, 1, 1, 1, i, flare::ALL(), flare::ALL());
+                            flare::subtensor(B, 1, 1, 1, 1, 1, i, flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, subSrc);
                 });
 
@@ -594,7 +594,7 @@ namespace Test {
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
                     auto subDst =
-                            flare::subview(B, 1, 1, 1, 1, 1, i, flare::ALL(), flare::ALL());
+                            flare::subtensor(B, 1, 1, 1, 1, 1, i, flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, 20.0);
                 });
 
@@ -609,27 +609,27 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_rangepolicy_rank_3(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
-        auto subA = flare::subview(A, 1, 1, 1, 1, flare::ALL(), flare::ALL(),
+        auto subA = flare::subtensor(A, 1, 1, 1, 1, flare::ALL(), flare::ALL(),
                                    flare::ALL(), flare::ALL());
         flare::deep_copy(subA, 10.0);
 
         // Deep Copy
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
-                    auto subSrc = flare::subview(A, 1, 1, 1, 1, i, flare::ALL(),
+                    auto subSrc = flare::subtensor(A, 1, 1, 1, 1, i, flare::ALL(),
                                                  flare::ALL(), flare::ALL());
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, i, flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, i, flare::ALL(),
                                                  flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, subSrc);
                 });
@@ -652,7 +652,7 @@ namespace Test {
 
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
-                    auto subDst = flare::subview(B, 1, 1, 1, 1, i, flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, 1, 1, 1, i, flare::ALL(),
                                                  flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, 20.0);
                 });
@@ -668,18 +668,18 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_rangepolicy_rank_4(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
-        auto subA = flare::subview(A, 1, 1, 1, flare::ALL(), flare::ALL(),
+        auto subA = flare::subtensor(A, 1, 1, 1, flare::ALL(), flare::ALL(),
                                    flare::ALL(), flare::ALL(), flare::ALL());
         flare::deep_copy(subA, 10.0);
 
@@ -687,10 +687,10 @@ namespace Test {
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
                     auto subSrc =
-                            flare::subview(A, 1, 1, 1, i, flare::ALL(), flare::ALL(),
+                            flare::subtensor(A, 1, 1, 1, i, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL());
                     auto subDst =
-                            flare::subview(B, 1, 1, 1, i, flare::ALL(), flare::ALL(),
+                            flare::subtensor(B, 1, 1, 1, i, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, subSrc);
                 });
@@ -714,7 +714,7 @@ namespace Test {
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
                     auto subDst =
-                            flare::subview(B, 1, 1, 1, i, flare::ALL(), flare::ALL(),
+                            flare::subtensor(B, 1, 1, 1, i, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, 20.0);
                 });
@@ -730,19 +730,19 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_rangepolicy_rank_5(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
         auto subA =
-                flare::subview(A, 1, 1, flare::ALL(), flare::ALL(), flare::ALL(),
+                flare::subtensor(A, 1, 1, flare::ALL(), flare::ALL(), flare::ALL(),
                                flare::ALL(), flare::ALL(), flare::ALL());
         flare::deep_copy(subA, 10.0);
 
@@ -750,10 +750,10 @@ namespace Test {
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
                     auto subSrc =
-                            flare::subview(A, 1, 1, i, flare::ALL(), flare::ALL(),
+                            flare::subtensor(A, 1, 1, i, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL(), flare::ALL());
                     auto subDst =
-                            flare::subview(B, 1, 1, i, flare::ALL(), flare::ALL(),
+                            flare::subtensor(B, 1, 1, i, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, subSrc);
                 });
@@ -777,7 +777,7 @@ namespace Test {
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
                     auto subDst =
-                            flare::subview(B, 1, 1, i, flare::ALL(), flare::ALL(),
+                            flare::subtensor(B, 1, 1, i, flare::ALL(), flare::ALL(),
                                            flare::ALL(), flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, 20.0);
                 });
@@ -793,18 +793,18 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_rangepolicy_rank_6(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
-        auto subA = flare::subview(A, 1, flare::ALL(), flare::ALL(), flare::ALL(),
+        auto subA = flare::subtensor(A, 1, flare::ALL(), flare::ALL(), flare::ALL(),
                                    flare::ALL(), flare::ALL(), flare::ALL(),
                                    flare::ALL());
         flare::deep_copy(subA, 10.0);
@@ -812,10 +812,10 @@ namespace Test {
         // Deep Copy
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
-                    auto subSrc = flare::subview(A, 1, i, flare::ALL(), flare::ALL(),
+                    auto subSrc = flare::subtensor(A, 1, i, flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL());
-                    auto subDst = flare::subview(B, 1, i, flare::ALL(), flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, i, flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, subSrc);
@@ -839,7 +839,7 @@ namespace Test {
 
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
-                    auto subDst = flare::subview(B, 1, i, flare::ALL(), flare::ALL(),
+                    auto subDst = flare::subtensor(B, 1, i, flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL(),
                                                  flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, 20.0);
@@ -856,15 +856,15 @@ namespace Test {
     }
 
 //-------------------------------------------------------------------------------------------------------------
-    template<typename ExecSpace, typename ViewType>
+    template<typename ExecSpace, typename TensorType>
     void impl_test_local_deepcopy_rangepolicy_rank_7(const int N) {
         // Allocate matrices on device.
-        ViewType A("A", N, N, N, N, N, N, N, N);
-        ViewType B("B", N, N, N, N, N, N, N, N);
+        TensorType A("A", N, N, N, N, N, N, N, N);
+        TensorType B("B", N, N, N, N, N, N, N, N);
 
-        // Create host mirrors of device views.
-        typename ViewType::HostMirror h_A = flare::create_mirror_view(A);
-        typename ViewType::HostMirror h_B = flare::create_mirror_view(B);
+        // Create host mirrors of device tensors.
+        typename TensorType::HostMirror h_A = flare::create_mirror_tensor(A);
+        typename TensorType::HostMirror h_B = flare::create_mirror_tensor(B);
 
         // Initialize A matrix.
         flare::deep_copy(A, 10.0);
@@ -872,10 +872,10 @@ namespace Test {
         // Deep Copy
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
-                    auto subSrc = flare::subview(
+                    auto subSrc = flare::subtensor(
                             A, i, flare::ALL(), flare::ALL(), flare::ALL(), flare::ALL(),
                             flare::ALL(), flare::ALL(), flare::ALL());
-                    auto subDst = flare::subview(
+                    auto subDst = flare::subtensor(
                             B, i, flare::ALL(), flare::ALL(), flare::ALL(), flare::ALL(),
                             flare::ALL(), flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, subSrc);
@@ -899,7 +899,7 @@ namespace Test {
 
         flare::parallel_for(
                 flare::RangePolicy<ExecSpace>(0, N), FLARE_LAMBDA(const int &i) {
-                    auto subDst = flare::subview(
+                    auto subDst = flare::subtensor(
                             B, i, flare::ALL(), flare::ALL(), flare::ALL(), flare::ALL(),
                             flare::ALL(), flare::ALL(), flare::ALL());
                     flare::experimental::local_deep_copy(subDst, 20.0);
@@ -924,30 +924,30 @@ namespace Test {
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
         if (std::is_same_v<ExecSpace, flare::Cuda>)
           GTEST_SKIP()
-              << "FIXME_NVHPC : Compiler bug affecting subviews of high rank Views";
+              << "FIXME_NVHPC : Compiler bug affecting subtensors of high rank Tensors";
 #endif
-        using ViewType = flare::View<double ********, flare::LayoutLeft, ExecSpace>;
+        using TensorType = flare::Tensor<double ********, flare::LayoutLeft, ExecSpace>;
 
         {  // Rank-1
-            impl_test_local_deepcopy_teampolicy_rank_1<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_1<ExecSpace, TensorType>(8);
         }
         {  // Rank-2
-            impl_test_local_deepcopy_teampolicy_rank_2<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_2<ExecSpace, TensorType>(8);
         }
         {  // Rank-3
-            impl_test_local_deepcopy_teampolicy_rank_3<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_3<ExecSpace, TensorType>(8);
         }
         {  // Rank-4
-            impl_test_local_deepcopy_teampolicy_rank_4<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_4<ExecSpace, TensorType>(8);
         }
         {  // Rank-5
-            impl_test_local_deepcopy_teampolicy_rank_5<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_5<ExecSpace, TensorType>(8);
         }
         {  // Rank-6
-            impl_test_local_deepcopy_teampolicy_rank_6<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_6<ExecSpace, TensorType>(8);
         }
         {  // Rank-7
-            impl_test_local_deepcopy_teampolicy_rank_7<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_7<ExecSpace, TensorType>(8);
         }
     }
 //-------------------------------------------------------------------------------------------------------------
@@ -956,33 +956,33 @@ namespace Test {
 #if defined(FLARE_ON_CUDA_DEVICE) && \
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
         if (std::is_same_v<ExecSpace, flare::Cuda>) {
-          INFO("FIXME_NVHPC : Compiler bug affecting subviews of high rank Views");
+          INFO("FIXME_NVHPC : Compiler bug affecting subtensors of high rank Tensors");
           return;
           }
 
 #endif
-        using ViewType = flare::View<double ********, flare::LayoutLeft, ExecSpace>;
+        using TensorType = flare::Tensor<double ********, flare::LayoutLeft, ExecSpace>;
 
         {  // Rank-1
-            impl_test_local_deepcopy_rangepolicy_rank_1<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_1<ExecSpace, TensorType>(8);
         }
         {  // Rank-2
-            impl_test_local_deepcopy_rangepolicy_rank_2<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_2<ExecSpace, TensorType>(8);
         }
         {  // Rank-3
-            impl_test_local_deepcopy_rangepolicy_rank_3<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_3<ExecSpace, TensorType>(8);
         }
         {  // Rank-4
-            impl_test_local_deepcopy_rangepolicy_rank_4<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_4<ExecSpace, TensorType>(8);
         }
         {  // Rank-5
-            impl_test_local_deepcopy_rangepolicy_rank_5<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_5<ExecSpace, TensorType>(8);
         }
         {  // Rank-6
-            impl_test_local_deepcopy_rangepolicy_rank_6<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_6<ExecSpace, TensorType>(8);
         }
         {  // Rank-7
-            impl_test_local_deepcopy_rangepolicy_rank_7<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_7<ExecSpace, TensorType>(8);
         }
     }
 //-------------------------------------------------------------------------------------------------------------
@@ -992,30 +992,30 @@ namespace Test {
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
         if (std::is_same_v<ExecSpace, flare::Cuda>)
           GTEST_SKIP()
-              << "FIXME_NVHPC : Compiler bug affecting subviews of high rank Views";
+              << "FIXME_NVHPC : Compiler bug affecting subtensors of high rank Tensors";
 #endif
-        using ViewType = flare::View<double ********, flare::LayoutRight, ExecSpace>;
+        using TensorType = flare::Tensor<double ********, flare::LayoutRight, ExecSpace>;
 
         {  // Rank-1
-            impl_test_local_deepcopy_teampolicy_rank_1<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_1<ExecSpace, TensorType>(8);
         }
         {  // Rank-2
-            impl_test_local_deepcopy_teampolicy_rank_2<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_2<ExecSpace, TensorType>(8);
         }
         {  // Rank-3
-            impl_test_local_deepcopy_teampolicy_rank_3<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_3<ExecSpace, TensorType>(8);
         }
         {  // Rank-4
-            impl_test_local_deepcopy_teampolicy_rank_4<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_4<ExecSpace, TensorType>(8);
         }
         {  // Rank-5
-            impl_test_local_deepcopy_teampolicy_rank_5<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_5<ExecSpace, TensorType>(8);
         }
         {  // Rank-6
-            impl_test_local_deepcopy_teampolicy_rank_6<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_6<ExecSpace, TensorType>(8);
         }
         {  // Rank-7
-            impl_test_local_deepcopy_teampolicy_rank_7<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_teampolicy_rank_7<ExecSpace, TensorType>(8);
         }
     }
 //-------------------------------------------------------------------------------------------------------------
@@ -1025,31 +1025,31 @@ namespace Test {
     defined(FLARE_COMPILER_NVHPC)  // FIXME_NVHPC 23.7
         if (std::is_same_v<ExecSpace, flare::Cuda>)
           GTEST_SKIP()
-              << "FIXME_NVHPC : Compiler bug affecting subviews of high rank Views";
+              << "FIXME_NVHPC : Compiler bug affecting subtensors of high rank Tensors";
 #endif
 
-        using ViewType = flare::View<double ********, flare::LayoutRight, ExecSpace>;
+        using TensorType = flare::Tensor<double ********, flare::LayoutRight, ExecSpace>;
 
         {  // Rank-1
-            impl_test_local_deepcopy_rangepolicy_rank_1<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_1<ExecSpace, TensorType>(8);
         }
         {  // Rank-2
-            impl_test_local_deepcopy_rangepolicy_rank_2<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_2<ExecSpace, TensorType>(8);
         }
         {  // Rank-3
-            impl_test_local_deepcopy_rangepolicy_rank_3<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_3<ExecSpace, TensorType>(8);
         }
         {  // Rank-4
-            impl_test_local_deepcopy_rangepolicy_rank_4<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_4<ExecSpace, TensorType>(8);
         }
         {  // Rank-5
-            impl_test_local_deepcopy_rangepolicy_rank_5<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_5<ExecSpace, TensorType>(8);
         }
         {  // Rank-6
-            impl_test_local_deepcopy_rangepolicy_rank_6<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_6<ExecSpace, TensorType>(8);
         }
         {  // Rank-7
-            impl_test_local_deepcopy_rangepolicy_rank_7<ExecSpace, ViewType>(8);
+            impl_test_local_deepcopy_rangepolicy_rank_7<ExecSpace, TensorType>(8);
         }
     }
 
@@ -1057,40 +1057,40 @@ namespace Test {
 
     namespace detail {
         template<typename T, typename SHMEMTYPE>
-        using ShMemView =
-                flare::View<T, flare::LayoutRight, SHMEMTYPE, flare::MemoryUnmanaged>;
+        using ShMemTensor =
+                flare::Tensor<T, flare::LayoutRight, SHMEMTYPE, flare::MemoryUnmanaged>;
 
         struct DeepCopyScratchFunctor {
             DeepCopyScratchFunctor(
-                    flare::View<double *, TEST_EXECSPACE::memory_space> check_view_1,
-                    flare::View<double *, TEST_EXECSPACE::memory_space> check_view_2)
-                    : check_view_1_(check_view_1),
-                      check_view_2_(check_view_2),
-                      N_(check_view_1.extent(0)) {}
+                    flare::Tensor<double *, TEST_EXECSPACE::memory_space> check_tensor_1,
+                    flare::Tensor<double *, TEST_EXECSPACE::memory_space> check_tensor_2)
+                    : check_tensor_1_(check_tensor_1),
+                      check_tensor_2_(check_tensor_2),
+                      N_(check_tensor_1.extent(0)) {}
 
             FLARE_INLINE_FUNCTION void operator()(
                     flare::TeamPolicy<TEST_EXECSPACE,
                             flare::Schedule<flare::Dynamic>>::member_type team)
             const {
                 using ShmemType = TEST_EXECSPACE::scratch_memory_space;
-                auto shview =
-                        detail::ShMemView<double **, ShmemType>(team.team_scratch(1), N_, 1);
+                auto shtensor =
+                        detail::ShMemTensor<double **, ShmemType>(team.team_scratch(1), N_, 1);
 
                 flare::parallel_for(
                         flare::TeamThreadRange(team, N_), FLARE_LAMBDA(const size_t &index) {
-                            auto thread_shview = flare::subview(shview, index, flare::ALL());
-                            flare::experimental::local_deep_copy(thread_shview, index);
+                            auto thread_shtensor = flare::subtensor(shtensor, index, flare::ALL());
+                            flare::experimental::local_deep_copy(thread_shtensor, index);
                         });
                 flare::experimental::local_deep_copy(
-                        team, check_view_1_, flare::subview(shview, flare::ALL(), 0));
+                        team, check_tensor_1_, flare::subtensor(shtensor, flare::ALL(), 0));
 
-                flare::experimental::local_deep_copy(team, shview, 6.);
+                flare::experimental::local_deep_copy(team, shtensor, 6.);
                 flare::experimental::local_deep_copy(
-                        team, check_view_2_, flare::subview(shview, flare::ALL(), 0));
+                        team, check_tensor_2_, flare::subtensor(shtensor, flare::ALL(), 0));
             }
 
-            flare::View<double *, TEST_EXECSPACE::memory_space> check_view_1_;
-            flare::View<double *, TEST_EXECSPACE::memory_space> check_view_2_;
+            flare::Tensor<double *, TEST_EXECSPACE::memory_space> check_tensor_1_;
+            flare::Tensor<double *, TEST_EXECSPACE::memory_space> check_tensor_2_;
             int const N_;
         };
     }  // namespace detail
@@ -1100,23 +1100,23 @@ namespace Test {
 
         const int N = 8;
         const int bytes_per_team =
-                detail::ShMemView<double **,
+                detail::ShMemTensor<double **,
                         TEST_EXECSPACE::scratch_memory_space>::shmem_size(N, 1);
 
         TestDeviceTeamPolicy policy(1, flare::AUTO);
         auto team_exec = policy.set_scratch_size(1, flare::PerTeam(bytes_per_team));
 
-        flare::View<double *, TEST_EXECSPACE::memory_space> check_view_1("check_1",
+        flare::Tensor<double *, TEST_EXECSPACE::memory_space> check_tensor_1("check_1",
                                                                          N);
-        flare::View<double *, TEST_EXECSPACE::memory_space> check_view_2("check_2",
+        flare::Tensor<double *, TEST_EXECSPACE::memory_space> check_tensor_2("check_2",
                                                                          N);
 
         flare::parallel_for(
-                team_exec, detail::DeepCopyScratchFunctor{check_view_1, check_view_2});
+                team_exec, detail::DeepCopyScratchFunctor{check_tensor_1, check_tensor_2});
         auto host_copy_1 =
-                flare::create_mirror_view_and_copy(flare::HostSpace(), check_view_1);
+                flare::create_mirror_tensor_and_copy(flare::HostSpace(), check_tensor_1);
         auto host_copy_2 =
-                flare::create_mirror_view_and_copy(flare::HostSpace(), check_view_2);
+                flare::create_mirror_tensor_and_copy(flare::HostSpace(), check_tensor_2);
 
         for (unsigned int i = 0; i < N; ++i) {
             REQUIRE_EQ(host_copy_1(i), i);

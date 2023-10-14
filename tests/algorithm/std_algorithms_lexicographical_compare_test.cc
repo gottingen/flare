@@ -22,15 +22,15 @@ namespace LexicographicalCompare {
 
 namespace KE = flare::experimental;
 
-template <class ViewType1, class ViewType2>
-void test_lexicographical_compare(const ViewType1 view_1, ViewType2 view_2) {
-  auto host_copy_1 = create_host_space_copy(view_1);
-  auto host_copy_2 = create_host_space_copy(view_2);
+template <class TensorType1, class TensorType2>
+void test_lexicographical_compare(const TensorType1 tensor_1, TensorType2 tensor_2) {
+  auto host_copy_1 = create_host_space_copy(tensor_1);
+  auto host_copy_2 = create_host_space_copy(tensor_2);
 
-  auto first_1 = KE::begin(view_1);
-  auto last_1  = KE::end(view_1);
-  auto first_2 = KE::begin(view_2);
-  auto last_2  = KE::end(view_2);
+  auto first_1 = KE::begin(tensor_1);
+  auto last_1  = KE::end(tensor_1);
+  auto first_2 = KE::begin(tensor_2);
+  auto last_2  = KE::end(tensor_2);
 
   auto h_first_1 = KE::begin(host_copy_1);
   auto h_last_1  = KE::end(host_copy_1);
@@ -49,17 +49,17 @@ void test_lexicographical_compare(const ViewType1 view_1, ViewType2 view_2) {
               KE::lexicographical_compare("label", exespace(), first_1, last_1,
                                           first_2, last_2));
 
-    // pass views
+    // pass tensors
     REQUIRE_EQ(std_result,
-              KE::lexicographical_compare(exespace(), view_1, view_2));
+              KE::lexicographical_compare(exespace(), tensor_1, tensor_2));
     REQUIRE_EQ(std_result,
-              KE::lexicographical_compare("label", exespace(), view_1, view_2));
+              KE::lexicographical_compare("label", exespace(), tensor_1, tensor_2));
   }
 
   {
     // custom comparator
-    using value_t_1 = typename ViewType1::value_type;
-    using value_t_2 = typename ViewType2::value_type;
+    using value_t_1 = typename TensorType1::value_type;
+    using value_t_2 = typename TensorType2::value_type;
     const auto custom_comparator =
         CustomLessThanComparator<value_t_1, value_t_2>();
     auto std_result = std::lexicographical_compare(
@@ -73,11 +73,11 @@ void test_lexicographical_compare(const ViewType1 view_1, ViewType2 view_2) {
               KE::lexicographical_compare("label", exespace(), first_1, last_1,
                                           first_2, last_2, custom_comparator));
 
-    // pass views
+    // pass tensors
     REQUIRE_EQ(std_result, KE::lexicographical_compare(
-                              exespace(), view_1, view_2, custom_comparator));
+                              exespace(), tensor_1, tensor_2, custom_comparator));
     REQUIRE_EQ(std_result,
-              KE::lexicographical_compare("label", exespace(), view_1, view_2,
+              KE::lexicographical_compare("label", exespace(), tensor_1, tensor_2,
                                           custom_comparator));
   }
 
@@ -91,7 +91,7 @@ void test_lexicographical_compare(const ViewType1 view_1, ViewType2 view_2) {
 
   {
     // pass shorter range
-    if (view_1.extent(0) > 1) {
+    if (tensor_1.extent(0) > 1) {
       auto std_result = std::lexicographical_compare(h_first_1, h_last_1 - 1,
                                                      h_first_2, h_last_2);
       REQUIRE_EQ(std_result,
@@ -102,7 +102,7 @@ void test_lexicographical_compare(const ViewType1 view_1, ViewType2 view_2) {
 
   {
     // first element smaller
-    if (view_1.extent(0) > 1) {
+    if (tensor_1.extent(0) > 1) {
       KE::fill(exespace(), first_1, first_1 + 1, 1);
       KE::fill(exespace(), first_2, first_2 + 1, 2);
 
@@ -113,7 +113,7 @@ void test_lexicographical_compare(const ViewType1 view_1, ViewType2 view_2) {
 
   {
     // first element bigger, last element smaller
-    if (view_1.extent(0) > 2) {
+    if (tensor_1.extent(0) > 2) {
       KE::fill(exespace(), first_1, first_1 + 1, 2);
       KE::fill(exespace(), first_2, first_2 + 1, 1);
 
@@ -129,12 +129,12 @@ void test_lexicographical_compare(const ViewType1 view_1, ViewType2 view_2) {
 template <class Tag, class ValueType>
 void run_all_scenarios() {
   for (const auto& scenario : default_scenarios) {
-    auto view1 = create_view<ValueType>(Tag{}, scenario.second,
+    auto tensor1 = create_tensor<ValueType>(Tag{}, scenario.second,
                                         "lexicographical_compare_1");
-    auto view2 = create_view<ValueType>(Tag{}, scenario.second,
+    auto tensor2 = create_tensor<ValueType>(Tag{}, scenario.second,
                                         "lexicographical_compare_2");
 
-    test_lexicographical_compare(view1, view2);
+    test_lexicographical_compare(tensor1, tensor2);
   }
 }
 

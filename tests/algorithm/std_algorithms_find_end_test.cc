@@ -37,14 +37,14 @@ struct UnifDist<int> {
   int operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -131,38 +131,38 @@ void fill_view(ViewType dest_view, const std::string& name) {
     }
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewType>
-auto create_seq(ViewType data_view, std::size_t seq_extent) {
+template <class TensorType>
+auto create_seq(TensorType data_tensor, std::size_t seq_extent) {
   // we need to specify a sequence that we search for
-  // within the original view/range.
+  // within the original tensor/range.
   // to do this, rather than doing something purely random,
-  // we use the view with the data, and select a subsequence.
+  // we use the tensor with the data, and select a subsequence.
 
-  auto data_view_h            = create_host_space_copy(data_view);
-  const auto data_view_extent = data_view.extent(0);
+  auto data_tensor_h            = create_host_space_copy(data_tensor);
+  const auto data_tensor_extent = data_tensor.extent(0);
 
-  using value_type = typename ViewType::value_type;
-  using exe_space  = typename ViewType::execution_space;
-  using seq_view_t = flare::View<value_type*, exe_space>;
-  seq_view_t seq_view("seq_view", seq_extent);
-  auto seq_view_h = create_mirror_view(flare::HostSpace(), seq_view);
+  using value_type = typename TensorType::value_type;
+  using exe_space  = typename TensorType::execution_space;
+  using seq_tensor_t = flare::Tensor<value_type*, exe_space>;
+  seq_tensor_t seq_tensor("seq_tensor", seq_extent);
+  auto seq_tensor_h = create_mirror_tensor(flare::HostSpace(), seq_tensor);
 
-  // when the target sequence is of same size as view, just fill
-  // sequeunce with all values of the view
-  if (seq_extent == data_view_extent) {
+  // when the target sequence is of same size as tensor, just fill
+  // sequeunce with all values of the tensor
+  if (seq_extent == data_tensor_extent) {
     for (std::size_t i = 0; i < seq_extent; ++i) {
-      seq_view_h(i) = data_view_h(i);
+      seq_tensor_h(i) = data_tensor_h(i);
     }
   } else {
     // if target sequence to fill is smaller, then we need to pick
     // a starting point to copy data from to make the the sequence.
-    // we pick randomly between 0 and data_view_extent - seq_extent.
-    // and fill the sequeunce data with the values copied from data view.
+    // we pick randomly between 0 and data_tensor_extent - seq_extent.
+    // and fill the sequeunce data with the values copied from data tensor.
 
     using dist_type = std::uniform_int_distribution<int>;
     std::random_device r;
@@ -170,17 +170,17 @@ auto create_seq(ViewType data_view, std::size_t seq_extent) {
     // https://stackoverflow.com/questions/34490599/c11-how-to-set-seed-using-random
     std::seed_seq seed{r(), r(), r(), r(), r(), r()};
     std::mt19937 gen(seed);
-    dist_type dist(0, data_view_extent - seq_extent);
+    dist_type dist(0, data_tensor_extent - seq_extent);
     const auto start = dist(gen);
     // std::cout << "start= " << start << "\n";
     for (std::size_t i = 0; i < seq_extent; ++i) {
-      seq_view_h(i) = data_view_h(start + i);
-      // std::cout << "i= " << i << " " << seq_view_h(i) << "\n";
+      seq_tensor_h(i) = data_tensor_h(start + i);
+      // std::cout << "i= " << i << " " << seq_tensor_h(i) << "\n";
     }
   }
 
-  flare::deep_copy(seq_view, seq_view_h);
-  return seq_view;
+  flare::deep_copy(seq_tensor, seq_tensor_h);
+  return seq_tensor;
 }
 
 // search is only avai from c++17, so I have to put it here
@@ -243,7 +243,7 @@ template <class Tag, class ValueType>
 void print_scenario_details(const std::string& name, std::size_t seq_ext) {
   std::cout << "find_end: default predicate: " << name << ", "
             << "find_end_seq_ext = " << seq_ext << ", "
-            << view_tag_to_string(Tag{}) << " "
+            << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << std::endl;
 }
 
@@ -253,7 +253,7 @@ void print_scenario_details(const std::string& name, std::size_t seq_ext,
   (void)pred;
   std::cout << "find_end: custom  predicate: " << name << ", "
             << "find_end_seq_ext = " << seq_ext << ", "
-            << view_tag_to_string(Tag{}) << " "
+            << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << std::endl;
 }
 
@@ -261,49 +261,49 @@ template <class Tag, class ValueType, class InfoType, class... Args>
 void run_single_scenario(const InfoType& scenario_info, std::size_t seq_ext,
                          Args... args) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // print_scenario_details<Tag, ValueType>(name, seq_ext, args...);
 
-  auto view = create_view<ValueType>(Tag{}, view_ext, "find_end_test_view");
-  fill_view(view, name);
-  auto s_view = create_seq(view, seq_ext);
+  auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "find_end_test_tensor");
+  fill_tensor(tensor, name);
+  auto s_tensor = create_seq(tensor, seq_ext);
 
   // run std
-  auto view_h   = create_host_space_copy(view);
-  auto s_view_h = create_host_space_copy(s_view);
+  auto tensor_h   = create_host_space_copy(tensor);
+  auto s_tensor_h = create_host_space_copy(s_tensor);
   auto stdrit =
-      my_std_find_end(KE::cbegin(view_h), KE::cend(view_h),
-                      KE::cbegin(s_view_h), KE::cend(s_view_h), args...);
+      my_std_find_end(KE::cbegin(tensor_h), KE::cend(tensor_h),
+                      KE::cbegin(s_tensor_h), KE::cend(s_tensor_h), args...);
 
   {
-    auto myrit = KE::find_end(exespace(), KE::cbegin(view), KE::cend(view),
-                              KE::cbegin(s_view), KE::cend(s_view), args...);
-    const auto mydiff  = myrit - KE::cbegin(view);
-    const auto stddiff = stdrit - KE::cbegin(view_h);
+    auto myrit = KE::find_end(exespace(), KE::cbegin(tensor), KE::cend(tensor),
+                              KE::cbegin(s_tensor), KE::cend(s_tensor), args...);
+    const auto mydiff  = myrit - KE::cbegin(tensor);
+    const auto stddiff = stdrit - KE::cbegin(tensor_h);
     // std::cout << "result : " << mydiff << " " << stddiff << std::endl;
     REQUIRE_EQ(mydiff, stddiff);
   }
 
   {
     auto myrit =
-        KE::find_end("label", exespace(), KE::cbegin(view), KE::cend(view),
-                     KE::cbegin(s_view), KE::cend(s_view), args...);
-    const auto mydiff  = myrit - KE::cbegin(view);
-    const auto stddiff = stdrit - KE::cbegin(view_h);
+        KE::find_end("label", exespace(), KE::cbegin(tensor), KE::cend(tensor),
+                     KE::cbegin(s_tensor), KE::cend(s_tensor), args...);
+    const auto mydiff  = myrit - KE::cbegin(tensor);
+    const auto stddiff = stdrit - KE::cbegin(tensor_h);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
   {
-    auto myrit         = KE::find_end(exespace(), view, s_view, args...);
-    const auto mydiff  = myrit - KE::begin(view);
-    const auto stddiff = stdrit - KE::cbegin(view_h);
+    auto myrit         = KE::find_end(exespace(), tensor, s_tensor, args...);
+    const auto mydiff  = myrit - KE::begin(tensor);
+    const auto stddiff = stdrit - KE::cbegin(tensor_h);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
   {
-    auto myrit = KE::find_end("label", exespace(), view, s_view, args...);
-    const auto mydiff  = myrit - KE::begin(view);
-    const auto stddiff = stdrit - KE::cbegin(view_h);
+    auto myrit = KE::find_end("label", exespace(), tensor, s_tensor, args...);
+    const auto mydiff  = myrit - KE::begin(tensor);
+    const auto stddiff = stdrit - KE::cbegin(tensor_h);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
@@ -335,7 +335,7 @@ void run_all_scenarios() {
   // for a set of sequences of various extents
   for (const auto& it : scenarios) {
     for (const auto& it2 : seq_extents) {
-      // only run if view is larger or equal than sequence
+      // only run if tensor is larger or equal than sequence
       if (it.second >= it2) {
         run_single_scenario<Tag, ValueType>(it, it2);
 

@@ -23,20 +23,20 @@
 #include <flare/kernel/blas/multi.h>
 
 namespace Test {
-    template<class ViewTypeA, class ViewTypeB, class ViewTypeC, class Device>
+    template<class TensorTypeA, class TensorTypeB, class TensorTypeC, class Device>
     void impl_test_mult(int N) {
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
-        typedef typename ViewTypeC::value_type ScalarC;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
+        typedef typename TensorTypeC::value_type ScalarC;
 
         ScalarA a = 3;
         ScalarB b = 5;
         double eps = std::is_same<ScalarC, float>::value ? 1e-4 : 1e-7;
 
-        view_stride_adapter<ViewTypeA> x("X", N);
-        view_stride_adapter<ViewTypeB> y("Y", N);
-        view_stride_adapter<ViewTypeC> z("Z", N);
-        view_stride_adapter<ViewTypeC> org_z("Org_Z", N);
+        tensor_stride_adapter<TensorTypeA> x("X", N);
+        tensor_stride_adapter<TensorTypeB> y("Y", N);
+        tensor_stride_adapter<TensorTypeC> z("Z", N);
+        tensor_stride_adapter<TensorTypeC> org_z("Org_Z", N);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
@@ -44,17 +44,17 @@ namespace Test {
         {
             ScalarA randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(x.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(x.d_tensor, rand_pool, randStart, randEnd);
         }
         {
             ScalarB randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(y.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(y.d_tensor, rand_pool, randStart, randEnd);
         }
         {
             ScalarC randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(z.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(z.d_tensor, rand_pool, randStart, randEnd);
         }
 
         flare::deep_copy(org_z.h_base, z.d_base);
@@ -62,44 +62,44 @@ namespace Test {
         flare::deep_copy(x.h_base, x.d_base);
         flare::deep_copy(y.h_base, y.d_base);
 
-        flare::blas::mult(b, z.d_view, a, x.d_view, y.d_view);
+        flare::blas::mult(b, z.d_tensor, a, x.d_tensor, y.d_tensor);
         flare::deep_copy(z.h_base, z.d_base);
         for (int i = 0; i < N; i++) {
-            EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_view(i) * y.h_view(i) +
-                                                b * org_z.h_view(i)),
-                           z.h_view(i), eps);
+            EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_tensor(i) * y.h_tensor(i) +
+                                                b * org_z.h_tensor(i)),
+                           z.h_tensor(i), eps);
         }
 
         flare::deep_copy(z.d_base, org_z.h_base);
-        flare::blas::mult(b, z.d_view, a, x.d_view, y.d_view_const);
+        flare::blas::mult(b, z.d_tensor, a, x.d_tensor, y.d_tensor_const);
         flare::deep_copy(z.h_base, z.d_base);
         for (int i = 0; i < N; i++) {
-            EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_view(i) * y.h_view(i) +
-                                                b * org_z.h_view(i)),
-                           z.h_view(i), eps);
+            EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_tensor(i) * y.h_tensor(i) +
+                                                b * org_z.h_tensor(i)),
+                           z.h_tensor(i), eps);
         }
 
         flare::deep_copy(z.d_base, org_z.h_base);
-        flare::blas::mult(b, z.d_view, a, x.d_view_const, y.d_view_const);
+        flare::blas::mult(b, z.d_tensor, a, x.d_tensor_const, y.d_tensor_const);
         flare::deep_copy(z.h_base, z.d_base);
         for (int i = 0; i < N; i++) {
-            EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_view(i) * y.h_view(i) +
-                                                b * org_z.h_view(i)),
-                           z.h_view(i), eps);
+            EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_tensor(i) * y.h_tensor(i) +
+                                                b * org_z.h_tensor(i)),
+                           z.h_tensor(i), eps);
         }
     }
 
-    template<class ViewTypeA, class ViewTypeB, class ViewTypeC, class Device>
+    template<class TensorTypeA, class TensorTypeB, class TensorTypeC, class Device>
     void impl_test_mult_mv(int N, int K) {
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
-        typedef typename ViewTypeC::value_type ScalarC;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
+        typedef typename TensorTypeC::value_type ScalarC;
 
         // x is rank-1, all others are rank-2
-        view_stride_adapter<ViewTypeA> x("X", N);
-        view_stride_adapter<ViewTypeB> y("Y", N, K);
-        view_stride_adapter<ViewTypeC> z("Z", N, K);
-        view_stride_adapter<ViewTypeC> org_z("Org_Z", N, K);
+        tensor_stride_adapter<TensorTypeA> x("X", N);
+        tensor_stride_adapter<TensorTypeB> y("Y", N, K);
+        tensor_stride_adapter<TensorTypeC> z("Z", N, K);
+        tensor_stride_adapter<TensorTypeC> org_z("Org_Z", N, K);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
@@ -107,17 +107,17 @@ namespace Test {
         {
             ScalarA randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(x.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(x.d_tensor, rand_pool, randStart, randEnd);
         }
         {
             ScalarB randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(y.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(y.d_tensor, rand_pool, randStart, randEnd);
         }
         {
             ScalarC randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(z.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(z.d_tensor, rand_pool, randStart, randEnd);
         }
 
         flare::deep_copy(org_z.h_base, z.d_base);
@@ -129,24 +129,24 @@ namespace Test {
 
         double eps = std::is_same<ScalarA, float>::value ? 1e-4 : 1e-7;
 
-        flare::blas::mult(b, z.d_view, a, x.d_view, y.d_view);
+        flare::blas::mult(b, z.d_tensor, a, x.d_tensor, y.d_tensor);
         flare::deep_copy(z.h_base, z.d_base);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < K; j++) {
-                EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_view(i) * y.h_view(i, j) +
-                                                    b * org_z.h_view(i, j)),
-                               z.h_view(i, j), eps);
+                EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_tensor(i) * y.h_tensor(i, j) +
+                                                    b * org_z.h_tensor(i, j)),
+                               z.h_tensor(i, j), eps);
             }
         }
 
         flare::deep_copy(z.d_base, org_z.h_base);
-        flare::blas::mult(b, z.d_view, a, x.d_view, y.d_view_const);
+        flare::blas::mult(b, z.d_tensor, a, x.d_tensor, y.d_tensor_const);
         flare::deep_copy(z.h_base, z.d_base);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < K; j++) {
-                EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_view(i) * y.h_view(i, j) +
-                                                    b * org_z.h_view(i, j)),
-                               z.h_view(i, j), eps);
+                EXPECT_NEAR_KK(static_cast<ScalarC>(a * x.h_tensor(i) * y.h_tensor(i, j) +
+                                                    b * org_z.h_tensor(i, j)),
+                               z.h_tensor(i, j), eps);
             }
         }
     }
@@ -155,51 +155,51 @@ namespace Test {
 template<class ScalarA, class ScalarB, class ScalarC, class Device>
 int test_mult() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA *, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB *, flare::LayoutLeft, Device> view_type_b_ll;
-    typedef flare::View<ScalarC *, flare::LayoutLeft, Device> view_type_c_ll;
-    Test::impl_test_mult<view_type_a_ll, view_type_b_ll, view_type_c_ll, Device>(
+    typedef flare::Tensor<ScalarA *, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB *, flare::LayoutLeft, Device> tensor_type_b_ll;
+    typedef flare::Tensor<ScalarC *, flare::LayoutLeft, Device> tensor_type_c_ll;
+    Test::impl_test_mult<tensor_type_a_ll, tensor_type_b_ll, tensor_type_c_ll, Device>(
             0);
-    Test::impl_test_mult<view_type_a_ll, view_type_b_ll, view_type_c_ll, Device>(
+    Test::impl_test_mult<tensor_type_a_ll, tensor_type_b_ll, tensor_type_c_ll, Device>(
             13);
-    Test::impl_test_mult<view_type_a_ll, view_type_b_ll, view_type_c_ll, Device>(
+    Test::impl_test_mult<tensor_type_a_ll, tensor_type_b_ll, tensor_type_c_ll, Device>(
             1024);
-    // Test::impl_test_mult<view_type_a_ll, view_type_b_ll, view_type_c_ll,
+    // Test::impl_test_mult<tensor_type_a_ll, tensor_type_b_ll, tensor_type_c_ll,
     // Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA *, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB *, flare::LayoutRight, Device> view_type_b_lr;
-    typedef flare::View<ScalarC *, flare::LayoutRight, Device> view_type_c_lr;
-    Test::impl_test_mult<view_type_a_lr, view_type_b_lr, view_type_c_lr, Device>(
+    typedef flare::Tensor<ScalarA *, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB *, flare::LayoutRight, Device> tensor_type_b_lr;
+    typedef flare::Tensor<ScalarC *, flare::LayoutRight, Device> tensor_type_c_lr;
+    Test::impl_test_mult<tensor_type_a_lr, tensor_type_b_lr, tensor_type_c_lr, Device>(
             0);
-    Test::impl_test_mult<view_type_a_lr, view_type_b_lr, view_type_c_lr, Device>(
+    Test::impl_test_mult<tensor_type_a_lr, tensor_type_b_lr, tensor_type_c_lr, Device>(
             13);
-    Test::impl_test_mult<view_type_a_lr, view_type_b_lr, view_type_c_lr, Device>(
+    Test::impl_test_mult<tensor_type_a_lr, tensor_type_b_lr, tensor_type_c_lr, Device>(
             1024);
-    // Test::impl_test_mult<view_type_a_lr, view_type_b_lr, view_type_c_lr,
+    // Test::impl_test_mult<tensor_type_a_lr, tensor_type_b_lr, tensor_type_c_lr,
     // Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA *, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB *, flare::LayoutStride, Device> view_type_b_ls;
-    typedef flare::View<ScalarC *, flare::LayoutStride, Device> view_type_c_ls;
-    Test::impl_test_mult<view_type_a_ls, view_type_b_ls, view_type_c_ls, Device>(
+    typedef flare::Tensor<ScalarA *, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB *, flare::LayoutStride, Device> tensor_type_b_ls;
+    typedef flare::Tensor<ScalarC *, flare::LayoutStride, Device> tensor_type_c_ls;
+    Test::impl_test_mult<tensor_type_a_ls, tensor_type_b_ls, tensor_type_c_ls, Device>(
             0);
-    Test::impl_test_mult<view_type_a_ls, view_type_b_ls, view_type_c_ls, Device>(
+    Test::impl_test_mult<tensor_type_a_ls, tensor_type_b_ls, tensor_type_c_ls, Device>(
             13);
-    Test::impl_test_mult<view_type_a_ls, view_type_b_ls, view_type_c_ls, Device>(
+    Test::impl_test_mult<tensor_type_a_ls, tensor_type_b_ls, tensor_type_c_ls, Device>(
             1024);
-    // Test::impl_test_mult<view_type_a_ls, view_type_b_ls, view_type_c_ls,
+    // Test::impl_test_mult<tensor_type_a_ls, tensor_type_b_ls, tensor_type_c_ls,
     // Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_mult<view_type_a_ls, view_type_b_ll, view_type_c_lr, Device>(
+    Test::impl_test_mult<tensor_type_a_ls, tensor_type_b_ll, tensor_type_c_lr, Device>(
             1024);
-    Test::impl_test_mult<view_type_a_ll, view_type_b_ls, view_type_c_lr, Device>(
+    Test::impl_test_mult<tensor_type_a_ll, tensor_type_b_ls, tensor_type_c_lr, Device>(
             1024);
 #endif
 
@@ -209,51 +209,51 @@ int test_mult() {
 template<class ScalarA, class ScalarB, class ScalarC, class Device>
 int test_mult_mv() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA *, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB **, flare::LayoutLeft, Device> view_type_b_ll;
-    typedef flare::View<ScalarC **, flare::LayoutLeft, Device> view_type_c_ll;
-    Test::impl_test_mult_mv<view_type_a_ll, view_type_b_ll, view_type_c_ll,
+    typedef flare::Tensor<ScalarA *, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB **, flare::LayoutLeft, Device> tensor_type_b_ll;
+    typedef flare::Tensor<ScalarC **, flare::LayoutLeft, Device> tensor_type_c_ll;
+    Test::impl_test_mult_mv<tensor_type_a_ll, tensor_type_b_ll, tensor_type_c_ll,
             Device>(0, 5);
-    Test::impl_test_mult_mv<view_type_a_ll, view_type_b_ll, view_type_c_ll,
+    Test::impl_test_mult_mv<tensor_type_a_ll, tensor_type_b_ll, tensor_type_c_ll,
             Device>(13, 5);
-    Test::impl_test_mult_mv<view_type_a_ll, view_type_b_ll, view_type_c_ll,
+    Test::impl_test_mult_mv<tensor_type_a_ll, tensor_type_b_ll, tensor_type_c_ll,
             Device>(1024, 5);
-    // Test::impl_test_mult_mv<view_type_a_ll, view_type_b_ll, view_type_c_ll,
+    // Test::impl_test_mult_mv<tensor_type_a_ll, tensor_type_b_ll, tensor_type_c_ll,
     // Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA *, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB **, flare::LayoutRight, Device> view_type_b_lr;
-    typedef flare::View<ScalarC **, flare::LayoutRight, Device> view_type_c_lr;
-    Test::impl_test_mult_mv<view_type_a_lr, view_type_b_lr, view_type_c_lr,
+    typedef flare::Tensor<ScalarA *, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB **, flare::LayoutRight, Device> tensor_type_b_lr;
+    typedef flare::Tensor<ScalarC **, flare::LayoutRight, Device> tensor_type_c_lr;
+    Test::impl_test_mult_mv<tensor_type_a_lr, tensor_type_b_lr, tensor_type_c_lr,
             Device>(0, 5);
-    Test::impl_test_mult_mv<view_type_a_lr, view_type_b_lr, view_type_c_lr,
+    Test::impl_test_mult_mv<tensor_type_a_lr, tensor_type_b_lr, tensor_type_c_lr,
             Device>(13, 5);
-    Test::impl_test_mult_mv<view_type_a_lr, view_type_b_lr, view_type_c_lr,
+    Test::impl_test_mult_mv<tensor_type_a_lr, tensor_type_b_lr, tensor_type_c_lr,
             Device>(1024, 5);
-    // Test::impl_test_mult_mv<view_type_a_lr, view_type_b_lr, view_type_c_lr,
+    // Test::impl_test_mult_mv<tensor_type_a_lr, tensor_type_b_lr, tensor_type_c_lr,
     // Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA *, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB **, flare::LayoutStride, Device> view_type_b_ls;
-    typedef flare::View<ScalarC **, flare::LayoutStride, Device> view_type_c_ls;
-    Test::impl_test_mult_mv<view_type_a_ls, view_type_b_ls, view_type_c_ls,
+    typedef flare::Tensor<ScalarA *, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB **, flare::LayoutStride, Device> tensor_type_b_ls;
+    typedef flare::Tensor<ScalarC **, flare::LayoutStride, Device> tensor_type_c_ls;
+    Test::impl_test_mult_mv<tensor_type_a_ls, tensor_type_b_ls, tensor_type_c_ls,
             Device>(0, 5);
-    Test::impl_test_mult_mv<view_type_a_ls, view_type_b_ls, view_type_c_ls,
+    Test::impl_test_mult_mv<tensor_type_a_ls, tensor_type_b_ls, tensor_type_c_ls,
             Device>(13, 5);
-    Test::impl_test_mult_mv<view_type_a_ls, view_type_b_ls, view_type_c_ls,
+    Test::impl_test_mult_mv<tensor_type_a_ls, tensor_type_b_ls, tensor_type_c_ls,
             Device>(1024, 5);
-    // Test::impl_test_mult_mv<view_type_a_ls, view_type_b_ls, view_type_c_ls,
+    // Test::impl_test_mult_mv<tensor_type_a_ls, tensor_type_b_ls, tensor_type_c_ls,
     // Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_mult_mv<view_type_a_ls, view_type_b_ll, view_type_c_lr,
+    Test::impl_test_mult_mv<tensor_type_a_ls, tensor_type_b_ll, tensor_type_c_lr,
             Device>(1024, 5);
-    Test::impl_test_mult_mv<view_type_a_ll, view_type_b_ls, view_type_c_lr,
+    Test::impl_test_mult_mv<tensor_type_a_ll, tensor_type_b_ls, tensor_type_c_lr,
             Device>(1024, 5);
 #endif
 

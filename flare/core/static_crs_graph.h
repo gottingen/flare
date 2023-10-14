@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include <flare/core/tensor/view.h>
+#include <flare/core/tensor/tensor.h>
 #include <flare/core/parallel/parallel.h>
 #include <flare/core/parallel/parallel_reduce.h>
 
@@ -103,25 +103,25 @@ namespace flare {
         };
     }  // namespace detail
 
-    /// \class GraphRowViewConst
-    /// \brief View of a row of a sparse graph.
+    /// \class GraphRowTensorConst
+    /// \brief Tensor of a row of a sparse graph.
     /// \tparam GraphType Sparse graph type, such as (but not limited to)
     /// StaticCrsGraph.
     ///
-    /// This class provides a generic view of a row of a sparse graph.
-    /// We intended this class to view a row of a StaticCrsGraph, but
+    /// This class provides a generic tensor of a row of a sparse graph.
+    /// We intended this class to tensor a row of a StaticCrsGraph, but
     /// GraphType need not necessarily be CrsMatrix.
     ///
-    /// The row view is suited for computational kernels like sparse
+    /// The row tensor is suited for computational kernels like sparse
     /// matrix-vector multiply, as well as for modifying entries in the
-    /// sparse matrix.  The view is always const as it does not allow graph
+    /// sparse matrix.  The tensor is always const as it does not allow graph
     /// modification.
     ///
     /// Here is an example loop over the entries in the row:
     /// \code
-    /// using ordinal_type = typename GraphRowViewConst<MatrixType>::ordinal_type;
+    /// using ordinal_type = typename GraphRowTensorConst<MatrixType>::ordinal_type;
     ///
-    /// GraphRowView<GraphType> G_i = ...;
+    /// GraphRowTensor<GraphType> G_i = ...;
     /// const ordinal_type numEntries = G_i.length;
     /// for (ordinal_type k = 0; k < numEntries; ++k) {
     ///   ordinal_type j = G_i.colidx (k);
@@ -130,8 +130,8 @@ namespace flare {
     /// \endcode
     ///
     /// GraphType must provide the \c data_type
-    /// aliases. In addition, it must make sense to use GraphRowViewConst to
-    /// view a row of GraphType. In particular, column
+    /// aliases. In addition, it must make sense to use GraphRowTensorConst to
+    /// tensor a row of GraphType. In particular, column
     /// indices of a row must be accessible using the <tt>entries</tt>
     /// resp. <tt>colidx</tt> arrays given to the constructor of this
     /// class, with a constant <tt>stride</tt> between successive entries.
@@ -139,7 +139,7 @@ namespace flare {
     /// is used by CrsMatrix), but may be greater than one for other
     /// sparse matrix storage formats (e.g., ELLPACK or jagged diagonal).
     template<class GraphType>
-    struct GraphRowViewConst {
+    struct GraphRowTensorConst {
         //! The type of the column indices in the row.
         using ordinal_type = const typename GraphType::data_type;
 
@@ -164,7 +164,7 @@ namespace flare {
         ///   each of the above arrays.
         /// \param count [in] Number of entries in the row.
         FLARE_INLINE_FUNCTION
-        GraphRowViewConst(ordinal_type *const colidx_in, const ordinal_type &stride,
+        GraphRowTensorConst(ordinal_type *const colidx_in, const ordinal_type &stride,
                           const ordinal_type &count)
                 : colidx_(colidx_in), stride_(stride), length(count) {}
 
@@ -181,7 +181,7 @@ namespace flare {
         ///   For example, the matrix may have dimensions that fit in int,
         ///   but a number of entries that does not fit in int.
         template<class OffsetType>
-        FLARE_INLINE_FUNCTION GraphRowViewConst(
+        FLARE_INLINE_FUNCTION GraphRowTensorConst(
                 const typename GraphType::entries_type &colidx_in,
                 const ordinal_type &stride, const ordinal_type &count,
                 const OffsetType &idx,
@@ -250,11 +250,11 @@ namespace flare {
     /// </ul>
     template<class DataType, class Arg1Type, class Arg2Type = void,
             class Arg3Type    = void,
-            typename SizeType = typename ViewTraits<DataType *, Arg1Type, Arg2Type,
+            typename SizeType = typename TensorTraits<DataType *, Arg1Type, Arg2Type,
                     Arg3Type>::size_type>
     class StaticCrsGraph {
     private:
-        using traits = ViewTraits<DataType *, Arg1Type, Arg2Type, Arg3Type>;
+        using traits = TensorTraits<DataType *, Arg1Type, Arg2Type, Arg3Type>;
 
     public:
         using data_type = DataType;
@@ -271,17 +271,17 @@ namespace flare {
                 memory_traits, size_type>;
 
         using row_map_type =
-                View<const size_type *, array_layout, device_type, memory_traits>;
+                Tensor<const size_type *, array_layout, device_type, memory_traits>;
         using entries_type =
-                View<data_type *, array_layout, device_type, memory_traits>;
+                Tensor<data_type *, array_layout, device_type, memory_traits>;
         using row_block_type =
-                View<const size_type *, array_layout, device_type, memory_traits>;
+                Tensor<const size_type *, array_layout, device_type, memory_traits>;
 
         entries_type entries;
         row_map_type row_map;
         row_block_type row_block_offsets;
 
-        //! Construct an empty view.
+        //! Construct an empty tensor.
         FLARE_INLINE_FUNCTION
         StaticCrsGraph() : entries(), row_map(), row_block_offsets() {}
 
@@ -297,8 +297,8 @@ namespace flare {
                                              const RowMapType &row_map_)
                 : entries(entries_), row_map(row_map_), row_block_offsets() {}
 
-        /** \brief  Assign to a view of the rhs array.
-         *          If the old view is the last view
+        /** \brief  Assign to a tensor of the rhs array.
+         *          If the old tensor is the last tensor
          *          then allocated memory is deallocated.
          */
         FLARE_INLINE_FUNCTION
@@ -309,8 +309,8 @@ namespace flare {
             return *this;
         }
 
-        /**  \brief  Destroy this view of the array.
-         *           If the last view then allocated memory is deallocated.
+        /**  \brief  Destroy this tensor of the array.
+         *           If the last tensor then allocated memory is deallocated.
          */
         FLARE_DEFAULTED_FUNCTION
         ~StaticCrsGraph() = default;
@@ -328,18 +328,18 @@ namespace flare {
             return (row_map.is_allocated() && entries.is_allocated());
         }
 
-        /// \brief Return a const view of row i of the graph.
+        /// \brief Return a const tensor of row i of the graph.
         ///
-        /// If row i does not belong to the graph, return an empty view.
+        /// If row i does not belong to the graph, return an empty tensor.
         ///
-        /// The returned object \c view implements the following interface:
+        /// The returned object \c tensor implements the following interface:
         /// <ul>
-        /// <li> \c view.length is the number of entries in the row </li>
-        /// <li> \c view.colidx(k) returns a const reference to the
+        /// <li> \c tensor.length is the number of entries in the row </li>
+        /// <li> \c tensor.colidx(k) returns a const reference to the
         ///      column index of the k-th entry in the row </li>
         /// </ul>
         /// k is not a column index; it just counts from 0 to
-        /// <tt>view.length - 1</tt>.
+        /// <tt>tensor.length - 1</tt>.
         ///
         /// Users should not rely on the return type of this method.  They
         /// should instead assign to 'auto'.  That allows compile-time
@@ -347,16 +347,16 @@ namespace flare {
         /// ELLPACK or Jagged Diagonal) that we may wish to support in the
         /// future.
         FLARE_INLINE_FUNCTION
-        GraphRowViewConst<StaticCrsGraph> rowConst(const data_type i) const {
+        GraphRowTensorConst<StaticCrsGraph> rowConst(const data_type i) const {
             const size_type start = row_map(i);
             // count is guaranteed to fit in ordinal_type, as long as no row
             // has duplicate entries.
             const data_type count = static_cast<data_type>(row_map(i + 1) - start);
 
             if (count == 0) {
-                return GraphRowViewConst<StaticCrsGraph>(nullptr, 1, 0);
+                return GraphRowTensorConst<StaticCrsGraph>(nullptr, 1, 0);
             } else {
-                return GraphRowViewConst<StaticCrsGraph>(entries, 1, count, start);
+                return GraphRowTensorConst<StaticCrsGraph>(entries, 1, count, start);
             }
         }
 
@@ -365,11 +365,11 @@ namespace flare {
          */
         void create_block_partitioning(size_type num_blocks,
                                        size_type fix_cost_per_row = 4) {
-            View<size_type *, array_layout, device_type> block_offsets(
+            Tensor<size_type *, array_layout, device_type> block_offsets(
                     "StatisCrsGraph::load_balance_offsets", num_blocks + 1);
 
             detail::StaticCrsGraphBalancerFunctor<
-                    row_map_type, View<size_type *, array_layout, device_type> >
+                    row_map_type, Tensor<size_type *, array_layout, device_type> >
                     partitioner(row_map, block_offsets, fix_cost_per_row, num_blocks);
 
             flare::parallel_for("flare::StaticCrsGraph::create_block_partitioning",
@@ -398,7 +398,7 @@ namespace flare {
             typename SizeType>
     typename StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
             SizeType>::HostMirror
-    create_mirror_view(const StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
+    create_mirror_tensor(const StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
             SizeType> &input);
 
     template<class DataType, class Arg1Type, class Arg2Type, class Arg3Type,

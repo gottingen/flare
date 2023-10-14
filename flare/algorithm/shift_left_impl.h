@@ -63,24 +63,24 @@ IteratorType shift_left_exespace_impl(
 
     We implement this in two steps:
     step 1:
-      we create a temporary view with extent = distance(first+n, last)
-      and *move* assign the elements from [first+n, last) to tmp view, such that
-      tmp view becomes:
+      we create a temporary tensor with extent = distance(first+n, last)
+      and *move* assign the elements from [first+n, last) to tmp tensor, such that
+      tmp tensor becomes:
 
       | 1  | 2  | 2  | 10  | -3 | 1  | -6 |
 
     step 2:
-      move elements of tmp view back to range starting at first.
+      move elements of tmp tensor back to range starting at first.
    */
 
   const auto num_elements_to_move =
       ::flare::experimental::distance(first + n, last);
 
-  // create tmp view
+  // create tmp tensor
   using value_type    = typename IteratorType::value_type;
-  using tmp_view_type = flare::View<value_type*, ExecutionSpace>;
-  tmp_view_type tmp_view("shift_left_impl", num_elements_to_move);
-  using tmp_readwrite_iterator_type = decltype(begin(tmp_view));
+  using tmp_tensor_type = flare::Tensor<value_type*, ExecutionSpace>;
+  tmp_tensor_type tmp_tensor("shift_left_impl", num_elements_to_move);
+  using tmp_readwrite_iterator_type = decltype(begin(tmp_tensor));
 
   using index_type = typename IteratorType::difference_type;
 
@@ -89,14 +89,14 @@ IteratorType shift_left_exespace_impl(
       StdMoveFunctor<index_type, IteratorType, tmp_readwrite_iterator_type>;
   ::flare::parallel_for(
       label, RangePolicy<ExecutionSpace>(ex, 0, num_elements_to_move),
-      step1_func_type(first + n, begin(tmp_view)));
+      step1_func_type(first + n, begin(tmp_tensor)));
 
   // step 2
   using step2_func_type =
       StdMoveFunctor<index_type, tmp_readwrite_iterator_type, IteratorType>;
   ::flare::parallel_for(label,
-                         RangePolicy<ExecutionSpace>(ex, 0, tmp_view.extent(0)),
-                         step2_func_type(begin(tmp_view), first));
+                         RangePolicy<ExecutionSpace>(ex, 0, tmp_tensor.extent(0)),
+                         step2_func_type(begin(tmp_tensor), first));
 
   ex.fence("flare::shift_left: fence after operation");
 

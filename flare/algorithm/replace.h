@@ -48,12 +48,12 @@ template <
     typename ValueType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 void replace(const ExecutionSpace& ex,
-             const ::flare::View<DataType1, Properties1...>& view,
+             const ::flare::Tensor<DataType1, Properties1...>& tensor,
              const ValueType& old_value, const ValueType& new_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   namespace KE = ::flare::experimental;
-  detail::replace_exespace_impl("flare::replace_view_api", ex, KE::begin(view),
-                              KE::end(view), old_value, new_value);
+  detail::replace_exespace_impl("flare::replace_tensor_api", ex, KE::begin(tensor),
+                              KE::end(tensor), old_value, new_value);
 }
 
 template <
@@ -61,11 +61,11 @@ template <
     typename ValueType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 void replace(const std::string& label, const ExecutionSpace& ex,
-             const ::flare::View<DataType1, Properties1...>& view,
+             const ::flare::Tensor<DataType1, Properties1...>& tensor,
              const ValueType& old_value, const ValueType& new_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   namespace KE = ::flare::experimental;
-  detail::replace_exespace_impl(label, ex, KE::begin(view), KE::end(view),
+  detail::replace_exespace_impl(label, ex, KE::begin(tensor), KE::end(tensor),
                               old_value, new_value);
 }
 
@@ -87,11 +87,11 @@ template <typename TeamHandleType, typename DataType1, typename... Properties1,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION void replace(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor,
     const ValueType& old_value, const ValueType& new_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   namespace KE = ::flare::experimental;
-  detail::replace_team_impl(teamHandle, KE::begin(view), KE::end(view), old_value,
+  detail::replace_team_impl(teamHandle, KE::begin(tensor), KE::end(tensor), old_value,
                           new_value);
 }
 

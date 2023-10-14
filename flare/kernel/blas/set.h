@@ -25,9 +25,9 @@ namespace flare::blas {
     ///
 
     struct SerialSet {
-        template <typename ScalarType, typename AViewType>
+        template <typename ScalarType, typename ATensorType>
         FLARE_INLINE_FUNCTION static int invoke(const ScalarType alpha,
-                                                 const AViewType &A) {
+                                                 const ATensorType &A) {
             return flare::blas::detail::SerialSetInternal::invoke(
                     A.extent(0), A.extent(1), alpha, A.data(), A.stride_0(), A.stride_1());
         }
@@ -39,10 +39,10 @@ namespace flare::blas {
 
     template <typename MemberType>
     struct TeamSet {
-        template <typename ScalarType, typename AViewType>
+        template <typename ScalarType, typename ATensorType>
         FLARE_INLINE_FUNCTION static int invoke(const MemberType &member,
                                                  const ScalarType alpha,
-                                                 const AViewType &A) {
+                                                 const ATensorType &A) {
             return flare::blas::detail::TeamSetInternal::invoke(member, A.extent(0), A.extent(1),
                                                  alpha, A.data(), A.stride_0(),
                                                  A.stride_1());
@@ -55,10 +55,10 @@ namespace flare::blas {
 
     template <typename MemberType>
     struct TeamVectorSet {
-        template <typename ScalarType, typename AViewType>
+        template <typename ScalarType, typename ATensorType>
         FLARE_INLINE_FUNCTION static int invoke(const MemberType &member,
                                                  const ScalarType alpha,
-                                                 const AViewType &A) {
+                                                 const ATensorType &A) {
             return flare::blas::detail::TeamVectorSetInternal::invoke(member, A.extent(0), A.extent(1),
                                                        alpha, A.data(), A.stride_0(),
                                                        A.stride_1());

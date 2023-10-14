@@ -67,31 +67,31 @@ TEST_CASE("TEST_CATEGORY, max") {
                           .second == 0);  // leftmost element
 }
 
-template<class ViewType>
+template<class TensorType>
 struct StdAlgoMinMaxOpsTestMax {
-    ViewType m_view;
+    TensorType m_tensor;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int &ind) const {
         auto v1 = 10.;
-        if (flare::max(v1, m_view(ind)) == 10.) {
-            m_view(ind) = 6.;
+        if (flare::max(v1, m_tensor(ind)) == 10.) {
+            m_tensor(ind) = 6.;
         }
     }
 
     FLARE_INLINE_FUNCTION
-    StdAlgoMinMaxOpsTestMax(ViewType aIn) : m_view(aIn) {}
+    StdAlgoMinMaxOpsTestMax(TensorType aIn) : m_tensor(aIn) {}
 };
 
 TEST_CASE("TEST_CATEGORY, max_within_parfor") {
     namespace KE = flare::experimental;
 
-    using view_t = flare::View<double *>;
-    view_t a("a", 10);
+    using tensor_t = flare::Tensor<double *>;
+    tensor_t a("a", 10);
 
-    StdAlgoMinMaxOpsTestMax<view_t> fnc(a);
+    StdAlgoMinMaxOpsTestMax<tensor_t> fnc(a);
     flare::parallel_for(a.extent(0), fnc);
-    auto a_h = flare::create_mirror_view_and_copy(flare::HostSpace(), a);
+    auto a_h = flare::create_mirror_tensor_and_copy(flare::HostSpace(), a);
     for (int i = 0; i < 10; ++i) {
         REQUIRE_EQ(a_h(0), 6.);
     }
@@ -128,30 +128,30 @@ TEST_CASE("TEST_CATEGORY, min") {
                           .second == 2);  // leftmost element
 }
 
-template<class ViewType>
+template<class TensorType>
 struct StdAlgoMinMaxOpsTestMin {
-    ViewType m_view;
+    TensorType m_tensor;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int &ind) const {
         auto v1 = 10.;
-        if (flare::min(v1, m_view(ind)) == 0.) {
-            m_view(ind) = 8.;
+        if (flare::min(v1, m_tensor(ind)) == 0.) {
+            m_tensor(ind) = 8.;
         }
     }
 
     FLARE_INLINE_FUNCTION
-    StdAlgoMinMaxOpsTestMin(ViewType aIn) : m_view(aIn) {}
+    StdAlgoMinMaxOpsTestMin(TensorType aIn) : m_tensor(aIn) {}
 };
 
 TEST_CASE("TEST_CATEGORY, min_within_parfor") {
     namespace KE = flare::experimental;
-    using view_t = flare::View<double *>;
-    view_t a("a", 10);
+    using tensor_t = flare::Tensor<double *>;
+    tensor_t a("a", 10);
 
-    StdAlgoMinMaxOpsTestMin<view_t> fnc(a);
+    StdAlgoMinMaxOpsTestMin<tensor_t> fnc(a);
     flare::parallel_for(a.extent(0), fnc);
-    auto a_h = flare::create_mirror_view_and_copy(flare::HostSpace(), a);
+    auto a_h = flare::create_mirror_tensor_and_copy(flare::HostSpace(), a);
     for (int i = 0; i < 10; ++i) {
         REQUIRE_EQ(a_h(0), 8.);
     }
@@ -205,28 +205,28 @@ TEST_CASE("TEST_CATEGORY, minmax") {
                           .second.second == 4);  // rightmost
 }
 
-template<class ViewType>
+template<class TensorType>
 struct StdAlgoMinMaxOpsTestMinMax {
-    ViewType m_view;
+    TensorType m_tensor;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int &ind) const {
         auto v1 = 7.;
-        const auto &r = flare::minmax(v1, m_view(ind));
-        m_view(ind) = (double) (r.first - r.second);
+        const auto &r = flare::minmax(v1, m_tensor(ind));
+        m_tensor(ind) = (double) (r.first - r.second);
     }
 
     FLARE_INLINE_FUNCTION
-    StdAlgoMinMaxOpsTestMinMax(ViewType aIn) : m_view(aIn) {}
+    StdAlgoMinMaxOpsTestMinMax(TensorType aIn) : m_tensor(aIn) {}
 };
 
 TEST_CASE("TEST_CATEGORY, minmax_within_parfor") {
-    using view_t = flare::View<double *>;
-    view_t a("a", 10);
+    using tensor_t = flare::Tensor<double *>;
+    tensor_t a("a", 10);
 
-    StdAlgoMinMaxOpsTestMinMax<view_t> fnc(a);
+    StdAlgoMinMaxOpsTestMinMax<tensor_t> fnc(a);
     flare::parallel_for(a.extent(0), fnc);
-    auto a_h = flare::create_mirror_view_and_copy(flare::HostSpace(), a);
+    auto a_h = flare::create_mirror_tensor_and_copy(flare::HostSpace(), a);
     for (int i = 0; i < 10; ++i) {
         REQUIRE_EQ(a_h(0), -7.);
     }
@@ -258,30 +258,30 @@ TEST_CASE("TEST_CATEGORY, clamp") {
     REQUIRE_EQ(r3, a);
 }
 
-template<class ViewType>
+template<class TensorType>
 struct StdAlgoMinMaxOpsTestClamp {
-    ViewType m_view;
+    TensorType m_tensor;
 
     FLARE_INLINE_FUNCTION
     void operator()(const int &ind) const {
-        m_view(ind) = 10.;
+        m_tensor(ind) = 10.;
         const auto b = -2.;
         const auto c = 3.;
-        const auto &r = flare::clamp(m_view(ind), b, c);
-        m_view(ind) = (double) (r);
+        const auto &r = flare::clamp(m_tensor(ind), b, c);
+        m_tensor(ind) = (double) (r);
     }
 
     FLARE_INLINE_FUNCTION
-    StdAlgoMinMaxOpsTestClamp(ViewType aIn) : m_view(aIn) {}
+    StdAlgoMinMaxOpsTestClamp(TensorType aIn) : m_tensor(aIn) {}
 };
 
 TEST_CASE("TEST_CATEGORY, clamp_within_parfor") {
-    using view_t = flare::View<double *>;
-    view_t a("a", 10);
+    using tensor_t = flare::Tensor<double *>;
+    tensor_t a("a", 10);
 
-    StdAlgoMinMaxOpsTestClamp<view_t> fnc(a);
+    StdAlgoMinMaxOpsTestClamp<tensor_t> fnc(a);
     flare::parallel_for(a.extent(0), fnc);
-    auto a_h = flare::create_mirror_view_and_copy(flare::HostSpace(), a);
+    auto a_h = flare::create_mirror_tensor_and_copy(flare::HostSpace(), a);
     for (std::size_t i = 0; i < a.extent(0); ++i) {
         REQUIRE_EQ(a_h(0), 3.);
     }

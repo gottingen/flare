@@ -29,14 +29,14 @@ struct functor_team_for {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
-  functor_team_for(flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+  functor_team_for(flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_int =
-      flare::View<Scalar *, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar *, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int team_size) const {
     return shared_int::shmem_size(team_size * 13);
   }
@@ -95,15 +95,15 @@ struct functor_team_reduce {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
   functor_team_reduce(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_scalar_t =
-      flare::View<Scalar *, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar *, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int team_size) const {
     return shared_scalar_t::shmem_size(team_size * 13);
   }
@@ -167,15 +167,15 @@ struct functor_team_reduce_reducer {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
   functor_team_reduce_reducer(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_scalar_t =
-      flare::View<Scalar *, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar *, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int team_size) const {
     return shared_scalar_t::shmem_size(team_size * 13);
   }
@@ -234,15 +234,15 @@ struct functor_team_vector_for {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
   functor_team_vector_for(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_int =
-      flare::View<Scalar *, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar *, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int team_size) const {
     return shared_int::shmem_size(team_size * 13);
   }
@@ -302,14 +302,14 @@ struct functor_team_vector_reduce {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
   functor_team_vector_reduce(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_int =
-      flare::View<Scalar *, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar *, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int team_size) const {
     return shared_int::shmem_size(team_size * 13);
   }
@@ -354,15 +354,15 @@ struct functor_team_vector_reduce_reducer {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
   functor_team_vector_reduce_reducer(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_int =
-      flare::View<Scalar *, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar *, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int team_size) const {
     return shared_int::shmem_size(team_size * 13);
   }
@@ -404,12 +404,12 @@ struct functor_vec_single {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
   int nStart;
   int nEnd;
 
   functor_vec_single(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_,
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_,
       const int start_, const int end_)
       : flag(flag_), nStart(start_), nEnd(end_) {}
 
@@ -449,14 +449,14 @@ struct functor_vec_for {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
-  functor_vec_for(flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+  functor_vec_for(flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_int =
-      flare::View<Scalar *, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar *, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int team_size) const {
     return shared_int::shmem_size(team_size * 13);
   }
@@ -504,9 +504,9 @@ struct functor_vec_red {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
-  functor_vec_red(flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+  functor_vec_red(flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   FLARE_INLINE_FUNCTION
@@ -538,10 +538,10 @@ struct functor_vec_red_reducer {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
   functor_vec_red_reducer(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   FLARE_INLINE_FUNCTION
@@ -577,8 +577,8 @@ struct functor_vec_scan {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
-  functor_vec_scan(flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
+  functor_vec_scan(flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   FLARE_INLINE_FUNCTION
@@ -610,8 +610,8 @@ struct functor_reduce {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
-  functor_reduce(flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
+  functor_reduce(flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   FLARE_INLINE_FUNCTION
@@ -622,8 +622,8 @@ struct functor_reduce {
 
 template <typename Scalar, class ExecutionSpace>
 bool test_scalar(int nteams, int team_size, int test) {
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> d_flag("flag");
-  typename flare::View<int, flare::LayoutLeft, ExecutionSpace>::HostMirror
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> d_flag("flag");
+  typename flare::Tensor<int, flare::LayoutLeft, ExecutionSpace>::HostMirror
       h_flag("h_flag");
   h_flag() = 0;
   flare::deep_copy(d_flag, h_flag);
@@ -732,12 +732,12 @@ class TestTripleNestedReduce {
     // using Layout = flare::LayoutLeft;
     using Layout = flare::LayoutRight;
 
-    using ViewVector = flare::View<ScalarType *, DeviceType>;
-    using ViewMatrix = flare::View<ScalarType **, Layout, DeviceType>;
+    using TensorVector = flare::Tensor<ScalarType *, DeviceType>;
+    using TensorMatrix = flare::Tensor<ScalarType **, Layout, DeviceType>;
 
-    ViewVector y("y", nrows);
-    ViewVector x("x", ncols);
-    ViewMatrix A("A", nrows, ncols);
+    TensorVector y("y", nrows);
+    TensorVector x("x", ncols);
+    TensorMatrix A("A", nrows, ncols);
 
     using range_policy = flare::RangePolicy<DeviceType>;
 
@@ -814,10 +814,10 @@ struct checkScan {
 
   using size_type  = typename ExecutionSpace::size_type;
   using value_type = typename Reducer::value_type;
-  using view_type  = flare::View<value_type[n], ExecutionSpace>;
+  using tensor_type  = flare::Tensor<value_type[n], ExecutionSpace>;
 
-  view_type inputs  = view_type{"inputs"};
-  view_type outputs = view_type{"outputs"};
+  tensor_type inputs  = tensor_type{"inputs"};
+  tensor_type outputs = tensor_type{"outputs"};
 
   value_type result;
   Reducer reducer = {result};
@@ -843,8 +843,8 @@ struct checkScan {
     const Reducer &m_reducer;
     const size_type &m_team_offset;
     const size_type &m_thread_offset;
-    const view_type &m_outputs;
-    const view_type &m_inputs;
+    const tensor_type &m_outputs;
+    const tensor_type &m_inputs;
   };
 
   struct TeamThreadRangeFunctor {
@@ -860,8 +860,8 @@ struct checkScan {
     const typename flare::TeamPolicy<ExecutionSpace>::member_type &m_team;
     const Reducer &m_reducer;
     const size_type &m_team_offset;
-    const view_type &m_outputs;
-    const view_type &m_inputs;
+    const tensor_type &m_outputs;
+    const tensor_type &m_inputs;
   };
 
   FLARE_FUNCTION void operator()(
@@ -892,11 +892,11 @@ struct checkScan {
     flare::fence();
 
     auto host_outputs =
-        flare::create_mirror_view_and_copy(flare::HostSpace{}, outputs);
+        flare::create_mirror_tensor_and_copy(flare::HostSpace{}, outputs);
     auto host_inputs =
-        flare::create_mirror_view_and_copy(flare::HostSpace{}, inputs);
+        flare::create_mirror_tensor_and_copy(flare::HostSpace{}, inputs);
 
-    flare::View<value_type[n], flare::HostSpace> expected("expected");
+    flare::Tensor<value_type[n], flare::HostSpace> expected("expected");
     {
       value_type identity;
       reducer.init(identity);

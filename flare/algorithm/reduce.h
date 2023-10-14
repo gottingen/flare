@@ -45,29 +45,29 @@ typename IteratorType::value_type reduce(const std::string& label,
 
 template <class ExecutionSpace, class DataType, class... Properties>
 auto reduce(const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view) {
+            const ::flare::Tensor<DataType, Properties...>& tensor) {
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
-  using view_type  = ::flare::View<DataType, Properties...>;
-  using value_type = typename view_type::value_type;
+  using tensor_type  = ::flare::Tensor<DataType, Properties...>;
+  using value_type = typename tensor_type::value_type;
 
   return detail::reduce_default_functors_impl(
-      "flare::reduce_default_functors_view_api", ex, KE::cbegin(view),
-      KE::cend(view), value_type());
+      "flare::reduce_default_functors_tensor_api", ex, KE::cbegin(tensor),
+      KE::cend(tensor), value_type());
 }
 
 template <class ExecutionSpace, class DataType, class... Properties>
 auto reduce(const std::string& label, const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view) {
+            const ::flare::Tensor<DataType, Properties...>& tensor) {
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
-  using view_type  = ::flare::View<DataType, Properties...>;
-  using value_type = typename view_type::value_type;
+  using tensor_type  = ::flare::Tensor<DataType, Properties...>;
+  using value_type = typename tensor_type::value_type;
 
-  return detail::reduce_default_functors_impl(label, ex, KE::cbegin(view),
-                                            KE::cend(view), value_type());
+  return detail::reduce_default_functors_impl(label, ex, KE::cbegin(tensor),
+                                            KE::cend(tensor), value_type());
 }
 
 //
@@ -98,32 +98,32 @@ ValueType reduce(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType, class... Properties,
           class ValueType>
 ValueType reduce(const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& view,
+                 const ::flare::Tensor<DataType, Properties...>& tensor,
                  ValueType init_reduction_value) {
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
 
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   return detail::reduce_default_functors_impl(
-      "flare::reduce_default_functors_view_api", ex, KE::cbegin(view),
-      KE::cend(view), init_reduction_value);
+      "flare::reduce_default_functors_tensor_api", ex, KE::cbegin(tensor),
+      KE::cend(tensor), init_reduction_value);
 }
 
 template <class ExecutionSpace, class DataType, class... Properties,
           class ValueType>
 ValueType reduce(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& view,
+                 const ::flare::Tensor<DataType, Properties...>& tensor,
                  ValueType init_reduction_value) {
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
 
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   return detail::reduce_default_functors_impl(
-      label, ex, KE::cbegin(view), KE::cend(view), init_reduction_value);
+      label, ex, KE::cbegin(tensor), KE::cend(tensor), init_reduction_value);
 }
 
 //
@@ -157,32 +157,32 @@ ValueType reduce(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType, class... Properties,
           class ValueType, class BinaryOp>
 ValueType reduce(const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& view,
+                 const ::flare::Tensor<DataType, Properties...>& tensor,
                  ValueType init_reduction_value, BinaryOp joiner) {
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
 
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
   return detail::reduce_custom_functors_impl(
-      "flare::reduce_custom_functors_view_api", ex, KE::cbegin(view),
-      KE::cend(view), init_reduction_value, joiner);
+      "flare::reduce_custom_functors_tensor_api", ex, KE::cbegin(tensor),
+      KE::cend(tensor), init_reduction_value, joiner);
 }
 
 template <class ExecutionSpace, class DataType, class... Properties,
           class ValueType, class BinaryOp>
 ValueType reduce(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& view,
+                 const ::flare::Tensor<DataType, Properties...>& tensor,
                  ValueType init_reduction_value, BinaryOp joiner) {
   static_assert(std::is_move_constructible<ValueType>::value,
                 "ValueType must be move constructible.");
 
   namespace KE = ::flare::experimental;
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
 
-  return detail::reduce_custom_functors_impl(label, ex, KE::cbegin(view),
-                                           KE::cend(view), init_reduction_value,
+  return detail::reduce_custom_functors_impl(label, ex, KE::cbegin(tensor),
+                                           KE::cend(tensor), init_reduction_value,
                                            joiner);
 }
 

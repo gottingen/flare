@@ -78,15 +78,15 @@ template <
     typename DataType2, typename... Properties2,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool equal(const ExecutionSpace& ex,
-           const ::flare::View<DataType1, Properties1...>& view1,
-           ::flare::View<DataType2, Properties2...>& view2) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+           const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+           ::flare::Tensor<DataType2, Properties2...>& tensor2) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::equal_exespace_impl("flare::equal_view_api_default", ex,
-                                   KE::cbegin(view1), KE::cend(view1),
-                                   KE::cbegin(view2));
+  return detail::equal_exespace_impl("flare::equal_tensor_api_default", ex,
+                                   KE::cbegin(tensor1), KE::cend(tensor1),
+                                   KE::cbegin(tensor2));
 }
 
 template <
@@ -94,14 +94,14 @@ template <
     typename DataType2, typename... Properties2,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool equal(const std::string& label, const ExecutionSpace& ex,
-           const ::flare::View<DataType1, Properties1...>& view1,
-           ::flare::View<DataType2, Properties2...>& view2) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+           const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+           ::flare::Tensor<DataType2, Properties2...>& tensor2) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::equal_exespace_impl(label, ex, KE::cbegin(view1),
-                                   KE::cend(view1), KE::cbegin(view2));
+  return detail::equal_exespace_impl(label, ex, KE::cbegin(tensor1),
+                                   KE::cend(tensor1), KE::cbegin(tensor2));
 }
 
 template <
@@ -109,16 +109,16 @@ template <
     typename DataType2, typename... Properties2, typename BinaryPredicateType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool equal(const ExecutionSpace& ex,
-           const ::flare::View<DataType1, Properties1...>& view1,
-           ::flare::View<DataType2, Properties2...>& view2,
+           const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+           ::flare::Tensor<DataType2, Properties2...>& tensor2,
            BinaryPredicateType predicate) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::equal_exespace_impl("flare::equal_view_api_default", ex,
-                                   KE::cbegin(view1), KE::cend(view1),
-                                   KE::cbegin(view2), std::move(predicate));
+  return detail::equal_exespace_impl("flare::equal_tensor_api_default", ex,
+                                   KE::cbegin(tensor1), KE::cend(tensor1),
+                                   KE::cbegin(tensor2), std::move(predicate));
 }
 
 template <
@@ -126,15 +126,15 @@ template <
     typename DataType2, typename... Properties2, typename BinaryPredicateType,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool equal(const std::string& label, const ExecutionSpace& ex,
-           const ::flare::View<DataType1, Properties1...>& view1,
-           ::flare::View<DataType2, Properties2...>& view2,
+           const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+           ::flare::Tensor<DataType2, Properties2...>& tensor2,
            BinaryPredicateType predicate) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::equal_exespace_impl(label, ex, KE::cbegin(view1),
-                                   KE::cend(view1), KE::cbegin(view2),
+  return detail::equal_exespace_impl(label, ex, KE::cbegin(tensor1),
+                                   KE::cend(tensor1), KE::cbegin(tensor2),
                                    std::move(predicate));
 }
 
@@ -225,14 +225,14 @@ template <typename TeamHandleType, typename DataType1, typename... Properties1,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION bool equal(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    ::flare::View<DataType2, Properties2...>& view2) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    ::flare::Tensor<DataType2, Properties2...>& tensor2) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::equal_team_impl(teamHandle, KE::cbegin(view1), KE::cend(view1),
-                               KE::cbegin(view2));
+  return detail::equal_team_impl(teamHandle, KE::cbegin(tensor1), KE::cend(tensor1),
+                               KE::cbegin(tensor2));
 }
 
 template <typename TeamHandleType, typename DataType1, typename... Properties1,
@@ -241,15 +241,15 @@ template <typename TeamHandleType, typename DataType1, typename... Properties1,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION bool equal(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    ::flare::View<DataType2, Properties2...>& view2,
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    ::flare::Tensor<DataType2, Properties2...>& tensor2,
     BinaryPredicateType predicate) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
-  return detail::equal_team_impl(teamHandle, KE::cbegin(view1), KE::cend(view1),
-                               KE::cbegin(view2), std::move(predicate));
+  return detail::equal_team_impl(teamHandle, KE::cbegin(tensor1), KE::cend(tensor1),
+                               KE::cbegin(tensor2), std::move(predicate));
 }
 
 template <typename TeamHandleType, typename IteratorType1,

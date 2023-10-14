@@ -23,17 +23,17 @@ namespace Test {
     namespace detail {
         template<class MemorySpaceA, class MemorySpaceB>
         struct TestDeepCopy {
-            using a_base_t = flare::View<double *, flare::LayoutRight, MemorySpaceA>;
-            using b_base_t = flare::View<double *, flare::LayoutRight, MemorySpaceB>;
-            using a_char_t = flare::View<char *, flare::LayoutRight, MemorySpaceA>;
-            using b_char_t = flare::View<char *, flare::LayoutRight, MemorySpaceB>;
+            using a_base_t = flare::Tensor<double *, flare::LayoutRight, MemorySpaceA>;
+            using b_base_t = flare::Tensor<double *, flare::LayoutRight, MemorySpaceB>;
+            using a_char_t = flare::Tensor<char *, flare::LayoutRight, MemorySpaceA>;
+            using b_char_t = flare::Tensor<char *, flare::LayoutRight, MemorySpaceB>;
 
             using policyA_t = flare::RangePolicy<typename MemorySpaceA::execution_space>;
             using policyB_t = flare::RangePolicy<typename MemorySpaceB::execution_space>;
 
             static void reset_a_copy_and_b(
-                    flare::View<char *, flare::LayoutRight, MemorySpaceA> a_char_copy,
-                    flare::View<char *, flare::LayoutRight, MemorySpaceB> b_char) {
+                    flare::Tensor<char *, flare::LayoutRight, MemorySpaceA> a_char_copy,
+                    flare::Tensor<char *, flare::LayoutRight, MemorySpaceB> b_char) {
                 const int N = b_char.extent_int(0);
                 flare::parallel_for(
                         "TestDeepCopy: FillA_copy", policyA_t(0, N),
@@ -44,8 +44,8 @@ namespace Test {
             }
 
             static int compare_equal(
-                    flare::View<char *, flare::LayoutRight, MemorySpaceA> a_char_copy,
-                    flare::View<char *, flare::LayoutRight, MemorySpaceA> a_char) {
+                    flare::Tensor<char *, flare::LayoutRight, MemorySpaceA> a_char_copy,
+                    flare::Tensor<char *, flare::LayoutRight, MemorySpaceA> a_char) {
                 const int N = a_char.extent_int(0);
                 int errors;
                 flare::parallel_reduce(
@@ -60,14 +60,14 @@ namespace Test {
             static void run_test(int num_bytes) {
                 a_base_t a_base("test_space_to_space", (num_bytes + 128) / 8);
                 a_base_t a_base_copy("test_space_to_space", (num_bytes + 128) / 8);
-                flare::View<double *, flare::LayoutRight, MemorySpaceB> b_base(
+                flare::Tensor<double *, flare::LayoutRight, MemorySpaceB> b_base(
                         "test_space_to_space", (num_bytes + 128) / 8);
 
-                flare::View<char *, flare::LayoutRight, MemorySpaceA> a_char(
+                flare::Tensor<char *, flare::LayoutRight, MemorySpaceA> a_char(
                         (char *) a_base.data(), a_base.extent(0) * 8);
-                flare::View<char *, flare::LayoutRight, MemorySpaceA> a_char_copy(
+                flare::Tensor<char *, flare::LayoutRight, MemorySpaceA> a_char_copy(
                         (char *) a_base_copy.data(), a_base.extent(0) * 8);
-                flare::View<char *, flare::LayoutRight, MemorySpaceB> b_char(
+                flare::Tensor<char *, flare::LayoutRight, MemorySpaceB> b_char(
                         (char *) b_base.data(), b_base.extent(0) * 8);
 
                 flare::parallel_for(
@@ -90,11 +90,11 @@ namespace Test {
                     int a_end = 0;
                     int b_begin = 0;
                     int b_end = 0;
-                    auto a = flare::subview(
+                    auto a = flare::subtensor(
                             a_char, std::pair<int, int>(a_begin, a_char.extent_int(0) - a_end));
-                    auto b = flare::subview(
+                    auto b = flare::subtensor(
                             b_char, std::pair<int, int>(b_begin, b_char.extent_int(0) - b_end));
-                    auto a_copy = flare::subview(
+                    auto a_copy = flare::subtensor(
                             a_char_copy,
                             std::pair<int, int>(a_begin, a_char_copy.extent_int(0) - a_end));
                     flare::deep_copy(b, a);
@@ -108,11 +108,11 @@ namespace Test {
                     int a_end = 5;
                     int b_begin = 0;
                     int b_end = 5;
-                    auto a = flare::subview(
+                    auto a = flare::subtensor(
                             a_char, std::pair<int, int>(a_begin, a_char.extent_int(0) - a_end));
-                    auto b = flare::subview(
+                    auto b = flare::subtensor(
                             b_char, std::pair<int, int>(b_begin, b_char.extent_int(0) - b_end));
-                    auto a_copy = flare::subview(
+                    auto a_copy = flare::subtensor(
                             a_char_copy,
                             std::pair<int, int>(a_begin, a_char_copy.extent_int(0) - a_end));
                     flare::deep_copy(b, a);
@@ -126,11 +126,11 @@ namespace Test {
                     int a_end = 0;
                     int b_begin = 3;
                     int b_end = 0;
-                    auto a = flare::subview(
+                    auto a = flare::subtensor(
                             a_char, std::pair<int, int>(a_begin, a_char.extent_int(0) - a_end));
-                    auto b = flare::subview(
+                    auto b = flare::subtensor(
                             b_char, std::pair<int, int>(b_begin, b_char.extent_int(0) - b_end));
-                    auto a_copy = flare::subview(
+                    auto a_copy = flare::subtensor(
                             a_char_copy,
                             std::pair<int, int>(a_begin, a_char_copy.extent_int(0) - a_end));
                     flare::deep_copy(b, a);
@@ -144,11 +144,11 @@ namespace Test {
                     int a_end = 6;
                     int b_begin = 3;
                     int b_end = 6;
-                    auto a = flare::subview(
+                    auto a = flare::subtensor(
                             a_char, std::pair<int, int>(a_begin, a_char.extent_int(0) - a_end));
-                    auto b = flare::subview(
+                    auto b = flare::subtensor(
                             b_char, std::pair<int, int>(b_begin, b_char.extent_int(0) - b_end));
-                    auto a_copy = flare::subview(
+                    auto a_copy = flare::subtensor(
                             a_char_copy,
                             std::pair<int, int>(a_begin, a_char_copy.extent_int(0) - a_end));
                     flare::deep_copy(b, a);
@@ -162,11 +162,11 @@ namespace Test {
                     int a_end = 4;
                     int b_begin = 3;
                     int b_end = 6;
-                    auto a = flare::subview(
+                    auto a = flare::subtensor(
                             a_char, std::pair<int, int>(a_begin, a_char.extent_int(0) - a_end));
-                    auto b = flare::subview(
+                    auto b = flare::subtensor(
                             b_char, std::pair<int, int>(b_begin, b_char.extent_int(0) - b_end));
-                    auto a_copy = flare::subview(
+                    auto a_copy = flare::subtensor(
                             a_char_copy,
                             std::pair<int, int>(a_begin, a_char_copy.extent_int(0) - a_end));
                     flare::deep_copy(b, a);
@@ -180,11 +180,11 @@ namespace Test {
                     int a_end = 8;
                     int b_begin = 2;
                     int b_end = 6;
-                    auto a = flare::subview(
+                    auto a = flare::subtensor(
                             a_char, std::pair<int, int>(a_begin, a_char.extent_int(0) - a_end));
-                    auto b = flare::subview(
+                    auto b = flare::subtensor(
                             b_char, std::pair<int, int>(b_begin, b_char.extent_int(0) - b_end));
-                    auto a_copy = flare::subview(
+                    auto a_copy = flare::subtensor(
                             a_char_copy,
                             std::pair<int, int>(a_begin, a_char_copy.extent_int(0) - a_end));
                     flare::deep_copy(b, a);
@@ -198,11 +198,11 @@ namespace Test {
                     int a_end = 6;
                     int b_begin = 0;
                     int b_end = 8;
-                    auto a = flare::subview(
+                    auto a = flare::subtensor(
                             a_char, std::pair<int, int>(a_begin, a_char.extent_int(0) - a_end));
-                    auto b = flare::subview(
+                    auto b = flare::subtensor(
                             b_char, std::pair<int, int>(b_begin, b_char.extent_int(0) - b_end));
-                    auto a_copy = flare::subview(
+                    auto a_copy = flare::subtensor(
                             a_char_copy,
                             std::pair<int, int>(a_begin, a_char_copy.extent_int(0) - a_end));
                     flare::deep_copy(b, a);
@@ -239,10 +239,10 @@ namespace Test {
             struct TagCompare {
             };
 
-            using view_type_s1_1d = flare::View<Scalar1 *, Layout1, TEST_EXECSPACE>;
-            using view_type_s2_1d = flare::View<Scalar2 *, Layout2, TEST_EXECSPACE>;
-            using view_type_s1_2d = flare::View<Scalar1 **, Layout1, TEST_EXECSPACE>;
-            using view_type_s2_2d = flare::View<Scalar2 **, Layout2, TEST_EXECSPACE>;
+            using tensor_type_s1_1d = flare::Tensor<Scalar1 *, Layout1, TEST_EXECSPACE>;
+            using tensor_type_s2_1d = flare::Tensor<Scalar2 *, Layout2, TEST_EXECSPACE>;
+            using tensor_type_s1_2d = flare::Tensor<Scalar1 **, Layout1, TEST_EXECSPACE>;
+            using tensor_type_s2_2d = flare::Tensor<Scalar2 **, Layout2, TEST_EXECSPACE>;
 
             using base_layout1 =
                     std::conditional_t<std::is_same<Layout1, flare::LayoutStride>::value,
@@ -251,47 +251,47 @@ namespace Test {
                     std::conditional_t<std::is_same<Layout2, flare::LayoutStride>::value,
                             flare::LayoutLeft, Layout2>;
 
-            using base_type_s1_1d = flare::View<Scalar1 *, base_layout1, TEST_EXECSPACE>;
-            using base_type_s2_1d = flare::View<Scalar2 *, base_layout2, TEST_EXECSPACE>;
-            using base_type_s1_2d = flare::View<Scalar1 **, base_layout1, TEST_EXECSPACE>;
-            using base_type_s2_2d = flare::View<Scalar2 **, base_layout2, TEST_EXECSPACE>;
+            using base_type_s1_1d = flare::Tensor<Scalar1 *, base_layout1, TEST_EXECSPACE>;
+            using base_type_s2_1d = flare::Tensor<Scalar2 *, base_layout2, TEST_EXECSPACE>;
+            using base_type_s1_2d = flare::Tensor<Scalar1 **, base_layout1, TEST_EXECSPACE>;
+            using base_type_s2_2d = flare::Tensor<Scalar2 **, base_layout2, TEST_EXECSPACE>;
 
-            view_type_s1_1d view_s1_1d;
-            view_type_s2_1d view_s2_1d;
-            view_type_s1_2d view_s1_2d;
-            view_type_s2_2d view_s2_2d;
+            tensor_type_s1_1d tensor_s1_1d;
+            tensor_type_s2_1d tensor_s2_1d;
+            tensor_type_s1_2d tensor_s1_2d;
+            tensor_type_s2_2d tensor_s2_2d;
 
-            flare::View<int64_t, TEST_EXECSPACE> error_count;
+            flare::Tensor<int64_t, TEST_EXECSPACE> error_count;
 
-            void create_views(int64_t N0, int64_t N1) {
+            void create_tensors(int64_t N0, int64_t N1) {
                 base_type_s1_1d b_s1_1d("TestDeepCopyConversion::b_s1_1d", N0);
                 base_type_s2_1d b_s2_1d("TestDeepCopyConversion::b_s2_1d", N0);
                 base_type_s1_2d b_s1_2d("TestDeepCopyConversion::b_s1_2d", N0, N1);
                 base_type_s2_2d b_s2_2d("TestDeepCopyConversion::b_s2_2d", N0, N1);
 
-                view_s1_1d = view_type_s1_1d(b_s1_1d, flare::ALL);
-                view_s2_1d = view_type_s2_1d(b_s2_1d, flare::ALL);
-                view_s1_2d = view_type_s1_2d(b_s1_2d, flare::ALL, flare::ALL);
-                view_s2_2d = view_type_s2_2d(b_s2_2d, flare::ALL, flare::ALL);
+                tensor_s1_1d = tensor_type_s1_1d(b_s1_1d, flare::ALL);
+                tensor_s2_1d = tensor_type_s2_1d(b_s2_1d, flare::ALL);
+                tensor_s1_2d = tensor_type_s1_2d(b_s1_2d, flare::ALL, flare::ALL);
+                tensor_s2_2d = tensor_type_s2_2d(b_s2_2d, flare::ALL, flare::ALL);
 
-                error_count = flare::View<int64_t, TEST_EXECSPACE>(
+                error_count = flare::Tensor<int64_t, TEST_EXECSPACE>(
                         "TestDeepCopyConversion::error_count");
             }
 
             FLARE_FUNCTION
             void operator()(TagFill, const int64_t i) const {
-                view_s2_1d(i) = static_cast<Scalar2>(i + 1);
-                for (int64_t j = 0; j < static_cast<int64_t>(view_s2_2d.extent(1)); j++)
-                    view_s2_2d(i, j) = static_cast<Scalar2>((i + 1) * 1000 + j + 1);
+                tensor_s2_1d(i) = static_cast<Scalar2>(i + 1);
+                for (int64_t j = 0; j < static_cast<int64_t>(tensor_s2_2d.extent(1)); j++)
+                    tensor_s2_2d(i, j) = static_cast<Scalar2>((i + 1) * 1000 + j + 1);
             }
 
             FLARE_FUNCTION
             void operator()(TagCompare, const int64_t i) const {
                 int64_t errors = 0;
-                if (view_s1_1d(i) != static_cast<Scalar1>(static_cast<Scalar2>(i + 1)))
+                if (tensor_s1_1d(i) != static_cast<Scalar1>(static_cast<Scalar2>(i + 1)))
                     errors++;
-                for (int64_t j = 0; j < static_cast<int64_t>(view_s1_2d.extent(1)); j++) {
-                    if (view_s1_2d(i, j) !=
+                for (int64_t j = 0; j < static_cast<int64_t>(tensor_s1_2d.extent(1)); j++) {
+                    if (tensor_s1_2d(i, j) !=
                         static_cast<Scalar1>(static_cast<Scalar2>((i + 1) * 1000 + j + 1)))
                         errors++;
                 }
@@ -299,15 +299,15 @@ namespace Test {
             }
 
             void run_tests(int64_t N0, int64_t N1) {
-                create_views(N0, N1);
+                create_tensors(N0, N1);
 
                 flare::parallel_for("TestDeepCopyConversion::Fill",
                                     flare::RangePolicy<TEST_EXECSPACE, TagFill,
                                             flare::IndexType<int64_t>>(0, N0),
                                     *this);
 
-                flare::deep_copy(view_s1_1d, view_s2_1d);
-                flare::deep_copy(view_s1_2d, view_s2_2d);
+                flare::deep_copy(tensor_s1_1d, tensor_s2_1d);
+                flare::deep_copy(tensor_s1_2d, tensor_s2_2d);
 
                 flare::parallel_for("TestDeepCopyConversion::Compare",
                                     flare::RangePolicy<TEST_EXECSPACE, TagCompare,
@@ -318,8 +318,8 @@ namespace Test {
                 flare::deep_copy(errors, error_count);
                 REQUIRE_EQ(errors, 0);
 
-                flare::deep_copy(view_s1_1d, static_cast<Scalar1>(0));
-                flare::deep_copy(view_s1_2d, static_cast<Scalar1>(0));
+                flare::deep_copy(tensor_s1_1d, static_cast<Scalar1>(0));
+                flare::deep_copy(tensor_s1_2d, static_cast<Scalar1>(0));
 
                 flare::parallel_for("TestDeepCopyConversion::Compare",
                                     flare::RangePolicy<TEST_EXECSPACE, TagCompare,
@@ -329,8 +329,8 @@ namespace Test {
                 REQUIRE_GT(errors, 0);
 
                 flare::deep_copy(error_count, 0);
-                flare::deep_copy(TEST_EXECSPACE(), view_s1_1d, view_s2_1d);
-                flare::deep_copy(TEST_EXECSPACE(), view_s1_2d, view_s2_2d);
+                flare::deep_copy(TEST_EXECSPACE(), tensor_s1_1d, tensor_s2_1d);
+                flare::deep_copy(TEST_EXECSPACE(), tensor_s1_2d, tensor_s2_2d);
 
                 flare::parallel_for("TestDeepCopyConversion::Compare",
                                     flare::RangePolicy<TEST_EXECSPACE, TagCompare,

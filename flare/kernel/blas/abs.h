@@ -30,30 +30,30 @@ namespace flare::blas {
     /// (magnitude) of the corresponding entry in X.
     ///
     /// \tparam execution_space a flare execution space to run the kernels on.
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as RMV, and its entries must be assignable to
     ///   those of RMV.
     ///
     /// \param space [in] an execution_space instance where the kernel will run.
-    /// \param R [out] view of type RMV that contains the absolute value X on
+    /// \param R [out] tensor of type RMV that contains the absolute value X on
     /// output.
-    /// \param X [in] view of type XMV.
+    /// \param X [in] tensor of type XMV.
     template <class execution_space, class RMV, class XMV>
     void abs(const execution_space& space, const RMV& R, const XMV& X) {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::abs: execution_space must be a valid flare "
                       "execution space.");
-        static_assert(flare::is_view<RMV>::value,
+        static_assert(flare::is_tensor<RMV>::value,
                       "flare::blas::abs: "
-                      "R is not a flare::View.");
+                      "R is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename RMV::memory_space>::accessible,
                 "flare::blas::abs: RMV must be accessible from execution space");
-        static_assert(flare::is_view<XMV>::value,
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::abs: "
-                      "X is not a flare::View.");
+                      "X is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
@@ -79,15 +79,15 @@ namespace flare::blas {
             flare::detail::throw_runtime_exception(os.str());
         }
 
-        // Create unmanaged versions of the input Views.  RMV and XMV may be
+        // Create unmanaged versions of the input Tensors.  RMV and XMV may be
         // rank 1 or rank 2.
-        using RMV_Internal = flare::View<
+        using RMV_Internal = flare::Tensor<
                 typename std::conditional<RMV::rank == 1,
                         typename RMV::non_const_value_type*,
                         typename RMV::non_const_value_type**>::type,
                 typename flare::detail::GetUnifiedLayout<RMV>::array_layout,
                 typename RMV::device_type, flare::MemoryTraits<flare::Unmanaged> >;
-        using XMV_Internal = flare::View<
+        using XMV_Internal = flare::Tensor<
                 typename std::conditional<XMV::rank == 1, typename XMV::const_value_type*,
                         typename XMV::const_value_type**>::type,
                 typename flare::detail::GetUnifiedLayout<XMV>::array_layout,
@@ -106,14 +106,14 @@ namespace flare::blas {
     /// (magnitude) of the corresponding entry in X. The kernel is executed in the
     /// default stream/queue associated with the execution space of RMV.
     ///
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as RMV, and its entries must be assignable to
     ///   those of RMV.
     ///
-    /// \param R [out] view of type RMV that contains the absolute value X on
+    /// \param R [out] tensor of type RMV that contains the absolute value X on
     /// output.
-    /// \param X [in] view of type XMV.
+    /// \param X [in] tensor of type XMV.
     template <class RMV, class XMV>
     void abs(const RMV& R, const XMV& X) {
         abs(typename RMV::execution_space{}, R, X);

@@ -27,12 +27,12 @@ template <class ExecSpace, class ScheduleType>
 struct TestTeamPolicy {
   using team_member =
       typename flare::TeamPolicy<ScheduleType, ExecSpace>::member_type;
-  using view_type = flare::View<int **, ExecSpace>;
+  using tensor_type = flare::Tensor<int **, ExecSpace>;
 
-  view_type m_flags;
+  tensor_type m_flags;
 
   TestTeamPolicy(const size_t league_size)
-      : m_flags(flare::view_alloc(flare::WithoutInitializing, "flags"),
+      : m_flags(flare::tensor_alloc(flare::WithoutInitializing, "flags"),
                 flare::TeamPolicy<ScheduleType, ExecSpace>(1, 1).team_size_max(
                     *this, flare::ParallelReduceTag()),
                 league_size) {
@@ -247,7 +247,7 @@ class TestReduceTeam {
         Test::ReduceTeamFunctor<ScalarType, execution_space, ScheduleType>;
     using value_type = typename functor_type::value_type;
     using result_type =
-        flare::View<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
+        flare::Tensor<value_type, flare::HostSpace, flare::MemoryUnmanaged>;
 
     enum { Count = 3 };
     enum { Repeat = 100 };
@@ -294,8 +294,8 @@ class ScanTeamFunctor {
   using policy_type     = flare::TeamPolicy<ScheduleType, execution_space>;
   using value_type      = int64_t;
 
-  flare::View<value_type, execution_space> accum;
-  flare::View<value_type, execution_space> total;
+  flare::Tensor<value_type, execution_space> accum;
+  flare::Tensor<value_type, execution_space> total;
 
   ScanTeamFunctor() : accum("accum"), total("total") {}
 
@@ -381,7 +381,7 @@ class TestScanTeam {
 
   void run_test(const size_t nteam) {
     using result_type =
-        flare::View<int64_t, flare::HostSpace, flare::MemoryUnmanaged>;
+        flare::Tensor<int64_t, flare::HostSpace, flare::MemoryUnmanaged>;
 
     const unsigned REPEAT = 100000;
     unsigned Repeat;
@@ -437,7 +437,7 @@ struct SharedTeamFunctor {
 
   // TBD: MemoryUnmanaged should be the default for shared memory space.
   using shared_int_array_type =
-      flare::View<int *, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<int *, shmem_space, flare::MemoryUnmanaged>;
 
   // Tell how much shared memory will be required by this functor.
   inline unsigned team_shmem_size(int /*team_size*/) const {
@@ -496,7 +496,7 @@ struct TestSharedTeam {
   void run() {
     using Functor = Test::SharedTeamFunctor<ExecSpace, ScheduleType>;
     using result_type =
-        flare::View<typename Functor::value_type, flare::HostSpace,
+        flare::Tensor<typename Functor::value_type, flare::HostSpace,
                      flare::MemoryUnmanaged>;
     const size_t team_size =
         flare::TeamPolicy<ScheduleType, ExecSpace>(8192, 1).team_size_max(
@@ -525,14 +525,14 @@ struct TestLambdaSharedTeam {
 
   void run() {
     using Functor     = Test::SharedTeamFunctor<ExecSpace, ScheduleType>;
-    using result_type = flare::View<typename Functor::value_type, MemorySpace,
+    using result_type = flare::Tensor<typename Functor::value_type, MemorySpace,
                                      flare::MemoryUnmanaged>;
 
     using shmem_space = typename ExecSpace::scratch_memory_space;
 
     // TBD: MemoryUnmanaged should be the default for shared memory space.
     using shared_int_array_type =
-        flare::View<int *, shmem_space, flare::MemoryUnmanaged>;
+        flare::Tensor<int *, shmem_space, flare::MemoryUnmanaged>;
 
     const int SHARED_COUNT = 1000;
     int team_size = 1;
@@ -612,7 +612,7 @@ struct ScratchTeamFunctor {
 
   // TBD: MemoryUnmanaged should be the default for shared memory space.
   using shared_int_array_type =
-      flare::View<size_t *, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<size_t *, shmem_space, flare::MemoryUnmanaged>;
 
   FLARE_INLINE_FUNCTION
   void operator()(const typename policy_type::member_type &ind,
@@ -681,7 +681,7 @@ struct TestScratchTeam {
   void run() {
     using Functor = Test::ScratchTeamFunctor<ExecSpace, ScheduleType>;
     using result_type =
-        flare::View<typename Functor::value_type, flare::HostSpace,
+        flare::Tensor<typename Functor::value_type, flare::HostSpace,
                      flare::MemoryUnmanaged>;
     using p_type = flare::TeamPolicy<ScheduleType, ExecSpace>;
 
@@ -728,31 +728,31 @@ namespace Test {
 template <class ExecSpace>
 FLARE_INLINE_FUNCTION int test_team_mulit_level_scratch_loop_body(
     const typename flare::TeamPolicy<ExecSpace>::member_type &team) {
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       a_team1(team.team_scratch(0), 128);
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       a_thread1(team.thread_scratch(0), 16);
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       a_team2(team.team_scratch(0), 128);
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       a_thread2(team.thread_scratch(0), 16);
 
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       b_team1(team.team_scratch(1), 12800);
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       b_thread1(team.thread_scratch(1), 1600);
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       b_team2(team.team_scratch(1), 12800);
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       b_thread2(team.thread_scratch(1), 1600);
 
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       a_team3(team.team_scratch(0), 128);
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       a_thread3(team.thread_scratch(0), 16);
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       b_team3(team.team_scratch(1), 12800);
-  flare::View<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
+  flare::Tensor<double *, ExecSpace, flare::MemoryTraits<flare::Unmanaged>>
       b_thread3(team.thread_scratch(1), 1600);
 
   // The explicit types for 0 and 128 are here to test TeamThreadRange accepting
@@ -848,7 +848,7 @@ struct ClassNoShmemSizeFunction {
   using member_type =
       typename flare::TeamPolicy<ExecSpace, ScheduleType>::member_type;
 
-  flare::View<int, ExecSpace, flare::MemoryTraits<flare::Atomic>> errors;
+  flare::Tensor<int, ExecSpace, flare::MemoryTraits<flare::Atomic>> errors;
 
   FLARE_INLINE_FUNCTION
   void operator()(const TagFor &, const member_type &team) const {
@@ -863,26 +863,26 @@ struct ClassNoShmemSizeFunction {
   }
 
   void run() {
-    flare::View<int, ExecSpace> d_errors =
-        flare::View<int, ExecSpace>("Errors");
+    flare::Tensor<int, ExecSpace> d_errors =
+        flare::Tensor<int, ExecSpace>("Errors");
     errors = d_errors;
 
     const int per_team0 =
         3 *
-        flare::View<double *, ExecSpace,
+        flare::Tensor<double *, ExecSpace,
                      flare::MemoryTraits<flare::Unmanaged>>::shmem_size(128);
     const int per_thread0 =
         3 *
-        flare::View<double *, ExecSpace,
+        flare::Tensor<double *, ExecSpace,
                      flare::MemoryTraits<flare::Unmanaged>>::shmem_size(16);
 
     const int per_team1 =
-        3 * flare::View<
+        3 * flare::Tensor<
                 double *, ExecSpace,
                 flare::MemoryTraits<flare::Unmanaged>>::shmem_size(12800);
     const int per_thread1 =
         3 *
-        flare::View<double *, ExecSpace,
+        flare::Tensor<double *, ExecSpace,
                      flare::MemoryTraits<flare::Unmanaged>>::shmem_size(1600);
 
     int team_size      = 8;
@@ -901,8 +901,8 @@ struct ClassNoShmemSizeFunction {
           *this);
       flare::fence();
 
-      typename flare::View<int, ExecSpace>::HostMirror h_errors =
-          flare::create_mirror_view(d_errors);
+      typename flare::Tensor<int, ExecSpace>::HostMirror h_errors =
+          flare::create_mirror_tensor(d_errors);
       flare::deep_copy(h_errors, d_errors);
       ASSERT_EQ(h_errors(), 0);
     }
@@ -930,7 +930,7 @@ struct ClassWithShmemSizeFunction {
   using member_type =
       typename flare::TeamPolicy<ExecSpace, ScheduleType>::member_type;
 
-  flare::View<int, ExecSpace, flare::MemoryTraits<flare::Atomic>> errors;
+  flare::Tensor<int, ExecSpace, flare::MemoryTraits<flare::Atomic>> errors;
 
   FLARE_INLINE_FUNCTION
   void operator()(const TagFor &, const member_type &team) const {
@@ -945,17 +945,17 @@ struct ClassWithShmemSizeFunction {
   }
 
   void run() {
-    flare::View<int, ExecSpace> d_errors =
-        flare::View<int, ExecSpace>("Errors");
+    flare::Tensor<int, ExecSpace> d_errors =
+        flare::Tensor<int, ExecSpace>("Errors");
     errors = d_errors;
 
     const int per_team1 =
-        3 * flare::View<
+        3 * flare::Tensor<
                 double *, ExecSpace,
                 flare::MemoryTraits<flare::Unmanaged>>::shmem_size(12800);
     const int per_thread1 =
         3 *
-        flare::View<double *, ExecSpace,
+        flare::Tensor<double *, ExecSpace,
                      flare::MemoryTraits<flare::Unmanaged>>::shmem_size(1600);
 
     int team_size = 8;
@@ -973,8 +973,8 @@ struct ClassWithShmemSizeFunction {
           *this);
       flare::fence();
 
-      typename flare::View<int, ExecSpace>::HostMirror h_errors =
-          flare::create_mirror_view(d_errors);
+      typename flare::Tensor<int, ExecSpace>::HostMirror h_errors =
+          flare::create_mirror_tensor(d_errors);
       flare::deep_copy(h_errors, d_errors);
       ASSERT_EQ(h_errors(), 0);
     }
@@ -996,11 +996,11 @@ struct ClassWithShmemSizeFunction {
   unsigned team_shmem_size(int team_size) const {
     const int per_team0 =
         3 *
-        flare::View<double *, ExecSpace,
+        flare::Tensor<double *, ExecSpace,
                      flare::MemoryTraits<flare::Unmanaged>>::shmem_size(128);
     const int per_thread0 =
         3 *
-        flare::View<double *, ExecSpace,
+        flare::Tensor<double *, ExecSpace,
                      flare::MemoryTraits<flare::Unmanaged>>::shmem_size(16);
     return per_team0 + team_size * per_thread0;
   }
@@ -1009,25 +1009,25 @@ struct ClassWithShmemSizeFunction {
 template <class ExecSpace, class ScheduleType>
 void test_team_mulit_level_scratch_test_lambda() {
 #ifdef FLARE_ENABLE_CXX11_DISPATCH_LAMBDA
-  flare::View<int, ExecSpace, flare::MemoryTraits<flare::Atomic>> errors;
-  flare::View<int, ExecSpace> d_errors("Errors");
+  flare::Tensor<int, ExecSpace, flare::MemoryTraits<flare::Atomic>> errors;
+  flare::Tensor<int, ExecSpace> d_errors("Errors");
   errors = d_errors;
 
   const int per_team0 =
       3 *
-      flare::View<double *, ExecSpace,
+      flare::Tensor<double *, ExecSpace,
                    flare::MemoryTraits<flare::Unmanaged>>::shmem_size(128);
   const int per_thread0 =
-      3 * flare::View<double *, ExecSpace,
+      3 * flare::Tensor<double *, ExecSpace,
                        flare::MemoryTraits<flare::Unmanaged>>::shmem_size(16);
 
   const int per_team1 =
       3 *
-      flare::View<double *, ExecSpace,
+      flare::Tensor<double *, ExecSpace,
                    flare::MemoryTraits<flare::Unmanaged>>::shmem_size(12800);
   const int per_thread1 =
       3 *
-      flare::View<double *, ExecSpace,
+      flare::Tensor<double *, ExecSpace,
                    flare::MemoryTraits<flare::Unmanaged>>::shmem_size(1600);
 
   int team_size = 8;
@@ -1049,8 +1049,8 @@ void test_team_mulit_level_scratch_test_lambda() {
       });
   flare::fence();
 
-  typename flare::View<int, ExecSpace>::HostMirror h_errors =
-      flare::create_mirror_view(errors);
+  typename flare::Tensor<int, ExecSpace>::HostMirror h_errors =
+      flare::create_mirror_tensor(errors);
   flare::deep_copy(h_errors, d_errors);
   ASSERT_EQ(h_errors(), 0);
 
@@ -1100,13 +1100,13 @@ struct TestShmemSize {
   TestShmemSize() { run(); }
 
   void run() {
-    using view_type = flare::View<int64_t ***, ExecSpace>;
+    using tensor_type = flare::Tensor<int64_t ***, ExecSpace>;
 
     size_t d1 = 5;
     size_t d2 = 6;
     size_t d3 = 7;
 
-    size_t size = view_type::shmem_size(d1, d2, d3);
+    size_t size = tensor_type::shmem_size(d1, d2, d3);
 
     ASSERT_EQ(size, (d1 * d2 * d3 + 1) * sizeof(int64_t));
 
@@ -1118,10 +1118,10 @@ struct TestShmemSize {
     int order[3]   = {2, 0, 1};
     int extents[3] = {100, 10, 3};
     auto s1 =
-        flare::View<double ***, flare::LayoutStride, ExecSpace>::shmem_size(
+        flare::Tensor<double ***, flare::LayoutStride, ExecSpace>::shmem_size(
             flare::LayoutStride::order_dimensions(rank, order, extents));
     auto s2 =
-        flare::View<double ***, flare::LayoutRight, ExecSpace>::shmem_size(
+        flare::Tensor<double ***, flare::LayoutRight, ExecSpace>::shmem_size(
             extents[0], extents[1], extents[2]);
     ASSERT_EQ(s1, s2);
   }
@@ -1395,28 +1395,28 @@ struct TestScratchAlignment {
     double x, y, z;
   };
   TestScratchAlignment() {
-    test_view(true);
-    test_view(false);
+    test_tensor(true);
+    test_tensor(false);
     test_minimal();
     test_raw();
   }
-  using ScratchView =
-      flare::View<TestScalar *, typename ExecSpace::scratch_memory_space>;
-  using ScratchViewInt =
-      flare::View<int *, typename ExecSpace::scratch_memory_space>;
-  void test_view(bool allocate_small) {
-    int shmem_size = ScratchView::shmem_size(11);
+  using ScratchTensor =
+      flare::Tensor<TestScalar *, typename ExecSpace::scratch_memory_space>;
+  using ScratchTensorInt =
+      flare::Tensor<int *, typename ExecSpace::scratch_memory_space>;
+  void test_tensor(bool allocate_small) {
+    int shmem_size = ScratchTensor::shmem_size(11);
     int team_size      = 1;
-    if (allocate_small) shmem_size += ScratchViewInt::shmem_size(1);
+    if (allocate_small) shmem_size += ScratchTensorInt::shmem_size(1);
     flare::parallel_for(
         flare::TeamPolicy<ExecSpace>(1, team_size)
             .set_scratch_size(0, flare::PerTeam(shmem_size)),
         FLARE_LAMBDA(
             const typename flare::TeamPolicy<ExecSpace>::member_type &team) {
-          if (allocate_small) ScratchViewInt(team.team_scratch(0), 1);
-          ScratchView a(team.team_scratch(0), 11);
+          if (allocate_small) ScratchTensorInt(team.team_scratch(0), 1);
+          ScratchTensor a(team.team_scratch(0), 11);
           if (ptrdiff_t(a.data()) % sizeof(TestScalar) != 0)
-            flare::abort("Error: invalid scratch view alignment\n");
+            flare::abort("Error: invalid scratch tensor alignment\n");
         });
     flare::fence();
   }
@@ -1427,7 +1427,7 @@ struct TestScratchAlignment {
     int team_size      = 1;
     flare::TeamPolicy<ExecSpace> policy(1, team_size);
     size_t scratch_size = sizeof(int);
-    flare::View<int, ExecSpace> flag("Flag");
+    flare::Tensor<int, ExecSpace> flag("Flag");
 
     flare::parallel_for(
         policy.set_scratch_size(0, flare::PerTeam(scratch_size)),
@@ -1446,7 +1446,7 @@ struct TestScratchAlignment {
     using member_type = typename flare::TeamPolicy<ExecSpace>::member_type;
     int team_size      = 1;
     flare::TeamPolicy<ExecSpace> policy(1, team_size);
-    flare::View<int, ExecSpace> flag("Flag");
+    flare::Tensor<int, ExecSpace> flag("Flag");
 
     flare::parallel_for(
         policy.set_scratch_size(0, flare::PerTeam(1024)),
@@ -1518,8 +1518,8 @@ struct TestTeamPolicyHandleByValue {
   void test() {
 #if defined(FLARE_ENABLE_CXX11_DISPATCH_LAMBDA)
     const int M = 1, N = 1;
-    flare::View<scalar **, mem_space> a("a", M, N);
-    flare::View<scalar **, mem_space> b("b", M, N);
+    flare::Tensor<scalar **, mem_space> a("a", M, N);
+    flare::Tensor<scalar **, mem_space> b("b", M, N);
     flare::deep_copy(a, 0.0);
     flare::deep_copy(b, 1.0);
     flare::parallel_for(
@@ -1599,7 +1599,7 @@ struct TestRepeatedTeamReduce {
     }
   }
 
-  flare::View<double *, ExecutionSpace> v;
+  flare::Tensor<double *, ExecutionSpace> v;
 };
 
 }  // namespace

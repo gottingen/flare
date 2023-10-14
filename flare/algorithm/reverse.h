@@ -46,21 +46,21 @@ template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 void reverse(const ExecutionSpace& ex,
-             const ::flare::View<DataType, Properties...>& view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+             const ::flare::Tensor<DataType, Properties...>& tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   namespace KE = ::flare::experimental;
-  return detail::reverse_exespace_impl("flare::reverse_view_api_default", ex,
-                                     KE::begin(view), KE::end(view));
+  return detail::reverse_exespace_impl("flare::reverse_tensor_api_default", ex,
+                                     KE::begin(tensor), KE::end(tensor));
 }
 
 template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 void reverse(const std::string& label, const ExecutionSpace& ex,
-             const ::flare::View<DataType, Properties...>& view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+             const ::flare::Tensor<DataType, Properties...>& tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   namespace KE = ::flare::experimental;
-  return detail::reverse_exespace_impl(label, ex, KE::begin(view), KE::end(view));
+  return detail::reverse_exespace_impl(label, ex, KE::begin(tensor), KE::end(tensor));
 }
 
 //
@@ -79,10 +79,10 @@ template <typename TeamHandleType, typename DataType, typename... Properties,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION void reverse(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType, Properties...>& view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
+    const ::flare::Tensor<DataType, Properties...>& tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
   namespace KE = ::flare::experimental;
-  return detail::reverse_team_impl(teamHandle, KE::begin(view), KE::end(view));
+  return detail::reverse_team_impl(teamHandle, KE::begin(tensor), KE::end(tensor));
 }
 
 }  // namespace experimental

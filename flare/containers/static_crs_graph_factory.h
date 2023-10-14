@@ -27,11 +27,11 @@ template <class DataType, class Arg1Type, class Arg2Type, class Arg3Type,
           typename SizeType>
 inline typename StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
                                SizeType>::HostMirror
-create_mirror_view(const StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
-                                        SizeType>& view,
-                   std::enable_if_t<ViewTraits<DataType, Arg1Type, Arg2Type,
+create_mirror_tensor(const StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
+                                        SizeType>& tensor,
+                   std::enable_if_t<TensorTraits<DataType, Arg1Type, Arg2Type,
                                                Arg3Type>::is_hostspace>* = 0) {
-  return view;
+  return tensor;
 }
 
 template <class DataType, class Arg1Type, class Arg2Type, class Arg3Type,
@@ -39,7 +39,7 @@ template <class DataType, class Arg1Type, class Arg2Type, class Arg3Type,
 inline typename StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
                                SizeType>::HostMirror
 create_mirror(const StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
-                                   SizeType>& view) {
+                                   SizeType>& tensor) {
   // Force copy:
   // using alloc = detail::ViewAssignment<detail::ViewDefault>; // unused
   using staticcrsgraph_type =
@@ -47,20 +47,20 @@ create_mirror(const StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
 
   typename staticcrsgraph_type::HostMirror tmp;
   typename staticcrsgraph_type::row_map_type::HostMirror tmp_row_map =
-      create_mirror(view.row_map);
+      create_mirror(tensor.row_map);
   typename staticcrsgraph_type::row_block_type::HostMirror
-      tmp_row_block_offsets = create_mirror(view.row_block_offsets);
+      tmp_row_block_offsets = create_mirror(tensor.row_block_offsets);
 
   // Allocation to match:
   tmp.row_map = tmp_row_map;  // Assignment of 'const' from 'non-const'
-  tmp.entries = create_mirror(view.entries);
+  tmp.entries = create_mirror(tensor.entries);
   tmp.row_block_offsets =
       tmp_row_block_offsets;  // Assignment of 'const' from 'non-const'
 
   // Deep copy:
-  deep_copy(tmp_row_map, view.row_map);
-  deep_copy(tmp.entries, view.entries);
-  deep_copy(tmp_row_block_offsets, view.row_block_offsets);
+  deep_copy(tmp_row_map, tensor.row_map);
+  deep_copy(tmp.entries, tensor.entries);
+  deep_copy(tmp_row_block_offsets, tensor.row_block_offsets);
 
   return tmp;
 }
@@ -69,11 +69,11 @@ template <class DataType, class Arg1Type, class Arg2Type, class Arg3Type,
           typename SizeType>
 inline typename StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
                                SizeType>::HostMirror
-create_mirror_view(const StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
-                                        SizeType>& view,
-                   std::enable_if_t<!ViewTraits<DataType, Arg1Type, Arg2Type,
+create_mirror_tensor(const StaticCrsGraph<DataType, Arg1Type, Arg2Type, Arg3Type,
+                                        SizeType>& tensor,
+                   std::enable_if_t<!TensorTraits<DataType, Arg1Type, Arg2Type,
                                                 Arg3Type>::is_hostspace>* = 0) {
-  return create_mirror(view);
+  return create_mirror(tensor);
 }
 }  // namespace flare
 
@@ -87,7 +87,7 @@ inline typename StaticCrsGraphType::staticcrsgraph_type create_staticcrsgraph(
     const std::string& label, const std::vector<InputSizeType>& input) {
   using output_type  = StaticCrsGraphType;
   using entries_type = typename output_type::entries_type;
-  using work_type    = View<
+  using work_type    = Tensor<
       typename output_type::size_type[], typename output_type::array_layout,
       typename output_type::device_type, typename output_type::memory_traits>;
 
@@ -100,7 +100,7 @@ inline typename StaticCrsGraphType::staticcrsgraph_type create_staticcrsgraph(
   {
     work_type row_work("tmp", length + 1);
 
-    typename work_type::HostMirror row_work_host = create_mirror_view(row_work);
+    typename work_type::HostMirror row_work_host = create_mirror_tensor(row_work);
 
     size_t sum       = 0;
     row_work_host[0] = 0;
@@ -126,9 +126,9 @@ inline typename StaticCrsGraphType::staticcrsgraph_type create_staticcrsgraph(
   using output_type  = StaticCrsGraphType;
   using entries_type = typename output_type::entries_type;
 
-  static_assert(entries_type::rank == 1, "Graph entries view must be rank one");
+  static_assert(entries_type::rank == 1, "Graph entries tensor must be rank one");
 
-  using work_type = View<
+  using work_type = Tensor<
       typename output_type::size_type[], typename output_type::array_layout,
       typename output_type::device_type, typename output_type::memory_traits>;
 
@@ -141,7 +141,7 @@ inline typename StaticCrsGraphType::staticcrsgraph_type create_staticcrsgraph(
   {
     work_type row_work("tmp", length + 1);
 
-    typename work_type::HostMirror row_work_host = create_mirror_view(row_work);
+    typename work_type::HostMirror row_work_host = create_mirror_tensor(row_work);
 
     size_t sum       = 0;
     row_work_host[0] = 0;
@@ -158,7 +158,7 @@ inline typename StaticCrsGraphType::staticcrsgraph_type create_staticcrsgraph(
   // Fill in the entries:
   {
     typename entries_type::HostMirror host_entries =
-        create_mirror_view(output.entries);
+        create_mirror_tensor(output.entries);
 
     size_t sum = 0;
     for (size_t i = 0; i < length; ++i) {

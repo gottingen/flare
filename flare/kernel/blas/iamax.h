@@ -27,10 +27,10 @@ namespace flare::blas {
     /// of the vector x.
     ///
     /// \tparam execution_space a flare execution space where the kernel will run.
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
     ///
     /// \param space [in] execution space instance where the kernel will run.
-    /// \param x [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
     ///
     /// \return The (smallest) index of the element of the maximum magnitude; a
     /// single value.
@@ -43,8 +43,8 @@ namespace flare::blas {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::iamax: execution_space must be a valid flare "
                       "execution space");
-        static_assert(flare::is_view<XVector>::value,
-                      "flare::blas::iamax: XVector must be a flare::View.");
+        static_assert(flare::is_tensor<XVector>::value,
+                      "flare::blas::iamax: XVector must be a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XVector::memory_space>::accessible,
@@ -55,7 +55,7 @@ namespace flare::blas {
 
         typedef typename XVector::size_type index_type;
 
-        typedef flare::View<
+        typedef flare::Tensor<
                 typename XVector::const_value_type*,
                 typename flare::detail::GetUnifiedLayout<XVector>::array_layout,
                 typename XVector::device_type, flare::MemoryTraits<flare::Unmanaged> >
@@ -63,7 +63,7 @@ namespace flare::blas {
 
         using layout_t = typename XVector_Internal::array_layout;
 
-        typedef flare::View<index_type, layout_t, flare::HostSpace,
+        typedef flare::Tensor<index_type, layout_t, flare::HostSpace,
         flare::MemoryTraits<flare::Unmanaged> >
                 RVector_Internal;
 
@@ -83,9 +83,9 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue associated
     /// with the execution space of XVector.
     ///
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
     ///
-    /// \param x [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
     ///
     /// \return The (smallest) index of the element of the maximum magnitude; a
     /// single value.
@@ -101,27 +101,27 @@ namespace flare::blas {
     /// maximum magnitude of the corresponding entry in X.
     /// This function is non-blocking and thread-safe.
     ///
-    /// \tparam RMV 0-D or 1-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.
+    /// \tparam RMV 0-D or 1-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.
     ///
     /// \param space [in] execution space instance where the kernel will run.
-    /// \param R [out] Output View (rank 0 or 1) containing the results.
-    /// \param X [in] Input View (rank 1 or 2).
+    /// \param R [out] Output Tensor (rank 0 or 1) containing the results.
+    /// \param X [in] Input Tensor (rank 1 or 2).
     ///
     /// Note for TPL cuBLAS: When TPL cuBLAS iamax is used and returns result to a
-    /// view, RMV must be 0-D view and XMV must be 1-D view.
+    /// tensor, RMV must be 0-D tensor and XMV must be 1-D tensor.
     template <class execution_space, class RV, class XMV>
     void iamax(const execution_space& space, const RV& R, const XMV& X,
-               typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
+               typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::iamax: execution_space must be a valid flare "
                       "execution space.");
-        static_assert(flare::is_view<RV>::value,
+        static_assert(flare::is_tensor<RV>::value,
                       "flare::blas::iamax: "
-                      "R is not a flare::View.");
-        static_assert(flare::is_view<XMV>::value,
+                      "R is not a flare::Tensor.");
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::iamax: "
-                      "X is not a flare::View.");
+                      "X is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
@@ -157,9 +157,9 @@ namespace flare::blas {
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         RV, UnifiedXLayout>::array_layout;
 
-        // Create unmanaged versions of the input Views.  RV may be rank 0 or rank 1.
+        // Create unmanaged versions of the input Tensors.  RV may be rank 0 or rank 1.
         // XMV may be rank 1 or rank 2.
-        typedef flare::View<typename std::conditional<
+        typedef flare::Tensor<typename std::conditional<
                 RV::rank == 0, typename RV::non_const_value_type,
                 typename RV::non_const_value_type*>::type,
                 UnifiedRVLayout,
@@ -169,7 +169,7 @@ namespace flare::blas {
                         flare::HostSpace, typename RV::device_type>::type,
                 flare::MemoryTraits<flare::Unmanaged> >
                 RV_Internal;
-        typedef flare::View<
+        typedef flare::Tensor<
                 typename std::conditional<XMV::rank == 1, typename XMV::const_value_type*,
                         typename XMV::const_value_type**>::type,
                 UnifiedXLayout, typename XMV::device_type,
@@ -190,14 +190,14 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue associated
     /// with the execution space of XVector.
     ///
-    /// \tparam RMV 0-D or 1-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.
+    /// \tparam RMV 0-D or 1-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.
     ///
     /// Note for TPL cuBLAS: When TPL cuBLAS iamax is used and returns result to a
-    /// view, RMV must be 0-D view and XMV must be 1-D view.
+    /// tensor, RMV must be 0-D tensor and XMV must be 1-D tensor.
     template <class RV, class XMV>
     void iamax(const RV& R, const XMV& X,
-               typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
+               typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
         iamax(typename XMV::execution_space{}, R, X);
     }
 

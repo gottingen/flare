@@ -26,19 +26,19 @@ namespace Test {
     void test_rotg_impl(typename Device::execution_space const& space,
                         Scalar const a_in, Scalar const b_in) {
         using magnitude_type = typename flare::ArithTraits<Scalar>::mag_type;
-        using SViewType      = flare::View<Scalar, Device>;
-        using MViewType      = flare::View<magnitude_type, Device>;
+        using STensorType      = flare::Tensor<Scalar, Device>;
+        using MTensorType      = flare::Tensor<magnitude_type, Device>;
 
         // const magnitude_type eps = flare::ArithTraits<Scalar>::eps();
         // const Scalar zero        = flare::ArithTraits<Scalar>::zero();
 
         // Initialize inputs/outputs
-        SViewType a("a");
+        STensorType a("a");
         flare::deep_copy(a, a_in);
-        SViewType b("b");
+        STensorType b("b");
         flare::deep_copy(b, b_in);
-        MViewType c("c");
-        SViewType s("s");
+        MTensorType c("c");
+        STensorType s("s");
 
         flare::blas::rotg(space, a, b, c, s);
 

@@ -283,14 +283,14 @@ namespace flare::experimental {
             // to interact with (even in release mode), so we should throw an exception
             // with an explanation rather than just doing a contract assertion.
             // We can't static_assert this because of the way that Reducers store
-            // whether or not they point to a View as a runtime boolean rather than part
+            // whether or not they point to a Tensor as a runtime boolean rather than part
             // of the type.
             if (flare::detail::parallel_reduce_needs_fence(
                     graph_impl_ptr->get_execution_space(), return_value)) {
                 flare::detail::throw_runtime_exception(
                         "Parallel reductions in graphs can't operate on Reducers that "
                         "reference a scalar because they can't complete synchronously. Use a "
-                        "flare::View instead and keep in mind the result will only be "
+                        "flare::Tensor instead and keep in mind the result will only be "
                         "available once the graph is submitted (or in tasks that depend on "
                         "this one).");
             }
@@ -299,10 +299,10 @@ namespace flare::experimental {
             // This is a disaster, but I guess it's not a my disaster to fix right now
             using return_type_remove_cvref =
                     std::remove_cv_t<std::remove_reference_t<ReturnType>>;
-            static_assert(flare::is_view<return_type_remove_cvref>::value ||
+            static_assert(flare::is_tensor<return_type_remove_cvref>::value ||
                           flare::is_reducer<return_type_remove_cvref>::value,
                           "Output argument to parallel reduce in a graph must be a "
-                          "View or a Reducer");
+                          "Tensor or a Reducer");
             using return_type =
                 // Yes, you do really have to do this...
                     std::conditional_t<flare::is_reducer<return_type_remove_cvref>::value,

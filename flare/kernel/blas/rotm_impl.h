@@ -27,20 +27,20 @@
 
 namespace flare::blas::detail {
 
-    template <class VectorView, class ParamView>
+    template <class VectorTensor, class ParamTensor>
     struct rotm_functor {
-        using Scalar = typename VectorView::non_const_value_type;
+        using Scalar = typename VectorTensor::non_const_value_type;
 
         // Dispatch tags
         struct minus_one_tag {};
         struct zero_tag {};
         struct one_tag {};
 
-        VectorView X, Y;
-        ParamView param;
+        VectorTensor X, Y;
+        ParamTensor param;
 
-        rotm_functor(VectorView const& X_, VectorView const& Y_,
-                     ParamView const& param_)
+        rotm_functor(VectorTensor const& X_, VectorTensor const& Y_,
+                     ParamTensor const& param_)
                 : X(X_), Y(Y_), param(param_) {}
 
         FLARE_INLINE_FUNCTION
@@ -65,10 +65,10 @@ namespace flare::blas::detail {
         }
     };
 
-    template <class execution_space, class VectorView, class ParamView>
-    void Rotm_Invoke(execution_space const& space, VectorView const& X,
-                     VectorView const& Y, ParamView const& param) {
-        using Scalar = typename VectorView::value_type;
+    template <class execution_space, class VectorTensor, class ParamTensor>
+    void Rotm_Invoke(execution_space const& space, VectorTensor const& X,
+                     VectorTensor const& Y, ParamTensor const& param) {
+        using Scalar = typename VectorTensor::value_type;
         static_assert(!flare::ArithTraits<Scalar>::is_complex,
                       "rotm is not defined for complex types!");
 
@@ -78,7 +78,7 @@ namespace flare::blas::detail {
 
         rotm_functor myFunc(X, Y, param);
 
-        typename ParamView::HostMirror param_h = flare::create_mirror_view(param);
+        typename ParamTensor::HostMirror param_h = flare::create_mirror_tensor(param);
         flare::deep_copy(param_h, param);
         Scalar const flag = param_h(0);
 
@@ -87,17 +87,17 @@ namespace flare::blas::detail {
         } else if (flag == -one) {
             flare::RangePolicy<
                     execution_space,
-                    typename rotm_functor<VectorView, ParamView>::minus_one_tag>
+                    typename rotm_functor<VectorTensor, ParamTensor>::minus_one_tag>
                     rotm_policy(space, 0, X.extent(0));
             flare::parallel_for("flare::blas::rotm_minus_one", rotm_policy, myFunc);
         } else if (flag == zero) {
             flare::RangePolicy<execution_space,
-                    typename rotm_functor<VectorView, ParamView>::zero_tag>
+                    typename rotm_functor<VectorTensor, ParamTensor>::zero_tag>
                     rotm_policy(space, 0, X.extent(0));
             flare::parallel_for("flare::blas::rotm_zero", rotm_policy, myFunc);
         } else if (flag == one) {
             flare::RangePolicy<execution_space,
-                    typename rotm_functor<VectorView, ParamView>::one_tag>
+                    typename rotm_functor<VectorTensor, ParamTensor>::one_tag>
                     rotm_policy(space, 0, X.extent(0));
             flare::parallel_for("flare::blas::rotm_one", rotm_policy, myFunc);
         } else {
@@ -107,12 +107,12 @@ namespace flare::blas::detail {
     }
 
     // Unification layer
-    template <class execution_space, class VectorView, class ParamView>
+    template <class execution_space, class VectorTensor, class ParamTensor>
     struct Rotm {
-        static void rotm(execution_space const& space, VectorView const& X,
-                         VectorView const& Y, ParamView const& param) {
+        static void rotm(execution_space const& space, VectorTensor const& X,
+                         VectorTensor const& Y, ParamTensor const& param) {
             flare::Profiling::pushRegion("flare::blas::rotm");
-            Rotm_Invoke<execution_space, VectorView, ParamView>(space, X, Y, param);
+            Rotm_Invoke<execution_space, VectorTensor, ParamTensor>(space, X, Y, param);
             flare::Profiling::popRegion();
         }
     };
@@ -125,9 +125,9 @@ namespace flare::blas::detail {
 #define FLARE_BLAS_ROTM_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE) \
   template struct Rotm<                                                       \
       EXEC_SPACE,                                                             \
-      flare::View<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
+      flare::Tensor<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,    \
                    flare::MemoryTraits<flare::Unmanaged>>,                  \
-      flare::View<const SCALAR[5], LAYOUT,                                   \
+      flare::Tensor<const SCALAR[5], LAYOUT,                                   \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                     \
                    flare::MemoryTraits<flare::Unmanaged>>>;
 

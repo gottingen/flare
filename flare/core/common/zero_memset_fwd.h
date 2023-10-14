@@ -18,7 +18,7 @@
 
 namespace flare::detail {
 
-    template<typename ExecutionSpace, class ViewType>
+    template<typename ExecutionSpace, class TensorType>
     struct ZeroMemset;
 
 }  // namespace flare::detail

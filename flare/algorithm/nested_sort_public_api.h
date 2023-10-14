@@ -23,74 +23,74 @@
 namespace flare {
 namespace experimental {
 
-template <class TeamMember, class ViewType>
+template <class TeamMember, class TensorType>
 FLARE_INLINE_FUNCTION void sort_team(const TeamMember& t,
-                                      const ViewType& view) {
-  detail::sort_nested_impl(t, view, nullptr,
+                                      const TensorType& tensor) {
+  detail::sort_nested_impl(t, tensor, nullptr,
                          experimental::detail::StdAlgoLessThanBinaryPredicate<
-                             typename ViewType::non_const_value_type>(),
+                             typename TensorType::non_const_value_type>(),
                          detail::NestedRange<true>());
 }
 
-template <class TeamMember, class ViewType, class Comparator>
-FLARE_INLINE_FUNCTION void sort_team(const TeamMember& t, const ViewType& view,
+template <class TeamMember, class TensorType, class Comparator>
+FLARE_INLINE_FUNCTION void sort_team(const TeamMember& t, const TensorType& tensor,
                                       const Comparator& comp) {
-  detail::sort_nested_impl(t, view, nullptr, comp, detail::NestedRange<true>());
+  detail::sort_nested_impl(t, tensor, nullptr, comp, detail::NestedRange<true>());
 }
 
-template <class TeamMember, class KeyViewType, class ValueViewType>
+template <class TeamMember, class KeyTensorType, class ValueTensorType>
 FLARE_INLINE_FUNCTION void sort_by_key_team(const TeamMember& t,
-                                             const KeyViewType& keyView,
-                                             const ValueViewType& valueView) {
-  detail::sort_nested_impl(t, keyView, valueView,
+                                             const KeyTensorType& keyTensor,
+                                             const ValueTensorType& valueTensor) {
+  detail::sort_nested_impl(t, keyTensor, valueTensor,
                          experimental::detail::StdAlgoLessThanBinaryPredicate<
-                             typename KeyViewType::non_const_value_type>(),
+                             typename KeyTensorType::non_const_value_type>(),
                          detail::NestedRange<true>());
 }
 
-template <class TeamMember, class KeyViewType, class ValueViewType,
+template <class TeamMember, class KeyTensorType, class ValueTensorType,
           class Comparator>
 FLARE_INLINE_FUNCTION void sort_by_key_team(const TeamMember& t,
-                                             const KeyViewType& keyView,
-                                             const ValueViewType& valueView,
+                                             const KeyTensorType& keyTensor,
+                                             const ValueTensorType& valueTensor,
                                              const Comparator& comp) {
-  detail::sort_nested_impl(t, keyView, valueView, comp,
+  detail::sort_nested_impl(t, keyTensor, valueTensor, comp,
                          detail::NestedRange<true>());
 }
 
-template <class TeamMember, class ViewType>
+template <class TeamMember, class TensorType>
 FLARE_INLINE_FUNCTION void sort_thread(const TeamMember& t,
-                                        const ViewType& view) {
-  detail::sort_nested_impl(t, view, nullptr,
+                                        const TensorType& tensor) {
+  detail::sort_nested_impl(t, tensor, nullptr,
                          experimental::detail::StdAlgoLessThanBinaryPredicate<
-                             typename ViewType::non_const_value_type>(),
+                             typename TensorType::non_const_value_type>(),
                          detail::NestedRange<false>());
 }
 
-template <class TeamMember, class ViewType, class Comparator>
+template <class TeamMember, class TensorType, class Comparator>
 FLARE_INLINE_FUNCTION void sort_thread(const TeamMember& t,
-                                        const ViewType& view,
+                                        const TensorType& tensor,
                                         const Comparator& comp) {
-  detail::sort_nested_impl(t, view, nullptr, comp, detail::NestedRange<false>());
+  detail::sort_nested_impl(t, tensor, nullptr, comp, detail::NestedRange<false>());
 }
 
-template <class TeamMember, class KeyViewType, class ValueViewType>
+template <class TeamMember, class KeyTensorType, class ValueTensorType>
 FLARE_INLINE_FUNCTION void sort_by_key_thread(const TeamMember& t,
-                                               const KeyViewType& keyView,
-                                               const ValueViewType& valueView) {
-  detail::sort_nested_impl(t, keyView, valueView,
+                                               const KeyTensorType& keyTensor,
+                                               const ValueTensorType& valueTensor) {
+  detail::sort_nested_impl(t, keyTensor, valueTensor,
                          experimental::detail::StdAlgoLessThanBinaryPredicate<
-                             typename KeyViewType::non_const_value_type>(),
+                             typename KeyTensorType::non_const_value_type>(),
                          detail::NestedRange<false>());
 }
 
-template <class TeamMember, class KeyViewType, class ValueViewType,
+template <class TeamMember, class KeyTensorType, class ValueTensorType,
           class Comparator>
 FLARE_INLINE_FUNCTION void sort_by_key_thread(const TeamMember& t,
-                                               const KeyViewType& keyView,
-                                               const ValueViewType& valueView,
+                                               const KeyTensorType& keyTensor,
+                                               const ValueTensorType& valueTensor,
                                                const Comparator& comp) {
-  detail::sort_nested_impl(t, keyView, valueView, comp,
+  detail::sort_nested_impl(t, keyTensor, valueTensor, comp,
                          detail::NestedRange<false>());
 }
 

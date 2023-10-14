@@ -26,11 +26,11 @@
 
 namespace flare::blas::detail {
 
-    template <class DXView, class YView, class PView>
-    FLARE_INLINE_FUNCTION void rotmg_impl(DXView const& d1, DXView const& d2,
-                                           DXView const& x1, YView const& y1,
-                                           PView const& param) {
-        using Scalar = typename DXView::non_const_value_type;
+    template <class DXTensor, class YTensor, class PTensor>
+    FLARE_INLINE_FUNCTION void rotmg_impl(DXTensor const& d1, DXTensor const& d2,
+                                           DXTensor const& x1, YTensor const& y1,
+                                           PTensor const& param) {
+        using Scalar = typename DXTensor::non_const_value_type;
 
         const Scalar one  = flare::ArithTraits<Scalar>::one();
         const Scalar zero = flare::ArithTraits<Scalar>::zero();
@@ -176,27 +176,27 @@ namespace flare::blas::detail {
         }
     }
 
-    template <class DXView, class YView, class PView>
+    template <class DXTensor, class YTensor, class PTensor>
     struct rotmg_functor {
-        using Scalar = typename DXView::non_const_value_type;
+        using Scalar = typename DXTensor::non_const_value_type;
 
-        DXView d1, d2, x1;
-        YView y1;
-        PView param;
+        DXTensor d1, d2, x1;
+        YTensor y1;
+        PTensor param;
 
-        rotmg_functor(DXView& d1_, DXView& d2_, DXView& x1_, const YView& y1_,
-                      PView& param_)
+        rotmg_functor(DXTensor& d1_, DXTensor& d2_, DXTensor& x1_, const YTensor& y1_,
+                      PTensor& param_)
                 : d1(d1_), d2(d2_), x1(x1_), y1(y1_), param(param_) {}
 
         FLARE_INLINE_FUNCTION
         void operator()(const int) const { rotmg_impl(d1, d2, x1, y1, param); }
     };
 
-    template <class execution_space, class DXView, class YView, class PView>
-    void Rotmg_Invoke(execution_space const& space, DXView const& d1,
-                      DXView const& d2, DXView const& x1, YView const& y1,
-                      PView const& param) {
-        using Scalar = typename DXView::value_type;
+    template <class execution_space, class DXTensor, class YTensor, class PTensor>
+    void Rotmg_Invoke(execution_space const& space, DXTensor const& d1,
+                      DXTensor const& d2, DXTensor const& x1, YTensor const& y1,
+                      PTensor const& param) {
+        using Scalar = typename DXTensor::value_type;
         static_assert(!flare::ArithTraits<Scalar>::is_complex,
                       "rotmg is not defined for complex types!");
 
@@ -207,12 +207,12 @@ namespace flare::blas::detail {
 
     // Unification layer
 
-    template <class execution_space, class DXView, class YView, class PView>
+    template <class execution_space, class DXTensor, class YTensor, class PTensor>
     struct Rotmg {
-        static void rotmg(execution_space const& space, DXView& d1, DXView& d2,
-                          DXView& x1, YView& y1, PView& param) {
+        static void rotmg(execution_space const& space, DXTensor& d1, DXTensor& d2,
+                          DXTensor& x1, YTensor& y1, PTensor& param) {
             flare::Profiling::pushRegion("flare::blas::rotmg");
-            Rotmg_Invoke<execution_space, DXView, YView, PView>(space, d1, d2, x1, y1,
+            Rotmg_Invoke<execution_space, DXTensor, YTensor, PTensor>(space, d1, d2, x1, y1,
                                                                 param);
             flare::Profiling::popRegion();
         }
@@ -227,12 +227,12 @@ namespace flare::blas::detail {
 #define FLARE_BLAS_ROTMG_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE) \
   template struct Rotmg<                                                       \
       EXEC_SPACE,                                                              \
-      flare::View<SCALAR, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,      \
+      flare::Tensor<SCALAR, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,      \
                    flare::MemoryTraits<flare::Unmanaged>>,                   \
-      flare::View<const SCALAR, LAYOUT,                                       \
+      flare::Tensor<const SCALAR, LAYOUT,                                       \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                      \
                    flare::MemoryTraits<flare::Unmanaged>>,                   \
-      flare::View<SCALAR[5], LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,   \
+      flare::Tensor<SCALAR[5], LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,   \
                    flare::MemoryTraits<flare::Unmanaged>>>;
 
 

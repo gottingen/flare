@@ -52,15 +52,15 @@ template <
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool lexicographical_compare(
     const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    ::flare::View<DataType2, Properties2...>& view2) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    ::flare::Tensor<DataType2, Properties2...>& tensor2) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
   return detail::lexicographical_compare_exespace_impl(
-      "flare::lexicographical_compare_view_api_default", ex, KE::cbegin(view1),
-      KE::cend(view1), KE::cbegin(view2), KE::cend(view2));
+      "flare::lexicographical_compare_tensor_api_default", ex, KE::cbegin(tensor1),
+      KE::cend(tensor1), KE::cbegin(tensor2), KE::cend(tensor2));
 }
 
 template <
@@ -69,15 +69,15 @@ template <
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool lexicographical_compare(
     const std::string& label, const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    ::flare::View<DataType2, Properties2...>& view2) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    ::flare::Tensor<DataType2, Properties2...>& tensor2) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
   return detail::lexicographical_compare_exespace_impl(
-      label, ex, KE::cbegin(view1), KE::cend(view1), KE::cbegin(view2),
-      KE::cend(view2));
+      label, ex, KE::cbegin(tensor1), KE::cend(tensor1), KE::cbegin(tensor2),
+      KE::cend(tensor2));
 }
 
 template <
@@ -110,15 +110,15 @@ template <
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool lexicographical_compare(
     const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    ::flare::View<DataType2, Properties2...>& view2, ComparatorType comp) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    ::flare::Tensor<DataType2, Properties2...>& tensor2, ComparatorType comp) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
   return detail::lexicographical_compare_exespace_impl(
-      "flare::lexicographical_compare_view_api_default", ex, KE::cbegin(view1),
-      KE::cend(view1), KE::cbegin(view2), KE::cend(view2), comp);
+      "flare::lexicographical_compare_tensor_api_default", ex, KE::cbegin(tensor1),
+      KE::cend(tensor1), KE::cbegin(tensor2), KE::cend(tensor2), comp);
 }
 
 template <
@@ -127,15 +127,15 @@ template <
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 bool lexicographical_compare(
     const std::string& label, const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    ::flare::View<DataType2, Properties2...>& view2, ComparatorType comp) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    ::flare::Tensor<DataType2, Properties2...>& tensor2, ComparatorType comp) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
   return detail::lexicographical_compare_exespace_impl(
-      label, ex, KE::cbegin(view1), KE::cend(view1), KE::cbegin(view2),
-      KE::cend(view2), comp);
+      label, ex, KE::cbegin(tensor1), KE::cend(tensor1), KE::cbegin(tensor2),
+      KE::cend(tensor2), comp);
 }
 
 //
@@ -159,15 +159,15 @@ template <class TeamHandleType, class DataType1, class... Properties1,
           std::enable_if_t<flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION bool lexicographical_compare(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    ::flare::View<DataType2, Properties2...>& view2) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    ::flare::Tensor<DataType2, Properties2...>& tensor2) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
   return detail::lexicographical_compare_team_impl(
-      teamHandle, KE::cbegin(view1), KE::cend(view1), KE::cbegin(view2),
-      KE::cend(view2));
+      teamHandle, KE::cbegin(tensor1), KE::cend(tensor1), KE::cbegin(tensor2),
+      KE::cend(tensor2));
 }
 
 template <class TeamHandleType, class IteratorType1, class IteratorType2,
@@ -185,15 +185,15 @@ template <class TeamHandleType, class DataType1, class... Properties1,
           std::enable_if_t<flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION bool lexicographical_compare(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType1, Properties1...>& view1,
-    ::flare::View<DataType2, Properties2...>& view2, ComparatorType comp) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view1);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view2);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor1,
+    ::flare::Tensor<DataType2, Properties2...>& tensor2, ComparatorType comp) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor1);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor2);
 
   namespace KE = ::flare::experimental;
   return detail::lexicographical_compare_team_impl(
-      teamHandle, KE::cbegin(view1), KE::cend(view1), KE::cbegin(view2),
-      KE::cend(view2), comp);
+      teamHandle, KE::cbegin(tensor1), KE::cend(tensor1), KE::cbegin(tensor2),
+      KE::cend(tensor2), comp);
 }
 
 }  // namespace experimental

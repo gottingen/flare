@@ -32,48 +32,48 @@ struct GreaterEqualFunctor {
   bool operator()(ValueType val) const { return (val >= m_val); }
 };
 
-template <class DataViewType, class GreaterThanValuesViewType,
-          class DistancesViewType>
+template <class DatATensorType, class GreaterThanValuesTensorType,
+          class DistancesTensorType>
 struct TestFunctorA {
-  DataViewType m_dataView;
-  GreaterThanValuesViewType m_greaterThanValuesView;
-  DistancesViewType m_distancesView;
+  DatATensorType m_dataTensor;
+  GreaterThanValuesTensorType m_greaterThanValuesTensor;
+  DistancesTensorType m_distancesTensor;
   int m_apiPick;
 
-  TestFunctorA(const DataViewType dataView,
-               const GreaterThanValuesViewType greaterThanValuesView,
-               const DistancesViewType distancesView, int apiPick)
-      : m_dataView(dataView),
-        m_greaterThanValuesView(greaterThanValuesView),
-        m_distancesView(distancesView),
+  TestFunctorA(const DatATensorType dataTensor,
+               const GreaterThanValuesTensorType greaterThanValuesTensor,
+               const DistancesTensorType distancesTensor, int apiPick)
+      : m_dataTensor(dataTensor),
+        m_greaterThanValuesTensor(greaterThanValuesTensor),
+        m_distancesTensor(distancesTensor),
         m_apiPick(apiPick) {}
 
   template <class MemberType>
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
-    auto myRowViewFrom = flare::subview(m_dataView, myRowIndex, flare::ALL());
-    const auto val     = m_greaterThanValuesView(myRowIndex);
+    auto myRowTensorFrom = flare::subtensor(m_dataTensor, myRowIndex, flare::ALL());
+    const auto val     = m_greaterThanValuesTensor(myRowIndex);
     GreaterEqualFunctor unaryPred{val};
 
     switch (m_apiPick) {
       case 0: {
-        auto it = KE::find_if(member, KE::cbegin(myRowViewFrom),
-                              KE::cend(myRowViewFrom), unaryPred);
+        auto it = KE::find_if(member, KE::cbegin(myRowTensorFrom),
+                              KE::cend(myRowTensorFrom), unaryPred);
 
         flare::single(flare::PerTeam(member), [=, *this]() {
-          m_distancesView(myRowIndex) =
-              KE::distance(KE::cbegin(myRowViewFrom), it);
+          m_distancesTensor(myRowIndex) =
+              KE::distance(KE::cbegin(myRowTensorFrom), it);
         });
 
         break;
       }
 
       case 1: {
-        auto it = KE::find_if(member, myRowViewFrom, unaryPred);
+        auto it = KE::find_if(member, myRowTensorFrom, unaryPred);
 
         flare::single(flare::PerTeam(member), [=, *this]() {
-          m_distancesView(myRowIndex) =
-              KE::distance(KE::begin(myRowViewFrom), it);
+          m_distancesTensor(myRowIndex) =
+              KE::distance(KE::begin(myRowTensorFrom), it);
         });
 
         break;
@@ -86,22 +86,22 @@ template <class LayoutTag, class ValueType>
 void test_A(const bool predicatesReturnTrue, std::size_t numTeams,
             std::size_t numCols, int apiId) {
   /* description:
-     use a rank-2 view randomly filled with values,
+     use a rank-2 tensor randomly filled with values,
      and run a team-level find_if
    */
 
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range.
   constexpr ValueType lowerBound = 5;
   constexpr ValueType upperBound = 523;
   const auto bounds              = make_bounds(lowerBound, upperBound);
 
-  auto [dataView, dataViewBeforeOp_h] = create_random_view_and_host_clone(
-      LayoutTag{}, numTeams, numCols, bounds, "dataView");
+  auto [dataTensor, dataTensorBeforeOp_h] = create_random_tensor_and_host_clone(
+      LayoutTag{}, numTeams, numCols, bounds, "dataTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -113,54 +113,54 @@ void test_A(const bool predicatesReturnTrue, std::size_t numTeams,
   // each team stores the distance of the returned iterator from the
   // beginning of the interval that team operates on and then we check
   // that these distances match the std result
-  flare::View<std::size_t*> distancesView("distancesView", numTeams);
+  flare::Tensor<std::size_t*> distancesTensor("distancesTensor", numTeams);
 
   // If predicatesReturnTrue == true, we want to ensure that eventually, for
-  // some value from each of dataView's row, predicate GreaterEqualFunctor will
+  // some value from each of dataTensor's row, predicate GreaterEqualFunctor will
   // return true. To do that, for each numTeams, a random j index from a range
-  // [0, numCols) is used to obtain a value from dataView, and later that value
+  // [0, numCols) is used to obtain a value from dataTensor, and later that value
   // is used for creating concrete GreaterEqualFunctor predicate.
   //
   // If predicatesReturnTrue == false we want to ensure the opposite, so every
   // value is randomly picked from range [upperBound, upperBound*2).
-  flare::View<ValueType*> greaterEqualValuesView("greaterEqualValuesView",
+  flare::Tensor<ValueType*> greaterEqualValuesTensor("greaterEqualValuesTensor",
                                                   numTeams);
-  auto greaterEqualValuesView_h =
-      create_mirror_view(flare::HostSpace(), greaterEqualValuesView);
+  auto greaterEqualValuesTensor_h =
+      create_mirror_tensor(flare::HostSpace(), greaterEqualValuesTensor);
 
   using rand_pool =
       flare::Random_XorShift64_Pool<flare::DefaultHostExecutionSpace>;
   rand_pool pool(lowerBound * upperBound);
 
   if (predicatesReturnTrue) {
-    flare::View<std::size_t*, flare::DefaultHostExecutionSpace> randomIndices(
+    flare::Tensor<std::size_t*, flare::DefaultHostExecutionSpace> randomIndices(
         "randomIndices", numTeams);
     flare::fill_random(randomIndices, pool, 0, numCols);
 
     for (std::size_t i = 0; i < numTeams; ++i) {
       const std::size_t j         = randomIndices(i);
-      greaterEqualValuesView_h(i) = dataViewBeforeOp_h(i, j);
+      greaterEqualValuesTensor_h(i) = dataTensorBeforeOp_h(i, j);
     }
   } else {
-    flare::fill_random(greaterEqualValuesView_h, pool, upperBound,
+    flare::fill_random(greaterEqualValuesTensor_h, pool, upperBound,
                         upperBound * 2);
   }
 
-  flare::deep_copy(greaterEqualValuesView, greaterEqualValuesView_h);
+  flare::deep_copy(greaterEqualValuesTensor, greaterEqualValuesTensor_h);
 
   // use CTAD for functor
-  TestFunctorA fnc(dataView, greaterEqualValuesView, distancesView, apiId);
+  TestFunctorA fnc(dataTensor, greaterEqualValuesTensor, distancesTensor, apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // run cpp-std kernel and check
   // -----------------------------------------------
-  auto distancesView_h = create_host_space_copy(distancesView);
-  for (std::size_t i = 0; i < dataView.extent(0); ++i) {
-    auto rowFrom = flare::subview(dataViewBeforeOp_h, i, flare::ALL());
+  auto distancesTensor_h = create_host_space_copy(distancesTensor);
+  for (std::size_t i = 0; i < dataTensor.extent(0); ++i) {
+    auto rowFrom = flare::subtensor(dataTensorBeforeOp_h, i, flare::ALL());
     const auto rowFromBegin = KE::cbegin(rowFrom);
     const auto rowFromEnd   = KE::cend(rowFrom);
-    const auto val          = greaterEqualValuesView_h(i);
+    const auto val          = greaterEqualValuesTensor_h(i);
     const GreaterEqualFunctor unaryPred{val};
 
     auto it = std::find_if(rowFromBegin, rowFromEnd, unaryPred);
@@ -174,7 +174,7 @@ void test_A(const bool predicatesReturnTrue, std::size_t numTeams,
       REQUIRE_EQ(stdDistance, beginEndDistance);
     }
 
-    REQUIRE_EQ(stdDistance, distancesView_h(i));
+    REQUIRE_EQ(stdDistance, distancesTensor_h(i));
   }
 }
 

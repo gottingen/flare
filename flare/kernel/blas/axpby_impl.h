@@ -33,7 +33,7 @@ namespace flare::blas::detail {
     //
 
     // Single-vector version of Axpby_MV_Functor.  The definition
-    // immediately below lets a and b both be 1-D Views (and only requires
+    // immediately below lets a and b both be 1-D Tensors (and only requires
     // that each have one entry).  Following this is a partial
     // specialization that lets both of them be scalars.  This functor
     // computes any of the following:
@@ -65,12 +65,12 @@ namespace flare::blas::detail {
         Axpby_Functor(const XV& x, const YV& y, const AV& a, const BV& b,
                       const SizeType startingColumn)
                 : m_x(x), m_y(y), m_a(a), m_b(b) {
-            static_assert(flare::is_view<XV>::value,
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::detail::"
-                          "Axpby_Functor: X is not a flare::View.");
-            static_assert(flare::is_view<YV>::value,
+                          "Axpby_Functor: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YV>::value,
                           "flare::blas::detail::"
-                          "Axpby_Functor: Y is not a flare::View.");
+                          "Axpby_Functor: Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YV::value_type,
                                   typename YV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby_Functor: Y is const.  "
@@ -84,9 +84,9 @@ namespace flare::blas::detail {
                           "XV and YV must have rank 1.");
 
             if (startingColumn != 0) {
-                m_a = flare::subview(
+                m_a = flare::subtensor(
                         a, std::make_pair(startingColumn, SizeType(a.extent(0))));
-                m_b = flare::subview(
+                m_b = flare::subtensor(
                         b, std::make_pair(startingColumn, SizeType(b.extent(0))));
             }
         }
@@ -167,7 +167,7 @@ namespace flare::blas::detail {
     };
 
     // Partial specialization of Axpby_Functor that lets a and b be
-    // scalars (rather than 1-D Views, as in the most general version
+    // scalars (rather than 1-D Tensors, as in the most general version
     // above).  This functor computes any of the following:
     //
     // 1. Y(i) = alpha*X(i) + beta*Y(i) for alpha,beta in -1,0,1
@@ -200,12 +200,12 @@ namespace flare::blas::detail {
                       const typename YV::non_const_value_type& b,
                       const SizeType /* startingColumn */)
                 : m_x(x), m_y(y), m_a(a), m_b(b) {
-            static_assert(flare::is_view<XV>::value,
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::detail::"
-                          "Axpby_Functor: X is not a flare::View.");
-            static_assert(flare::is_view<YV>::value,
+                          "Axpby_Functor: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YV>::value,
                           "flare::blas::detail::"
-                          "Axpby_Functor: Y is not a flare::View.");
+                          "Axpby_Functor: Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YV::value_type,
                                   typename YV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby_Functor: R is const.  "
@@ -295,23 +295,23 @@ namespace flare::blas::detail {
         }
     };
 
-    // Variant of Axpby_MV_Generic for single vectors (1-D Views) x and y.
-    // As above, either av and bv are both 1-D Views (and only the first
+    // Variant of Axpby_MV_Generic for single vectors (1-D Tensors) x and y.
+    // As above, either av and bv are both 1-D Tensors (and only the first
     // entry of each will be read), or both av and bv are scalars.
     //
     // This takes the starting column, so that if av and bv are both 1-D
-    // Views, then the functor can take a subview if appropriate.
+    // Tensors, then the functor can take a subtensor if appropriate.
     template <class execution_space, class AV, class XV, class BV, class YV,
             class SizeType>
     void Axpby_Generic(const execution_space& space, const AV& av, const XV& x,
                        const BV& bv, const YV& y, const SizeType startingColumn,
                        int a = 2, int b = 2) {
-        static_assert(flare::is_view<XV>::value,
+        static_assert(flare::is_tensor<XV>::value,
                       "flare::blas::detail::"
-                      "Axpby_Generic: X is not a flare::View.");
-        static_assert(flare::is_view<YV>::value,
+                      "Axpby_Generic: X is not a flare::Tensor.");
+        static_assert(flare::is_tensor<YV>::value,
                       "flare::blas::detail::"
-                      "Axpby_Generic: Y is not a flare::View.");
+                      "Axpby_Generic: Y is not a flare::Tensor.");
         static_assert(std::is_same<typename YV::value_type,
                               typename YV::non_const_value_type>::value,
                       "flare::blas::detail::Axpby_Generic: Y is const.  "
@@ -439,7 +439,7 @@ namespace flare::blas::detail {
     // axpby
     //
 
-    // Functor for multivectors X and Y and 1-D views a and b, that
+    // Functor for multivectors X and Y and 1-D tensors a and b, that
     // computes any of the following:
     //
     // 1. Y(i,j) = alpha*X(i,j) + beta*Y(i,j) for alpha,beta in -1,0,1
@@ -468,19 +468,19 @@ namespace flare::blas::detail {
 
         Axpby_MV_Functor(const XMV& X, const YMV& Y, const AV& a, const BV& b)
                 : numCols(X.extent(1)), m_x(X), m_y(Y), m_a(a), m_b(b) {
-            // XMV and YMV must be flare::View specializations.
-            static_assert(flare::is_view<AV>::value,
+            // XMV and YMV must be flare::Tensor specializations.
+            static_assert(flare::is_tensor<AV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Functor: a is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Axpby_MV_Functor: a is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Functor: X is not a flare::View.");
-            static_assert(flare::is_view<BV>::value,
+                          "Axpby_MV_Functor: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<BV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Functor: b is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "Axpby_MV_Functor: b is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Functor: Y is not a flare::View.");
+                          "Axpby_MV_Functor: Y is not a flare::Tensor.");
             // YMV must be nonconst (else it can't be an output argument).
             static_assert(std::is_same<typename YMV::value_type,
                                   typename YMV::non_const_value_type>::value,
@@ -622,12 +622,12 @@ namespace flare::blas::detail {
                          const typename XMV::non_const_value_type& a,
                          const typename YMV::non_const_value_type& b)
                 : numCols(X.extent(1)), m_x(X), m_y(Y), m_a(a), m_b(b) {
-            static_assert(flare::is_view<XMV>::value,
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Functor: X is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "Axpby_MV_Functor: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Functor: Y is not a flare::View.");
+                          "Axpby_MV_Functor: Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YMV::value_type,
                                   typename YMV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby_MV_Functor: Y is const.  "
@@ -743,18 +743,18 @@ namespace flare::blas::detail {
         Axpby_MV_Unroll_Functor(const XMV& x, const YMV& y, const AV& a, const BV& b,
                                 const SizeType startingColumn)
                 : m_x(x), m_y(y), m_a(a), m_b(b) {
-            static_assert(flare::is_view<AV>::value,
+            static_assert(flare::is_tensor<AV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Unroll_Functor: a is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Axpby_MV_Unroll_Functor: a is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Unroll_Functor: X is not a flare::View.");
-            static_assert(flare::is_view<BV>::value,
+                          "Axpby_MV_Unroll_Functor: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<BV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Unroll_Functor: b is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "Axpby_MV_Unroll_Functor: b is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Unroll_Functor: Y is not a flare::View.");
+                          "Axpby_MV_Unroll_Functor: Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YMV::value_type,
                                   typename YMV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby_MV_Unroll_Functor: Y is const.  "
@@ -774,9 +774,9 @@ namespace flare::blas::detail {
                           "BV must have rank 1.");
 
             if (startingColumn != 0) {
-                m_a = flare::subview(
+                m_a = flare::subtensor(
                         a, std::make_pair(startingColumn, SizeType(a.extent(0))));
-                m_b = flare::subview(
+                m_b = flare::subtensor(
                         b, std::make_pair(startingColumn, SizeType(b.extent(0))));
             }
         }
@@ -972,12 +972,12 @@ namespace flare::blas::detail {
                                 const typename YMV::non_const_value_type& b,
                                 const SizeType /* startingColumn */)
                 : m_x(X), m_y(Y), m_a(a), m_b(b) {
-            static_assert(flare::is_view<XMV>::value,
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Unroll_Functor: X is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "Axpby_MV_Unroll_Functor: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Unroll_Functor: Y is not a flare::View.");
+                          "Axpby_MV_Unroll_Functor: Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YMV::value_type,
                                   typename YMV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby_MV_Unroll_Functor: Y is const.  "
@@ -1180,18 +1180,18 @@ namespace flare::blas::detail {
     // corresponding (multi)vector entry.  This does NOT apply to
     // coefficients in av and bv vectors, if they are used.
     //
-    // Either av and bv are both 1-D Views, or av and bv are both scalars.
+    // Either av and bv are both 1-D Tensors, or av and bv are both scalars.
     template <class execution_space, class AV, class XMV, class BV, class YMV,
             int UNROLL, class SizeType>
     void Axpby_MV_Unrolled(const execution_space& space, const AV& av, const XMV& x,
                            const BV& bv, const YMV& y,
                            const SizeType startingColumn, int a = 2, int b = 2) {
-        static_assert(flare::is_view<XMV>::value,
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::detail::"
-                      "Axpby_MV_Unrolled: X is not a flare::View.");
-        static_assert(flare::is_view<YMV>::value,
+                      "Axpby_MV_Unrolled: X is not a flare::Tensor.");
+        static_assert(flare::is_tensor<YMV>::value,
                       "flare::blas::detail::"
-                      "Axpby_MV_Unrolled: Y is not a flare::View.");
+                      "Axpby_MV_Unrolled: Y is not a flare::Tensor.");
         static_assert(std::is_same<typename YMV::value_type,
                               typename YMV::non_const_value_type>::value,
                       "flare::blas::detail::Axpby_MV_Unrolled: Y is const.  "
@@ -1335,17 +1335,17 @@ namespace flare::blas::detail {
     // corresponding (multi)vector entry.  This does NOT apply to
     // coefficients in av and bv vectors, if they are used.
     //
-    // Either av and bv are both 1-D Views, or av and bv are both scalars.
+    // Either av and bv are both 1-D Tensors, or av and bv are both scalars.
     template <class execution_space, class AV, class XMV, class BV, class YMV,
             class SizeType>
     void Axpby_MV_Generic(const execution_space& space, const AV& av, const XMV& x,
                           const BV& bv, const YMV& y, int a = 2, int b = 2) {
-        static_assert(flare::is_view<XMV>::value,
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::detail::"
-                      "Axpby_MV_Generic: X is not a flare::View.");
-        static_assert(flare::is_view<YMV>::value,
+                      "Axpby_MV_Generic: X is not a flare::Tensor.");
+        static_assert(flare::is_tensor<YMV>::value,
                       "flare::blas::detail::"
-                      "Axpby_MV_Generic: Y is not a flare::View.");
+                      "Axpby_MV_Generic: Y is not a flare::Tensor.");
         static_assert(std::is_same<typename YMV::value_type,
                               typename YMV::non_const_value_type>::value,
                       "flare::blas::detail::Axpby_MV_Generic: Y is const.  "
@@ -1474,18 +1474,18 @@ namespace flare::blas::detail {
     // corresponding (multi)vector entry.  This does NOT apply to
     // coefficients in av and bv vectors, if they are used.
     //
-    // Either av and bv are both 1-D Views, or av and bv are both scalars.
+    // Either av and bv are both 1-D Tensors, or av and bv are both scalars.
     template <class execution_space, class AV, class XMV, class BV, class YMV,
             class SizeType>
     struct Axpby_MV_Invoke_Left {
         static void run(const execution_space& space, const AV& av, const XMV& x,
                         const BV& bv, const YMV& y, int a = 2, int b = 2) {
-            static_assert(flare::is_view<XMV>::value,
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Invoke_Left: X is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "Axpby_MV_Invoke_Left: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Invoke_Left: Y is not a flare::View.");
+                          "Axpby_MV_Invoke_Left: Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YMV::value_type,
                                   typename YMV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby_MV_Invoke_Left: Y is const.  "
@@ -1505,31 +1505,31 @@ namespace flare::blas::detail {
             // the amount of code to compile.
             SizeType j = 0;
             for (; j + 8 <= numCols; j += 8) {
-                XMV X_cur = flare::subview(x, flare::ALL(), std::make_pair(j, j + 8));
-                YMV Y_cur = flare::subview(y, flare::ALL(), std::make_pair(j, j + 8));
+                XMV X_cur = flare::subtensor(x, flare::ALL(), std::make_pair(j, j + 8));
+                YMV Y_cur = flare::subtensor(y, flare::ALL(), std::make_pair(j, j + 8));
 
                 // Passing in the starting column index lets the functor take
-                // subviews of av and bv, if they are Views.  If they are scalars,
+                // subtensors of av and bv, if they are Tensors.  If they are scalars,
                 // the functor doesn't have to do anything to them.
                 Axpby_MV_Unrolled<execution_space, AV, XMV, BV, YMV, 8, SizeType>(
                         space, av, X_cur, bv, Y_cur, j, a, b);
             }
             for (; j + 4 <= numCols; j += 4) {
-                XMV X_cur = flare::subview(x, flare::ALL(), std::make_pair(j, j + 4));
-                YMV Y_cur = flare::subview(y, flare::ALL(), std::make_pair(j, j + 4));
+                XMV X_cur = flare::subtensor(x, flare::ALL(), std::make_pair(j, j + 4));
+                YMV Y_cur = flare::subtensor(y, flare::ALL(), std::make_pair(j, j + 4));
 
                 // Passing in the starting column index lets the functor take
-                // subviews of av and bv, if they are Views.  If they are scalars,
+                // subtensors of av and bv, if they are Tensors.  If they are scalars,
                 // the functor doesn't have to do anything to them.
                 Axpby_MV_Unrolled<execution_space, AV, XMV, BV, YMV, 4, SizeType>(
                         space, av, X_cur, bv, Y_cur, j, a, b);
             }
             for (; j < numCols; ++j) {
-                auto x_cur = flare::subview(x, flare::ALL(), j);
-                auto y_cur = flare::subview(y, flare::ALL(), j);
+                auto x_cur = flare::subtensor(x, flare::ALL(), j);
+                auto y_cur = flare::subtensor(y, flare::ALL(), j);
 
                 // Passing in the starting column index lets the functor take
-                // subviews of av and bv, if they are Views.  If they are scalars,
+                // subtensors of av and bv, if they are Tensors.  If they are scalars,
                 // the functor doesn't have to do anything to them.
                 typedef decltype(x_cur) XV;
                 typedef decltype(y_cur) YV;
@@ -1557,18 +1557,18 @@ namespace flare::blas::detail {
     // corresponding (multi)vector entry.  This does NOT apply to
     // coefficients in av and bv vectors, if they are used.
     //
-    // Either av and bv are both 1-D Views, or av and bv are both scalars.
+    // Either av and bv are both 1-D Tensors, or av and bv are both scalars.
     template <class execution_space, class AV, class XMV, class BV, class YMV,
             class SizeType>
     struct Axpby_MV_Invoke_Right {
         static void run(const execution_space& space, const AV& av, const XMV& x,
                         const BV& bv, const YMV& y, int a = 2, int b = 2) {
-            static_assert(flare::is_view<XMV>::value,
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Invoke_Right: X is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "Axpby_MV_Invoke_Right: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::detail::"
-                          "Axpby_MV_Invoke_Right: Y is not a flare::View.");
+                          "Axpby_MV_Invoke_Right: Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YMV::value_type,
                                   typename YMV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby_MV_Invoke_Right: Y is const.  "
@@ -1583,8 +1583,8 @@ namespace flare::blas::detail {
 
             const SizeType numCols = x.extent(1);
             if (numCols == 1) {
-                auto x_0 = flare::subview(x, flare::ALL(), 0);
-                auto y_0 = flare::subview(y, flare::ALL(), 0);
+                auto x_0 = flare::subtensor(x, flare::ALL(), 0);
+                auto y_0 = flare::subtensor(y, flare::ALL(), 0);
                 typedef decltype(x_0) XV;
                 typedef decltype(y_0) YV;
                 Axpby_Generic<execution_space, AV, XV, BV, YV, SizeType>(
@@ -1613,7 +1613,7 @@ namespace flare::blas::detail {
     ///    and av and bv are scalars)
     ///
     /// 3. Y(i) = av()*X(i) + bv()*Y(i) (if R, X, and Y are 1-D, and av
-    ///    and bv are 0-D Views (not scalars))
+    ///    and bv are 0-D Tensors (not scalars))
     ///
     /// 4. Y(i) = av*X(i) + bv*Y(i) (if R, X, and Y are 1-D, and av and bv
     ///    are scalars)
@@ -1637,19 +1637,19 @@ namespace flare::blas::detail {
         }
     };
 
-    // Full specialization for XMV and YMV rank-2 Views.
+    // Full specialization for XMV and YMV rank-2 Tensors.
     template <class execution_space, class AV, class XMV, class BV, class YMV>
     struct Axpby<execution_space, AV, XMV, BV, YMV, 2> {
         typedef typename YMV::size_type size_type;
 
         static void axpby(const execution_space& space, const AV& av, const XMV& X,
                           const BV& bv, const YMV& Y) {
-            static_assert(flare::is_view<XMV>::value,
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Axpby<rank-2>::axpby: X is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "Axpby<rank-2>::axpby: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::detail::"
-                          "Axpby<rank-2>::axpby: Y is not a flare::View.");
+                          "Axpby<rank-2>::axpby: Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YMV::value_type,
                                   typename YMV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby<rank-2>::axpby: Y is const.  "
@@ -1695,7 +1695,7 @@ namespace flare::blas::detail {
         }
     };
 
-    // Partial specialization for XMV, and YMV rank-2 Views,
+    // Partial specialization for XMV, and YMV rank-2 Tensors,
     // and AV and BV scalars.
     template <class execution_space, class XMV, class YMV>
     struct Axpby<execution_space, typename XMV::non_const_value_type, XMV,
@@ -1708,12 +1708,12 @@ namespace flare::blas::detail {
 
         static void axpby(const execution_space& space, const AV& alpha, const XMV& X,
                           const BV& beta, const YMV& Y) {
-            static_assert(flare::is_view<XMV>::value,
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::Axpby::axpby (MV): "
-                          "X is not a flare::View.");
-            static_assert(flare::is_view<YMV>::value,
+                          "X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YMV>::value,
                           "flare::blas::detail::Axpby::axpby (MV): "
-                          "Y is not a flare::View.");
+                          "Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YMV::value_type,
                                   typename YMV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby::axpby (MV): Y is const.  "
@@ -1779,7 +1779,7 @@ namespace flare::blas::detail {
         }
     };
 
-    // Partial specialization for XV and YV rank-1 Views,
+    // Partial specialization for XV and YV rank-1 Tensors,
     // and AV and BV scalars.
     template <class execution_space, class XV, class YV>
     struct Axpby<execution_space, typename XV::non_const_value_type, XV,
@@ -1792,12 +1792,12 @@ namespace flare::blas::detail {
 
         static void axpby(const execution_space& space, const AV& alpha, const XV& X,
                           const BV& beta, const YV& Y) {
-            static_assert(flare::is_view<XV>::value,
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::detail::"
-                          "Axpby<rank-1>::axpby: X is not a flare::View.");
-            static_assert(flare::is_view<YV>::value,
+                          "Axpby<rank-1>::axpby: X is not a flare::Tensor.");
+            static_assert(flare::is_tensor<YV>::value,
                           "flare::blas::detail::"
-                          "Axpby<rank-1>::axpby: Y is not a flare::View.");
+                          "Axpby<rank-1>::axpby: Y is not a flare::Tensor.");
             static_assert(std::is_same<typename YV::value_type,
                                   typename YV::non_const_value_type>::value,
                           "flare::blas::detail::Axpby<rank-1>::axpby: Y is const.  "
@@ -1890,11 +1890,11 @@ namespace flare::blas::detail {
 #define FLARE_BLAS_AXPBY_SPEC_INST(SCALAR, LAYOUT, EXEC_SPACE, MEM_SPACE) \
   template struct Axpby<                                                       \
       EXEC_SPACE, SCALAR,                                                      \
-      flare::View<const SCALAR*, LAYOUT,                                      \
+      flare::Tensor<const SCALAR*, LAYOUT,                                      \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                      \
                    flare::MemoryTraits<flare::Unmanaged> >,                  \
       SCALAR,                                                                  \
-      flare::View<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,     \
+      flare::Tensor<SCALAR*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>,     \
                    flare::MemoryTraits<flare::Unmanaged> >,                  \
       1>;
 
@@ -1902,25 +1902,25 @@ namespace flare::blas::detail {
                                            MEM_SPACE)                       \
   template struct Axpby<                                                    \
       EXEC_SPACE, SCALAR,                                                   \
-      flare::View<const SCALAR**, LAYOUT,                                  \
+      flare::Tensor<const SCALAR**, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
       SCALAR,                                                               \
-      flare::View<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
       2>;                                                                  \
   template struct Axpby<                                                    \
       EXEC_SPACE,                                                           \
-      flare::View<const SCALAR*, LAYOUT,                                   \
+      flare::Tensor<const SCALAR*, LAYOUT,                                   \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<const SCALAR**, LAYOUT,                                  \
+      flare::Tensor<const SCALAR**, LAYOUT,                                  \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<const SCALAR*, LAYOUT,                                   \
+      flare::Tensor<const SCALAR*, LAYOUT,                                   \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
-      flare::View<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<SCALAR**, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,               \
       2>;
 

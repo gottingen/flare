@@ -695,7 +695,7 @@ cuda_single_inter_block_reduce_scan_shmem(const FunctorType& functor,
 
 template <typename WorkTag, typename ValueType, typename Policy,
           typename FunctorType>
-inline void check_reduced_view_shmem_size(const Policy& policy,
+inline void check_reduced_tensor_shmem_size(const Policy& policy,
                                           const FunctorType& functor) {
   size_t minBlockSize = CudaTraits::WarpSize * 1;
   unsigned reqShmemSize =

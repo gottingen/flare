@@ -22,48 +22,48 @@
 namespace Test {
 namespace stdalgos {
 
-template <class ViewTypeFrom, class ViewTypeTo>
+template <class TensorTypeFrom, class TensorTypeTo>
 struct CopyFunctor {
-  ViewTypeFrom m_view_from;
-  ViewTypeTo m_view_to;
+  TensorTypeFrom m_tensor_from;
+  TensorTypeTo m_tensor_to;
 
   CopyFunctor() = delete;
 
-  CopyFunctor(const ViewTypeFrom view_from, const ViewTypeTo view_to)
-      : m_view_from(view_from), m_view_to(view_to) {}
+  CopyFunctor(const TensorTypeFrom tensor_from, const TensorTypeTo tensor_to)
+      : m_tensor_from(tensor_from), m_tensor_to(tensor_to) {}
 
   FLARE_INLINE_FUNCTION
-  void operator()(int i) const { m_view_to(i) = m_view_from(i); }
+  void operator()(int i) const { m_tensor_to(i) = m_tensor_from(i); }
 };
 
-template <class ViewTypeFrom, class ViewTypeTo>
+template <class TensorTypeFrom, class TensorTypeTo>
 struct CopyFunctorRank2 {
-  ViewTypeFrom m_view_from;
-  ViewTypeTo m_view_to;
+  TensorTypeFrom m_tensor_from;
+  TensorTypeTo m_tensor_to;
 
   CopyFunctorRank2() = delete;
 
-  CopyFunctorRank2(const ViewTypeFrom view_from, const ViewTypeTo view_to)
-      : m_view_from(view_from), m_view_to(view_to) {}
+  CopyFunctorRank2(const TensorTypeFrom tensor_from, const TensorTypeTo tensor_to)
+      : m_tensor_from(tensor_from), m_tensor_to(tensor_to) {}
 
   FLARE_INLINE_FUNCTION
   void operator()(int k) const {
-    const auto i    = k / m_view_from.extent(1);
-    const auto j    = k % m_view_from.extent(1);
-    m_view_to(i, j) = m_view_from(i, j);
+    const auto i    = k / m_tensor_from.extent(1);
+    const auto j    = k % m_tensor_from.extent(1);
+    m_tensor_to(i, j) = m_tensor_from(i, j);
   }
 };
 
-template <class ItTypeFrom, class ViewTypeTo>
+template <class ItTypeFrom, class TensorTypeTo>
 struct CopyFromIteratorFunctor {
   ItTypeFrom m_it_from;
-  ViewTypeTo m_view_to;
+  TensorTypeTo m_tensor_to;
 
-  CopyFromIteratorFunctor(const ItTypeFrom it_from, const ViewTypeTo view_to)
-      : m_it_from(it_from), m_view_to(view_to) {}
+  CopyFromIteratorFunctor(const ItTypeFrom it_from, const TensorTypeTo tensor_to)
+      : m_it_from(it_from), m_tensor_to(tensor_to) {}
 
   FLARE_INLINE_FUNCTION
-  void operator()(int) const { m_view_to() = *m_it_from; }
+  void operator()(int) const { m_tensor_to() = *m_it_from; }
 };
 
 template <class ValueType>
@@ -72,17 +72,17 @@ struct IncrementElementWiseFunctor {
   void operator()(ValueType& val) const { ++val; }
 };
 
-template <class ViewType>
+template <class TensorType>
 struct FillZeroFunctor {
-  ViewType m_view;
+  TensorType m_tensor;
 
   FLARE_INLINE_FUNCTION
   void operator()(int index) const {
-    m_view(index) = static_cast<typename ViewType::value_type>(0);
+    m_tensor(index) = static_cast<typename TensorType::value_type>(0);
   }
 
   FLARE_INLINE_FUNCTION
-  FillZeroFunctor(ViewType viewIn) : m_view(viewIn) {}
+  FillZeroFunctor(TensorType tensorIn) : m_tensor(tensorIn) {}
 };
 
 template <class ValueType>
@@ -91,14 +91,14 @@ struct NoOpNonMutableFunctor {
   void operator()(const ValueType& val) const { (void)val; }
 };
 
-template <class ViewType>
+template <class TensorType>
 struct AssignIndexFunctor {
-  ViewType m_view;
+  TensorType m_tensor;
 
-  AssignIndexFunctor(ViewType view) : m_view(view) {}
+  AssignIndexFunctor(TensorType tensor) : m_tensor(tensor) {}
 
   FLARE_INLINE_FUNCTION
-  void operator()(int i) const { m_view(i) = typename ViewType::value_type(i); }
+  void operator()(int i) const { m_tensor(i) = typename TensorType::value_type(i); }
 };
 
 template <class ValueType>

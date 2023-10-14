@@ -22,12 +22,12 @@
 
 namespace flare {
 
-    /** \brief  Memory access traits for views, an extension point.
+    /** \brief  Memory access traits for tensors, an extension point.
      *
      *  These traits should be orthogonal.  If there are dependencies then
      *  the MemoryTraits template must detect and enforce dependencies.
      *
-     *  A zero value is the default for a View, indicating that none of
+     *  A zero value is the default for a Tensor, indicating that none of
      *  these traits are present.
      */
     enum MemoryTraitsFlags {
@@ -78,7 +78,7 @@ namespace flare::detail {
     /** \brief Memory alignment settings
      *
      *  Sets global value for memory alignment.  Must be a power of two!
-     *  Enable compatibility of views from different devices with static stride.
+     *  Enable compatibility of tensors from different devices with static stride.
      *  Use compiler flag to enable overwrites.
      */
     enum : unsigned {

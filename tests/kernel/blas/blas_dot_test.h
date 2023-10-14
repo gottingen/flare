@@ -24,14 +24,14 @@
 #include <kernel/common/test_utility.h>
 
 namespace Test {
-    template<class ViewTypeA, class ViewTypeB, class Device>
+    template<class TensorTypeA, class TensorTypeB, class Device>
     void impl_test_dot(int N) {
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
         typedef flare::ArithTraits<ScalarA> ats;
 
-        view_stride_adapter<ViewTypeA> a("a", N);
-        view_stride_adapter<ViewTypeB> b("b", N);
+        tensor_stride_adapter<TensorTypeA> a("a", N);
+        tensor_stride_adapter<TensorTypeB> b("b", N);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
@@ -39,12 +39,12 @@ namespace Test {
         {
             ScalarA randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(a.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(a.d_tensor, rand_pool, randStart, randEnd);
         }
         {
             ScalarB randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(b.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(b.d_tensor, rand_pool, randStart, randEnd);
         }
 
         flare::deep_copy(a.h_base, a.d_base);
@@ -52,31 +52,31 @@ namespace Test {
 
         ScalarA expected_result = 0;
         for (int i = 0; i < N; i++)
-            expected_result += ats::conj(a.h_view(i)) * b.h_view(i);
+            expected_result += ats::conj(a.h_tensor(i)) * b.h_tensor(i);
 
-        ScalarA nonconst_nonconst_result = flare::blas::dot(a.d_view, b.d_view);
+        ScalarA nonconst_nonconst_result = flare::blas::dot(a.d_tensor, b.d_tensor);
         double eps = std::is_same<ScalarA, float>::value ? 2 * 1e-5 : 1e-7;
         EXPECT_NEAR_KK(nonconst_nonconst_result, expected_result,
                        eps * expected_result);
 
-        ScalarA const_const_result = flare::blas::dot(a.d_view_const, b.d_view_const);
+        ScalarA const_const_result = flare::blas::dot(a.d_tensor_const, b.d_tensor_const);
         EXPECT_NEAR_KK(const_const_result, expected_result, eps * expected_result);
 
-        ScalarA nonconst_const_result = flare::blas::dot(a.d_view, b.d_view_const);
+        ScalarA nonconst_const_result = flare::blas::dot(a.d_tensor, b.d_tensor_const);
         EXPECT_NEAR_KK(nonconst_const_result, expected_result, eps * expected_result);
 
-        ScalarA const_nonconst_result = flare::blas::dot(a.d_view_const, b.d_view);
+        ScalarA const_nonconst_result = flare::blas::dot(a.d_tensor_const, b.d_tensor);
         EXPECT_NEAR_KK(const_nonconst_result, expected_result, eps * expected_result);
     }
 
-    template<class ViewTypeA, class ViewTypeB, class Device>
+    template<class TensorTypeA, class TensorTypeB, class Device>
     void impl_test_dot_mv(int N, int K) {
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
         typedef flare::ArithTraits<ScalarA> ats;
 
-        view_stride_adapter<ViewTypeA> a("A", N, K);
-        view_stride_adapter<ViewTypeB> b("B", N, K);
+        tensor_stride_adapter<TensorTypeA> a("A", N, K);
+        tensor_stride_adapter<TensorTypeB> b("B", N, K);
 
         flare::Random_XorShift64_Pool<typename Device::execution_space> rand_pool(
                 13718);
@@ -84,12 +84,12 @@ namespace Test {
         {
             ScalarA randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(a.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(a.d_tensor, rand_pool, randStart, randEnd);
         }
         {
             ScalarB randStart, randEnd;
             Test::getRandomBounds(10.0, randStart, randEnd);
-            flare::fill_random(b.d_view, rand_pool, randStart, randEnd);
+            flare::fill_random(b.d_tensor, rand_pool, randStart, randEnd);
         }
 
         flare::deep_copy(a.h_base, a.d_base);
@@ -99,14 +99,14 @@ namespace Test {
         for (int j = 0; j < K; j++) {
             expected_result[j] = ScalarA();
             for (int i = 0; i < N; i++)
-                expected_result[j] += ats::conj(a.h_view(i, j)) * b.h_view(i, j);
+                expected_result[j] += ats::conj(a.h_tensor(i, j)) * b.h_tensor(i, j);
         }
 
         double eps = std::is_same<ScalarA, float>::value ? 2 * 1e-5 : 1e-7;
 
-        flare::View<ScalarB *, flare::HostSpace> r("Dot::Result", K);
+        flare::Tensor<ScalarB *, flare::HostSpace> r("Dot::Result", K);
 
-        flare::blas::dot(r, a.d_view, b.d_view);
+        flare::blas::dot(r, a.d_tensor, b.d_tensor);
         flare::fence();
         for (int k = 0; k < K; k++) {
             ScalarA nonconst_nonconst_result = r(k);
@@ -114,7 +114,7 @@ namespace Test {
                            eps * expected_result[k]);
         }
 
-        flare::blas::dot(r, a.d_view_const, b.d_view_const);
+        flare::blas::dot(r, a.d_tensor_const, b.d_tensor_const);
         flare::fence();
         for (int k = 0; k < K; k++) {
             ScalarA const_const_result = r(k);
@@ -122,7 +122,7 @@ namespace Test {
                            eps * expected_result[k]);
         }
 
-        flare::blas::dot(r, a.d_view, b.d_view_const);
+        flare::blas::dot(r, a.d_tensor, b.d_tensor_const);
         flare::fence();
         for (int k = 0; k < K; k++) {
             ScalarA non_const_const_result = r(k);
@@ -130,7 +130,7 @@ namespace Test {
                            eps * expected_result[k]);
         }
 
-        flare::blas::dot(r, a.d_view_const, b.d_view);
+        flare::blas::dot(r, a.d_tensor_const, b.d_tensor);
         flare::fence();
         for (int k = 0; k < K; k++) {
             ScalarA const_non_const_result = r(k);
@@ -145,35 +145,35 @@ namespace Test {
 template<class ScalarA, class ScalarB, class Device>
 int test_dot() {
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA *, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB *, flare::LayoutLeft, Device> view_type_b_ll;
-    Test::impl_test_dot<view_type_a_ll, view_type_b_ll, Device>(0);
-    Test::impl_test_dot<view_type_a_ll, view_type_b_ll, Device>(13);
-    Test::impl_test_dot<view_type_a_ll, view_type_b_ll, Device>(1024);
-    // Test::impl_test_dot<view_type_a_ll, view_type_b_ll, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB *, flare::LayoutLeft, Device> tensor_type_b_ll;
+    Test::impl_test_dot<tensor_type_a_ll, tensor_type_b_ll, Device>(0);
+    Test::impl_test_dot<tensor_type_a_ll, tensor_type_b_ll, Device>(13);
+    Test::impl_test_dot<tensor_type_a_ll, tensor_type_b_ll, Device>(1024);
+    // Test::impl_test_dot<tensor_type_a_ll, tensor_type_b_ll, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA *, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB *, flare::LayoutRight, Device> view_type_b_lr;
-    Test::impl_test_dot<view_type_a_lr, view_type_b_lr, Device>(0);
-    Test::impl_test_dot<view_type_a_lr, view_type_b_lr, Device>(13);
-    Test::impl_test_dot<view_type_a_lr, view_type_b_lr, Device>(1024);
-    // Test::impl_test_dot<view_type_a_lr, view_type_b_lr, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB *, flare::LayoutRight, Device> tensor_type_b_lr;
+    Test::impl_test_dot<tensor_type_a_lr, tensor_type_b_lr, Device>(0);
+    Test::impl_test_dot<tensor_type_a_lr, tensor_type_b_lr, Device>(13);
+    Test::impl_test_dot<tensor_type_a_lr, tensor_type_b_lr, Device>(1024);
+    // Test::impl_test_dot<tensor_type_a_lr, tensor_type_b_lr, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA *, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB *, flare::LayoutStride, Device> view_type_b_ls;
-    Test::impl_test_dot<view_type_a_ls, view_type_b_ls, Device>(0);
-    Test::impl_test_dot<view_type_a_ls, view_type_b_ls, Device>(13);
-    Test::impl_test_dot<view_type_a_ls, view_type_b_ls, Device>(1024);
-    // Test::impl_test_dot<view_type_a_ls, view_type_b_ls, Device>(132231);
+    typedef flare::Tensor<ScalarA *, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB *, flare::LayoutStride, Device> tensor_type_b_ls;
+    Test::impl_test_dot<tensor_type_a_ls, tensor_type_b_ls, Device>(0);
+    Test::impl_test_dot<tensor_type_a_ls, tensor_type_b_ls, Device>(13);
+    Test::impl_test_dot<tensor_type_a_ls, tensor_type_b_ls, Device>(1024);
+    // Test::impl_test_dot<tensor_type_a_ls, tensor_type_b_ls, Device>(132231);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_dot<view_type_a_ls, view_type_b_ll, Device>(1024);
-    Test::impl_test_dot<view_type_a_ll, view_type_b_ls, Device>(1024);
+    Test::impl_test_dot<tensor_type_a_ls, tensor_type_b_ll, Device>(1024);
+    Test::impl_test_dot<tensor_type_a_ll, tensor_type_b_ls, Device>(1024);
 #endif
 
     return 1;
@@ -182,40 +182,40 @@ int test_dot() {
 template<class ScalarA, class ScalarB, class Device>
 int test_dot_mv() {
 #if defined(FLARE_TEST_LAYOUTLEFT)
-    typedef flare::View<ScalarA **, flare::LayoutLeft, Device> view_type_a_ll;
-    typedef flare::View<ScalarB **, flare::LayoutLeft, Device> view_type_b_ll;
-    Test::impl_test_dot_mv<view_type_a_ll, view_type_b_ll, Device>(0, 5);
-    Test::impl_test_dot_mv<view_type_a_ll, view_type_b_ll, Device>(13, 5);
-    Test::impl_test_dot_mv<view_type_a_ll, view_type_b_ll, Device>(1024, 5);
-    Test::impl_test_dot_mv<view_type_a_ll, view_type_b_ll, Device>(789, 1);
-    // Test::impl_test_dot_mv<view_type_a_ll, view_type_b_ll, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutLeft, Device> tensor_type_a_ll;
+    typedef flare::Tensor<ScalarB **, flare::LayoutLeft, Device> tensor_type_b_ll;
+    Test::impl_test_dot_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(0, 5);
+    Test::impl_test_dot_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(13, 5);
+    Test::impl_test_dot_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(1024, 5);
+    Test::impl_test_dot_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(789, 1);
+    // Test::impl_test_dot_mv<tensor_type_a_ll, tensor_type_b_ll, Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_LAYOUTRIGHT)
-    typedef flare::View<ScalarA **, flare::LayoutRight, Device> view_type_a_lr;
-    typedef flare::View<ScalarB **, flare::LayoutRight, Device> view_type_b_lr;
-    Test::impl_test_dot_mv<view_type_a_lr, view_type_b_lr, Device>(0, 5);
-    Test::impl_test_dot_mv<view_type_a_lr, view_type_b_lr, Device>(13, 5);
-    Test::impl_test_dot_mv<view_type_a_lr, view_type_b_lr, Device>(1024, 5);
-    Test::impl_test_dot_mv<view_type_a_lr, view_type_b_lr, Device>(789, 1);
-    // Test::impl_test_dot_mv<view_type_a_lr, view_type_b_lr, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutRight, Device> tensor_type_a_lr;
+    typedef flare::Tensor<ScalarB **, flare::LayoutRight, Device> tensor_type_b_lr;
+    Test::impl_test_dot_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(0, 5);
+    Test::impl_test_dot_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(13, 5);
+    Test::impl_test_dot_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(1024, 5);
+    Test::impl_test_dot_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(789, 1);
+    // Test::impl_test_dot_mv<tensor_type_a_lr, tensor_type_b_lr, Device>(132231,5);
 #endif
 
-// Removing the layout stride test as ViewTypeA a("a", N);
-// is invalid since the view constructor needs a stride object!
+// Removing the layout stride test as TensorTypeA a("a", N);
+// is invalid since the tensor constructor needs a stride object!
 #if defined(FLARE_TEST_ALL_TYPES)
-    typedef flare::View<ScalarA **, flare::LayoutStride, Device> view_type_a_ls;
-    typedef flare::View<ScalarB **, flare::LayoutStride, Device> view_type_b_ls;
-    Test::impl_test_dot_mv<view_type_a_ls, view_type_b_ls, Device>(0, 5);
-    Test::impl_test_dot_mv<view_type_a_ls, view_type_b_ls, Device>(13, 5);
-    Test::impl_test_dot_mv<view_type_a_ls, view_type_b_ls, Device>(1024, 5);
-    Test::impl_test_dot_mv<view_type_a_ls, view_type_b_ls, Device>(789, 1);
-    // Test::impl_test_dot_mv<view_type_a_ls, view_type_b_ls, Device>(132231,5);
+    typedef flare::Tensor<ScalarA **, flare::LayoutStride, Device> tensor_type_a_ls;
+    typedef flare::Tensor<ScalarB **, flare::LayoutStride, Device> tensor_type_b_ls;
+    Test::impl_test_dot_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(0, 5);
+    Test::impl_test_dot_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(13, 5);
+    Test::impl_test_dot_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(1024, 5);
+    Test::impl_test_dot_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(789, 1);
+    // Test::impl_test_dot_mv<tensor_type_a_ls, tensor_type_b_ls, Device>(132231,5);
 #endif
 
 #if defined(FLARE_TEST_ALL_TYPES)
-    Test::impl_test_dot_mv<view_type_a_ls, view_type_b_ll, Device>(1024, 5);
-    Test::impl_test_dot_mv<view_type_a_ll, view_type_b_ls, Device>(1024, 5);
+    Test::impl_test_dot_mv<tensor_type_a_ls, tensor_type_b_ll, Device>(1024, 5);
+    Test::impl_test_dot_mv<tensor_type_a_ll, tensor_type_b_ls, Device>(1024, 5);
 #endif
 
     return 1;

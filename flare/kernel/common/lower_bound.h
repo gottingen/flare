@@ -25,31 +25,31 @@ namespace flare::detail {
 
     /*! \brief Single-thread sequential lower-bound search
 
-        \tparam ViewLike A flare::View or flare::detail::Iota
+        \tparam TensorLike A flare::Tensor or flare::detail::Iota
         \tparam Pred a binary predicate function
-        \param view the view to search
+        \param tensor the tensor to search
         \param value the value to search for
         \param pred a binary predicate function
-        \returns index of first element in view where pred(element, value) is false,
-        or view.size if no such element exists
+        \returns index of first element in tensor where pred(element, value) is false,
+        or tensor.size if no such element exists
 
-        At most view.size() predicate function calls
+        At most tensor.size() predicate function calls
     */
-    template<typename ViewLike,
-            typename Pred = LT<typename ViewLike::non_const_value_type>>
-    FLARE_INLINE_FUNCTION typename ViewLike::size_type
+    template<typename TensorLike,
+            typename Pred = LT<typename TensorLike::non_const_value_type>>
+    FLARE_INLINE_FUNCTION typename TensorLike::size_type
     lower_bound_sequential_thread(
-            const ViewLike &view, const typename ViewLike::non_const_value_type &value,
+            const TensorLike &tensor, const typename TensorLike::non_const_value_type &value,
             Pred pred = Pred()) {
-        using size_type = typename ViewLike::size_type;
-        static_assert(1 == ViewLike::rank,
-                      "lower_bound_sequential_thread requires rank-1 views");
-        static_assert(is_iota_v<ViewLike> || flare::is_view<ViewLike>::value,
+        using size_type = typename TensorLike::size_type;
+        static_assert(1 == TensorLike::rank,
+                      "lower_bound_sequential_thread requires rank-1 tensors");
+        static_assert(is_iota_v<TensorLike> || flare::is_tensor<TensorLike>::value,
                       "lower_bound_sequential_thread requires a "
-                      "flare::detail::Iota or a flare::View");
+                      "flare::detail::Iota or a flare::Tensor");
 
         size_type i = 0;
-        while (i < view.size() && pred(view(i), value)) {
+        while (i < tensor.size() && pred(tensor(i), value)) {
             ++i;
         }
         return i;
@@ -57,33 +57,33 @@ namespace flare::detail {
 
     /*! \brief Single-thread binary lower-bound search
 
-        \tparam ViewLike A flare::View or flare::detail::Iota
+        \tparam TensorLike A flare::Tensor or flare::detail::Iota
         \tparam Pred a binary predicate function
-        \param view the view to search
+        \param tensor the tensor to search
         \param value the value to search for
         \param pred a binary predicate function
-        \returns index of first element in view where pred(element, value) is false,
-        or view.size if no such element exists
+        \returns index of first element in tensor where pred(element, value) is false,
+        or tensor.size if no such element exists
 
-        At most log2(view.size()) + 1 predicate function calls
+        At most log2(tensor.size()) + 1 predicate function calls
     */
-    template<typename ViewLike,
-            typename Pred = LT<typename ViewLike::non_const_value_type>>
-    FLARE_INLINE_FUNCTION typename ViewLike::size_type lower_bound_binary_thread(
-            const ViewLike &view, const typename ViewLike::non_const_value_type &value,
+    template<typename TensorLike,
+            typename Pred = LT<typename TensorLike::non_const_value_type>>
+    FLARE_INLINE_FUNCTION typename TensorLike::size_type lower_bound_binary_thread(
+            const TensorLike &tensor, const typename TensorLike::non_const_value_type &value,
             Pred pred = Pred()) {
-        using size_type = typename ViewLike::size_type;
-        static_assert(1 == ViewLike::rank,
-                      "lower_bound_binary_thread requires rank-1 views");
-        static_assert(is_iota_v<ViewLike> || flare::is_view<ViewLike>::value,
+        using size_type = typename TensorLike::size_type;
+        static_assert(1 == TensorLike::rank,
+                      "lower_bound_binary_thread requires rank-1 tensors");
+        static_assert(is_iota_v<TensorLike> || flare::is_tensor<TensorLike>::value,
                       "lower_bound_binary_thread requires a "
-                      "flare::detail::Iota or a flare::View");
+                      "flare::detail::Iota or a flare::Tensor");
 
         size_type lo = 0;
-        size_type hi = view.size();
+        size_type hi = tensor.size();
         while (lo < hi) {
             size_type mid = (lo + hi) / 2;
-            const auto &ve = view(mid);
+            const auto &ve = tensor(mid);
             if (pred(ve, value)) {  // mid satisfies predicate, look in higher half not
                 // including mid
                 lo = mid + 1;
@@ -99,40 +99,40 @@ namespace flare::detail {
 namespace flare {
     /*! \brief single-thread lower-bound search
 
-        \tparam ViewLike A flare::View or flare::detail::Iota
+        \tparam TensorLike A flare::Tensor or flare::detail::Iota
         \tparam Pred a binary predicate function
-        \param view the view to search
+        \param tensor the tensor to search
         \param value the value to search for
         \param pred a binary predicate function
-        \returns index of first element in view where pred(element, value) is false,
-        or view.size if no such element exists
+        \returns index of first element in tensor where pred(element, value) is false,
+        or tensor.size if no such element exists
 
         This minimizes the calls to predicate:
-        for view.size() >= 8, this does a binary search, otherwise, a linear search
+        for tensor.size() >= 8, this does a binary search, otherwise, a linear search
     */
-    template<typename ViewLike,
-            typename Pred = LT<typename ViewLike::non_const_value_type>>
-    FLARE_INLINE_FUNCTION typename ViewLike::size_type
+    template<typename TensorLike,
+            typename Pred = LT<typename TensorLike::non_const_value_type>>
+    FLARE_INLINE_FUNCTION typename TensorLike::size_type
 
     lower_bound_thread(
-            const ViewLike &view, const typename ViewLike::non_const_value_type &value,
+            const TensorLike &tensor, const typename TensorLike::non_const_value_type &value,
             Pred pred = Pred()) {
-        static_assert(1 == ViewLike::rank,
-                      "lower_bound_thread requires rank-1 views");
-        static_assert(flare::detail::is_iota_v<ViewLike> ||
-                      flare::is_view<ViewLike>::value,
+        static_assert(1 == TensorLike::rank,
+                      "lower_bound_thread requires rank-1 tensors");
+        static_assert(flare::detail::is_iota_v<TensorLike> ||
+                      flare::is_tensor<TensorLike>::value,
                       "lower_bound_thread requires a "
-                      "flare::detail::Iota or a flare::View");
+                      "flare::detail::Iota or a flare::Tensor");
         /*
-           sequential search makes on average 0.5 * view.size memory accesses
-           binary search makes log2(view.size)+1 accesses
+           sequential search makes on average 0.5 * tensor.size memory accesses
+           binary search makes log2(tensor.size)+1 accesses
 
            log2(x) <= 0.5x roughly when x >= 8
         */
-        if (view.size() >= 8) {
-            return detail::lower_bound_binary_thread(view, value, pred);
+        if (tensor.size() >= 8) {
+            return detail::lower_bound_binary_thread(tensor, value, pred);
         } else {
-            return detail::lower_bound_sequential_thread(view, value, pred);
+            return detail::lower_bound_sequential_thread(tensor, value, pred);
         }
     }
 }
@@ -141,32 +141,32 @@ namespace flare::detail {
 /*! \brief Team-collaborative sequential lower-bound search
 
     \tparam TeamMember the team policy member type
-    \tparam ViewLike A flare::View or flare::Iota
+    \tparam TensorLike A flare::Tensor or flare::Iota
     \tparam Pred The type of the predicate function to call
 
     \param handle The flare team handle
-    \param view The view-like to search
+    \param tensor The tensor-like to search
     \param value The value to compare in the predicate
     \param lo The first index to search
     \param hi One-past the last index to search
-    \param pred Apply pred(view(i), value)
+    \param pred Apply pred(tensor(i), value)
 
-    \returns To all team members, the smallest i for which pred(view(i), value)
+    \returns To all team members, the smallest i for which pred(tensor(i), value)
    is false for i in [lo, hi), or hi if no such value
 
     Uses a single thread to call \c lower_bound_thread, and broadcasts that
     to all team members.
 */
-    template<typename TeamMember, typename ViewLike,
-            typename Pred = LT<typename ViewLike::non_const_value_type>>
-    FLARE_INLINE_FUNCTION typename ViewLike::size_type lower_bound_single_team(
-            const TeamMember &handle, const ViewLike &view,
-            const typename ViewLike::non_const_value_type &value, Pred pred = Pred()) {
-        typename ViewLike::size_type idx;
+    template<typename TeamMember, typename TensorLike,
+            typename Pred = LT<typename TensorLike::non_const_value_type>>
+    FLARE_INLINE_FUNCTION typename TensorLike::size_type lower_bound_single_team(
+            const TeamMember &handle, const TensorLike &tensor,
+            const typename TensorLike::non_const_value_type &value, Pred pred = Pred()) {
+        typename TensorLike::size_type idx;
         flare::single(
                 flare::PerTeam(handle),
-                [&](typename ViewLike::size_type &lidx) {
-                    lidx = flare::lower_bound_thread(view, value, pred);
+                [&](typename TensorLike::size_type &lidx) {
+                    lidx = flare::lower_bound_thread(tensor, value, pred);
                 },
                 idx);
         return idx;
@@ -175,34 +175,34 @@ namespace flare::detail {
     /*! \brief Team-collaborative sequential lower-bound search
 
         \tparam TeamMember the team policy member type
-        \tparam ViewLike A flare::View or flare::Iota
+        \tparam TensorLike A flare::Tensor or flare::Iota
         \tparam Pred The type of the predicate function to call
 
         \param handle The flare team handle
-        \param view The view-like to search
+        \param tensor The tensor-like to search
         \param value The value to compare in the predicate
         \param lo The first index to search
         \param hi One-past the last index to search
-        \param pred Apply pred(view(i), value)F
+        \param pred Apply pred(tensor(i), value)F
 
-        \returns To all team members, the smallest i for which pred(view(i), value)
+        \returns To all team members, the smallest i for which pred(tensor(i), value)
        is false for i in [lo, hi), or hi if no such value
 
-        Apply pred(view(i), value) for i in [lo, hi)
+        Apply pred(tensor(i), value) for i in [lo, hi)
     */
-    template<typename TeamMember, typename ViewLike,
-            typename Pred = LT<typename ViewLike::non_const_value_type>>
-    FLARE_INLINE_FUNCTION typename ViewLike::size_type lower_bound_sequential_team(
-            const TeamMember &handle, const ViewLike &view,
-            const typename ViewLike::non_const_value_type &value,
-            typename ViewLike::size_type lo, typename ViewLike::size_type hi,
+    template<typename TeamMember, typename TensorLike,
+            typename Pred = LT<typename TensorLike::non_const_value_type>>
+    FLARE_INLINE_FUNCTION typename TensorLike::size_type lower_bound_sequential_team(
+            const TeamMember &handle, const TensorLike &tensor,
+            const typename TensorLike::non_const_value_type &value,
+            typename TensorLike::size_type lo, typename TensorLike::size_type hi,
             Pred pred = Pred()) {
-        using size_type = typename ViewLike::size_type;
-        static_assert(1 == ViewLike::rank,
-                      "lower_bound_sequential_team requires rank-1 views");
-        static_assert(is_iota_v<ViewLike> || flare::is_view<ViewLike>::value,
+        using size_type = typename TensorLike::size_type;
+        static_assert(1 == TensorLike::rank,
+                      "lower_bound_sequential_team requires rank-1 tensors");
+        static_assert(is_iota_v<TensorLike> || flare::is_tensor<TensorLike>::value,
                       "lower_bound_sequential_team requires a "
-                      "flare::detail::Iota or a flare::View");
+                      "flare::detail::Iota or a flare::Tensor");
 
         if (lo == hi) {
             return hi;
@@ -213,7 +213,7 @@ namespace flare::detail {
                 [&](const size_type &i, size_type &li) {
                     li = FLARE_MACRO_MIN(li, hi);
                     if (i < li) {  // no need to search higher than the smallest so far
-                        if (!pred(view(i), value)) {  // look for the smallest index that does
+                        if (!pred(tensor(i), value)) {  // look for the smallest index that does
                             // not satisfy
                             li = i;
                         }
@@ -226,23 +226,23 @@ namespace flare::detail {
     /*! \brief Team-collaborative sequential lower-bound search
 
         \tparam TeamMember the team policy member type
-        \tparam ViewLike A flare::View or flare::Iota
+        \tparam TensorLike A flare::Tensor or flare::Iota
         \tparam Pred The type of the predicate function to call
 
         \param handle The flare team handle
-        \param view The view-like to search
+        \param tensor The tensor-like to search
         \param value The value to compare in the predicate
-        \param pred Apply pred(view(i), value)
+        \param pred Apply pred(tensor(i), value)
 
-        \returns To all team members, the smallest i for which pred(view(i), value)
-       is false or view.size() if no such value
+        \returns To all team members, the smallest i for which pred(tensor(i), value)
+       is false or tensor.size() if no such value
     */
-    template<typename TeamMember, typename ViewLike,
-            typename Pred = LT<typename ViewLike::non_const_value_type>>
-    FLARE_INLINE_FUNCTION typename ViewLike::size_type lower_bound_sequential_team(
-            const TeamMember &handle, const ViewLike &view,
-            const typename ViewLike::non_const_value_type &value, Pred pred = Pred()) {
-        return lower_bound_sequential_team(handle, view, value, 0, view.size(), pred);
+    template<typename TeamMember, typename TensorLike,
+            typename Pred = LT<typename TensorLike::non_const_value_type>>
+    FLARE_INLINE_FUNCTION typename TensorLike::size_type lower_bound_sequential_team(
+            const TeamMember &handle, const TensorLike &tensor,
+            const typename TensorLike::non_const_value_type &value, Pred pred = Pred()) {
+        return lower_bound_sequential_team(handle, tensor, value, 0, tensor.size(), pred);
     }
 
 /*! \brief A range for the k-ary lower bound search
@@ -273,8 +273,8 @@ namespace flare::detail {
     struct RangeReducer {
         using reducer = RangeReducer;
         using value_type = Range<T>;
-        using result_view_type =
-                flare::View<Range<T> *, Space, flare::MemoryUnmanaged>;
+        using result_tensor_type =
+                flare::Tensor<Range<T> *, Space, flare::MemoryUnmanaged>;
 
     private:
         value_type &value;
@@ -296,7 +296,7 @@ namespace flare::detail {
         value_type &reference() const { return value; }
 
         FLARE_INLINE_FUNCTION
-        result_view_type view() const { return result_view_type(&value, 1); }
+        result_tensor_type tensor() const { return result_tensor_type(&value, 1); }
 
         FLARE_INLINE_FUNCTION
         bool references_scalar() const { return true; }
@@ -305,11 +305,11 @@ namespace flare::detail {
 /*! \brief team-collaborative K-ary lower-bound search
 
     \tparam TeamMember the team policy member type
-    \tparam ViewLike A flare::View or flare::Iota
+    \tparam TensorLike A flare::Tensor or flare::Iota
     \tparam Pred the binary predicate function type
 
     Actually, K+1-ary, where K is the size of the team
-    Split the view into k+1 segments at K points
+    Split the tensor into k+1 segments at K points
     Evalute the predicate in parallel at each point and use a joint min-max
    parallel reduction:
       * The lower bound is after the max index where the predicate was true
@@ -317,31 +317,31 @@ namespace flare::detail {
    false Once there are fewer values left than threads in the team, switch to
    team sequential search
 */
-    template<typename TeamMember, typename ViewLike,
-            typename Pred = LT<typename ViewLike::non_const_value_type>>
-    FLARE_INLINE_FUNCTION typename ViewLike::size_type lower_bound_kary_team(
-            const TeamMember &handle, const ViewLike &view,
-            const typename ViewLike::non_const_value_type &value, Pred pred = Pred()) {
-        static_assert(1 == ViewLike::rank,
-                      "lower_bound_kary_team requires rank-1 views");
-        static_assert(is_iota_v<ViewLike> || flare::is_view<ViewLike>::value,
+    template<typename TeamMember, typename TensorLike,
+            typename Pred = LT<typename TensorLike::non_const_value_type>>
+    FLARE_INLINE_FUNCTION typename TensorLike::size_type lower_bound_kary_team(
+            const TeamMember &handle, const TensorLike &tensor,
+            const typename TensorLike::non_const_value_type &value, Pred pred = Pred()) {
+        static_assert(1 == TensorLike::rank,
+                      "lower_bound_kary_team requires rank-1 tensors");
+        static_assert(is_iota_v<TensorLike> || flare::is_tensor<TensorLike>::value,
                       "lower_bound_kary_team requires a "
-                      "flare::detail::Iota or a flare::View");
+                      "flare::detail::Iota or a flare::Tensor");
 
-        using size_type = typename ViewLike::size_type;
+        using size_type = typename TensorLike::size_type;
 
         size_type lo = 0;
-        size_type hi = view.size();
+        size_type hi = tensor.size();
         while (lo < hi) {
             // if fewer than team_size elements left, just hit them all sequentially
             if (lo + handle.team_size() >= hi) {
-                return lower_bound_sequential_team(handle, view, value, lo, hi, pred);
+                return lower_bound_sequential_team(handle, tensor, value, lo, hi, pred);
             }
 
             // otherwise, split the region up among threads
             size_type mid =
                     lo + (hi - lo) * (handle.team_rank() + 1) / (handle.team_size() + 1);
-            auto ve = view(mid);
+            auto ve = tensor(mid);
 
             // reduce across threads to figure out where the new search bounds are
             // if a thread satisfies the predicate, the first element that does not
@@ -355,14 +355,14 @@ namespace flare::detail {
                     [&](const int &, Range<size_type> &lr) {
                         lr.lb = FLARE_MACRO_MAX(lo, lr.lb);  // no lower than lo
                         lr.ub = FLARE_MACRO_MIN(hi, lr.ub);  // no higher than hi
-                        // if pred(view(mid), value), then the lower bound is above this
+                        // if pred(tensor(mid), value), then the lower bound is above this
                         if (pred(ve, value)) {
                             lr.lb = mid + 1;
                         } else {  // otherwise the lower bound is no larger than this
                             lr.ub = mid;
                         }
                     },
-                    RangeReducer<size_type, typename ViewLike::device_type>(teamRange));
+                    RangeReducer<size_type, typename TensorLike::device_type>(teamRange));
 
             // next iteration, search in the newly-discovered window
             hi = teamRange.ub;
@@ -376,45 +376,45 @@ namespace flare {
     /*! \brief Team-collaborative lower-bound search
 
         \tparam TeamMember the team policy member type the flare team handle
-        \tparam View the type of view
+        \tparam Tensor the type of tensor
         \tparam Pred the type of the predicate
 
         \param handle a flare team handle
-        \param view a flare::View to search
+        \param tensor a flare::Tensor to search
         \param value the value to search for
-        \param pred the predicate to test entries in the view
+        \param pred the predicate to test entries in the tensor
 
-        \returns The smallest i in range [0, view.size()) for which pred(view(i),
-       value) is not true, or view.size() if no such `i` exists
+        \returns The smallest i in range [0, tensor.size()) for which pred(tensor(i),
+       value) is not true, or tensor.size() if no such `i` exists
 
         default pred is `element < value`, i.e. return the index to the first
-       element in the view that does not satisfy `element < value`. For well-ordered
+       element in the tensor that does not satisfy `element < value`. For well-ordered
        types this is the first element where element >= value
 
         Pred should be a binary function comparing two `typename
-       View::non_const_value_type`
+       Tensor::non_const_value_type`
     */
-    template<typename TeamMember, typename ViewLike,
-            typename Pred = LT<typename ViewLike::non_const_value_type>>
-    FLARE_INLINE_FUNCTION typename ViewLike::size_type lower_bound_team(
-            const TeamMember &handle, const ViewLike &view,
-            const typename ViewLike::non_const_value_type &value, Pred pred = Pred()) {
-        static_assert(1 == ViewLike::rank, "lower_bound_team requires rank-1 views");
-        static_assert(flare::detail::is_iota_v<ViewLike> ||
-                      flare::is_view<ViewLike>::value,
+    template<typename TeamMember, typename TensorLike,
+            typename Pred = LT<typename TensorLike::non_const_value_type>>
+    FLARE_INLINE_FUNCTION typename TensorLike::size_type lower_bound_team(
+            const TeamMember &handle, const TensorLike &tensor,
+            const typename TensorLike::non_const_value_type &value, Pred pred = Pred()) {
+        static_assert(1 == TensorLike::rank, "lower_bound_team requires rank-1 tensors");
+        static_assert(flare::detail::is_iota_v<TensorLike> ||
+                      flare::is_tensor<TensorLike>::value,
                       "lower_bound_team requires a "
-                      "flare::detail::Iota or a flare::View");
+                      "flare::detail::Iota or a flare::Tensor");
 
-        /* kary search is A = (k-1) * (logk(view.size()) + 1) accesses
+        /* kary search is A = (k-1) * (logk(tensor.size()) + 1) accesses
 
-           sequential search is B = view.size() accesses
+           sequential search is B = tensor.size() accesses
 
-            A < B is true ruoughly when view.size() > 3 * k
+            A < B is true ruoughly when tensor.size() > 3 * k
         */
-        if (view.size() > 3 * size_t(handle.team_size())) {
-            return detail::lower_bound_kary_team(handle, view, value, pred);
+        if (tensor.size() > 3 * size_t(handle.team_size())) {
+            return detail::lower_bound_kary_team(handle, tensor, value, pred);
         } else {
-            return detail::lower_bound_sequential_team(handle, view, value, pred);
+            return detail::lower_bound_sequential_team(handle, tensor, value, pred);
         }
     }
 

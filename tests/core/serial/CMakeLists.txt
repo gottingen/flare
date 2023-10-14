@@ -39,7 +39,7 @@ carbin_cc_test(
         atomic_operations_unsignedint_test.cc
         atomic_operations_unsignedlongint_test.cc
         atomic_test.cc
-        atomic_view_test.cc
+        atomic_tensor_test.cc
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
@@ -108,7 +108,7 @@ carbin_cc_test(
         reducers_c_test.cc
         reducers_d_test.cc
         reducers_e_test.cc
-        reductions_device_view_test.cc
+        reductions_device_tensor_test.cc
         reductions_test.cc
         shared_alloc_test.cc
         ${TEST_MAIN_SRC}
@@ -119,25 +119,25 @@ carbin_cc_test(
 )
 
 carbin_cc_test(
-        NAME serial_view_api_test
+        NAME serial_tensor_api_test
         SOURCES
-        view_64bit_test.cc
-        view_api_a_test.cc
-        view_api_b_test.cc
-        view_api_c_test.cc
-        view_api_d_test.cc
-        view_api_e_test.cc
-        view_copy_a_test.cc
-        view_copy_b_test.cc
-        view_hooks_test.cc
-        #view_layout_stride_assignment_test.cc
-        view_mapping_a_test.cc
-        view_mapping_b_test.cc
-        view_mapping_subview_test.cc
-        #view_memory_access_violation_test.cc
-        view_of_class_test.cc
-        view_resize_test.cc
-        view_subview_test.cc
+        tensor_64bit_test.cc
+        tensor_api_a_test.cc
+        tensor_api_b_test.cc
+        tensor_api_c_test.cc
+        tensor_api_d_test.cc
+        tensor_api_e_test.cc
+        tensor_copy_a_test.cc
+        tensor_copy_b_test.cc
+        tensor_hooks_test.cc
+        #tensor_layout_stride_assignment_test.cc
+        tensor_mapping_a_test.cc
+        tensor_mapping_b_test.cc
+        tensor_mapping_subtensor_test.cc
+        #tensor_memory_access_violation_test.cc
+        tensor_of_class_test.cc
+        tensor_resize_test.cc
+        tensor_subtensor_test.cc
         without_initializing_test.cc
         work_graph_test.cc
         ${TEST_MAIN_SRC}
@@ -148,24 +148,24 @@ carbin_cc_test(
 )
 
 carbin_cc_test(
-        NAME serial_subview_test
+        NAME serial_subtensor_test
         SOURCES
-        subview_01_test.cc
-        subview_02_test.cc
-        subview_03_test.cc
-        subview_04_test.cc
-        subview_05_test.cc
-        subview_06_test.cc
-        subview_07_test.cc
-        subview_08_test.cc
-        subview_09_test.cc
-        subview_10_test.cc
-        subview_11_test.cc
-        subview_12_test.cc
-        subview_13_test.cc
-        subview_14_test.cc
-        subview_a_test.cc
-        subview_b_test.cc
+        subtensor_01_test.cc
+        subtensor_02_test.cc
+        subtensor_03_test.cc
+        subtensor_04_test.cc
+        subtensor_05_test.cc
+        subtensor_06_test.cc
+        subtensor_07_test.cc
+        subtensor_08_test.cc
+        subtensor_09_test.cc
+        subtensor_10_test.cc
+        subtensor_11_test.cc
+        subtensor_12_test.cc
+        subtensor_13_test.cc
+        subtensor_14_test.cc
+        subtensor_a_test.cc
+        subtensor_b_test.cc
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS

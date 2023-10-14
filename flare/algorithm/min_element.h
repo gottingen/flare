@@ -68,11 +68,11 @@ template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto min_element(const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v) {
+                 const ::flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   return detail::min_or_max_element_exespace_impl<MinFirstLoc>(
-      "flare::min_element_view_api_default", ex, begin(v), end(v));
+      "flare::min_element_tensor_api_default", ex, begin(v), end(v));
 }
 
 template <
@@ -80,12 +80,12 @@ template <
     typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto min_element(const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v,
+                 const ::flare::Tensor<DataType, Properties...>& v,
                  ComparatorType comp) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   return detail::min_or_max_element_exespace_impl<MinFirstLocCustomComparator>(
-      "flare::min_element_view_api_default", ex, begin(v), end(v),
+      "flare::min_element_tensor_api_default", ex, begin(v), end(v),
       std::move(comp));
 }
 
@@ -93,7 +93,7 @@ template <
     typename ExecutionSpace, typename DataType, typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto min_element(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v) {
+                 const ::flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   return detail::min_or_max_element_exespace_impl<MinFirstLoc>(label, ex,
@@ -105,7 +105,7 @@ template <
     typename... Properties,
     std::enable_if_t<::flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto min_element(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType, Properties...>& v,
+                 const ::flare::Tensor<DataType, Properties...>& v,
                  ComparatorType comp) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
@@ -130,7 +130,7 @@ template <typename TeamHandleType, typename DataType, typename... Properties,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto min_element(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType, Properties...>& v) {
+    const ::flare::Tensor<DataType, Properties...>& v) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   return detail::min_or_max_element_team_impl<MinFirstLoc>(teamHandle, begin(v),
@@ -152,7 +152,7 @@ template <typename TeamHandleType, typename DataType, typename ComparatorType,
           std::enable_if_t<::flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto min_element(
     const TeamHandleType& teamHandle,
-    const ::flare::View<DataType, Properties...>& v, ComparatorType comp) {
+    const ::flare::Tensor<DataType, Properties...>& v, ComparatorType comp) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
   return detail::min_or_max_element_team_impl<MinFirstLocCustomComparator>(
       teamHandle, begin(v), end(v), std::move(comp));

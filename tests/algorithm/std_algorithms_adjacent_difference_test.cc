@@ -25,16 +25,16 @@ namespace AdjacentDifference {
 
 namespace KE = flare::experimental;
 
-template <class DestViewType>
-void fill_view(DestViewType dest_view, const std::string& name) {
-  // we need to be careful because dest_view might not be deep copyable
+template <class DestTensorType>
+void fill_tensor(DestTensorType dest_tensor, const std::string& name) {
+  // we need to be careful because dest_tensor might not be deep copyable
   // for instance strided layout
 
-  using value_type      = typename DestViewType::value_type;
-  const std::size_t ext = dest_view.extent(0);
-  auto aux_view =
-      create_deep_copyable_compatible_view_with_same_extent(dest_view);
-  auto aux_v_h = create_mirror_view(flare::HostSpace(), aux_view);
+  using value_type      = typename DestTensorType::value_type;
+  const std::size_t ext = dest_tensor.extent(0);
+  auto aux_tensor =
+      create_deep_copyable_compatible_tensor_with_same_extent(dest_tensor);
+  auto aux_v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -98,37 +98,37 @@ void fill_view(DestViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, aux_v_h);
-  CopyFunctor<decltype(aux_view), DestViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, aux_v_h);
+  CopyFunctor<decltype(aux_tensor), DestTensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class TestViewType, class... Args>
-auto compute_gold(TestViewType test_view, const std::string& name,
+template <class TestTensorType, class... Args>
+auto compute_gold(TestTensorType test_tensor, const std::string& name,
                   Args... args /* copy on purpose */) {
-  // we need to be careful because test_view might not be deep copyable
+  // we need to be careful because test_tensor might not be deep copyable
   // for instance strided layout
 
-  const std::size_t ext = test_view.extent(0);
+  const std::size_t ext = test_tensor.extent(0);
 
-  // create a deep copyable clone of test_view
-  auto test_view_dc = create_deep_copyable_compatible_clone(test_view);
-  auto test_view_dc_h =
-      create_mirror_view_and_copy(flare::HostSpace(), test_view_dc);
+  // create a deep copyable clone of test_tensor
+  auto test_tensor_dc = create_deep_copyable_compatible_clone(test_tensor);
+  auto test_tensor_dc_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), test_tensor_dc);
 
-  // create gold deep copyable view
-  auto gold_view =
-      create_deep_copyable_compatible_view_with_same_extent(test_view);
-  auto gold_view_h = create_mirror_view(flare::HostSpace(), gold_view);
+  // create gold deep copyable tensor
+  auto gold_tensor =
+      create_deep_copyable_compatible_tensor_with_same_extent(test_tensor);
+  auto gold_tensor_h = create_mirror_tensor(flare::HostSpace(), gold_tensor);
 
   // compute gold solution on host and deep copy to device
   if (name == "empty") {
-    return gold_view;
+    return gold_tensor;
   } else {
-    using value_type = typename TestViewType::value_type;
+    using value_type = typename TestTensorType::value_type;
     std::vector<value_type> tmp(ext);
     for (std::size_t i = 0; i < ext; ++i) {
-      tmp[i] = test_view_dc_h(i);
+      tmp[i] = test_tensor_dc_h(i);
     }
     // run adj-diff on tmp directly
     std::adjacent_difference(tmp.begin(), tmp.end(), tmp.begin(),
@@ -136,27 +136,27 @@ auto compute_gold(TestViewType test_view, const std::string& name,
 
     // copy from tmp to gold_h
     for (std::size_t i = 0; i < ext; ++i) {
-      gold_view_h(i) = tmp[i];
+      gold_tensor_h(i) = tmp[i];
     }
     // deep_copy to device
-    flare::deep_copy(gold_view, gold_view_h);
-    return gold_view;
+    flare::deep_copy(gold_tensor, gold_tensor_h);
+    return gold_tensor;
   }
 }
 
-template <class TestViewType, class GoldViewType>
-void verify_data(TestViewType test_view, GoldViewType gold) {
-  // we need to be careful because test_view might not be deep copyable
+template <class TestTensorType, class GolDTensorType>
+void verify_data(TestTensorType test_tensor, GolDTensorType gold) {
+  // we need to be careful because test_tensor might not be deep copyable
   // for instance strided layout
 
-  auto test_view_dc = create_deep_copyable_compatible_clone(test_view);
-  auto test_view_dc_h =
-      create_mirror_view_and_copy(flare::HostSpace(), test_view_dc);
+  auto test_tensor_dc = create_deep_copyable_compatible_clone(test_tensor);
+  auto test_tensor_dc_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), test_tensor_dc);
   // gold is deep_copyable for sure
-  const auto gold_h = create_mirror_view_and_copy(flare::HostSpace(), gold);
+  const auto gold_h = create_mirror_tensor_and_copy(flare::HostSpace(), gold);
 
-  for (std::size_t i = 0; i < test_view.extent(0); ++i) {
-    REQUIRE_EQ(gold_h(i), test_view_dc_h(i));
+  for (std::size_t i = 0; i < test_tensor.extent(0); ++i) {
+    REQUIRE_EQ(gold_h(i), test_tensor_dc_h(i));
   }
 }
 
@@ -182,50 +182,50 @@ template <class Tag, class ValueType, class InfoType, class... Args>
 void run_single_scenario(const InfoType& scenario_info,
                          Args... args /* copy on purpose */) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
 
-  auto view_from =
-      create_view<ValueType>(Tag{}, view_ext, "adj_diff_from_view");
-  fill_view(view_from, name);
+  auto tensor_from =
+      create_tensor<ValueType>(Tag{}, tensor_ext, "adj_diff_from_tensor");
+  fill_tensor(tensor_from, name);
 
-  const auto gold = compute_gold(view_from, name, args...);
+  const auto gold = compute_gold(tensor_from, name, args...);
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "adj_diff_dest_view");
-    auto res1 = KE::adjacent_difference(exespace(), KE::cbegin(view_from),
-                                        KE::cend(view_from),
-                                        KE::begin(view_dest), args...);
-    REQUIRE_EQ(res1, KE::end(view_dest));
-    verify_data(view_dest, gold);
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "adj_diff_dest_tensor");
+    auto res1 = KE::adjacent_difference(exespace(), KE::cbegin(tensor_from),
+                                        KE::cend(tensor_from),
+                                        KE::begin(tensor_dest), args...);
+    REQUIRE_EQ(res1, KE::end(tensor_dest));
+    verify_data(tensor_dest, gold);
   }
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "adj_diff_dest_view");
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "adj_diff_dest_tensor");
     auto res2 = KE::adjacent_difference(
-        "label", exespace(), KE::cbegin(view_from), KE::cend(view_from),
-        KE::begin(view_dest), args...);
-    REQUIRE_EQ(res2, KE::end(view_dest));
-    verify_data(view_dest, gold);
+        "label", exespace(), KE::cbegin(tensor_from), KE::cend(tensor_from),
+        KE::begin(tensor_dest), args...);
+    REQUIRE_EQ(res2, KE::end(tensor_dest));
+    verify_data(tensor_dest, gold);
   }
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "adj_diff_dest_view");
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "adj_diff_dest_tensor");
     auto res3 =
-        KE::adjacent_difference(exespace(), view_from, view_dest, args...);
-    REQUIRE_EQ(res3, KE::end(view_dest));
-    verify_data(view_dest, gold);
+        KE::adjacent_difference(exespace(), tensor_from, tensor_dest, args...);
+    REQUIRE_EQ(res3, KE::end(tensor_dest));
+    verify_data(tensor_dest, gold);
   }
 
   {
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "adj_diff_dest_view");
-    auto res4 = KE::adjacent_difference("label", exespace(), view_from,
-                                        view_dest, args...);
-    REQUIRE_EQ(res4, KE::end(view_dest));
-    verify_data(view_dest, gold);
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "adj_diff_dest_tensor");
+    auto res4 = KE::adjacent_difference("label", exespace(), tensor_from,
+                                        tensor_dest, args...);
+    REQUIRE_EQ(res4, KE::end(tensor_dest));
+    verify_data(tensor_dest, gold);
   }
 
   flare::fence();
@@ -234,10 +234,10 @@ void run_single_scenario(const InfoType& scenario_info,
 template <class Tag, class ValueType, class... Args>
 void run_all_scenarios(Args... args /* copy on purpose */) {
   // if (0 < sizeof...(args)) {
-  //   std::cout << "adjacent_difference: " << view_tag_to_string(Tag{})
+  //   std::cout << "adjacent_difference: " << tensor_tag_to_string(Tag{})
   //             << ", custom binary op, all overloads \n";
   // } else {
-  //   std::cout << "adjacent_difference: " << view_tag_to_string(Tag{})
+  //   std::cout << "adjacent_difference: " << tensor_tag_to_string(Tag{})
   //             << ", default binary op, all overloads \n";
   // }
 

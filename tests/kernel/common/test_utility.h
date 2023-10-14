@@ -60,92 +60,92 @@
 
 namespace Test {
 
-    // Utility class for testing kernels with rank-1 and rank-2 views that may be
-    // LayoutStride. Simplifies making a LayoutStride view of a given size that is
+    // Utility class for testing kernels with rank-1 and rank-2 tensors that may be
+    // LayoutStride. Simplifies making a LayoutStride tensor of a given size that is
     // actually noncontiguous, and host-device transfers for checking results on
     // host.
     //
-    // Constructed with label and extent(s), and then provides 5 views as members:
-    //  - d_view, and a const-valued alias d_view_const
-    //  - h_view
+    // Constructed with label and extent(s), and then provides 5 tensors as members:
+    //  - d_tensor, and a const-valued alias d_tensor_const
+    //  - h_tensor
     //  - d_base
     //  - h_base
-    // d_view is of type ViewType, and has the extents passed to the constructor.
-    // h_view is a mirror of d_view.
-    // d_base (and its mirror h_base) are contiguous views, so they can be
-    // deep-copied to each other. d_view aliases d_base, and h_view aliases h_base.
+    // d_tensor is of type TensorType, and has the extents passed to the constructor.
+    // h_tensor is a mirror of d_tensor.
+    // d_base (and its mirror h_base) are contiguous tensors, so they can be
+    // deep-copied to each other. d_tensor aliases d_base, and h_tensor aliases h_base.
     // This means that copying between d_base and h_base
-    //    also copies between d_view and h_view.
+    //    also copies between d_tensor and h_tensor.
     //
-    // If the Boolean template parameter 'createMirrorView' is:
+    // If the Boolean template parameter 'createMirrorTensor' is:
     // - 'true' (default value), then this utility class will use
-    //   flare::create_mirror_view();
+    //   flare::create_mirror_tensor();
     // - 'false', then this utility class will use flare::create_mirror()
-    template <class ViewType, bool createMirrorView = true>
-    struct view_stride_adapter {
-        static_assert(flare::is_view_v<ViewType>,
-                      "view_stride_adapter: ViewType must be a flare::View");
-        static_assert(ViewType::rank >= 1 && ViewType::rank <= 2,
-                      "view_stride_adapter: ViewType must be rank 1 or rank 2");
+    template <class TensorType, bool createMirrorTensor = true>
+    struct tensor_stride_adapter {
+        static_assert(flare::is_tensor_v<TensorType>,
+                      "tensor_stride_adapter: TensorType must be a flare::Tensor");
+        static_assert(TensorType::rank >= 1 && TensorType::rank <= 2,
+                      "tensor_stride_adapter: TensorType must be rank 1 or rank 2");
 
-        static constexpr bool strided = std::is_same<typename ViewType::array_layout,
+        static constexpr bool strided = std::is_same<typename TensorType::array_layout,
                 flare::LayoutStride>::value;
-        static constexpr int rank     = ViewType::rank;
+        static constexpr int rank     = TensorType::rank;
 
-        using DView = ViewType;
-        using HView = typename DView::HostMirror;
-        // If not strided, the base view types are the same as DView/HView.
-        // But if strided, the base views have one additional dimension, so that
-        // d_view/h_view have stride > 1 between consecutive elements.
-        using DViewBase = std::conditional_t<
+        using DTensor = TensorType;
+        using HTensor = typename DTensor::HostMirror;
+        // If not strided, the base tensor types are the same as DTensor/HTensor.
+        // But if strided, the base tensors have one additional dimension, so that
+        // d_tensor/h_tensor have stride > 1 between consecutive elements.
+        using DTensorBase = std::conditional_t<
         strided,
-        flare::View<typename ViewType::data_type*, flare::LayoutRight,
-                typename ViewType::device_type>,
-        DView>;
-        using HViewBase = typename DViewBase::HostMirror;
+        flare::Tensor<typename TensorType::data_type*, flare::LayoutRight,
+                typename TensorType::device_type>,
+        DTensor>;
+        using HTensorBase = typename DTensorBase::HostMirror;
 
-        view_stride_adapter(const std::string& label, int m, int n = 1) {
+        tensor_stride_adapter(const std::string& label, int m, int n = 1) {
             if constexpr (rank == 1) {
                 if constexpr (strided) {
-                    d_base = DViewBase(label, m, 2);
-                    h_base = createMirrorView ? flare::create_mirror_view(d_base)
+                    d_base = DTensorBase(label, m, 2);
+                    h_base = createMirrorTensor ? flare::create_mirror_tensor(d_base)
                                               : flare::create_mirror(d_base);
-                    d_view = flare::subview(d_base, flare::ALL(), 0);
-                    h_view = flare::subview(h_base, flare::ALL(), 0);
+                    d_tensor = flare::subtensor(d_base, flare::ALL(), 0);
+                    h_tensor = flare::subtensor(h_base, flare::ALL(), 0);
                 } else {
-                    d_base = DViewBase(label, m);
-                    h_base = createMirrorView ? flare::create_mirror_view(d_base)
+                    d_base = DTensorBase(label, m);
+                    h_base = createMirrorTensor ? flare::create_mirror_tensor(d_base)
                                               : flare::create_mirror(d_base);
-                    d_view = d_base;
-                    h_view = h_base;
+                    d_tensor = d_base;
+                    h_tensor = h_base;
                 }
             } else {
                 if constexpr (strided) {
-                    d_base = DViewBase(label, m, n, 2);
-                    h_base = createMirrorView ? flare::create_mirror_view(d_base)
+                    d_base = DTensorBase(label, m, n, 2);
+                    h_base = createMirrorTensor ? flare::create_mirror_tensor(d_base)
                                               : flare::create_mirror(d_base);
-                    d_view =
-                            flare::subview(d_base, flare::ALL(), flare::make_pair(0, n), 0);
-                    h_view =
-                            flare::subview(h_base, flare::ALL(), flare::make_pair(0, n), 0);
+                    d_tensor =
+                            flare::subtensor(d_base, flare::ALL(), flare::make_pair(0, n), 0);
+                    h_tensor =
+                            flare::subtensor(h_base, flare::ALL(), flare::make_pair(0, n), 0);
                 } else {
-                    d_base = DViewBase(label, m, n);
-                    h_base = createMirrorView ? flare::create_mirror_view(d_base)
+                    d_base = DTensorBase(label, m, n);
+                    h_base = createMirrorTensor ? flare::create_mirror_tensor(d_base)
                                               : flare::create_mirror(d_base);
-                    d_view = d_base;
-                    h_view = h_base;
+                    d_tensor = d_base;
+                    h_tensor = h_base;
                 }
             }
-            d_view_const = d_view;
+            d_tensor_const = d_tensor;
         }
 
-        // Have both const and nonconst versions of d_view (with same underlying
+        // Have both const and nonconst versions of d_tensor (with same underlying
         // data), since we often test BLAS with both
-        DView d_view;
-        typename DView::const_type d_view_const;
-        HView h_view;
-        DViewBase d_base;
-        HViewBase h_base;
+        DTensor d_tensor;
+        typename DTensor::const_type d_tensor_const;
+        HTensor h_tensor;
+        DTensorBase d_base;
+        HTensorBase h_base;
     };
 
     template <class Scalar1, class Scalar2, class Scalar3>
@@ -166,14 +166,14 @@ namespace Test {
         EXPECT_NEAR_KK(val1, val2, tol * flare::max(ahv1, ahv2), msg);
     }
 
-    template <class ViewType1, class ViewType2, class Scalar>
-    void EXPECT_NEAR_KK_1DVIEW(ViewType1 v1, ViewType2 v2, Scalar tol) {
+    template <class TensorType1, class TensorType2, class Scalar>
+    void EXPECT_NEAR_KK_1DTensor(TensorType1 v1, TensorType2 v2, Scalar tol) {
         size_t v1_size = v1.extent(0);
         size_t v2_size = v2.extent(0);
         REQUIRE_EQ(v1_size, v2_size);
 
-        typename ViewType1::HostMirror h_v1 = flare::create_mirror_view(v1);
-        typename ViewType2::HostMirror h_v2 = flare::create_mirror_view(v2);
+        typename TensorType1::HostMirror h_v1 = flare::create_mirror_tensor(v1);
+        typename TensorType2::HostMirror h_v2 = flare::create_mirror_tensor(v2);
 
         flare::detail::safe_device_to_host_deep_copy(v1.extent(0), v1, h_v1);
         flare::detail::safe_device_to_host_deep_copy(v2.extent(0), v2, h_v2);
@@ -183,14 +183,14 @@ namespace Test {
         }
     }
 
-    template <class ViewType1, class ViewType2, class Scalar>
-    void EXPECT_NEAR_KK_REL_1DVIEW(ViewType1 v1, ViewType2 v2, Scalar tol) {
+    template <class TensorType1, class TensorType2, class Scalar>
+    void EXPECT_NEAR_KK_REL_1DTensor(TensorType1 v1, TensorType2 v2, Scalar tol) {
         size_t v1_size = v1.extent(0);
         size_t v2_size = v2.extent(0);
         REQUIRE_EQ(v1_size, v2_size);
 
-        typename ViewType1::HostMirror h_v1 = flare::create_mirror_view(v1);
-        typename ViewType2::HostMirror h_v2 = flare::create_mirror_view(v2);
+        typename TensorType1::HostMirror h_v1 = flare::create_mirror_tensor(v1);
+        typename TensorType2::HostMirror h_v2 = flare::create_mirror_tensor(v2);
 
         flare::detail::safe_device_to_host_deep_copy(v1.extent(0), v1, h_v1);
         flare::detail::safe_device_to_host_deep_copy(v2.extent(0), v2, h_v2);
@@ -221,24 +221,24 @@ namespace Test {
     using bhalfScalarType = flare::experimental::bhalf_t;
 #endif  // FLARE_BHALF_T_IS_FLOAT
 
-    template <class ViewTypeA, class ViewTypeB, class ViewTypeC,
+    template <class TensorTypeA, class TensorTypeB, class TensorTypeC,
             class ExecutionSpace>
     struct SharedVanillaGEMM {
         bool A_t, B_t, A_c, B_c;
         int C_rows, C_cols, A_cols;
-        ViewTypeA A;
-        ViewTypeB B;
-        ViewTypeC C;
+        TensorTypeA A;
+        TensorTypeB B;
+        TensorTypeC C;
 
-        typedef typename ViewTypeA::value_type ScalarA;
-        typedef typename ViewTypeB::value_type ScalarB;
-        typedef typename ViewTypeC::value_type ScalarC;
-        typedef flare::View<ScalarA*, flare::LayoutStride,
-                typename ViewTypeA::device_type>
-                SubviewTypeA;
-        typedef flare::View<ScalarB*, flare::LayoutStride,
-                typename ViewTypeB::device_type>
-                SubviewTypeB;
+        typedef typename TensorTypeA::value_type ScalarA;
+        typedef typename TensorTypeB::value_type ScalarB;
+        typedef typename TensorTypeC::value_type ScalarC;
+        typedef flare::Tensor<ScalarA*, flare::LayoutStride,
+                typename TensorTypeA::device_type>
+                SubtensorTypeA;
+        typedef flare::Tensor<ScalarB*, flare::LayoutStride,
+                typename TensorTypeB::device_type>
+                SubtensorTypeB;
         typedef flare::ArithTraits<ScalarC> APT;
         typedef typename APT::mag_type mag_type;
         ScalarA alpha;
@@ -251,20 +251,20 @@ namespace Test {
             flare::parallel_for(
                     flare::TeamThreadRange(team, C_rows), [&](const int& i) {
                         // Give each flare thread a vector of A
-                        SubviewTypeA a_vec;
+                        SubtensorTypeA a_vec;
                         if (A_t)
-                            a_vec = flare::subview(A, flare::ALL(), i);
+                            a_vec = flare::subtensor(A, flare::ALL(), i);
                         else
-                            a_vec = flare::subview(A, i, flare::ALL());
+                            a_vec = flare::subtensor(A, i, flare::ALL());
 
                         // Have all vector lanes perform the dot product
                         flare::parallel_for(
                                 flare::ThreadVectorRange(team, C_cols), [&](const int& j) {
-                                    SubviewTypeB b_vec;
+                                    SubtensorTypeB b_vec;
                                     if (B_t)
-                                        b_vec = flare::subview(B, j, flare::ALL());
+                                        b_vec = flare::subtensor(B, j, flare::ALL());
                                     else
-                                        b_vec = flare::subview(B, flare::ALL(), j);
+                                        b_vec = flare::subtensor(B, flare::ALL(), j);
                                     ScalarC ab = ScalarC(0);
                                     for (int k = 0; k < A_cols; k++) {
                                         auto a = A_c ? APT::conj(a_vec(k)) : a_vec(k);
@@ -277,23 +277,23 @@ namespace Test {
         }
     };
 // C(i,:,:) = alpha * (A(i,:,:) * B(i,:,:)) + beta * C(i,:,:)
-    template <class ViewTypeA, class ViewTypeB, class ViewTypeC,
+    template <class TensorTypeA, class TensorTypeB, class TensorTypeC,
             class ExecutionSpace>
     struct Functor_BatchedVanillaGEMM {
         bool A_t, B_t, A_c, B_c, batch_size_last_dim = false;
-        ViewTypeA A;
-        ViewTypeB B;
-        ViewTypeC C;
+        TensorTypeA A;
+        TensorTypeB B;
+        TensorTypeC C;
 
-        using ScalarA      = typename ViewTypeA::value_type;
-        using ScalarB      = typename ViewTypeB::value_type;
-        using ScalarC      = typename ViewTypeC::value_type;
-        using SubviewTypeA = typename flare::View<ScalarA**, flare::LayoutStride,
-                typename ViewTypeA::device_type>;
-        using SubviewTypeB = typename flare::View<ScalarB**, flare::LayoutStride,
-                typename ViewTypeA::device_type>;
-        using SubviewTypeC = typename flare::View<ScalarC**, flare::LayoutStride,
-                typename ViewTypeA::device_type>;
+        using ScalarA      = typename TensorTypeA::value_type;
+        using ScalarB      = typename TensorTypeB::value_type;
+        using ScalarC      = typename TensorTypeC::value_type;
+        using SubtensorTypeA = typename flare::Tensor<ScalarA**, flare::LayoutStride,
+                typename TensorTypeA::device_type>;
+        using SubtensorTypeB = typename flare::Tensor<ScalarB**, flare::LayoutStride,
+                typename TensorTypeA::device_type>;
+        using SubtensorTypeC = typename flare::Tensor<ScalarC**, flare::LayoutStride,
+                typename TensorTypeA::device_type>;
 
         ScalarA alpha;
         ScalarC beta;
@@ -303,20 +303,20 @@ namespace Test {
                 const typename flare::TeamPolicy<ExecutionSpace>::member_type& team)
         const {
             int i = team.league_rank();
-            SubviewTypeA _A;
-            SubviewTypeB _B;
-            SubviewTypeC _C;
+            SubtensorTypeA _A;
+            SubtensorTypeB _B;
+            SubtensorTypeC _C;
 
             if (batch_size_last_dim) {
-                _A = flare::subview(A, flare::ALL(), flare::ALL(), i);
-                _B = flare::subview(B, flare::ALL(), flare::ALL(), i);
-                _C = flare::subview(C, flare::ALL(), flare::ALL(), i);
+                _A = flare::subtensor(A, flare::ALL(), flare::ALL(), i);
+                _B = flare::subtensor(B, flare::ALL(), flare::ALL(), i);
+                _C = flare::subtensor(C, flare::ALL(), flare::ALL(), i);
             } else {
-                _A = flare::subview(A, i, flare::ALL(), flare::ALL());
-                _B = flare::subview(B, i, flare::ALL(), flare::ALL());
-                _C = flare::subview(C, i, flare::ALL(), flare::ALL());
+                _A = flare::subtensor(A, i, flare::ALL(), flare::ALL());
+                _B = flare::subtensor(B, i, flare::ALL(), flare::ALL());
+                _C = flare::subtensor(C, i, flare::ALL(), flare::ALL());
             }
-            struct SharedVanillaGEMM<SubviewTypeA, SubviewTypeB, SubviewTypeC,
+            struct SharedVanillaGEMM<SubtensorTypeA, SubtensorTypeB, SubtensorTypeC,
                     ExecutionSpace>
                     vgemm;
             vgemm.A_t    = A_t;
@@ -346,12 +346,12 @@ namespace Test {
     };
 
 // Compute C := alpha * AB + beta * C
-    template <class ViewTypeA, class ViewTypeB, class ViewTypeC>
-    void vanillaGEMM(typename ViewTypeC::non_const_value_type alpha,
-                     const ViewTypeA& A, const ViewTypeB& B,
-                     typename ViewTypeC::non_const_value_type beta,
-                     const ViewTypeC& C) {
-        using value_type = typename ViewTypeC::non_const_value_type;
+    template <class TensorTypeA, class TensorTypeB, class TensorTypeC>
+    void vanillaGEMM(typename TensorTypeC::non_const_value_type alpha,
+                     const TensorTypeA& A, const TensorTypeB& B,
+                     typename TensorTypeC::non_const_value_type beta,
+                     const TensorTypeC& C) {
+        using value_type = typename TensorTypeC::non_const_value_type;
         using KAT        = flare::ArithTraits<value_type>;
         int m            = A.extent(0);
         int k            = A.extent(1);
@@ -367,13 +367,13 @@ namespace Test {
         }
     }
 
-    template <class AlphaType, class ViewTypeA, class ViewTypeX, class BetaType,
-            class ViewTypeY>
+    template <class AlphaType, class TensorTypeA, class TensorTypeX, class BetaType,
+            class TensorTypeY>
     FLARE_INLINE_FUNCTION void vanillaGEMV(char mode, AlphaType alpha,
-                                            const ViewTypeA& A, const ViewTypeX& x,
-                                            BetaType beta, const ViewTypeY& y) {
-        using ScalarY = typename ViewTypeY::non_const_value_type;
-        using KAT_A   = flare::ArithTraits<typename ViewTypeA::non_const_value_type>;
+                                            const TensorTypeA& A, const TensorTypeX& x,
+                                            BetaType beta, const TensorTypeY& y) {
+        using ScalarY = typename TensorTypeY::non_const_value_type;
+        using KAT_A   = flare::ArithTraits<typename TensorTypeA::non_const_value_type>;
         const bool transposed = mode == 'T' || mode == 'C';
         const bool conjugated = mode == 'C';
         const bool has_beta   = beta != flare::ArithTraits<BetaType>::zero();
@@ -421,15 +421,15 @@ namespace Test {
             typename device, typename crsMat_t>
     crsMat_t symmetrize(crsMat_t A) {
         typedef typename crsMat_t::StaticCrsGraphType graph_t;
-        typedef typename crsMat_t::values_type::non_const_type scalar_view_t;
-        typedef typename graph_t::row_map_type::non_const_type lno_view_t;
-        typedef typename graph_t::entries_type::non_const_type lno_nnz_view_t;
+        typedef typename crsMat_t::values_type::non_const_type scalar_tensor_t;
+        typedef typename graph_t::row_map_type::non_const_type lno_tensor_t;
+        typedef typename graph_t::entries_type::non_const_type lno_nnz_tensor_t;
         auto host_rowmap =
-                flare::create_mirror_view_and_copy(flare::HostSpace(), A.graph.row_map);
+                flare::create_mirror_tensor_and_copy(flare::HostSpace(), A.graph.row_map);
         auto host_entries =
-                flare::create_mirror_view_and_copy(flare::HostSpace(), A.graph.entries);
+                flare::create_mirror_tensor_and_copy(flare::HostSpace(), A.graph.entries);
         auto host_values =
-                flare::create_mirror_view_and_copy(flare::HostSpace(), A.values);
+                flare::create_mirror_tensor_and_copy(flare::HostSpace(), A.values);
         lno_t numRows = A.numRows();
         // symmetrize as input_mat + input_mat^T, to still have a diagonally dominant
         // matrix
@@ -453,7 +453,7 @@ namespace Test {
             }
         }
         // Count entries
-        flare::View<size_type*, flare::LayoutLeft, flare::HostSpace>
+        flare::Tensor<size_type*, flare::LayoutLeft, flare::HostSpace>
                                                      new_host_rowmap("Rowmap", numRows + 1);
         size_t accum = 0;
         for (lno_t r = 0; r <= numRows; r++) {
@@ -461,9 +461,9 @@ namespace Test {
             if (r < numRows) accum += symRows[r].size();
         }
         // Allocate new entries/values
-        flare::View<lno_t*, flare::LayoutLeft, flare::HostSpace> new_host_entries(
+        flare::Tensor<lno_t*, flare::LayoutLeft, flare::HostSpace> new_host_entries(
                 "Entries", accum);
-        flare::View<scalar_t*, flare::LayoutLeft, flare::HostSpace>
+        flare::Tensor<scalar_t*, flare::LayoutLeft, flare::HostSpace>
                                                     new_host_values("Values", accum);
         for (lno_t r = 0; r < numRows; r++) {
             auto rowIt = symRows[r].begin();
@@ -473,9 +473,9 @@ namespace Test {
                 rowIt++;
             }
         }
-        lno_view_t new_rowmap("Rowmap", numRows + 1);
-        lno_nnz_view_t new_entries("Entries", accum);
-        scalar_view_t new_values("Values", accum);
+        lno_tensor_t new_rowmap("Rowmap", numRows + 1);
+        lno_nnz_tensor_t new_entries("Entries", accum);
+        scalar_tensor_t new_values("Values", accum);
         flare::deep_copy(new_rowmap, new_host_rowmap);
         flare::deep_copy(new_entries, new_host_entries);
         flare::deep_copy(new_values, new_host_values);
@@ -488,7 +488,7 @@ namespace Test {
     template <typename vec_t>
     vec_t create_random_x_vector(vec_t& kok_x, double max_value = 10.0) {
         typedef typename vec_t::value_type scalar_t;
-        auto h_x = flare::create_mirror_view(kok_x);
+        auto h_x = flare::create_mirror_tensor(kok_x);
         for (size_t j = 0; j < h_x.extent(1); ++j) {
             for (size_t i = 0; i < h_x.extent(0); ++i) {
                 scalar_t r = static_cast<scalar_t>(rand()) /
@@ -565,12 +565,12 @@ template <class ScalarType, class LayoutType, class Device>
 class RandCooMat {
 private:
     using ExeSpaceType  = typename Device::execution_space;
-    using RowViewTypeD  = flare::View<int64_t*, LayoutType, Device>;
-    using ColViewTypeD  = flare::View<int64_t*, LayoutType, Device>;
-    using DataViewTypeD = flare::View<ScalarType*, LayoutType, Device>;
-    RowViewTypeD __row_d;
-    ColViewTypeD __col_d;
-    DataViewTypeD __data_d;
+    using RowTensorTypeD  = flare::Tensor<int64_t*, LayoutType, Device>;
+    using ColTensorTypeD  = flare::Tensor<int64_t*, LayoutType, Device>;
+    using DatATensorTypeD = flare::Tensor<ScalarType*, LayoutType, Device>;
+    RowTensorTypeD __row_d;
+    ColTensorTypeD __col_d;
+    DatATensorTypeD __data_d;
 
     template <class T>
     T __getter_copy_helper(T src) {
@@ -601,13 +601,13 @@ public:
                            "...): rand seed: " + std::to_string(ticks) + "\n");
         flare::Random_XorShift64_Pool<ExeSpaceType> random(ticks);
 
-        __row_d = RowViewTypeD("RandCooMat.RowViewType", n_tuples);
+        __row_d = RowTensorTypeD("RandCooMat.RowTensorType", n_tuples);
         flare::fill_random(__row_d, random, -m, m);
 
-        __col_d = ColViewTypeD("RandCooMat.ColViewType", n_tuples);
+        __col_d = ColTensorTypeD("RandCooMat.ColTensorType", n_tuples);
         flare::fill_random(__col_d, random, -n, n);
 
-        __data_d = DataViewTypeD("RandCooMat.DataViewType", n_tuples);
+        __data_d = DatATensorTypeD("RandCooMat.DatATensorType", n_tuples);
         flare::fill_random(__data_d, random, min_val, max_val);
 
         ExeSpaceType().fence();
@@ -628,7 +628,7 @@ public:
 /// \tparam Device
 template <class ScalarType, class LayoutType, class Device,
         typename Ordinal = int64_t,
-        typename Size    = typename flare::ViewTraits<Ordinal*, Device, void,
+        typename Size    = typename flare::TensorTraits<Ordinal*, Device, void,
                 void>::size_type>
 class RandCsMatrix {
 public:
@@ -637,24 +637,24 @@ public:
     using device_type  = Device;
     using ordinal_type = Ordinal;
     using size_type    = Size;
-    using ValViewTypeD = flare::View<ScalarType*, LayoutType, Device>;
-    using IdViewTypeD  = flare::View<Ordinal*, LayoutType, Device>;
-    using MapViewTypeD = flare::View<Size*, LayoutType, Device>;
+    using ValTensorTypeD = flare::Tensor<ScalarType*, LayoutType, Device>;
+    using IDTensorTypeD  = flare::Tensor<Ordinal*, LayoutType, Device>;
+    using MapTensorTypeD = flare::Tensor<Size*, LayoutType, Device>;
 
 private:
     using execution_space = typename Device::execution_space;
     Ordinal __dim2;
     Ordinal __dim1;
     Size __nnz = 0;
-    MapViewTypeD __map_d;
-    IdViewTypeD __ids_d;
-    ValViewTypeD __vals_d;
-    using MapViewTypeH = typename MapViewTypeD::HostMirror;
-    using IdViewTypeH  = typename IdViewTypeD::HostMirror;
-    using ValViewTypeH = typename ValViewTypeD::HostMirror;
-    MapViewTypeH __map;
-    IdViewTypeH __ids;
-    ValViewTypeH __vals;
+    MapTensorTypeD __map_d;
+    IDTensorTypeD __ids_d;
+    ValTensorTypeD __vals_d;
+    using MapTensorTypeH = typename MapTensorTypeD::HostMirror;
+    using IDTensorTypeH  = typename IDTensorTypeD::HostMirror;
+    using ValTensorTypeH = typename ValTensorTypeD::HostMirror;
+    MapTensorTypeH __map;
+    IDTensorTypeH __ids;
+    ValTensorTypeH __vals;
     bool __fully_sparse;
 
     /// Generates a random map where (using Ccs terminology):
@@ -689,12 +689,12 @@ private:
 
         // Copy to device
         flare::deep_copy(__map_d, __map);
-        IdViewTypeD tight_ids(flare::view_alloc(flare::WithoutInitializing,
-                                                 "RandCsMatrix.IdViewTypeD"),
+        IDTensorTypeD tight_ids(flare::tensor_alloc(flare::WithoutInitializing,
+                                                 "RandCsMatrix.IDTensorTypeD"),
                               __nnz);
         flare::deep_copy(
                 tight_ids,
-                flare::subview(__ids, flare::make_pair(0, static_cast<int>(__nnz))));
+                flare::subtensor(__ids, flare::make_pair(0, static_cast<int>(__nnz))));
         __ids_d = tight_ids;
     }
 
@@ -718,11 +718,11 @@ public:
         __dim1         = dim1;
         __dim2         = dim2;
         __fully_sparse = fully_sparse;
-        __map_d        = MapViewTypeD("RandCsMatrix.ColMapViewType", __dim1 + 1);
-        __map          = flare::create_mirror_view(__map_d);
-        __ids_d        = IdViewTypeD("RandCsMatrix.RowIdViewType",
+        __map_d        = MapTensorTypeD("RandCsMatrix.ColMapTensorType", __dim1 + 1);
+        __map          = flare::create_mirror_tensor(__map_d);
+        __ids_d        = IDTensorTypeD("RandCsMatrix.RowIDTensorType",
                                      dim2 * dim1 + 1);  // over-allocated
-        __ids          = flare::create_mirror_view(__ids_d);
+        __ids          = flare::create_mirror_tensor(__ids_d);
 
         uint64_t ticks =
                 std::chrono::high_resolution_clock::now().time_since_epoch().count() %
@@ -737,8 +737,8 @@ public:
         flare::Random_XorShift64_Pool<flare::HostSpace> random(ticks);
         __populate_random_cs_mat(ticks);
 
-        __vals_d = ValViewTypeD("RandCsMatrix.ValViewType", __nnz + 1);
-        __vals   = flare::create_mirror_view(__vals_d);
+        __vals_d = ValTensorTypeD("RandCsMatrix.ValTensorType", __nnz + 1);
+        __vals   = flare::create_mirror_tensor(__vals_d);
         flare::fill_random(__vals, random, min_val, max_val);  // random scalars
         flare::fence();
         __vals(__nnz) = ScalarType(0);
@@ -755,9 +755,9 @@ public:
     Ordinal get_dim2() { return __dim2; }
     // dimension1: This is either rows for Crs matrix or columns for a Ccs matrix.
     Ordinal get_dim1() { return __dim1; }
-    ValViewTypeD get_vals() { return __getter_copy_helper(__vals_d); }
-    IdViewTypeD get_ids() { return __getter_copy_helper(__ids_d); }
-    MapViewTypeD get_map() { return __getter_copy_helper(__map_d); }
+    ValTensorTypeD get_vals() { return __getter_copy_helper(__vals_d); }
+    IDTensorTypeD get_ids() { return __getter_copy_helper(__ids_d); }
+    MapTensorTypeD get_map() { return __getter_copy_helper(__map_d); }
 };
 
 /// \brief Randomly shuffle the entries in each row (col) of a Crs (Ccs) matrix.
@@ -766,11 +766,11 @@ void shuffleMatrixEntries(Rowptrs rowptrs, Entries entries, Values values) {
     using size_type    = typename Rowptrs::non_const_value_type;
     using ordinal_type = typename Entries::value_type;
     auto rowptrsHost =
-            flare::create_mirror_view_and_copy(flare::HostSpace(), rowptrs);
+            flare::create_mirror_tensor_and_copy(flare::HostSpace(), rowptrs);
     auto entriesHost =
-            flare::create_mirror_view_and_copy(flare::HostSpace(), entries);
+            flare::create_mirror_tensor_and_copy(flare::HostSpace(), entries);
     auto valuesHost =
-            flare::create_mirror_view_and_copy(flare::HostSpace(), values);
+            flare::create_mirror_tensor_and_copy(flare::HostSpace(), values);
     ordinal_type numRows =
             rowptrsHost.extent(0) ? (rowptrsHost.extent(0) - 1) : 0;
     for (ordinal_type i = 0; i < numRows; i++) {

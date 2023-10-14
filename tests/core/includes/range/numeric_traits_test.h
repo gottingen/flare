@@ -130,10 +130,10 @@ struct TestNumericTraits {
     template<class U>
     using trait = typename Tag::template trait<U>;
 
-    flare::View<T, Space> compare;
+    flare::Tensor<T, Space> compare;
 
     TestNumericTraits() {
-        compare = flare::View<T, Space>("C");
+        compare = flare::Tensor<T, Space>("C");
         run();
     }
 

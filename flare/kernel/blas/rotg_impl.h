@@ -90,14 +90,14 @@ namespace flare::blas::detail {
         }
     }
 
-    template <class SViewType, class MViewType>
+    template <class STensorType, class MTensorType>
     struct rotg_functor {
-        SViewType a, b;
-        MViewType c;
-        SViewType s;
+        STensorType a, b;
+        MTensorType c;
+        STensorType s;
 
-        rotg_functor(SViewType const& a_, SViewType const& b_, MViewType const& c_,
-                     SViewType const& s_)
+        rotg_functor(STensorType const& a_, STensorType const& b_, MTensorType const& c_,
+                     STensorType const& s_)
                 : a(a_), b(b_), c(c_), s(s_) {}
 
         FLARE_INLINE_FUNCTION
@@ -107,21 +107,21 @@ namespace flare::blas::detail {
     };
 
     /// \brief Compute Givens rotation coefficients.
-    template <class ExecutionSpace, class SViewType, class MViewType>
-    void Rotg_Invoke(ExecutionSpace const& space, SViewType const& a,
-                     SViewType const& b, MViewType const& c, SViewType const& s) {
+    template <class ExecutionSpace, class STensorType, class MTensorType>
+    void Rotg_Invoke(ExecutionSpace const& space, STensorType const& a,
+                     STensorType const& b, MTensorType const& c, STensorType const& s) {
         flare::RangePolicy<ExecutionSpace> rotg_policy(space, 0, 1);
         rotg_functor rotg_func(a, b, c, s);
         flare::parallel_for("flare::blas::rotg", rotg_policy, rotg_func);
     }
 
     // Unification layer
-    template <class ExecutionSpace, class SViewType, class MViewType>
+    template <class ExecutionSpace, class STensorType, class MTensorType>
     struct Rotg{
-        static void rotg(ExecutionSpace const& space, SViewType const& a,
-                         SViewType const& b, MViewType const& c, SViewType const& s) {
+        static void rotg(ExecutionSpace const& space, STensorType const& a,
+                         STensorType const& b, MTensorType const& c, STensorType const& s) {
             flare::Profiling::pushRegion("flare::blas::rotg");
-            Rotg_Invoke<ExecutionSpace, SViewType, MViewType>(space, a, b, c, s);
+            Rotg_Invoke<ExecutionSpace, STensorType, MTensorType>(space, a, b, c, s);
             flare::Profiling::popRegion();
         }
     };
@@ -135,9 +135,9 @@ namespace flare::blas::detail {
 #define FLARE_BLAS_ROTG_SPEC_INST(SCALAR, LAYOUT, EXECSPACE, MEMSPACE) \
   template struct Rotg<                                                     \
       EXECSPACE,                                                            \
-      flare::View<SCALAR, LAYOUT, flare::Device<EXECSPACE, MEMSPACE>,     \
+      flare::Tensor<SCALAR, LAYOUT, flare::Device<EXECSPACE, MEMSPACE>,     \
                    flare::MemoryTraits<flare::Unmanaged>>,                \
-      flare::View<typename flare::ArithTraits<SCALAR>::mag_type, LAYOUT,  \
+      flare::Tensor<typename flare::ArithTraits<SCALAR>::mag_type, LAYOUT,  \
                    flare::Device<EXECSPACE, MEMSPACE>,                     \
                    flare::MemoryTraits<flare::Unmanaged>>>;
 

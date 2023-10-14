@@ -32,8 +32,8 @@ namespace flare::blas::detail {
 
     /// \brief 2-norm (squared) functor for single vectors.
     ///
-    /// \tparam RV 0-D output View
-    /// \tparam XV 1-D input View
+    /// \tparam RV 0-D output Tensor
+    /// \tparam XV 1-D input Tensor
     /// \tparam SizeType Index type.  Use int (32 bits) if possible.
     template <class RV, class XV, class SizeType = typename XV::size_type>
     struct V_NrmInf_Functor {
@@ -47,12 +47,12 @@ namespace flare::blas::detail {
         typename XV::const_type m_x;
 
         V_NrmInf_Functor(const XV& x) : m_x(x) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::blas::Impl::V_NrmInf_Functor: "
-                          "R is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "R is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::Impl::V_NrmInf_Functor: "
-                          "X is not a flare::View.");
+                          "X is not a flare::Tensor.");
             static_assert(std::is_same<typename RV::value_type,
                                   typename RV::non_const_value_type>::value,
                           "flare::blas::Impl::V_NrmInf_Functor: R is const.  "
@@ -70,14 +70,14 @@ namespace flare::blas::detail {
     };
 
     /// \brief Compute the 2-norm (or its square) of the single vector (1-D
-    ///   View) X, and store the result in the 0-D View r.
+    ///   Tensor) X, and store the result in the 0-D Tensor r.
     template <class execution_space, class RV, class XV, class SizeType>
     void V_NrmInf_Invoke(const execution_space& space, const RV& r, const XV& X) {
         typedef flare::ArithTraits<typename RV::non_const_value_type> AT;
 
         const SizeType numRows = static_cast<SizeType>(X.extent(0));
 
-        // Avoid Max Reduction if this is a zero length view
+        // Avoid Max Reduction if this is a zero length tensor
         if (numRows == 0) {
             flare::deep_copy(r, AT::zero());
             return;
@@ -92,12 +92,12 @@ namespace flare::blas::detail {
     }
 
     /// \brief Compute the 2-norms (or their square) of the columns of the
-    ///   multivector (2-D View) X, and store result(s) in the 1-D View r.
+    ///   multivector (2-D Tensor) X, and store result(s) in the 1-D Tensor r.
     template <class execution_space, class RV, class XMV, class SizeType>
     void MV_NrmInf_Invoke(const execution_space& space, const RV& r, const XMV& X) {
         for (size_t i = 0; i < X.extent(1); i++) {
-            auto ri = flare::subview(r, i);
-            auto Xi = flare::subview(X, flare::ALL(), i);
+            auto ri = flare::subtensor(r, i);
+            auto Xi = flare::subtensor(X, flare::ALL(), i);
             V_NrmInf_Invoke<execution_space, decltype(ri), decltype(Xi), SizeType>(
                     space, ri, Xi);
         }
@@ -110,18 +110,18 @@ namespace flare::blas::detail {
         static void nrminf(const execution_space& space, const RMV& R, const XMV& X);
     };
 
-    //! Full specialization of NrmInf for single vectors (1-D Views).
+    //! Full specialization of NrmInf for single vectors (1-D Tensors).
     template <class execution_space, class RMV, class XMV>
     struct NrmInf<execution_space, RMV, XMV, 1> {
         typedef typename XMV::size_type size_type;
 
         static void nrminf(const execution_space& space, const RMV& R, const XMV& X) {
-            static_assert(flare::is_view<RMV>::value,
+            static_assert(flare::is_tensor<RMV>::value,
                           "flare::blas::Impl::"
-                          "NrmInf<1-D>: RMV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "NrmInf<1-D>: RMV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::Impl::"
-                          "NrmInf<1-D>: XMV is not a flare::View.");
+                          "NrmInf<1-D>: XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 0,
                           "flare::blas::Impl::NrmInf<1-D>: "
                           "RMV is not rank 0.");
@@ -146,12 +146,12 @@ namespace flare::blas::detail {
         typedef typename XMV::size_type size_type;
 
         static void nrminf(const execution_space& space, const RV& R, const XMV& X) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::blas::Impl::"
-                          "NrmInf<2-D>: RV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "NrmInf<2-D>: RV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::Impl::"
-                          "NrmInf<2-D>: XMV is not a flare::View.");
+                          "NrmInf<2-D>: XMV is not a flare::Tensor.");
             static_assert(RV::rank == 1,
                           "flare::blas::Impl::NrmInf<2-D>: "
                           "RV is not rank 1.");
@@ -182,11 +182,11 @@ namespace flare::blas::detail {
                                          MEM_SPACE)                            \
   template struct NrmInf<                                                      \
       EXEC_SPACE,                                                              \
-      flare::View<                                                            \
+      flare::Tensor<                                                            \
           typename flare::detail::InnerProductSpaceTraits<SCALAR>::mag_type, \
           LAYOUT, flare::HostSpace,                                           \
           flare::MemoryTraits<flare::Unmanaged> >,                           \
-      flare::View<const SCALAR*, LAYOUT,                                      \
+      flare::Tensor<const SCALAR*, LAYOUT,                                      \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                      \
                    flare::MemoryTraits<flare::Unmanaged> >,                  \
       1>;
@@ -200,13 +200,13 @@ namespace flare::blas::detail {
                                             MEM_SPACE)                  \
   template struct NrmInf<                                               \
       EXEC_SPACE,                                                       \
-      flare::View<typename flare::detail::InnerProductSpaceTraits<   \
+      flare::Tensor<typename flare::detail::InnerProductSpaceTraits<   \
                        SCALAR>::mag_type*,                              \
                    LAYOUT,                                              \
                    flare::Device<flare::DefaultHostExecutionSpace,    \
                                   flare::HostSpace>,                   \
                    flare::MemoryTraits<flare::Unmanaged> >,           \
-      flare::View<const SCALAR**, LAYOUT,                              \
+      flare::Tensor<const SCALAR**, LAYOUT,                              \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,               \
                    flare::MemoryTraits<flare::Unmanaged> >,           \
       2>;

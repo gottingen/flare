@@ -23,7 +23,7 @@
 namespace flare::detail {
 
     /*! \class Iota
-      \brief A class that mimics a small subset of flare::View
+      \brief A class that mimics a small subset of flare::Tensor
 
       \tparam T the type returned by operator()
       \tparam SizeType a custom offset type
@@ -36,8 +36,8 @@ namespace flare::detail {
       \enum rank always 1
 
       Iota::operator() returns offset + i
-      Meant to be used in place of a flare::View where entry i holds i + offset.
-      Unlike a flare::View, Iota is not materialized in memory.
+      Meant to be used in place of a flare::Tensor where entry i holds i + offset.
+      Unlike a flare::Tensor, Iota is not materialized in memory.
 
       Constructing with a size less than 0 yeilds a 0-size Iota
     */
@@ -79,25 +79,25 @@ namespace flare::detail {
         FLARE_INLINE_FUNCTION
         constexpr Iota() : size_(0), offset_(0) {}
 
-        /*! \brief Construct Iota subview
+        /*! \brief Construct Iota subtensor
 
-          Like the flare::View 1D subview constructor:
+          Like the flare::Tensor 1D subtensor constructor:
           \verbatim
-          flare::View a(10); // size = 10
-          flare::View b(a, flare::pair{3,7}); // entries 3,4,5,6 of a
+          flare::Tensor a(10); // size = 10
+          flare::Tensor b(a, flare::pair{3,7}); // entries 3,4,5,6 of a
 
           Iota a(10);
           Iota b(a, flare::pair{3,7}); // entries // 3,4,5,6 of a
           \endverbatim
 
-          Creating a subview outside of the base Iota yeilds undefined behavior
+          Creating a subtensor outside of the base Iota yeilds undefined behavior
         */
         template<typename P1, typename P2>
         FLARE_INLINE_FUNCTION constexpr Iota(const Iota &base,
                                              const flare::pair<P1, P2> &range)
                 : Iota(range.second - range.first, base.offset_ + range.first) {}
 
-        /*! \brief Construct Iota subview
+        /*! \brief Construct Iota subtensor
 
            i >= size() or i < 0 yields undefined behavior.
         */
@@ -110,7 +110,7 @@ namespace flare::detail {
         FLARE_INLINE_FUNCTION
         constexpr size_t size() const noexcept { return size_; }
 
-        /// \brief Iotas are always like a rank-1 flare::View
+        /// \brief Iotas are always like a rank-1 flare::Tensor
         enum {
             rank = 1
         };

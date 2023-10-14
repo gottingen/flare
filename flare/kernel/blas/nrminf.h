@@ -24,11 +24,11 @@ namespace flare::blas {
     /// \brief Return the nrminf := Max(abs(X(i))) of the vector x.
     ///
     /// \tparam execution_space The execution space in which the kernel will run.
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
     ///
     /// \param space [in] an execution space instance that can specify computing
     ///                   resources to be used, for instance a stream or queue.
-    /// \param x [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
     ///
     /// \return The nrminf product result; a single value.
     template <
@@ -38,15 +38,15 @@ namespace flare::blas {
     typename flare::detail::InnerProductSpaceTraits<
             typename XVector::non_const_value_type>::mag_type
     nrminf(const execution_space& space, const XVector& x) {
-        static_assert(flare::is_view<XVector>::value,
-                      "flare::blas::nrminf: XVector must be a flare::View.");
+        static_assert(flare::is_tensor<XVector>::value,
+                      "flare::blas::nrminf: XVector must be a flare::Tensor.");
         static_assert(XVector::rank == 1,
                       "flare::blas::nrminf: "
                       "Both Vector inputs must have rank 1.");
         typedef typename flare::detail::InnerProductSpaceTraits<
                 typename XVector::non_const_value_type>::mag_type mag_type;
 
-        typedef flare::View<
+        typedef flare::Tensor<
                 typename XVector::const_value_type*,
                 typename flare::detail::GetUnifiedLayout<XVector>::array_layout,
                 typename XVector::device_type, flare::MemoryTraits<flare::Unmanaged> >
@@ -54,7 +54,7 @@ namespace flare::blas {
 
         using layout_t = typename XVector_Internal::array_layout;
 
-        typedef flare::View<mag_type, layout_t, flare::HostSpace,
+        typedef flare::Tensor<mag_type, layout_t, flare::HostSpace,
         flare::MemoryTraits<flare::Unmanaged> >
                 RVector_Internal;
 
@@ -70,9 +70,9 @@ namespace flare::blas {
 
     /// \brief Return the nrminf of the vector x.
     ///
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
     ///
-    /// \param x [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
     ///
     /// \return The nrminf product result; a single value.
     template <class XVector>
@@ -88,22 +88,22 @@ namespace flare::blas {
     /// corresponding entry in X.
     ///
     /// \tparam execution_space, the execution space in which the kernel will run.
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as RMV, and its entries must be assignable to
     ///   those of RMV.
     template <class execution_space, class RV, class XMV>
     void nrminf(
             const execution_space& space, const RV& R, const XMV& X,
-            typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
+            typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
         static_assert(flare::is_execution_space<execution_space>::value,
                       "flare::blas::nrminf: space is not an execution space instance");
-        static_assert(flare::is_view<RV>::value,
+        static_assert(flare::is_tensor<RV>::value,
                       "flare::blas::nrminf: "
-                      "R is not a flare::View.");
-        static_assert(flare::is_view<XMV>::value,
+                      "R is not a flare::Tensor.");
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::nrminf: "
-                      "X is not a flare::View.");
+                      "X is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
@@ -140,15 +140,15 @@ namespace flare::blas {
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         RV, UnifiedXLayout>::array_layout;
 
-        // Create unmanaged versions of the input Views.  RV and XMV may be
+        // Create unmanaged versions of the input Tensors.  RV and XMV may be
         // rank 1 or rank 2.
-        typedef flare::View<typename std::conditional<
+        typedef flare::Tensor<typename std::conditional<
                 RV::rank == 0, typename RV::non_const_value_type,
                 typename RV::non_const_value_type*>::type,
                 UnifiedRVLayout, typename RV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >
                 RV_Internal;
-        typedef flare::View<
+        typedef flare::Tensor<
                 typename std::conditional<XMV::rank == 1, typename XMV::const_value_type*,
                         typename XMV::const_value_type**>::type,
                 UnifiedXLayout, typename XMV::device_type,
@@ -167,14 +167,14 @@ namespace flare::blas {
     /// Replace each entry in R with the nrminfolute value (magnitude) of the
     /// corresponding entry in X.
     ///
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as RMV, and its entries must be assignable to
     ///   those of RMV.
     template <class RV, class XMV>
     void nrminf(
             const RV& R, const XMV& X,
-            typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
+            typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
         nrminf(typename XMV::execution_space{}, R, X);
     }
 

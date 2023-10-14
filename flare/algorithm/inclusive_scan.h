@@ -51,28 +51,28 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto inclusive_scan(
     const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view_from,
-    const ::flare::View<DataType2, Properties2...>& view_dest) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   namespace KE = ::flare::experimental;
   return detail::inclusive_scan_default_op_impl(
-      "flare::inclusive_scan_default_functors_view_api", ex,
-      KE::cbegin(view_from), KE::cend(view_from), KE::begin(view_dest));
+      "flare::inclusive_scan_default_functors_tensor_api", ex,
+      KE::cbegin(tensor_from), KE::cend(tensor_from), KE::begin(tensor_dest));
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto inclusive_scan(
     const std::string& label, const ExecutionSpace& ex,
-    const ::flare::View<DataType1, Properties1...>& view_from,
-    const ::flare::View<DataType2, Properties2...>& view_dest) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   namespace KE = ::flare::experimental;
-  return detail::inclusive_scan_default_op_impl(label, ex, KE::cbegin(view_from),
-                                              KE::cend(view_from),
-                                              KE::begin(view_dest));
+  return detail::inclusive_scan_default_op_impl(label, ex, KE::cbegin(tensor_from),
+                                              KE::cend(tensor_from),
+                                              KE::begin(tensor_dest));
 }
 
 // overload set 2 (accepting custom binary op)
@@ -104,30 +104,30 @@ inclusive_scan(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class BinaryOp>
 auto inclusive_scan(const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     BinaryOp binary_op) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   namespace KE = ::flare::experimental;
   return detail::inclusive_scan_custom_binary_op_impl(
-      "flare::inclusive_scan_custom_functors_view_api", ex,
-      KE::cbegin(view_from), KE::cend(view_from), KE::begin(view_dest),
+      "flare::inclusive_scan_custom_functors_tensor_api", ex,
+      KE::cbegin(tensor_from), KE::cend(tensor_from), KE::begin(tensor_dest),
       binary_op);
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class BinaryOp>
 auto inclusive_scan(const std::string& label, const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     BinaryOp binary_op) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   namespace KE = ::flare::experimental;
   return detail::inclusive_scan_custom_binary_op_impl(
-      label, ex, KE::cbegin(view_from), KE::cend(view_from),
-      KE::begin(view_dest), binary_op);
+      label, ex, KE::cbegin(tensor_from), KE::cend(tensor_from),
+      KE::begin(tensor_dest), binary_op);
 }
 
 // overload set 3
@@ -161,15 +161,15 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class BinaryOp,
           class ValueType>
 auto inclusive_scan(const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     BinaryOp binary_op, ValueType init_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   namespace KE = ::flare::experimental;
   return detail::inclusive_scan_custom_binary_op_impl(
-      "flare::inclusive_scan_custom_functors_view_api", ex,
-      KE::cbegin(view_from), KE::cend(view_from), KE::begin(view_dest),
+      "flare::inclusive_scan_custom_functors_tensor_api", ex,
+      KE::cbegin(tensor_from), KE::cend(tensor_from), KE::begin(tensor_dest),
       binary_op, init_value);
 }
 
@@ -177,15 +177,15 @@ template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class BinaryOp,
           class ValueType>
 auto inclusive_scan(const std::string& label, const ExecutionSpace& ex,
-                    const ::flare::View<DataType1, Properties1...>& view_from,
-                    const ::flare::View<DataType2, Properties2...>& view_dest,
+                    const ::flare::Tensor<DataType1, Properties1...>& tensor_from,
+                    const ::flare::Tensor<DataType2, Properties2...>& tensor_dest,
                     BinaryOp binary_op, ValueType init_value) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_from);
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view_dest);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_from);
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor_dest);
   namespace KE = ::flare::experimental;
   return detail::inclusive_scan_custom_binary_op_impl(
-      label, ex, KE::cbegin(view_from), KE::cend(view_from),
-      KE::begin(view_dest), binary_op, init_value);
+      label, ex, KE::cbegin(tensor_from), KE::cend(tensor_from),
+      KE::begin(tensor_dest), binary_op, init_value);
 }
 
 }  // namespace experimental

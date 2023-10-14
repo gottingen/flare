@@ -19,31 +19,31 @@
 #include <cmath>
 
 // Type of a one-dimensional length-N array of int.
-using view_type      = flare::View<int*>;
-using host_view_type = view_type::HostMirror;
-// This is a "zero-dimensional" View, that is, a View of a single
+using tensor_type      = flare::Tensor<int*>;
+using host_tensor_type = tensor_type::HostMirror;
+// This is a "zero-dimensional" Tensor, that is, a Tensor of a single
 // value (an int, in this case).  Access the value using operator()
 // with no arguments: e.g., 'count()'.
 //
-// Zero-dimensional Views are useful for reduction results that stay
+// Zero-dimensional Tensors are useful for reduction results that stay
 // resident in device memory, as well as for irregularly updated
 // shared state.  We use it for the latter in this example.
-using count_type      = flare::View<int>;
+using count_type      = flare::Tensor<int>;
 using host_count_type = count_type::HostMirror;
 
 // Functor for finding a list of primes in a given set of numbers.  If
 // run in parallel, the order of results is nondeterministic, because
 // hardware atomic updates do not guarantee an order of execution.
 struct findprimes {
-  view_type data;
-  view_type result;
+  tensor_type data;
+  tensor_type result;
   count_type count;
 
-  findprimes(view_type data_, view_type result_, count_type count_)
+  findprimes(tensor_type data_, tensor_type result_, count_type count_)
       : data(data_), result(result_), count(count_) {}
 
   // Test if data(i) is prime.  If it is, increment the count of
-  // primes (stored in the zero-dimensional View 'count') and add the
+  // primes (stored in the zero-dimensional Tensor 'count') and add the
   // value to the current list of primes 'result'.
   FLARE_INLINE_FUNCTION
   void operator()(const int i) const {
@@ -81,15 +81,15 @@ int main() {
     srand(61391);  // Set the random seed
 
     int nnumbers = 100000;
-    view_type data("RND", nnumbers);
-    view_type result("Prime", nnumbers);
+    tensor_type data("RND", nnumbers);
+    tensor_type result("Prime", nnumbers);
     count_type count("Count");
 
-    host_view_type h_data   = flare::create_mirror_view(data);
-    host_view_type h_result = flare::create_mirror_view(result);
-    host_count_type h_count = flare::create_mirror_view(count);
+    host_tensor_type h_data   = flare::create_mirror_tensor(data);
+    host_tensor_type h_result = flare::create_mirror_tensor(result);
+    host_count_type h_count = flare::create_mirror_tensor(count);
 
-    using size_type = view_type::size_type;
+    using size_type = tensor_type::size_type;
     // Fill the 'data' array on the host with random numbers.  We assume
     // that they come from some process which is only implemented on the
     // host, via some library.  (That's true in this case.)

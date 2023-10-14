@@ -84,15 +84,15 @@ struct UnifDist<int> {
   int operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType, class ValueType>
-void fill_view(ViewType dest_view, ValueType value, std::size_t count,
+template <class TensorType, class ValueType>
+void fill_tensor(TensorType dest_tensor, ValueType value, std::size_t count,
                const std::string& where_to_place_count_values) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   // fill with something
   for (std::size_t i = 0; i < ext; ++i) {
@@ -120,7 +120,7 @@ void fill_view(ViewType dest_view, ValueType value, std::size_t count,
   }
 
   else if (where_to_place_count_values == "random") {
-    // find a random location to start filling view
+    // find a random location to start filling tensor
     using dist_type = std::uniform_int_distribution<int>;
     std::random_device r;
     // from this:
@@ -156,9 +156,9 @@ void fill_view(ViewType dest_view, ValueType value, std::size_t count,
     throw std::runtime_error("flare: test: search_n: this should not happen");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
 template <class Tag, class ValueType>
@@ -166,7 +166,7 @@ void print_scenario_details(const std::string& name, std::size_t count,
                             const std::string& where_to_place_count_values) {
   std::cout << "search_n: default predicate: " << name << ", "
             << "count = " << count << ", " << where_to_place_count_values
-            << ", " << view_tag_to_string(Tag{}) << " "
+            << ", " << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << std::endl;
 }
 
@@ -177,7 +177,7 @@ void print_scenario_details(const std::string& name, std::size_t count,
   (void)pred;
   std::cout << "search_n: custom predicate: " << name << ", "
             << "count = " << count << ", " << where_to_place_count_values
-            << ", " << view_tag_to_string(Tag{}) << " "
+            << ", " << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << std::endl;
 }
 
@@ -185,42 +185,42 @@ template <class Tag, class ValueType, class InfoType, class... Args>
 void run_single_scenario(const InfoType& scenario_info, std::size_t count,
                          ValueType value, Args... args) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   const auto count_place     = std::get<2>(scenario_info);
   // print_scenario_details<Tag, ValueType>(name, count, count_place, args...);
 
-  auto view = create_view<ValueType>(Tag{}, view_ext, "search_n_test_view");
-  fill_view(view, value, count, count_place);
+  auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "search_n_test_tensor");
+  fill_tensor(tensor, value, count, count_place);
 
   // run std
-  auto view_h = create_host_space_copy(view);
-  auto stdrit = my_std_search_n(KE::cbegin(view_h), KE::cend(view_h), count,
+  auto tensor_h = create_host_space_copy(tensor);
+  auto stdrit = my_std_search_n(KE::cbegin(tensor_h), KE::cend(tensor_h), count,
                                 value, args...);
-  const auto stddiff = stdrit - KE::cbegin(view_h);
+  const auto stddiff = stdrit - KE::cbegin(tensor_h);
 
   {
-    auto myrit = KE::search_n(exespace(), KE::cbegin(view), KE::cend(view),
+    auto myrit = KE::search_n(exespace(), KE::cbegin(tensor), KE::cend(tensor),
                               count, value, args...);
-    const auto mydiff = myrit - KE::cbegin(view);
+    const auto mydiff = myrit - KE::cbegin(tensor);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
   {
-    auto myrit        = KE::search_n("label", exespace(), KE::cbegin(view),
-                              KE::cend(view), count, value, args...);
-    const auto mydiff = myrit - KE::cbegin(view);
+    auto myrit        = KE::search_n("label", exespace(), KE::cbegin(tensor),
+                              KE::cend(tensor), count, value, args...);
+    const auto mydiff = myrit - KE::cbegin(tensor);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
   {
-    auto myrit = KE::search_n("label", exespace(), view, count, value, args...);
-    const auto mydiff = myrit - KE::begin(view);
+    auto myrit = KE::search_n("label", exespace(), tensor, count, value, args...);
+    const auto mydiff = myrit - KE::begin(tensor);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
   {
-    auto myrit        = KE::search_n(exespace(), view, count, value, args...);
-    const auto mydiff = myrit - KE::begin(view);
+    auto myrit        = KE::search_n(exespace(), tensor, count, value, args...);
+    const auto mydiff = myrit - KE::begin(tensor);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
@@ -275,16 +275,16 @@ void run_all_scenarios() {
 
   const ValueType target_value = 3;
 
-  // for each view scenario, run "search_n" for multiple counts
+  // for each tensor scenario, run "search_n" for multiple counts
   for (const auto& it : scenarios) {
-    const std::size_t view_ext = std::get<1>(it);
+    const std::size_t tensor_ext = std::get<1>(it);
 
-    if (view_ext == 0) {
+    if (tensor_ext == 0) {
       run_single_scenario<Tag, ValueType>(it, 0, target_value);
     } else {
       for (const auto& it2 : counts) {
-        // only run if view is larger or equal than count
-        if (view_ext >= it2) {
+        // only run if tensor is larger or equal than count
+        if (tensor_ext >= it2) {
           run_single_scenario<Tag, ValueType>(it, it2, target_value);
 
           using func_t = IsEqualFunctor<ValueType>;

@@ -53,18 +53,18 @@ struct NestedRange<false> {
   FLARE_FUNCTION static void barrier(const TeamMember&) {}
 };
 
-// When just doing sort (not sort_by_key), use nullptr_t for ValueViewType.
+// When just doing sort (not sort_by_key), use nullptr_t for ValueTensorType.
 // This only takes the NestedRange instance for template arg deduction.
-template <class TeamMember, class KeyViewType, class ValueViewType,
+template <class TeamMember, class KeyTensorType, class ValueTensorType,
           class Comparator, bool useTeamLevel>
 FLARE_INLINE_FUNCTION void sort_nested_impl(
-    const TeamMember& t, const KeyViewType& keyView,
-    [[maybe_unused]] const ValueViewType& valueView, const Comparator& comp,
+    const TeamMember& t, const KeyTensorType& keyTensor,
+    [[maybe_unused]] const ValueTensorType& valueTensor, const Comparator& comp,
     const NestedRange<useTeamLevel>) {
-  using SizeType  = typename KeyViewType::size_type;
-  using KeyType   = typename KeyViewType::non_const_value_type;
+  using SizeType  = typename KeyTensorType::size_type;
+  using KeyType   = typename KeyTensorType::non_const_value_type;
   using Range     = NestedRange<useTeamLevel>;
-  SizeType n      = keyView.extent(0);
+  SizeType n      = keyTensor.extent(0);
   SizeType npot   = 1;
   SizeType levels = 0;
   // FIXME: ceiling power-of-two is a common thing to need - make it a utility
@@ -92,13 +92,13 @@ FLARE_INLINE_FUNCTION void sort_nested_impl(
         SizeType elem2 = (j == 0) ? (boxStart + boxSize - 1 - boxOffset)
                                   : (elem1 + boxSize / 2);
         if (elem2 < n) {
-          KeyType key1 = keyView(elem1);
-          KeyType key2 = keyView(elem2);
+          KeyType key1 = keyTensor(elem1);
+          KeyType key2 = keyTensor(elem2);
           if (comp(key2, key1)) {
-            keyView(elem1) = key2;
-            keyView(elem2) = key1;
-            if constexpr (!std::is_same_v<ValueViewType, std::nullptr_t>) {
-              flare::experimental::swap(valueView(elem1), valueView(elem2));
+            keyTensor(elem1) = key2;
+            keyTensor(elem2) = key1;
+            if constexpr (!std::is_same_v<ValueTensorType, std::nullptr_t>) {
+              flare::experimental::swap(valueTensor(elem1), valueTensor(elem2));
             }
           }
         }

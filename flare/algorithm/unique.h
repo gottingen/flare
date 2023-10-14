@@ -27,14 +27,14 @@ namespace experimental {
 
 // overload set1
 template <class ExecutionSpace, class IteratorType>
-std::enable_if_t<!::flare::is_view<IteratorType>::value, IteratorType> unique(
+std::enable_if_t<!::flare::is_tensor<IteratorType>::value, IteratorType> unique(
     const ExecutionSpace& ex, IteratorType first, IteratorType last) {
   return detail::unique_impl("flare::unique_iterator_api_default", ex, first,
                            last);
 }
 
 template <class ExecutionSpace, class IteratorType>
-std::enable_if_t<!::flare::is_view<IteratorType>::value, IteratorType> unique(
+std::enable_if_t<!::flare::is_tensor<IteratorType>::value, IteratorType> unique(
     const std::string& label, const ExecutionSpace& ex, IteratorType first,
     IteratorType last) {
   return detail::unique_impl(label, ex, first, last);
@@ -42,17 +42,17 @@ std::enable_if_t<!::flare::is_view<IteratorType>::value, IteratorType> unique(
 
 template <class ExecutionSpace, class DataType, class... Properties>
 auto unique(const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return ::flare::experimental::unique("flare::unique_view_api_default", ex,
-                                        begin(view), end(view));
+            const ::flare::Tensor<DataType, Properties...>& tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return ::flare::experimental::unique("flare::unique_tensor_api_default", ex,
+                                        begin(tensor), end(tensor));
 }
 
 template <class ExecutionSpace, class DataType, class... Properties>
 auto unique(const std::string& label, const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return ::flare::experimental::unique(label, ex, begin(view), end(view));
+            const ::flare::Tensor<DataType, Properties...>& tensor) {
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return ::flare::experimental::unique(label, ex, begin(tensor), end(tensor));
 }
 
 // overload set2
@@ -73,20 +73,20 @@ IteratorType unique(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType, class... Properties,
           class BinaryPredicate>
 auto unique(const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view,
+            const ::flare::Tensor<DataType, Properties...>& tensor,
             BinaryPredicate pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::unique_impl("flare::unique_view_api_default", ex, begin(view),
-                           end(view), std::move(pred));
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::unique_impl("flare::unique_tensor_api_default", ex, begin(tensor),
+                           end(tensor), std::move(pred));
 }
 
 template <class ExecutionSpace, class DataType, class... Properties,
           class BinaryPredicate>
 auto unique(const std::string& label, const ExecutionSpace& ex,
-            const ::flare::View<DataType, Properties...>& view,
+            const ::flare::Tensor<DataType, Properties...>& tensor,
             BinaryPredicate pred) {
-  detail::static_assert_is_admissible_to_flare_std_algorithms(view);
-  return detail::unique_impl(label, ex, begin(view), end(view), std::move(pred));
+  detail::static_assert_is_admissible_to_flare_std_algorithms(tensor);
+  return detail::unique_impl(label, ex, begin(tensor), end(tensor), std::move(pred));
 }
 
 }  // namespace experimental

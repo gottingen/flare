@@ -34,7 +34,7 @@ namespace Test {
 
         {
             TEST_EXECSPACE space0(stream);
-            flare::View<int *, TEST_EXECSPACE> v(p, 100);
+            flare::Tensor<int *, TEST_EXECSPACE> v(p, 100);
             flare::deep_copy(space0, v, 5);
             int sum;
 

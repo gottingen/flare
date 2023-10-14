@@ -36,16 +36,16 @@ struct UnifDist<int> {
   int operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType, class ValueType>
+template <class TensorType, class ValueType>
 struct TestFunctorA {
-  ViewType m_view;
+  TensorType m_tensor;
   ValueType m_targetValue;
   ValueType m_newValue;
   int m_apiPick;
 
-  TestFunctorA(const ViewType view, ValueType oldVal, ValueType newVal,
+  TestFunctorA(const TensorType tensor, ValueType oldVal, ValueType newVal,
                int apiPick)
-      : m_view(view),
+      : m_tensor(tensor),
         m_targetValue(oldVal),
         m_newValue(newVal),
         m_apiPick(apiPick) {}
@@ -53,13 +53,13 @@ struct TestFunctorA {
   template <class MemberType>
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
-    auto myRowView        = flare::subview(m_view, myRowIndex, flare::ALL());
+    auto myRowTensor        = flare::subtensor(m_tensor, myRowIndex, flare::ALL());
 
     if (m_apiPick == 0) {
-      KE::replace(member, KE::begin(myRowView), KE::end(myRowView),
+      KE::replace(member, KE::begin(myRowTensor), KE::end(myRowTensor),
                   m_targetValue, m_newValue);
     } else if (m_apiPick == 1) {
-      KE::replace(member, myRowView, m_targetValue, m_newValue);
+      KE::replace(member, myRowTensor, m_targetValue, m_newValue);
     }
   }
 };
@@ -67,7 +67,7 @@ struct TestFunctorA {
 template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   /* description:
-     Randomly fill a view with some elements equal to a target value that we
+     Randomly fill a tensor with some elements equal to a target value that we
      want to replace with a new value. Do the operation via a team parfor with
      one row per team.
    */
@@ -78,13 +78,13 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // Create a view in the memory space associated with default exespace with as
+  // Create a tensor in the memory space associated with default exespace with as
   // many rows as the number of teams and fill it with random values from an
   // arbitrary range. Pick range so that some of the values are equal to target.
-  auto [dataView, dataViewBeforeOp_h] = create_random_view_and_host_clone(
+  auto [dataTensor, dataTensorBeforeOp_h] = create_random_tensor_and_host_clone(
       LayoutTag{}, numTeams, numCols,
       flare::pair<ValueType, ValueType>{targetVal - 1, targetVal + 1},
-      "dataView");
+      "dataTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -92,7 +92,7 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   using space_t = flare::DefaultExecutionSpace;
   flare::TeamPolicy<space_t> policy(numTeams, flare::AUTO());
   // use CTAD for functor
-  TestFunctorA fnc(dataView, targetVal, newVal, apiId);
+  TestFunctorA fnc(dataTensor, targetVal, newVal, apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
@@ -100,13 +100,13 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   // - the target elements are replaced with the new value
   // - all other elements are unchanged
   // -----------------------------------------------
-  auto dataViewAfterOp_h = create_host_space_copy(dataView);
-  for (std::size_t i = 0; i < dataViewAfterOp_h.extent(0); ++i) {
-    for (std::size_t j = 0; j < dataViewAfterOp_h.extent(1); ++j) {
-      const auto correctVal = (dataViewBeforeOp_h(i, j) == targetVal)
+  auto dataTensorAfterOp_h = create_host_space_copy(dataTensor);
+  for (std::size_t i = 0; i < dataTensorAfterOp_h.extent(0); ++i) {
+    for (std::size_t j = 0; j < dataTensorAfterOp_h.extent(1); ++j) {
+      const auto correctVal = (dataTensorBeforeOp_h(i, j) == targetVal)
                                   ? newVal
-                                  : dataViewBeforeOp_h(i, j);
-      REQUIRE_EQ(dataViewAfterOp_h(i, j), correctVal);
+                                  : dataTensorBeforeOp_h(i, j);
+      REQUIRE_EQ(dataTensorAfterOp_h(i, j), correctVal);
     }
   }
 }

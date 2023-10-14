@@ -36,7 +36,7 @@ struct TestInsert {
     unsigned map_idx;
     typename map_type::value_type v;
   };
-  using expected_values_type = flare::View<ExpectedValues *, execution_space>;
+  using expected_values_type = flare::Tensor<ExpectedValues *, execution_space>;
   expected_values_type expected_values;
 
   map_type map;
@@ -75,7 +75,7 @@ struct TestInsert {
 
     if (!rehash_on_fail && CheckValues) {
       typename expected_values_type::HostMirror expected_values_h =
-          create_mirror_view(expected_values);
+          create_mirror_tensor(expected_values);
       flare::deep_copy(expected_values_h, expected_values);
       for (unsigned i = 0; i < map_h.size(); i++) {
         auto map_idx = expected_values_h(i).map_idx;
@@ -103,7 +103,7 @@ struct TestInsert {
   FLARE_FORCEINLINE_FUNCTION bool is_op_noop() const {
     using vt             = typename map_type::value_type;
     using Device         = typename map_type::device_type;
-    using UmapOpTypeArg1 = flare::View<
+    using UmapOpTypeArg1 = flare::Tensor<
         std::remove_const_t<std::conditional_t<std::is_void_v<vt>, int, vt>> *,
         Device>;
     return std::is_base_of_v<
@@ -115,7 +115,7 @@ struct TestInsert {
   FLARE_FORCEINLINE_FUNCTION bool is_op_atomic_add() const {
     using vt             = typename map_type::value_type;
     using Device         = typename map_type::device_type;
-    using UmapOpTypeArg1 = flare::View<
+    using UmapOpTypeArg1 = flare::Tensor<
         std::remove_const_t<std::conditional_t<std::is_void_v<vt>, int, vt>> *,
         Device>;
     return std::is_base_of_v<UmapOpType,
@@ -283,13 +283,13 @@ void test_inserts(uint32_t num_nodes, uint32_t num_inserts,
                   uint32_t num_duplicates, bool near) {
   using key_type        = uint32_t;
   using value_type      = uint32_t;
-  using value_view_type = flare::View<value_type *, Device>;
+  using value_tensor_type = flare::Tensor<value_type *, Device>;
   using size_type       = uint32_t;
   using hasher_type     = typename flare::pod_hash<key_type>;
   using equal_to_type   = typename flare::pod_equal_to<key_type>;
 
   using map_op_type =
-      flare::UnorderedMapInsertOpTypes<value_view_type, size_type>;
+      flare::UnorderedMapInsertOpTypes<value_tensor_type, size_type>;
   using noop_type = typename map_op_type::NoOp;
 
   using map_type = flare::UnorderedMap<key_type, value_type, Device,
@@ -307,13 +307,13 @@ void test_all_insert_ops(uint32_t num_nodes, uint32_t num_inserts,
                          uint32_t num_duplicates, bool near) {
   using key_type        = uint32_t;
   using value_type      = uint32_t;
-  using value_view_type = flare::View<value_type *, Device>;
+  using value_tensor_type = flare::Tensor<value_type *, Device>;
   using size_type       = uint32_t;
   using hasher_type     = typename flare::pod_hash<key_type>;
   using equal_to_type   = typename flare::pod_equal_to<key_type>;
 
   using map_op_type =
-      flare::UnorderedMapInsertOpTypes<value_view_type, size_type>;
+      flare::UnorderedMapInsertOpTypes<value_tensor_type, size_type>;
   using noop_type       = typename map_op_type::NoOp;
   using atomic_add_type = typename map_op_type::AtomicAdd;
 

@@ -92,23 +92,23 @@ void TestErrorReporter() {
   test2.m_errorReporter.getReports(reporters, reports);
   checkReportersAndReportsAgree(reporters, reports);
 
-  typename flare::View<
+  typename flare::Tensor<
       int *, typename ErrorReporterDriverType::execution_space>::HostMirror
-      view_reporters;
-  typename flare::View<typename tester_type::report_type *,
+      tensor_reporters;
+  typename flare::Tensor<typename tester_type::report_type *,
                         typename ErrorReporterDriverType::execution_space>::
-      HostMirror view_reports;
-  test2.m_errorReporter.getReports(view_reporters, view_reports);
+      HostMirror tensor_reports;
+  test2.m_errorReporter.getReports(tensor_reporters, tensor_reports);
 
-  int num_reports = view_reporters.extent(0);
+  int num_reports = tensor_reporters.extent(0);
   reporters.clear();
   reports.clear();
   reporters.reserve(num_reports);
   reports.reserve(num_reports);
 
   for (int i = 0; i < num_reports; ++i) {
-    reporters.push_back(view_reporters(i));
-    reports.push_back(view_reports(i));
+    reporters.push_back(tensor_reporters(i));
+    reports.push_back(tensor_reports(i));
   }
   checkReportersAndReportsAgree(reporters, reports);
 }

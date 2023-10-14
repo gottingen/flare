@@ -16,4 +16,4 @@
 // Created by jeff on 23-10-5.
 //
 #include <openmp_category_test.h>
-#include <view/without_initializing_test.h>
+#include <tensor/without_initializing_test.h>

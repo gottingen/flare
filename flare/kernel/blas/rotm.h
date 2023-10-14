@@ -28,8 +28,8 @@ namespace flare::blas {
     ///
     /// \tparam execution_space the execution space where the kernel will be
     ///         executed, it can be used to specify a stream too.
-    /// \tparam VectorView a rank1 view type that hold non const data
-    /// \tparam ParamView a rank1 view of static extent [5] type that
+    /// \tparam VectorTensor a rank1 tensor type that hold non const data
+    /// \tparam ParamTensor a rank1 tensor of static extent [5] type that
     ///         holds const data
     ///
     /// \param space [in]  execution space used for parallel loops in this kernel
@@ -37,63 +37,63 @@ namespace flare::blas {
     /// \param Y [in/out] vector to be rotated with param coefficients
     /// \param param [in]  output of rotmg contains rotation coefficients
     ///
-    template <class execution_space, class VectorView, class ParamView>
-    void rotm(execution_space const& space, VectorView const& X,
-              VectorView const& Y, ParamView const& param) {
+    template <class execution_space, class VectorTensor, class ParamTensor>
+    void rotm(execution_space const& space, VectorTensor const& X,
+              VectorTensor const& Y, ParamTensor const& param) {
         static_assert(flare::is_execution_space<execution_space>::value,
                       "rotm: execution_space template parameter is not a flare "
                       "execution space.");
         static_assert(
-                VectorView::rank == 1,
-                "rotm: VectorView template parameter needs to be a rank 1 view");
-        static_assert(ParamView::rank == 1,
-                      "rotm: ParamView template parameter needs to be a rank 1 view");
+                VectorTensor::rank == 1,
+                "rotm: VectorTensor template parameter needs to be a rank 1 tensor");
+        static_assert(ParamTensor::rank == 1,
+                      "rotm: ParamTensor template parameter needs to be a rank 1 tensor");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
-                        typename VectorView::memory_space>::accessible,
-                "rotm: VectorView template parameter memory space needs to be accessible "
+                        typename VectorTensor::memory_space>::accessible,
+                "rotm: VectorTensor template parameter memory space needs to be accessible "
                 "from execution_space template parameter");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
-                        typename ParamView::memory_space>::accessible,
-                "rotm: ScalarView template parameter memory space needs to be accessible "
+                        typename ParamTensor::memory_space>::accessible,
+                "rotm: ScalarTensor template parameter memory space needs to be accessible "
                 "from execution_space template parameter");
         static_assert(
-                std::is_same<typename VectorView::non_const_value_type,
-                        typename VectorView::value_type>::value,
-                "rotm: VectorView template parameter needs to store non-const values");
+                std::is_same<typename VectorTensor::non_const_value_type,
+                        typename VectorTensor::value_type>::value,
+                "rotm: VectorTensor template parameter needs to store non-const values");
         static_assert(
-                !flare::ArithTraits<typename VectorView::value_type>::is_complex,
-                "rotm: VectorView template parameter cannot use complex value_type");
+                !flare::ArithTraits<typename VectorTensor::value_type>::is_complex,
+                "rotm: VectorTensor template parameter cannot use complex value_type");
         static_assert(
-                !flare::ArithTraits<typename ParamView::value_type>::is_complex,
-                "rotm: ParamView template parameter cannot use complex value_type");
+                !flare::ArithTraits<typename ParamTensor::value_type>::is_complex,
+                "rotm: ParamTensor template parameter cannot use complex value_type");
 
-        using VectorView_Internal = flare::View<
-                typename VectorView::non_const_value_type*,
-                typename flare::detail::GetUnifiedLayout<VectorView>::array_layout,
-                flare::Device<execution_space, typename VectorView::memory_space>,
+        using VectorTensor_Internal = flare::Tensor<
+                typename VectorTensor::non_const_value_type*,
+                typename flare::detail::GetUnifiedLayout<VectorTensor>::array_layout,
+                flare::Device<execution_space, typename VectorTensor::memory_space>,
                 flare::MemoryTraits<flare::Unmanaged>>;
 
-        using ParamView_Internal = flare::View<
-                typename ParamView::const_value_type[5],
-                typename flare::detail::GetUnifiedLayout<ParamView>::array_layout,
-                flare::Device<execution_space, typename ParamView::memory_space>,
+        using ParamTensor_Internal = flare::Tensor<
+                typename ParamTensor::const_value_type[5],
+                typename flare::detail::GetUnifiedLayout<ParamTensor>::array_layout,
+                flare::Device<execution_space, typename ParamTensor::memory_space>,
                 flare::MemoryTraits<flare::Unmanaged>>;
 
-        VectorView_Internal X_(X), Y_(Y);
-        ParamView_Internal param_(param);
+        VectorTensor_Internal X_(X), Y_(Y);
+        ParamTensor_Internal param_(param);
 
         flare::Profiling::pushRegion("flare::blas::rotm");
-        flare::blas::detail::Rotm<execution_space, VectorView_Internal, ParamView_Internal>::rotm(
+        flare::blas::detail::Rotm<execution_space, VectorTensor_Internal, ParamTensor_Internal>::rotm(
                 space, X_, Y_, param_);
         flare::Profiling::popRegion();
     }
 
-    template <class VectorView, class ParamView>
-    void rotm(VectorView const& X, VectorView const& Y, ParamView const& param) {
-        const typename VectorView::execution_space space =
-                typename VectorView::execution_space();
+    template <class VectorTensor, class ParamTensor>
+    void rotm(VectorTensor const& X, VectorTensor const& Y, ParamTensor const& param) {
+        const typename VectorTensor::execution_space space =
+                typename VectorTensor::execution_space();
         rotm(space, X, Y, param);
     }
 }  // namespace flare::blas

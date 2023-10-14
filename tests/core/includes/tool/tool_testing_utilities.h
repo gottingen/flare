@@ -577,11 +577,11 @@ struct EndDeepCopyEvent : public EventBase {
 };
 
 template <class Derived>
-struct DualViewEvent : public EventBase {
+struct DualTensorEvent : public EventBase {
   std::string name;
   EventBase::PtrHandle ptr;
   bool is_device;
-  DualViewEvent(std::string n, EventBase::PtrHandle p, bool i_d)
+  DualTensorEvent(std::string n, EventBase::PtrHandle p, bool i_d)
       : name(n), ptr(p), is_device(i_d) {}
   std::string descriptor() const override {
     std::stringstream s;
@@ -590,15 +590,15 @@ struct DualViewEvent : public EventBase {
     return s.str();
   }
 };
-struct DualViewModifyEvent : public DualViewEvent<DualViewModifyEvent> {
-  static std::string event_name() { return "DualViewModifyEvent"; }
-  DualViewModifyEvent(std::string n, EventBase::PtrHandle p, bool i_d)
-      : DualViewEvent(n, p, i_d) {}
+struct DualTensorModifyEvent : public DualTensorEvent<DualTensorModifyEvent> {
+  static std::string event_name() { return "DualTensorModifyEvent"; }
+  DualTensorModifyEvent(std::string n, EventBase::PtrHandle p, bool i_d)
+      : DualTensorEvent(n, p, i_d) {}
 };
-struct DualViewSyncEvent : public DualViewEvent<DualViewSyncEvent> {
-  static std::string event_name() { return "DualViewSyncEvent"; }
-  DualViewSyncEvent(std::string n, EventBase::PtrHandle p, bool i_d)
-      : DualViewEvent(n, p, i_d) {}
+struct DualTensorSyncEvent : public DualTensorEvent<DualTensorSyncEvent> {
+  static std::string event_name() { return "DualTensorSyncEvent"; }
+  DualTensorSyncEvent(std::string n, EventBase::PtrHandle p, bool i_d)
+      : DualTensorEvent(n, p, i_d) {}
 };
 
 struct DeclareMetadataEvent : public EventBase {
@@ -763,7 +763,7 @@ struct ToolValidatorConfiguration {
     bool fences         = true;
     bool allocs         = true;
     bool copies         = true;
-    bool dual_view_ops  = true;
+    bool dual_tensor_ops  = true;
     bool sections       = true;
     bool profile_events = true;
     bool metadata       = true;
@@ -832,7 +832,7 @@ FLARE_IMPL_TOOLS_TEST_CONFIG_OPTION(Regions, profiling.regions, 2);
 FLARE_IMPL_TOOLS_TEST_CONFIG_OPTION(Fences, profiling.fences, 2);
 FLARE_IMPL_TOOLS_TEST_CONFIG_OPTION(Allocs, profiling.allocs, 2);
 FLARE_IMPL_TOOLS_TEST_CONFIG_OPTION(Copies, profiling.copies, 2);
-FLARE_IMPL_TOOLS_TEST_CONFIG_OPTION(DualViewOps, profiling.dual_view_ops, 2);
+FLARE_IMPL_TOOLS_TEST_CONFIG_OPTION(DualTensorOps, profiling.dual_tensor_ops, 2);
 FLARE_IMPL_TOOLS_TEST_CONFIG_OPTION(Sections, profiling.sections, 2);
 FLARE_IMPL_TOOLS_TEST_CONFIG_OPTION(ProfileEvents, profiling.profile_events,
                                      2);
@@ -869,7 +869,7 @@ struct ToggleProfiling : public std::integral_constant<int, 1> {
     ToggleFences<target_value>{}(config);
     ToggleAllocs<target_value>{}(config);
     ToggleCopies<target_value>{}(config);
-    ToggleDualViewOps<target_value>{}(config);
+    ToggleDualTensorOps<target_value>{}(config);
     ToggleSections<target_value>{}(config);
     ToggleProfileEvents<target_value>{}(config);
     ToggleMetadata<target_value>{}(config);
@@ -1005,15 +1005,15 @@ static void set_tool_events_impl(const ToolValidatorConfiguration& config) {
     flare::Tools::experimental::set_end_deep_copy_callback(
         []() { found_events.push_back(std::make_shared<EndDeepCopyEvent>()); });
   }
-  if (config.profiling.dual_view_ops) {
-    flare::Tools::experimental::set_dual_view_sync_callback(
+  if (config.profiling.dual_tensor_ops) {
+    flare::Tools::experimental::set_dual_tensor_sync_callback(
         [](const char* name, EventBase::PtrHandle ptr, bool is_device) {
-          found_events.push_back(std::make_shared<DualViewSyncEvent>(
+          found_events.push_back(std::make_shared<DualTensorSyncEvent>(
               std::string(name), ptr, is_device));
         });
-    flare::Tools::experimental::set_dual_view_modify_callback(
+    flare::Tools::experimental::set_dual_tensor_modify_callback(
         [](const char* name, EventBase::PtrHandle ptr, bool is_device) {
-          found_events.push_back(std::make_shared<DualViewModifyEvent>(
+          found_events.push_back(std::make_shared<DualTensorModifyEvent>(
               std::string(name), ptr, is_device));
         });
   }

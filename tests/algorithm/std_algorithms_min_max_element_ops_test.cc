@@ -27,69 +27,69 @@ namespace Test {
 
             const int m_number_of_filling_cases = 5;
 
-            void fillFixtureViews(int case_number) {
-                static_view_t tmpView("tmpView");
-                auto tmp_view_h = flare::create_mirror_view(flare::HostSpace(), tmpView);
+            void fillFixtureTensors(int case_number) {
+                static_tensor_t tmpTensor("tmpTensor");
+                auto tmp_tensor_h = flare::create_mirror_tensor(flare::HostSpace(), tmpTensor);
                 if (case_number == 1) {
-                    tmp_view_h(0) = 0;
-                    tmp_view_h(1) = 0;
-                    tmp_view_h(2) = 0;
-                    tmp_view_h(3) = 2;
-                    tmp_view_h(4) = 2;
-                    tmp_view_h(5) = 1;
-                    tmp_view_h(6) = 1;
-                    tmp_view_h(7) = 1;
-                    tmp_view_h(8) = 1;
-                    tmp_view_h(9) = 0;
+                    tmp_tensor_h(0) = 0;
+                    tmp_tensor_h(1) = 0;
+                    tmp_tensor_h(2) = 0;
+                    tmp_tensor_h(3) = 2;
+                    tmp_tensor_h(4) = 2;
+                    tmp_tensor_h(5) = 1;
+                    tmp_tensor_h(6) = 1;
+                    tmp_tensor_h(7) = 1;
+                    tmp_tensor_h(8) = 1;
+                    tmp_tensor_h(9) = 0;
                 } else if (case_number == 2) {
-                    tmp_view_h(0) = 1;
-                    tmp_view_h(1) = 2;
-                    tmp_view_h(2) = 3;
-                    tmp_view_h(3) = 4;
-                    tmp_view_h(4) = 5;
-                    tmp_view_h(5) = 6;
-                    tmp_view_h(6) = 7;
-                    tmp_view_h(7) = 8;
-                    tmp_view_h(8) = 9;
-                    tmp_view_h(9) = 10;
+                    tmp_tensor_h(0) = 1;
+                    tmp_tensor_h(1) = 2;
+                    tmp_tensor_h(2) = 3;
+                    tmp_tensor_h(3) = 4;
+                    tmp_tensor_h(4) = 5;
+                    tmp_tensor_h(5) = 6;
+                    tmp_tensor_h(6) = 7;
+                    tmp_tensor_h(7) = 8;
+                    tmp_tensor_h(8) = 9;
+                    tmp_tensor_h(9) = 10;
                 } else if (case_number == 3) {
-                    tmp_view_h(0) = 8;
-                    tmp_view_h(1) = 8;
-                    tmp_view_h(2) = -1;
-                    tmp_view_h(3) = -1;
-                    tmp_view_h(4) = 5;
-                    tmp_view_h(5) = 5;
-                    tmp_view_h(6) = 5;
-                    tmp_view_h(7) = 8;
-                    tmp_view_h(8) = 2;
-                    tmp_view_h(9) = 1;
+                    tmp_tensor_h(0) = 8;
+                    tmp_tensor_h(1) = 8;
+                    tmp_tensor_h(2) = -1;
+                    tmp_tensor_h(3) = -1;
+                    tmp_tensor_h(4) = 5;
+                    tmp_tensor_h(5) = 5;
+                    tmp_tensor_h(6) = 5;
+                    tmp_tensor_h(7) = 8;
+                    tmp_tensor_h(8) = 2;
+                    tmp_tensor_h(9) = 1;
                 } else if (case_number == 4) {
-                    tmp_view_h(0) = 2;
-                    tmp_view_h(1) = 2;
-                    tmp_view_h(2) = 2;
-                    tmp_view_h(3) = 2;
-                    tmp_view_h(4) = 2;
-                    tmp_view_h(5) = 2;
-                    tmp_view_h(6) = 2;
-                    tmp_view_h(7) = 2;
-                    tmp_view_h(8) = 2;
-                    tmp_view_h(9) = 2;
+                    tmp_tensor_h(0) = 2;
+                    tmp_tensor_h(1) = 2;
+                    tmp_tensor_h(2) = 2;
+                    tmp_tensor_h(3) = 2;
+                    tmp_tensor_h(4) = 2;
+                    tmp_tensor_h(5) = 2;
+                    tmp_tensor_h(6) = 2;
+                    tmp_tensor_h(7) = 2;
+                    tmp_tensor_h(8) = 2;
+                    tmp_tensor_h(9) = 2;
                 } else if (case_number == 5) {
-                    tmp_view_h(0) = 1;
-                    tmp_view_h(1) = 2;
-                    tmp_view_h(2) = 3;
-                    tmp_view_h(3) = 4;
-                    tmp_view_h(4) = 5;
-                    tmp_view_h(5) = 12;
-                    tmp_view_h(6) = 5;
-                    tmp_view_h(7) = 4;
-                    tmp_view_h(8) = 3;
-                    tmp_view_h(9) = 2;
+                    tmp_tensor_h(0) = 1;
+                    tmp_tensor_h(1) = 2;
+                    tmp_tensor_h(2) = 3;
+                    tmp_tensor_h(3) = 4;
+                    tmp_tensor_h(4) = 5;
+                    tmp_tensor_h(5) = 12;
+                    tmp_tensor_h(6) = 5;
+                    tmp_tensor_h(7) = 4;
+                    tmp_tensor_h(8) = 3;
+                    tmp_tensor_h(9) = 2;
                 } else {
                 }
 
-                flare::deep_copy(tmpView, tmp_view_h);
-                copyInputViewToFixtureViews(tmpView);
+                flare::deep_copy(tmpTensor, tmp_tensor_h);
+                copyInputTensorToFixtureTensors(tmpTensor);
             }
 
             flare::pair<int, value_type> goldSolutionMaxElement(int caseNumber) {
@@ -151,289 +151,289 @@ namespace Test {
                 }
             }
 
-            template<class ViewType>
-            void test_max_element_non_trivial_data(ViewType view);
+            template<class TensorType>
+            void test_max_element_non_trivial_data(TensorType tensor);
 
-            template<class ViewType>
-            void test_min_element_non_trivial_data(ViewType view);
+            template<class TensorType>
+            void test_min_element_non_trivial_data(TensorType tensor);
 
-            template<class ViewType>
-            void test_minmax_element_non_trivial_data(ViewType view);
+            template<class TensorType>
+            void test_minmax_element_non_trivial_data(TensorType tensor);
 
-            template<class ViewType>
-            void test_max_element_non_trivial_data_custom_comp(ViewType view);
+            template<class TensorType>
+            void test_max_element_non_trivial_data_custom_comp(TensorType tensor);
 
-            template<class ViewType>
-            void test_min_element_non_trivial_data_custom_comp(ViewType view);
+            template<class TensorType>
+            void test_min_element_non_trivial_data_custom_comp(TensorType tensor);
 
-            template<class ViewType>
-            void test_minmax_element_non_trivial_data_custom_comp(ViewType view);
+            template<class TensorType>
+            void test_minmax_element_non_trivial_data_custom_comp(TensorType tensor);
         };
 
-        template<class IndexType, class ValueType, class ItType, class TestedViewType>
+        template<class IndexType, class ValueType, class ItType, class TesteDTensorType>
         void std_algo_min_max_test_verify(flare::pair<IndexType, ValueType> goldPair,
                                           const ItType result,
-                                          TestedViewType testedView) {
+                                          TesteDTensorType testeDTensor) {
             // check that iterator is pointing to right element
-            REQUIRE_EQ(result - KE::begin(testedView), goldPair.first);
+            REQUIRE_EQ(result - KE::begin(testeDTensor), goldPair.first);
 
-            // create a view for the result to copy into it the iterator's value
-            using result_view_t = flare::View<int>;
-            result_view_t resultView("result");
-            CopyFromIteratorFunctor<ItType, result_view_t> cf(result, resultView);
+            // create a tensor for the result to copy into it the iterator's value
+            using result_tensor_t = flare::Tensor<int>;
+            result_tensor_t resultTensor("result");
+            CopyFromIteratorFunctor<ItType, result_tensor_t> cf(result, resultTensor);
             flare::parallel_for("_std_algo_copy", 1, cf);
             auto result_v_h =
-                    flare::create_mirror_view_and_copy(flare::HostSpace(), resultView);
+                    flare::create_mirror_tensor_and_copy(flare::HostSpace(), resultTensor);
 
-            // use the host mirror of the result view to check that the values match
+            // use the host mirror of the result tensor to check that the values match
             REQUIRE_EQ(result_v_h(), goldPair.second);
         }
 
-        template<class GoldSolutionType, class ItType, class TestedViewType>
+        template<class GoldSolutionType, class ItType, class TesteDTensorType>
         void std_algo_min_max_test_verify(const GoldSolutionType &goldSolution,
                                           const ItType itMin, const ItType itMax,
-                                          TestedViewType testedView) {
-            std_algo_min_max_test_verify(goldSolution.first, itMin, testedView);
-            std_algo_min_max_test_verify(goldSolution.second, itMax, testedView);
+                                          TesteDTensorType testeDTensor) {
+            std_algo_min_max_test_verify(goldSolution.first, itMin, testeDTensor);
+            std_algo_min_max_test_verify(goldSolution.second, itMax, testeDTensor);
         }
 
-        template<class ViewType>
-        void test_max_element_trivial_data(ViewType view) {
+        template<class TensorType>
+        void test_max_element_trivial_data(TensorType tensor) {
             /* if we pass empty range, should return last */
-            auto result = KE::max_element(exespace(), KE::cbegin(view), KE::cbegin(view));
-            REQUIRE_EQ(result, KE::cbegin(view));
+            auto result = KE::max_element(exespace(), KE::cbegin(tensor), KE::cbegin(tensor));
+            REQUIRE_EQ(result, KE::cbegin(tensor));
 
             /* if we pass empty range, should return last */
-            auto it0 = KE::cbegin(view) + 3;
+            auto it0 = KE::cbegin(tensor) + 3;
             auto it1 = it0;
             auto result2 = KE::max_element(exespace(), it0, it1);
             REQUIRE_EQ(result2, it1);
         }
 
-        template<class ViewType>
-        void test_min_element_trivial_data(ViewType view) {
+        template<class TensorType>
+        void test_min_element_trivial_data(TensorType tensor) {
             /* if we pass empty range, should return last */
-            auto result = KE::min_element(exespace(), KE::cbegin(view), KE::cbegin(view));
-            REQUIRE_EQ(result, KE::cbegin(view));
+            auto result = KE::min_element(exespace(), KE::cbegin(tensor), KE::cbegin(tensor));
+            REQUIRE_EQ(result, KE::cbegin(tensor));
 
             /* if we pass empty range, should return last */
-            auto it0 = KE::cbegin(view) + 3;
+            auto it0 = KE::cbegin(tensor) + 3;
             auto it1 = it0;
             auto result2 = KE::min_element(exespace(), it0, it1);
             REQUIRE_EQ(result2, it1);
         }
 
-        template<class ViewType>
-        void test_minmax_element_empty_range(ViewType view) {
+        template<class TensorType>
+        void test_minmax_element_empty_range(TensorType tensor) {
             auto result =
-                    KE::minmax_element(exespace(), KE::cbegin(view), KE::cbegin(view));
-            REQUIRE_EQ(result.first, KE::cbegin(view));
-            REQUIRE_EQ(result.second, KE::cbegin(view));
-            auto it0 = KE::cbegin(view) + 3;
+                    KE::minmax_element(exespace(), KE::cbegin(tensor), KE::cbegin(tensor));
+            REQUIRE_EQ(result.first, KE::cbegin(tensor));
+            REQUIRE_EQ(result.second, KE::cbegin(tensor));
+            auto it0 = KE::cbegin(tensor) + 3;
             auto it1 = it0;
             auto result2 = KE::minmax_element(exespace(), it0, it1);
             REQUIRE_EQ(result2.first, it1);
             REQUIRE_EQ(result2.second, it1);
         }
 
-        template<class ViewType>
+        template<class TensorType>
         void std_algorithms_min_max_element_test::test_max_element_non_trivial_data(
-                ViewType view) {
+                TensorType tensor) {
             for (int id = 1; id <= m_number_of_filling_cases; ++id) {
-                fillFixtureViews(id);
+                fillFixtureTensors(id);
                 const auto gold_solution = goldSolutionMaxElement(id);
-                // API accepting view
+                // API accepting tensor
                 {
-                    const auto result = KE::max_element(exespace(), view);
-                    std_algo_min_max_test_verify(gold_solution, result, view);
-                    const auto result2 = KE::max_element("MYCUSTOMLABEL1", exespace(), view);
-                    std_algo_min_max_test_verify(gold_solution, result2, view);
+                    const auto result = KE::max_element(exespace(), tensor);
+                    std_algo_min_max_test_verify(gold_solution, result, tensor);
+                    const auto result2 = KE::max_element("MYCUSTOMLABEL1", exespace(), tensor);
+                    std_algo_min_max_test_verify(gold_solution, result2, tensor);
                 }
                 // API accepting iterators
                 {
                     const auto result =
-                            KE::max_element(exespace(), KE::begin(view), KE::end(view));
-                    std_algo_min_max_test_verify(gold_solution, result, view);
+                            KE::max_element(exespace(), KE::begin(tensor), KE::end(tensor));
+                    std_algo_min_max_test_verify(gold_solution, result, tensor);
                     const auto result2 = KE::max_element("MYCUSTOMLABEL2", exespace(),
-                                                         KE::begin(view), KE::end(view));
-                    std_algo_min_max_test_verify(gold_solution, result2, view);
+                                                         KE::begin(tensor), KE::end(tensor));
+                    std_algo_min_max_test_verify(gold_solution, result2, tensor);
                 }
             }
         }
 
-        template<class ViewType>
+        template<class TensorType>
         void std_algorithms_min_max_element_test::test_min_element_non_trivial_data(
-                ViewType view) {
+                TensorType tensor) {
             for (int id = 1; id <= m_number_of_filling_cases; ++id) {
-                fillFixtureViews(id);
+                fillFixtureTensors(id);
                 const auto goldPair = goldSolutionMinElement(id);
-                // API accepting view
+                // API accepting tensor
                 {
-                    const auto result = KE::min_element(exespace(), view);
-                    std_algo_min_max_test_verify(goldPair, result, view);
-                    const auto result2 = KE::min_element("MYCUSTOMLABEL1", exespace(), view);
-                    std_algo_min_max_test_verify(goldPair, result2, view);
+                    const auto result = KE::min_element(exespace(), tensor);
+                    std_algo_min_max_test_verify(goldPair, result, tensor);
+                    const auto result2 = KE::min_element("MYCUSTOMLABEL1", exespace(), tensor);
+                    std_algo_min_max_test_verify(goldPair, result2, tensor);
                 }
                 // API accepting iterators
                 {
                     const auto result =
-                            KE::min_element(exespace(), KE::begin(view), KE::end(view));
-                    std_algo_min_max_test_verify(goldPair, result, view);
+                            KE::min_element(exespace(), KE::begin(tensor), KE::end(tensor));
+                    std_algo_min_max_test_verify(goldPair, result, tensor);
                     const auto result2 = KE::min_element("MYCUSTOMLABEL2", exespace(),
-                                                         KE::begin(view), KE::end(view));
-                    std_algo_min_max_test_verify(goldPair, result2, view);
+                                                         KE::begin(tensor), KE::end(tensor));
+                    std_algo_min_max_test_verify(goldPair, result2, tensor);
                 }
             }
         }
 
-        template<class ViewType>
+        template<class TensorType>
         void std_algorithms_min_max_element_test::test_minmax_element_non_trivial_data(
-                ViewType view) {
+                TensorType tensor) {
             for (int id = 1; id <= m_number_of_filling_cases; ++id) {
-                fillFixtureViews(id);
+                fillFixtureTensors(id);
                 const auto gold = goldSolutionMinMaxElement(id);
                 {
-                    auto result = KE::minmax_element(exespace(), view);
-                    std_algo_min_max_test_verify(gold, result.first, result.second, view);
+                    auto result = KE::minmax_element(exespace(), tensor);
+                    std_algo_min_max_test_verify(gold, result.first, result.second, tensor);
                     const auto result2 =
-                            KE::minmax_element("MYCUSTOMLABEL1", exespace(), view);
-                    std_algo_min_max_test_verify(gold, result2.first, result2.second, view);
+                            KE::minmax_element("MYCUSTOMLABEL1", exespace(), tensor);
+                    std_algo_min_max_test_verify(gold, result2.first, result2.second, tensor);
                 }
                 {
                     const auto result =
-                            KE::minmax_element(exespace(), KE::begin(view), KE::end(view));
-                    std_algo_min_max_test_verify(gold, result.first, result.second, view);
+                            KE::minmax_element(exespace(), KE::begin(tensor), KE::end(tensor));
+                    std_algo_min_max_test_verify(gold, result.first, result.second, tensor);
                     const auto result2 = KE::minmax_element("MYCUSTOMLABEL2", exespace(),
-                                                            KE::begin(view), KE::end(view));
-                    std_algo_min_max_test_verify(gold, result2.first, result2.second, view);
+                                                            KE::begin(tensor), KE::end(tensor));
+                    std_algo_min_max_test_verify(gold, result2.first, result2.second, tensor);
                 }
             }
         }
 
-        template<class ViewType>
+        template<class TensorType>
         void std_algorithms_min_max_element_test::
-        test_max_element_non_trivial_data_custom_comp(ViewType view) {
+        test_max_element_non_trivial_data_custom_comp(TensorType tensor) {
             for (int id = 1; id <= m_number_of_filling_cases; ++id) {
-                fillFixtureViews(id);
+                fillFixtureTensors(id);
                 const auto goldPair = goldSolutionMaxElement(id);
                 CustomLessThanComparator<value_type, value_type> comp;
-                // API accepting view
+                // API accepting tensor
                 {
-                    const auto result = KE::max_element(exespace(), view, comp);
-                    std_algo_min_max_test_verify(goldPair, result, view);
+                    const auto result = KE::max_element(exespace(), tensor, comp);
+                    std_algo_min_max_test_verify(goldPair, result, tensor);
                     const auto result2 =
-                            KE::max_element("MYCUSTOMLABEL3", exespace(), view, comp);
-                    std_algo_min_max_test_verify(goldPair, result2, view);
+                            KE::max_element("MYCUSTOMLABEL3", exespace(), tensor, comp);
+                    std_algo_min_max_test_verify(goldPair, result2, tensor);
                 }
                 // API accepting iterators
                 {
                     const auto result =
-                            KE::max_element(exespace(), KE::begin(view), KE::end(view), comp);
-                    std_algo_min_max_test_verify(goldPair, result, view);
+                            KE::max_element(exespace(), KE::begin(tensor), KE::end(tensor), comp);
+                    std_algo_min_max_test_verify(goldPair, result, tensor);
                     const auto result2 = KE::max_element(
-                            "MYCUSTOMLABEL4", exespace(), KE::begin(view), KE::end(view), comp);
-                    std_algo_min_max_test_verify(goldPair, result2, view);
+                            "MYCUSTOMLABEL4", exespace(), KE::begin(tensor), KE::end(tensor), comp);
+                    std_algo_min_max_test_verify(goldPair, result2, tensor);
                 }
             }
         }
 
-        template<class ViewType>
+        template<class TensorType>
         void std_algorithms_min_max_element_test::
-        test_min_element_non_trivial_data_custom_comp(ViewType view) {
+        test_min_element_non_trivial_data_custom_comp(TensorType tensor) {
             for (int id = 1; id <= m_number_of_filling_cases; ++id) {
-                fillFixtureViews(id);
+                fillFixtureTensors(id);
                 const auto goldPair = goldSolutionMinElement(id);
                 CustomLessThanComparator<value_type, value_type> comp;
-                // API accepting view
+                // API accepting tensor
                 {
-                    const auto result = KE::min_element(exespace(), view, comp);
-                    std_algo_min_max_test_verify(goldPair, result, view);
+                    const auto result = KE::min_element(exespace(), tensor, comp);
+                    std_algo_min_max_test_verify(goldPair, result, tensor);
                     const auto result2 =
-                            KE::min_element("MYCUSTOMLABEL3", exespace(), view, comp);
-                    std_algo_min_max_test_verify(goldPair, result2, view);
+                            KE::min_element("MYCUSTOMLABEL3", exespace(), tensor, comp);
+                    std_algo_min_max_test_verify(goldPair, result2, tensor);
                 }
                 // API accepting iterators
                 {
                     const auto result =
-                            KE::min_element(exespace(), KE::begin(view), KE::end(view), comp);
-                    std_algo_min_max_test_verify(goldPair, result, view);
+                            KE::min_element(exespace(), KE::begin(tensor), KE::end(tensor), comp);
+                    std_algo_min_max_test_verify(goldPair, result, tensor);
                     const auto result2 = KE::min_element(
-                            "MYCUSTOMLABEL4", exespace(), KE::begin(view), KE::end(view), comp);
-                    std_algo_min_max_test_verify(goldPair, result2, view);
+                            "MYCUSTOMLABEL4", exespace(), KE::begin(tensor), KE::end(tensor), comp);
+                    std_algo_min_max_test_verify(goldPair, result2, tensor);
                 }
             }
         }
 
-        template<class ViewType>
+        template<class TensorType>
         void std_algorithms_min_max_element_test::
-        test_minmax_element_non_trivial_data_custom_comp(ViewType view) {
+        test_minmax_element_non_trivial_data_custom_comp(TensorType tensor) {
             for (int id = 1; id <= m_number_of_filling_cases; ++id) {
-                fillFixtureViews(id);
+                fillFixtureTensors(id);
                 const auto goldPair = goldSolutionMinMaxElement(id);
                 CustomLessThanComparator<value_type, value_type> comp;
                 {
-                    const auto result = KE::minmax_element(exespace(), view, comp);
-                    std_algo_min_max_test_verify(goldPair, result.first, result.second, view);
+                    const auto result = KE::minmax_element(exespace(), tensor, comp);
+                    std_algo_min_max_test_verify(goldPair, result.first, result.second, tensor);
                     const auto result2 =
-                            KE::minmax_element("MYCUSTOMLABEL3", exespace(), view, comp);
+                            KE::minmax_element("MYCUSTOMLABEL3", exespace(), tensor, comp);
                     std_algo_min_max_test_verify(goldPair, result2.first, result2.second,
-                                                 view);
+                                                 tensor);
                 }
                 {
                     const auto result =
-                            KE::minmax_element(exespace(), KE::begin(view), KE::end(view), comp);
-                    std_algo_min_max_test_verify(goldPair, result.first, result.second, view);
+                            KE::minmax_element(exespace(), KE::begin(tensor), KE::end(tensor), comp);
+                    std_algo_min_max_test_verify(goldPair, result.first, result.second, tensor);
                     const auto result2 = KE::minmax_element(
-                            "MYCUSTOMLABEL4", exespace(), KE::begin(view), KE::end(view), comp);
+                            "MYCUSTOMLABEL4", exespace(), KE::begin(tensor), KE::end(tensor), comp);
                     std_algo_min_max_test_verify(goldPair, result2.first, result2.second,
-                                                 view);
+                                                 tensor);
                 }
             }
         }
 
         // trivial case
         TEST_CASE_FIXTURE(std_algorithms_min_max_element_test, "min_element_empty_range") {
-            test_min_element_trivial_data(m_static_view);
-            test_min_element_trivial_data(m_dynamic_view);
-            test_min_element_trivial_data(m_strided_view);
+            test_min_element_trivial_data(m_static_tensor);
+            test_min_element_trivial_data(m_dynamic_tensor);
+            test_min_element_trivial_data(m_strided_tensor);
         }
 
         TEST_CASE_FIXTURE(std_algorithms_min_max_element_test, "max_element_empty_range") {
-            test_max_element_trivial_data(m_static_view);
-            test_max_element_trivial_data(m_dynamic_view);
-            test_max_element_trivial_data(m_strided_view);
+            test_max_element_trivial_data(m_static_tensor);
+            test_max_element_trivial_data(m_dynamic_tensor);
+            test_max_element_trivial_data(m_strided_tensor);
         }
 
         // non-trivial data
         TEST_CASE_FIXTURE(std_algorithms_min_max_element_test, "min_element_non_trivial_data") {
-            test_min_element_non_trivial_data(m_static_view);
-            test_min_element_non_trivial_data(m_dynamic_view);
-            test_min_element_non_trivial_data(m_strided_view);
+            test_min_element_non_trivial_data(m_static_tensor);
+            test_min_element_non_trivial_data(m_dynamic_tensor);
+            test_min_element_non_trivial_data(m_strided_tensor);
         }
 
         TEST_CASE_FIXTURE(std_algorithms_min_max_element_test, "max_element_non_trivial_data") {
-            test_max_element_non_trivial_data(m_static_view);
-            test_max_element_non_trivial_data(m_dynamic_view);
-            test_max_element_non_trivial_data(m_strided_view);
+            test_max_element_non_trivial_data(m_static_tensor);
+            test_max_element_non_trivial_data(m_dynamic_tensor);
+            test_max_element_non_trivial_data(m_strided_tensor);
         }
 
         // non-trivial data, custom comp
         TEST_CASE_FIXTURE(std_algorithms_min_max_element_test, "min_element_non_trivial_data_custom_comp") {
-            test_min_element_non_trivial_data_custom_comp(m_static_view);
-            test_min_element_non_trivial_data_custom_comp(m_dynamic_view);
-            test_min_element_non_trivial_data_custom_comp(m_strided_view);
+            test_min_element_non_trivial_data_custom_comp(m_static_tensor);
+            test_min_element_non_trivial_data_custom_comp(m_dynamic_tensor);
+            test_min_element_non_trivial_data_custom_comp(m_strided_tensor);
         }
 
         TEST_CASE_FIXTURE(std_algorithms_min_max_element_test, "max_element_non_trivial_data_custom_comp") {
-            test_max_element_non_trivial_data_custom_comp(m_static_view);
-            test_max_element_non_trivial_data_custom_comp(m_dynamic_view);
-            test_max_element_non_trivial_data_custom_comp(m_strided_view);
+            test_max_element_non_trivial_data_custom_comp(m_static_tensor);
+            test_max_element_non_trivial_data_custom_comp(m_dynamic_tensor);
+            test_max_element_non_trivial_data_custom_comp(m_strided_tensor);
         }
 
         TEST_CASE_FIXTURE(std_algorithms_min_max_element_test,"minmax_element_non_trivial_data_custom_comp") {
-            test_minmax_element_non_trivial_data_custom_comp(m_static_view);
-            test_minmax_element_non_trivial_data_custom_comp(m_dynamic_view);
-            test_minmax_element_non_trivial_data_custom_comp(m_strided_view);
+            test_minmax_element_non_trivial_data_custom_comp(m_static_tensor);
+            test_minmax_element_non_trivial_data_custom_comp(m_dynamic_tensor);
+            test_minmax_element_non_trivial_data_custom_comp(m_strided_tensor);
         }
 
     }  // namespace stdalgos

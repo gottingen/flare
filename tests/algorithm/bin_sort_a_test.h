@@ -30,13 +30,13 @@ namespace Test {
             using value_type = unsigned int;
             using execution_space = ExecutionSpace;
 
-            flare::View<Scalar *[3], ExecutionSpace> keys;
+            flare::Tensor<Scalar *[3], ExecutionSpace> keys;
 
             int max_bins;
             Scalar min;
             Scalar max;
 
-            bin3d_is_sorted_struct(flare::View<Scalar *[3], ExecutionSpace> keys_,
+            bin3d_is_sorted_struct(flare::Tensor<Scalar *[3], ExecutionSpace> keys_,
                                    int max_bins_, Scalar min_, Scalar max_)
                     : keys(keys_), max_bins(max_bins_), min(min_), max(max_) {}
 
@@ -65,9 +65,9 @@ namespace Test {
             using value_type = double;
             using execution_space = ExecutionSpace;
 
-            flare::View<Scalar *[3], ExecutionSpace> keys;
+            flare::Tensor<Scalar *[3], ExecutionSpace> keys;
 
-            sum3D(flare::View<Scalar *[3], ExecutionSpace> keys_) : keys(keys_) {}
+            sum3D(flare::Tensor<Scalar *[3], ExecutionSpace> keys_) : keys(keys_) {}
 
             FLARE_INLINE_FUNCTION
             void operator()(int i, double &count) const {
@@ -79,9 +79,9 @@ namespace Test {
 
         template<class ExecutionSpace, typename KeyType>
         void test_3D_sort_impl(unsigned int n) {
-            using KeyViewType = flare::View<KeyType *[3], ExecutionSpace>;
+            using KeyTensorType = flare::Tensor<KeyType *[3], ExecutionSpace>;
 
-            KeyViewType keys("Keys", n * n * n);
+            KeyTensorType keys("Keys", n * n * n);
 
             flare::Random_XorShift64_Pool<ExecutionSpace> g(1931);
             flare::fill_random(keys, g, 100.0);
@@ -98,12 +98,12 @@ namespace Test {
             int bin_1d = 1;
             while (bin_1d * bin_1d * bin_1d * 4 < (int) keys.extent(0)) bin_1d *= 2;
             int bin_max[3] = {bin_1d, bin_1d, bin_1d};
-            typename KeyViewType::value_type min[3] = {0, 0, 0};
-            typename KeyViewType::value_type max[3] = {100, 100, 100};
+            typename KeyTensorType::value_type min[3] = {0, 0, 0};
+            typename KeyTensorType::value_type max[3] = {100, 100, 100};
 
-            using BinOp = flare::BinOp3D<KeyViewType>;
+            using BinOp = flare::BinOp3D<KeyTensorType>;
             BinOp bin_op(bin_max, min, max);
-            flare::BinSort<KeyViewType, BinOp> Sorter(keys, bin_op, false);
+            flare::BinSort<KeyTensorType, BinOp> Sorter(keys, bin_op, false);
             Sorter.create_permute_vector(exec);
             Sorter.sort(exec, keys);
 
@@ -130,13 +130,13 @@ namespace Test {
 
         template<class ExecutionSpace>
         void test_issue_1160_impl() {
-            flare::View<int *, ExecutionSpace> element_("element", 10);
-            flare::View<double *, ExecutionSpace> x_("x", 10);
-            flare::View<double *, ExecutionSpace> v_("y", 10);
+            flare::Tensor<int *, ExecutionSpace> element_("element", 10);
+            flare::Tensor<double *, ExecutionSpace> x_("x", 10);
+            flare::Tensor<double *, ExecutionSpace> v_("y", 10);
 
-            auto h_element = flare::create_mirror_view(element_);
-            auto h_x = flare::create_mirror_view(x_);
-            auto h_v = flare::create_mirror_view(v_);
+            auto h_element = flare::create_mirror_tensor(element_);
+            auto h_x = flare::create_mirror_tensor(x_);
+            auto h_v = flare::create_mirror_tensor(v_);
 
             h_element(0) = 9;
             h_element(1) = 8;
@@ -157,8 +157,8 @@ namespace Test {
             flare::deep_copy(exec, x_, h_x);
             flare::deep_copy(exec, v_, h_v);
 
-            using KeyViewType = decltype(element_);
-            using BinOp = flare::BinOp1D<KeyViewType>;
+            using KeyTensorType = decltype(element_);
+            using BinOp = flare::BinOp1D<KeyTensorType>;
 
             int begin = 3;
             int end = 8;
@@ -166,7 +166,7 @@ namespace Test {
             auto min = h_element(end - 1);
             BinOp binner(end - begin, min, max);
 
-            flare::BinSort<KeyViewType, BinOp> Sorter(element_, begin, end, binner,
+            flare::BinSort<KeyTensorType, BinOp> Sorter(element_, begin, end, binner,
                                                       false);
             Sorter.create_permute_vector(exec);
             Sorter.sort(exec, element_, begin, end);
@@ -209,10 +209,10 @@ namespace Test {
             // bin calculation
             T a[2] = {flare::experimental::finite_max<T>::value,
                       flare::experimental::finite_min<T>::value};
-            auto vd = flare::create_mirror_view_and_copy(
-                    ExecutionSpace(), flare::View<T[2], flare::HostSpace>(a));
+            auto vd = flare::create_mirror_tensor_and_copy(
+                    ExecutionSpace(), flare::Tensor<T[2], flare::HostSpace>(a));
             flare::sort(vd);
-            auto vh = flare::create_mirror_view_and_copy(flare::HostSpace(), vd);
+            auto vh = flare::create_mirror_tensor_and_copy(flare::HostSpace(), vd);
             REQUIRE(std::is_sorted(vh.data(), vh.data() + 2));
         }
 
@@ -230,21 +230,21 @@ namespace Test {
         BinSortSetA::test_sort_integer_overflow<ExecutionSpace, int>();
     }
 
-    TEST_CASE("TEST_CATEGORY, BinSortEmptyView") {
+    TEST_CASE("TEST_CATEGORY, BinSortEmptyTensor") {
         using ExecutionSpace = TEST_EXECSPACE;
 
         // the bounds and extents used below are totally arbitrary
         // and, in theory, should have no impact
 
-        using KeyViewType = flare::View<int *, ExecutionSpace>;
-        KeyViewType kv("kv", 20);
+        using KeyTensorType = flare::Tensor<int *, ExecutionSpace>;
+        KeyTensorType kv("kv", 20);
 
-        using BinOp_t = flare::BinOp1D<KeyViewType>;
+        using BinOp_t = flare::BinOp1D<KeyTensorType>;
         BinOp_t binOp(5, 0, 10);
-        flare::BinSort<KeyViewType, BinOp_t> Sorter(ExecutionSpace{}, kv, binOp);
+        flare::BinSort<KeyTensorType, BinOp_t> Sorter(ExecutionSpace{}, kv, binOp);
 
         // does not matter if we use int or something else
-        flare::View<int *, ExecutionSpace> v("v", 0);
+        flare::Tensor<int *, ExecutionSpace> v("v", 0);
 
         // test all exposed public sort methods
         REQUIRE_NOTHROW(Sorter.sort(ExecutionSpace(), v, 0, 0));
@@ -253,15 +253,15 @@ namespace Test {
         REQUIRE_NOTHROW(Sorter.sort(v));
     }
 
-    TEST_CASE("TEST_CATEGORY, BinSortEmptyKeysView") {
+    TEST_CASE("TEST_CATEGORY, BinSortEmptyKeysTensor") {
         using ExecutionSpace = TEST_EXECSPACE;
 
-        using KeyViewType = flare::View<int *, ExecutionSpace>;
-        KeyViewType kv("kv", 0);
+        using KeyTensorType = flare::Tensor<int *, ExecutionSpace>;
+        KeyTensorType kv("kv", 0);
 
-        using BinOp_t = flare::BinOp1D<KeyViewType>;
+        using BinOp_t = flare::BinOp1D<KeyTensorType>;
         BinOp_t binOp(5, 0, 10);
-        flare::BinSort<KeyViewType, BinOp_t> Sorter(ExecutionSpace{}, kv, binOp);
+        flare::BinSort<KeyTensorType, BinOp_t> Sorter(ExecutionSpace{}, kv, binOp);
 
         REQUIRE_NOTHROW(Sorter.create_permute_vector(ExecutionSpace{}));
     }

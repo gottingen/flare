@@ -17,7 +17,7 @@
 #define FLARE_ALGORITHM_CONSTRAINTS_H_
 
 #include <flare/core/common/detection_idiom.h>
-#include <flare/core/tensor/view.h>
+#include <flare/core/tensor/tensor.h>
 
 namespace flare {
 namespace experimental {
@@ -28,7 +28,7 @@ struct is_admissible_to_flare_std_algorithms : std::false_type {};
 
 template <typename T>
 struct is_admissible_to_flare_std_algorithms<
-    T, std::enable_if_t< ::flare::is_view<T>::value && T::rank() == 1 &&
+    T, std::enable_if_t< ::flare::is_tensor<T>::value && T::rank() == 1 &&
                          (std::is_same<typename T::traits::array_layout,
                                        flare::LayoutLeft>::value ||
                           std::is_same<typename T::traits::array_layout,
@@ -37,12 +37,12 @@ struct is_admissible_to_flare_std_algorithms<
                                        flare::LayoutStride>::value)> >
     : std::true_type {};
 
-template <class ViewType>
+template <class TensorType>
 FLARE_INLINE_FUNCTION constexpr void
 static_assert_is_admissible_to_flare_std_algorithms(
-    const ViewType& /* view */) {
-  static_assert(is_admissible_to_flare_std_algorithms<ViewType>::value,
-                "Currently, flare standard algorithms only accept 1D Views.");
+    const TensorType& /* tensor */) {
+  static_assert(is_admissible_to_flare_std_algorithms<TensorType>::value,
+                "Currently, flare standard algorithms only accept 1D Tensors.");
 }
 
 //
@@ -109,10 +109,10 @@ struct iterators_are_accessible_from;
 
 template <class ExeSpace, class IteratorType>
 struct iterators_are_accessible_from<ExeSpace, IteratorType> {
-  using view_type = typename IteratorType::view_type;
+  using tensor_type = typename IteratorType::tensor_type;
   static constexpr bool value =
       SpaceAccessibility<ExeSpace,
-                         typename view_type::memory_space>::accessible;
+                         typename tensor_type::memory_space>::accessible;
 };
 
 template <class ExeSpace, class Head, class... Tail>
@@ -133,7 +133,7 @@ static_assert_random_access_and_accessible(
   static_assert(iterators_are_accessible_from<
                     typename ExecutionSpaceOrTeamHandleType::execution_space,
                     IteratorTypes...>::value,
-                "Incompatible view/iterator and execution space");
+                "Incompatible tensor/iterator and execution space");
 }
 
 //

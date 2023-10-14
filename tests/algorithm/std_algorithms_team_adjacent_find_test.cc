@@ -29,18 +29,18 @@ struct IsEqualFunctor {
   }
 };
 
-template <class DataViewType, class DistancesViewType, class BinaryPredType>
+template <class DatATensorType, class DistancesTensorType, class BinaryPredType>
 struct TestFunctorA {
-  DataViewType m_dataView;
-  DistancesViewType m_distancesView;
+  DatATensorType m_dataTensor;
+  DistancesTensorType m_distancesTensor;
   int m_apiPick;
   BinaryPredType m_binaryPred;
 
-  TestFunctorA(const DataViewType dataView,
-               const DistancesViewType distancesView, int apiPick,
+  TestFunctorA(const DatATensorType dataTensor,
+               const DistancesTensorType distancesTensor, int apiPick,
                BinaryPredType binaryPred)
-      : m_dataView(dataView),
-        m_distancesView(distancesView),
+      : m_dataTensor(dataTensor),
+        m_distancesTensor(distancesTensor),
         m_apiPick(apiPick),
         m_binaryPred(binaryPred) {}
 
@@ -48,44 +48,44 @@ struct TestFunctorA {
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
 
-    auto myRowViewFrom = flare::subview(m_dataView, myRowIndex, flare::ALL());
+    auto myRowTensorFrom = flare::subtensor(m_dataTensor, myRowIndex, flare::ALL());
 
     switch (m_apiPick) {
       case 0: {
-        const auto it = KE::adjacent_find(member, KE::cbegin(myRowViewFrom),
-                                          KE::cend(myRowViewFrom));
+        const auto it = KE::adjacent_find(member, KE::cbegin(myRowTensorFrom),
+                                          KE::cend(myRowTensorFrom));
         flare::single(flare::PerTeam(member), [=, *this]() {
-          m_distancesView(myRowIndex) =
-              KE::distance(KE::cbegin(myRowViewFrom), it);
+          m_distancesTensor(myRowIndex) =
+              KE::distance(KE::cbegin(myRowTensorFrom), it);
         });
         break;
       }
 
       case 1: {
-        const auto it = KE::adjacent_find(member, myRowViewFrom);
+        const auto it = KE::adjacent_find(member, myRowTensorFrom);
         flare::single(flare::PerTeam(member), [=, *this]() {
-          m_distancesView(myRowIndex) =
-              KE::distance(KE::begin(myRowViewFrom), it);
+          m_distancesTensor(myRowIndex) =
+              KE::distance(KE::begin(myRowTensorFrom), it);
         });
         break;
       }
 
       case 2: {
         const auto it =
-            KE::adjacent_find(member, KE::cbegin(myRowViewFrom),
-                              KE::cend(myRowViewFrom), m_binaryPred);
+            KE::adjacent_find(member, KE::cbegin(myRowTensorFrom),
+                              KE::cend(myRowTensorFrom), m_binaryPred);
         flare::single(flare::PerTeam(member), [=, *this]() {
-          m_distancesView(myRowIndex) =
-              KE::distance(KE::cbegin(myRowViewFrom), it);
+          m_distancesTensor(myRowIndex) =
+              KE::distance(KE::cbegin(myRowTensorFrom), it);
         });
         break;
       }
 
       case 3: {
-        const auto it = KE::adjacent_find(member, myRowViewFrom, m_binaryPred);
+        const auto it = KE::adjacent_find(member, myRowTensorFrom, m_binaryPred);
         flare::single(flare::PerTeam(member), [=, *this]() {
-          m_distancesView(myRowIndex) =
-              KE::distance(KE::begin(myRowViewFrom), it);
+          m_distancesTensor(myRowIndex) =
+              KE::distance(KE::begin(myRowTensorFrom), it);
         });
         break;
       }
@@ -97,46 +97,46 @@ template <class LayoutTag, class ValueType>
 void test_A(const bool ensureAdjacentFindCanFind, std::size_t numTeams,
             std::size_t numCols, int apiId) {
   /* description:
-     use a rank-2 view randomly filled with values,
+     use a rank-2 tensor randomly filled with values,
      and run a team-level adjacent_find
    */
 
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range.
   constexpr ValueType lowerBound = 5;
   constexpr ValueType upperBound = 523;
   const auto bounds              = make_bounds(lowerBound, upperBound);
 
-  auto [dataView, dataViewBeforeOp_h] = create_random_view_and_host_clone(
-      LayoutTag{}, numTeams, numCols, bounds, "dataView");
+  auto [dataTensor, dataTensorBeforeOp_h] = create_random_tensor_and_host_clone(
+      LayoutTag{}, numTeams, numCols, bounds, "dataTensor");
 
   // If ensureAdjacentFindCanFind == true ensure there are two consecutive equal
   // elements in each row
 
-  // dataView might not deep copyable (e.g. strided layout) so to prepare it
-  // correctly, we make a new view that is for sure deep copyable, modify it on
-  // the host, deep copy to device and then launch a kernel to copy to dataView
-  auto dataView_dc =
-      create_deep_copyable_compatible_view_with_same_extent(dataView);
-  auto dataView_dc_h = create_mirror_view(flare::HostSpace(), dataView_dc);
+  // dataTensor might not deep copyable (e.g. strided layout) so to prepare it
+  // correctly, we make a new tensor that is for sure deep copyable, modify it on
+  // the host, deep copy to device and then launch a kernel to copy to dataTensor
+  auto dataTensor_dc =
+      create_deep_copyable_compatible_tensor_with_same_extent(dataTensor);
+  auto dataTensor_dc_h = create_mirror_tensor(flare::HostSpace(), dataTensor_dc);
 
   if (ensureAdjacentFindCanFind && numCols > 1) {
     for (std::size_t i = 0; i < numTeams; ++i) {
       const auto j = numCols / 2;
 
-      dataView_dc_h(i, j - 1) = dataView_dc_h(i, j);
+      dataTensor_dc_h(i, j - 1) = dataTensor_dc_h(i, j);
     }
   }
 
-  // copy to dataView_dc and then to dataView
-  flare::deep_copy(dataView_dc, dataView_dc_h);
+  // copy to dataTensor_dc and then to dataTensor
+  flare::deep_copy(dataTensor_dc, dataTensor_dc_h);
 
-  CopyFunctorRank2 cpFun(dataView_dc, dataView);
-  flare::parallel_for("copy", dataView.extent(0) * dataView.extent(1), cpFun);
+  CopyFunctorRank2 cpFun(dataTensor_dc, dataTensor);
+  flare::parallel_for("copy", dataTensor.extent(0) * dataTensor.extent(1), cpFun);
 
   // -----------------------------------------------
   // launch flare kernel
@@ -148,20 +148,20 @@ void test_A(const bool ensureAdjacentFindCanFind, std::size_t numTeams,
   // each team stores the distance of the returned iterator from the beginning
   // of the interval that team operates on and then we check that these
   // distances match the std result
-  flare::View<std::size_t*> distancesView("distancesView", numTeams);
+  flare::Tensor<std::size_t*> distancesTensor("distancesTensor", numTeams);
 
   // use CTAD for functor
   IsEqualFunctor<ValueType> binaryPred;
-  TestFunctorA fnc(dataView, distancesView, apiId, binaryPred);
+  TestFunctorA fnc(dataTensor, distancesTensor, apiId, binaryPred);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // run cpp-std kernel and check
   // -----------------------------------------------
-  auto distancesView_h = create_host_space_copy(distancesView);
+  auto distancesTensor_h = create_host_space_copy(distancesTensor);
 
-  for (std::size_t i = 0; i < dataView.extent(0); ++i) {
-    auto rowFrom            = flare::subview(dataView_dc_h, i, flare::ALL());
+  for (std::size_t i = 0; i < dataTensor.extent(0); ++i) {
+    auto rowFrom            = flare::subtensor(dataTensor_dc_h, i, flare::ALL());
     const auto rowFromBegin = KE::cbegin(rowFrom);
     const auto rowFromEnd   = KE::cend(rowFrom);
     const std::size_t beginEndDist = KE::distance(rowFromBegin, rowFromEnd);
@@ -171,12 +171,12 @@ void test_A(const bool ensureAdjacentFindCanFind, std::size_t numTeams,
       case 1: {
         const auto it = std::adjacent_find(rowFromBegin, rowFromEnd);
         const std::size_t stdDistance = KE::distance(rowFromBegin, it);
-        REQUIRE_EQ(stdDistance, distancesView_h(i));
+        REQUIRE_EQ(stdDistance, distancesTensor_h(i));
 
         if (numCols == 1) {
-          REQUIRE_EQ(distancesView_h(i), beginEndDist);
+          REQUIRE_EQ(distancesTensor_h(i), beginEndDist);
         } else if (ensureAdjacentFindCanFind) {
-          REQUIRE_NE(distancesView_h(i), beginEndDist);
+          REQUIRE_NE(distancesTensor_h(i), beginEndDist);
         }
 
         break;
@@ -188,12 +188,12 @@ void test_A(const bool ensureAdjacentFindCanFind, std::size_t numTeams,
             std::adjacent_find(rowFromBegin, rowFromEnd, binaryPred);
         const std::size_t stdDistance = KE::distance(rowFromBegin, it);
 
-        REQUIRE_EQ(stdDistance, distancesView_h(i));
+        REQUIRE_EQ(stdDistance, distancesTensor_h(i));
 
         if (numCols == 1) {
-          REQUIRE_EQ(distancesView_h(i), beginEndDist);
+          REQUIRE_EQ(distancesTensor_h(i), beginEndDist);
         } else if (ensureAdjacentFindCanFind) {
-          REQUIRE_NE(distancesView_h(i), beginEndDist);
+          REQUIRE_NE(distancesTensor_h(i), beginEndDist);
         }
 
         break;

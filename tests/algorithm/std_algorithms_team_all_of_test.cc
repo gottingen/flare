@@ -32,18 +32,18 @@ struct GreaterThanValueFunctor {
   bool operator()(ValueType val) const { return (val > m_val); }
 };
 
-template <class DataViewType, class AlllOfResultsViewType, class UnaryPredType>
+template <class DatATensorType, class AlllOfResultsTensorType, class UnaryPredType>
 struct TestFunctorA {
-  DataViewType m_dataView;
-  AlllOfResultsViewType m_allOfResultsView;
+  DatATensorType m_dataTensor;
+  AlllOfResultsTensorType m_allOfResultsTensor;
   int m_apiPick;
   UnaryPredType m_unaryPred;
 
-  TestFunctorA(const DataViewType dataView,
-               const AlllOfResultsViewType allOfResultsView, int apiPick,
+  TestFunctorA(const DatATensorType dataTensor,
+               const AlllOfResultsTensorType allOfResultsTensor, int apiPick,
                UnaryPredType unaryPred)
-      : m_dataView(dataView),
-        m_allOfResultsView(allOfResultsView),
+      : m_dataTensor(dataTensor),
+        m_allOfResultsTensor(allOfResultsTensor),
         m_apiPick(apiPick),
         m_unaryPred(unaryPred) {}
 
@@ -51,22 +51,22 @@ struct TestFunctorA {
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
 
-    auto myRowViewFrom = flare::subview(m_dataView, myRowIndex, flare::ALL());
+    auto myRowTensorFrom = flare::subtensor(m_dataTensor, myRowIndex, flare::ALL());
 
     switch (m_apiPick) {
       case 0: {
-        const bool result = KE::all_of(member, KE::cbegin(myRowViewFrom),
-                                       KE::cend(myRowViewFrom), m_unaryPred);
+        const bool result = KE::all_of(member, KE::cbegin(myRowTensorFrom),
+                                       KE::cend(myRowTensorFrom), m_unaryPred);
         flare::single(flare::PerTeam(member), [=, *this]() {
-          m_allOfResultsView(myRowIndex) = result;
+          m_allOfResultsTensor(myRowIndex) = result;
         });
         break;
       }
 
       case 1: {
-        const bool result = KE::all_of(member, myRowViewFrom, m_unaryPred);
+        const bool result = KE::all_of(member, myRowTensorFrom, m_unaryPred);
         flare::single(flare::PerTeam(member), [=, *this]() {
-          m_allOfResultsView(myRowIndex) = result;
+          m_allOfResultsTensor(myRowIndex) = result;
         });
         break;
       }
@@ -77,22 +77,22 @@ struct TestFunctorA {
 template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
   /* description:
-     use a rank-2 view randomly filled with values,
+     use a rank-2 tensor randomly filled with values,
      and run a team-level all_of
    */
 
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range.
   constexpr ValueType lowerBound = 5;
   constexpr ValueType upperBound = 523;
   const auto bounds              = make_bounds(lowerBound, upperBound);
 
-  auto [dataView, dataViewBeforeOp_h] = create_random_view_and_host_clone(
-      LayoutTag{}, numTeams, numCols, bounds, "dataView");
+  auto [dataTensor, dataTensorBeforeOp_h] = create_random_tensor_and_host_clone(
+      LayoutTag{}, numTeams, numCols, bounds, "dataTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -102,24 +102,24 @@ void test_A(std::size_t numTeams, std::size_t numCols, int apiId) {
 
   // to verify that things work, each team stores the result of its all_of call,
   // and then we check that these match what we expect
-  flare::View<bool*> allOfResultsView("allOfResultsView", numTeams);
+  flare::Tensor<bool*> allOfResultsTensor("allOfResultsTensor", numTeams);
 
   GreaterThanValueFunctor unaryPred{lowerBound - 1};
 
   // use CTAD for functor
-  TestFunctorA fnc(dataView, allOfResultsView, apiId, unaryPred);
+  TestFunctorA fnc(dataTensor, allOfResultsTensor, apiId, unaryPred);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // run cpp-std kernel and check
   // -----------------------------------------------
-  auto allOfResultsView_h = create_host_space_copy(allOfResultsView);
+  auto allOfResultsTensor_h = create_host_space_copy(allOfResultsTensor);
 
-  for (std::size_t i = 0; i < dataView.extent(0); ++i) {
-    auto rowFrom = flare::subview(dataViewBeforeOp_h, i, flare::ALL());
+  for (std::size_t i = 0; i < dataTensor.extent(0); ++i) {
+    auto rowFrom = flare::subtensor(dataTensorBeforeOp_h, i, flare::ALL());
     const bool result =
         std::all_of(KE::cbegin(rowFrom), KE::cend(rowFrom), unaryPred);
-    REQUIRE_EQ(result, allOfResultsView_h(i));
+    REQUIRE_EQ(result, allOfResultsTensor_h(i));
   }
 }
 

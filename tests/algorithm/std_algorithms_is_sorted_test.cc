@@ -22,15 +22,15 @@ namespace IsSorted {
 
 namespace KE = flare::experimental;
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type = typename ViewType::value_type;
-  using exe_space  = typename ViewType::execution_space;
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type = typename TensorType::value_type;
+  using exe_space  = typename TensorType::execution_space;
 
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -94,9 +94,9 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
 bool compute_gold(const std::string& name) {
@@ -128,21 +128,21 @@ bool compute_gold(const std::string& name) {
 template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
 
-  // std::cout << "is-sorted: " << name << ", " << view_tag_to_string(Tag{})
+  // std::cout << "is-sorted: " << name << ", " << tensor_tag_to_string(Tag{})
   //           << std::endl;
 
-  auto view = create_view<ValueType>(Tag{}, view_ext, "is_sorted");
-  fill_view(view, name);
+  auto tensor = create_tensor<ValueType>(Tag{}, tensor_ext, "is_sorted");
+  fill_tensor(tensor, name);
   const auto gold = compute_gold(name);
 
   std::vector<bool> resultsA(4);
-  resultsA[0] = KE::is_sorted(exespace(), KE::cbegin(view), KE::cend(view));
+  resultsA[0] = KE::is_sorted(exespace(), KE::cbegin(tensor), KE::cend(tensor));
   resultsA[1] =
-      KE::is_sorted("label", exespace(), KE::cbegin(view), KE::cend(view));
-  resultsA[2]     = KE::is_sorted(exespace(), view);
-  resultsA[3]     = KE::is_sorted("label", exespace(), view);
+      KE::is_sorted("label", exespace(), KE::cbegin(tensor), KE::cend(tensor));
+  resultsA[2]     = KE::is_sorted(exespace(), tensor);
+  resultsA[3]     = KE::is_sorted("label", exespace(), tensor);
   const auto allA = std::all_of(resultsA.cbegin(), resultsA.cend(),
                                 [=](bool v) { return v == gold; });
   REQUIRE(allA);
@@ -150,11 +150,11 @@ void run_single_scenario(const InfoType& scenario_info) {
   CustomLessThanComparator<ValueType, ValueType> comp;
   std::vector<bool> resultsB(4);
   resultsB[0] =
-      KE::is_sorted(exespace(), KE::cbegin(view), KE::cend(view), comp);
-  resultsB[1]     = KE::is_sorted("label", exespace(), KE::cbegin(view),
-                              KE::cend(view), comp);
-  resultsB[2]     = KE::is_sorted(exespace(), view, comp);
-  resultsB[3]     = KE::is_sorted("label", exespace(), view, comp);
+      KE::is_sorted(exespace(), KE::cbegin(tensor), KE::cend(tensor), comp);
+  resultsB[1]     = KE::is_sorted("label", exespace(), KE::cbegin(tensor),
+                              KE::cend(tensor), comp);
+  resultsB[2]     = KE::is_sorted(exespace(), tensor, comp);
+  resultsB[3]     = KE::is_sorted("label", exespace(), tensor, comp);
   const auto allB = std::all_of(resultsB.cbegin(), resultsB.cend(),
                                 [=](bool v) { return v == gold; });
   REQUIRE(allB);
@@ -170,7 +170,7 @@ void run_is_sorted_all_scenarios() {
       {"medium-a", 1003},    {"medium-b", 1003}, {"large-a", 101513},
       {"large-b", 101513}};
 
-  std::cout << "is_sorted: " << view_tag_to_string(Tag{})
+  std::cout << "is_sorted: " << tensor_tag_to_string(Tag{})
             << ", all overloads \n";
 
   for (const auto& it : scenarios) {

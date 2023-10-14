@@ -24,14 +24,14 @@ namespace Test {
 
 template <class ExecSpace>
 struct TestComplexConstruction {
-  flare::View<flare::complex<double> *, ExecSpace> d_results;
-  typename flare::View<flare::complex<double> *, ExecSpace>::HostMirror
+  flare::Tensor<flare::complex<double> *, ExecSpace> d_results;
+  typename flare::Tensor<flare::complex<double> *, ExecSpace>::HostMirror
       h_results;
 
   void testit() {
-    d_results = flare::View<flare::complex<double> *, ExecSpace>(
+    d_results = flare::Tensor<flare::complex<double> *, ExecSpace>(
         "TestComplexConstruction", 10);
-    h_results = flare::create_mirror_view(d_results);
+    h_results = flare::create_mirror_tensor(d_results);
 
     flare::parallel_for(flare::RangePolicy<ExecSpace>(0, 1), *this);
     flare::fence();
@@ -105,14 +105,14 @@ TEST_CASE("TEST_CATEGORY, complex_construction") {
 
 template <class ExecSpace>
 struct TestComplexBasicMath {
-  flare::View<flare::complex<double> *, ExecSpace> d_results;
-  typename flare::View<flare::complex<double> *, ExecSpace>::HostMirror
+  flare::Tensor<flare::complex<double> *, ExecSpace> d_results;
+  typename flare::Tensor<flare::complex<double> *, ExecSpace>::HostMirror
       h_results;
 
   void testit() {
-    d_results = flare::View<flare::complex<double> *, ExecSpace>(
+    d_results = flare::Tensor<flare::complex<double> *, ExecSpace>(
         "TestComplexBasicMath", 24);
-    h_results = flare::create_mirror_view(d_results);
+    h_results = flare::create_mirror_tensor(d_results);
 
     flare::parallel_for(flare::RangePolicy<ExecSpace>(0, 1), *this);
     flare::fence();
@@ -253,14 +253,14 @@ TEST_CASE("TEST_CATEGORY, complex_basic_math") {
 
 template <class ExecSpace>
 struct TestComplexSpecialFunctions {
-  flare::View<flare::complex<double> *, ExecSpace> d_results;
-  typename flare::View<flare::complex<double> *, ExecSpace>::HostMirror
+  flare::Tensor<flare::complex<double> *, ExecSpace> d_results;
+  typename flare::Tensor<flare::complex<double> *, ExecSpace>::HostMirror
       h_results;
 
   void testit() {
-    d_results = flare::View<flare::complex<double> *, ExecSpace>(
+    d_results = flare::Tensor<flare::complex<double> *, ExecSpace>(
         "TestComplexSpecialFunctions", 20);
-    h_results = flare::create_mirror_view(d_results);
+    h_results = flare::create_mirror_tensor(d_results);
 
     flare::parallel_for(flare::RangePolicy<ExecSpace>(0, 1), *this);
     flare::fence();
@@ -399,19 +399,19 @@ TEST_CASE("TEST_CATEGORY, complex_trivially_copyable") {
 
 template <class ExecSpace>
 struct TestBugPowAndLogComplex {
-  flare::View<flare::complex<double> *, ExecSpace> d_pow;
-  flare::View<flare::complex<double> *, ExecSpace> d_log;
+  flare::Tensor<flare::complex<double> *, ExecSpace> d_pow;
+  flare::Tensor<flare::complex<double> *, ExecSpace> d_log;
   TestBugPowAndLogComplex() : d_pow("pow", 2), d_log("log", 2) { test(); }
   void test() {
     flare::parallel_for(flare::RangePolicy<ExecSpace>(0, 1), *this);
     auto h_pow =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), d_pow);
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), d_pow);
     REQUIRE_EQ(h_pow(0).real(), 18);
     REQUIRE_EQ(h_pow(0).imag(), 26);
     REQUIRE_EQ(h_pow(1).real(), -18);
     REQUIRE_EQ(h_pow(1).imag(), 26);
     auto h_log =
-        flare::create_mirror_view_and_copy(flare::HostSpace(), d_log);
+        flare::create_mirror_tensor_and_copy(flare::HostSpace(), d_log);
     REQUIRE_EQ(h_log(0).real(), 1.151292546497023);
     REQUIRE_EQ(h_log(0).imag(), 0.3217505543966422);
     REQUIRE_EQ(h_log(1).real(), 1.151292546497023);

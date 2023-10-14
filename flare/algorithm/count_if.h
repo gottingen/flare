@@ -52,12 +52,12 @@ template <
     class ExecutionSpace, class DataType, class... Properties, class Predicate,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto count_if(const ExecutionSpace& ex,
-              const ::flare::View<DataType, Properties...>& v,
+              const ::flare::Tensor<DataType, Properties...>& v,
               Predicate predicate) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
   namespace KE = ::flare::experimental;
-  return detail::count_if_exespace_impl("flare::count_if_view_api_default", ex,
+  return detail::count_if_exespace_impl("flare::count_if_tensor_api_default", ex,
                                       KE::cbegin(v), KE::cend(v),
                                       std::move(predicate));
 }
@@ -66,7 +66,7 @@ template <
     class ExecutionSpace, class DataType, class... Properties, class Predicate,
     std::enable_if_t<flare::is_execution_space_v<ExecutionSpace>, int> = 0>
 auto count_if(const std::string& label, const ExecutionSpace& ex,
-              const ::flare::View<DataType, Properties...>& v,
+              const ::flare::Tensor<DataType, Properties...>& v,
               Predicate predicate) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 
@@ -91,7 +91,7 @@ template <class TeamHandleType, class DataType, class... Properties,
           class Predicate,
           std::enable_if_t<flare::is_team_handle_v<TeamHandleType>, int> = 0>
 FLARE_FUNCTION auto count_if(const TeamHandleType& teamHandle,
-                              const ::flare::View<DataType, Properties...>& v,
+                              const ::flare::Tensor<DataType, Properties...>& v,
                               Predicate predicate) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(v);
 

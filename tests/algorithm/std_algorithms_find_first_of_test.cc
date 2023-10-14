@@ -37,14 +37,14 @@ struct UnifDist<int> {
   int operator()() { return m_dist(m_gen); }
 };
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -131,27 +131,27 @@ void fill_view(ViewType dest_view, const std::string& name) {
     }
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewType>
-auto create_seq_for_find_first_of(ViewType data_view, std::size_t seq_extent) {
-  (void)data_view;
-  using value_type = typename ViewType::value_type;
-  using exe_space  = typename ViewType::execution_space;
-  using seq_view_t = flare::View<value_type*, exe_space>;
-  seq_view_t seq_view("seq_view", seq_extent);
-  auto seq_view_h = create_mirror_view(flare::HostSpace(), seq_view);
+template <class TensorType>
+auto create_seq_for_find_first_of(TensorType data_tensor, std::size_t seq_extent) {
+  (void)data_tensor;
+  using value_type = typename TensorType::value_type;
+  using exe_space  = typename TensorType::execution_space;
+  using seq_tensor_t = flare::Tensor<value_type*, exe_space>;
+  seq_tensor_t seq_tensor("seq_tensor", seq_extent);
+  auto seq_tensor_h = create_mirror_tensor(flare::HostSpace(), seq_tensor);
 
   UnifDist<value_type> randObj(-10, -10);
   for (std::size_t i = 0; i < seq_extent; ++i) {
-    seq_view_h(i) = randObj();
+    seq_tensor_h(i) = randObj();
   }
 
-  flare::deep_copy(seq_view, seq_view_h);
-  return seq_view;
+  flare::deep_copy(seq_tensor, seq_tensor_h);
+  return seq_tensor;
 }
 
 std::string value_type_to_string(int) { return "int"; }
@@ -161,7 +161,7 @@ template <class Tag, class ValueType>
 void print_scenario_details(const std::string& name, std::size_t seq_ext) {
   std::cout << "find_first_of: default predicate: " << name << ", "
             << "seach_seq_ext = " << seq_ext << ", "
-            << view_tag_to_string(Tag{}) << " "
+            << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << std::endl;
 }
 
@@ -171,7 +171,7 @@ void print_scenario_details(const std::string& name, std::size_t seq_ext,
   (void)pred;
   std::cout << "find_first_of: custom  predicate: " << name << ", "
             << "seach_seq_ext = " << seq_ext << ", "
-            << view_tag_to_string(Tag{}) << " "
+            << tensor_tag_to_string(Tag{}) << " "
             << value_type_to_string(ValueType()) << std::endl;
 }
 
@@ -179,50 +179,50 @@ template <class Tag, class ValueType, class InfoType, class... Args>
 void run_single_scenario(const InfoType& scenario_info, std::size_t seq_ext,
                          Args... args) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // print_scenario_details<Tag, ValueType>(name, seq_ext, args...);
 
-  auto view =
-      create_view<ValueType>(Tag{}, view_ext, "find_first_of_test_view");
-  fill_view(view, name);
-  auto s_view = create_seq_for_find_first_of(view, seq_ext);
+  auto tensor =
+      create_tensor<ValueType>(Tag{}, tensor_ext, "find_first_of_test_tensor");
+  fill_tensor(tensor, name);
+  auto s_tensor = create_seq_for_find_first_of(tensor, seq_ext);
 
   // run std
-  auto view_h   = create_host_space_copy(view);
-  auto s_view_h = create_host_space_copy(s_view);
+  auto tensor_h   = create_host_space_copy(tensor);
+  auto s_tensor_h = create_host_space_copy(s_tensor);
   auto stdrit =
-      std::find_first_of(KE::cbegin(view_h), KE::cend(view_h),
-                         KE::cbegin(s_view_h), KE::cend(s_view_h), args...);
+      std::find_first_of(KE::cbegin(tensor_h), KE::cend(tensor_h),
+                         KE::cbegin(s_tensor_h), KE::cend(s_tensor_h), args...);
 
   {
     auto myrit =
-        KE::find_first_of(exespace(), KE::cbegin(view), KE::cend(view),
-                          KE::cbegin(s_view), KE::cend(s_view), args...);
-    const auto mydiff  = myrit - KE::cbegin(view);
-    const auto stddiff = stdrit - KE::cbegin(view_h);
+        KE::find_first_of(exespace(), KE::cbegin(tensor), KE::cend(tensor),
+                          KE::cbegin(s_tensor), KE::cend(s_tensor), args...);
+    const auto mydiff  = myrit - KE::cbegin(tensor);
+    const auto stddiff = stdrit - KE::cbegin(tensor_h);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
   {
     auto myrit =
-        KE::find_first_of("label", exespace(), KE::cbegin(view), KE::cend(view),
-                          KE::cbegin(s_view), KE::cend(s_view), args...);
-    const auto mydiff  = myrit - KE::cbegin(view);
-    const auto stddiff = stdrit - KE::cbegin(view_h);
+        KE::find_first_of("label", exespace(), KE::cbegin(tensor), KE::cend(tensor),
+                          KE::cbegin(s_tensor), KE::cend(s_tensor), args...);
+    const auto mydiff  = myrit - KE::cbegin(tensor);
+    const auto stddiff = stdrit - KE::cbegin(tensor_h);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
   {
-    auto myrit         = KE::find_first_of(exespace(), view, s_view, args...);
-    const auto mydiff  = myrit - KE::begin(view);
-    const auto stddiff = stdrit - KE::cbegin(view_h);
+    auto myrit         = KE::find_first_of(exespace(), tensor, s_tensor, args...);
+    const auto mydiff  = myrit - KE::begin(tensor);
+    const auto stddiff = stdrit - KE::cbegin(tensor_h);
     REQUIRE_EQ(mydiff, stddiff);
   }
 
   {
-    auto myrit = KE::find_first_of("label", exespace(), view, s_view, args...);
-    const auto mydiff  = myrit - KE::begin(view);
-    const auto stddiff = stdrit - KE::cbegin(view_h);
+    auto myrit = KE::find_first_of("label", exespace(), tensor, s_tensor, args...);
+    const auto mydiff  = myrit - KE::begin(tensor);
+    const auto stddiff = stdrit - KE::cbegin(tensor_h);
     REQUIRE_EQ(mydiff, stddiff);
   }
 

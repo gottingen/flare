@@ -28,8 +28,8 @@ namespace flare::blas::detail {
 
     /// \brief Iamax functor for single vectors.
     ///
-    /// \tparam RV 0-D output View
-    /// \tparam XV 1-D input View
+    /// \tparam RV 0-D output Tensor
+    /// \tparam XV 1-D input Tensor
     /// \tparam MagType Magnitude type
     /// \tparam SizeType Index type.  Use int (32 bits) if possible.
     template <class RV, class XV, class MagType,
@@ -44,12 +44,12 @@ namespace flare::blas::detail {
         typename XV::const_type m_x;
 
         V_Iamax_Functor(const XV& x) : m_x(x) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::blas::detail::V_Iamax_Functor: "
-                          "R is not a flare::View.");
-            static_assert(flare::is_view<XV>::value,
+                          "R is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XV>::value,
                           "flare::blas::detail::V_Iamax_Functor: "
-                          "X is not a flare::View.");
+                          "X is not a flare::Tensor.");
             static_assert(std::is_same<typename RV::value_type,
                                   typename RV::non_const_value_type>::value,
                           "flare::blas::detail::V_Iamax_Functor: R is const.  "
@@ -81,7 +81,7 @@ namespace flare::blas::detail {
 
     /// \brief Find the index of the element with the maximum magnitude of the
     /// single vector (1-D
-    ///   View) X, and store the result in the 0-D View r.
+    ///   Tensor) X, and store the result in the 0-D Tensor r.
     template <class execution_space, class RV, class XV, class SizeType>
     void V_Iamax_Invoke(const execution_space& space, const RV& r, const XV& X) {
         using AT       = flare::ArithTraits<typename XV::non_const_value_type>;
@@ -89,7 +89,7 @@ namespace flare::blas::detail {
 
         const SizeType numRows = static_cast<SizeType>(X.extent(0));
 
-        // Avoid MaxLoc Reduction if this is a zero length view
+        // Avoid MaxLoc Reduction if this is a zero length tensor
         if (numRows == 0) {
             flare::deep_copy(space, r, 0u);
             return;
@@ -104,12 +104,12 @@ namespace flare::blas::detail {
 
     /// \brief Find the index of the element with the maximum magnitude of the
     /// columns of the
-    ///   multivector (2-D View) X, and store result(s) in the 1-D View r.
+    ///   multivector (2-D Tensor) X, and store result(s) in the 1-D Tensor r.
     template <class execution_space, class RV, class XMV, class SizeType>
     void MV_Iamax_Invoke(const execution_space& space, const RV& r, const XMV& X) {
         for (size_t i = 0; i < X.extent(1); i++) {
-            auto ri = flare::subview(r, i);
-            auto Xi = flare::subview(X, flare::ALL(), i);
+            auto ri = flare::subtensor(r, i);
+            auto Xi = flare::subtensor(X, flare::ALL(), i);
             V_Iamax_Invoke<execution_space, decltype(ri), decltype(Xi), SizeType>(
                     space, ri, Xi);
         }
@@ -127,12 +127,12 @@ namespace flare::blas::detail {
         typedef typename XMV::size_type size_type;
 
         static void iamax(const execution_space& space, const RMV& R, const XMV& X) {
-            static_assert(flare::is_view<RMV>::value,
+            static_assert(flare::is_tensor<RMV>::value,
                           "flare::blas::detail::"
-                          "Iamax<1-D>: RMV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Iamax<1-D>: RMV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Iamax<1-D>: XMV is not a flare::View.");
+                          "Iamax<1-D>: XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 0,
                           "flare::blas::detail::Iamax<1-D>: "
                           "RMV is not rank 0.");
@@ -157,12 +157,12 @@ namespace flare::blas::detail {
         typedef typename XMV::size_type size_type;
 
         static void iamax(const execution_space& space, const RV& R, const XMV& X) {
-            static_assert(flare::is_view<RV>::value,
+            static_assert(flare::is_tensor<RV>::value,
                           "flare::blas::detail::"
-                          "Iamax<2-D>: RV is not a flare::View.");
-            static_assert(flare::is_view<XMV>::value,
+                          "Iamax<2-D>: RV is not a flare::Tensor.");
+            static_assert(flare::is_tensor<XMV>::value,
                           "flare::blas::detail::"
-                          "Iamax<2-D>: XMV is not a flare::View.");
+                          "Iamax<2-D>: XMV is not a flare::Tensor.");
             static_assert(RV::rank == 1,
                           "flare::blas::detail::Iamax<2-D>: "
                           "RV is not rank 1.");
@@ -194,17 +194,17 @@ namespace flare::blas::detail {
                                               EXEC_SPACE, MEM_SPACE)          \
   template struct Iamax<                                                      \
       EXEC_SPACE,                                                             \
-      flare::View<INDEX_TYPE, LAYOUT, flare::HostSpace,                     \
+      flare::Tensor<INDEX_TYPE, LAYOUT, flare::HostSpace,                     \
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
-      flare::View<const SCALAR*, LAYOUT,                                     \
+      flare::Tensor<const SCALAR*, LAYOUT,                                     \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                     \
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
       1>;                                                                    \
   template struct Iamax<                                                      \
       EXEC_SPACE,                                                             \
-      flare::View<INDEX_TYPE, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<INDEX_TYPE, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
-      flare::View<const SCALAR*, LAYOUT,                                     \
+      flare::Tensor<const SCALAR*, LAYOUT,                                     \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                     \
                    flare::MemoryTraits<flare::Unmanaged> >,                 \
       1>;
@@ -227,17 +227,17 @@ namespace flare::blas::detail {
                                                  EXEC_SPACE, MEM_SPACE)        \
   template struct Iamax<                                                       \
       EXEC_SPACE,                                                              \
-      flare::View<INDEX_TYPE*, LAYOUT, flare::HostSpace,                     \
+      flare::Tensor<INDEX_TYPE*, LAYOUT, flare::HostSpace,                     \
                    flare::MemoryTraits<flare::Unmanaged> >,                  \
-      flare::View<const SCALAR**, LAYOUT,                                     \
+      flare::Tensor<const SCALAR**, LAYOUT,                                     \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                      \
                    flare::MemoryTraits<flare::Unmanaged> >,                  \
       2>;                                                         \
   template struct Iamax<                                                       \
       EXEC_SPACE,                                                              \
-      flare::View<INDEX_TYPE*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
+      flare::Tensor<INDEX_TYPE*, LAYOUT, flare::Device<EXEC_SPACE, MEM_SPACE>, \
                    flare::MemoryTraits<flare::Unmanaged> >,                  \
-      flare::View<const SCALAR**, LAYOUT,                                     \
+      flare::Tensor<const SCALAR**, LAYOUT,                                     \
                    flare::Device<EXEC_SPACE, MEM_SPACE>,                      \
                    flare::MemoryTraits<flare::Unmanaged> >,                  \
       2>;

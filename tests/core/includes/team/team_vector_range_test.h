@@ -139,15 +139,15 @@ struct functor_teamvector_for {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
   functor_teamvector_for(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_int =
-      flare::View<Scalar*, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar*, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int /*team_size*/) const {
     return shared_int::shmem_size(131);
   }
@@ -208,15 +208,15 @@ struct functor_teamvector_reduce {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
   functor_teamvector_reduce(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_scalar_t =
-      flare::View<Scalar*, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar*, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int team_size) const {
     return shared_scalar_t::shmem_size(team_size * 13);
   }
@@ -290,15 +290,15 @@ struct functor_teamvector_reduce_reducer {
   using policy_type     = flare::TeamPolicy<ExecutionSpace>;
   using execution_space = ExecutionSpace;
 
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> flag;
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag;
 
   functor_teamvector_reduce_reducer(
-      flare::View<int, flare::LayoutLeft, ExecutionSpace> flag_)
+      flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> flag_)
       : flag(flag_) {}
 
   using shmem_space = typename ExecutionSpace::scratch_memory_space;
   using shared_scalar_t =
-      flare::View<Scalar*, shmem_space, flare::MemoryUnmanaged>;
+      flare::Tensor<Scalar*, shmem_space, flare::MemoryUnmanaged>;
   unsigned team_shmem_size(int team_size) const {
     return shared_scalar_t::shmem_size(team_size * 13);
   }
@@ -354,8 +354,8 @@ struct functor_teamvector_reduce_reducer {
 
 template <typename Scalar, class ExecutionSpace>
 bool test_scalar(int nteams, int team_size, int test) {
-  flare::View<int, flare::LayoutLeft, ExecutionSpace> d_flag("flag");
-  typename flare::View<int, flare::LayoutLeft, ExecutionSpace>::HostMirror
+  flare::Tensor<int, flare::LayoutLeft, ExecutionSpace> d_flag("flag");
+  typename flare::Tensor<int, flare::LayoutLeft, ExecutionSpace>::HostMirror
       h_flag("h_flag");
   h_flag() = 0;
   flare::deep_copy(d_flag, h_flag);

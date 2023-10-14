@@ -22,7 +22,7 @@
 namespace {
     void test_mdspan_minimal_functional() {
         int N = 100;
-        flare::View<int *, TEST_EXECSPACE> a("A", N);
+        flare::Tensor<int *, TEST_EXECSPACE> a("A", N);
         flare::parallel_for(
                 "FillSequence", flare::RangePolicy<TEST_EXECSPACE>(0, N),
                 FLARE_LAMBDA(int i) { a(i) = i; });

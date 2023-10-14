@@ -852,18 +852,18 @@ class ParallelReduce<CombinedFunctorReducerType,
     }
   }
 
-  template <class ViewType>
+  template <class TensorType>
   ParallelReduce(const CombinedFunctorReducerType& arg_functor_reducer,
-                 const Policy& arg_policy, const ViewType& arg_result)
+                 const Policy& arg_policy, const TensorType& arg_result)
       : m_functor_reducer(arg_functor_reducer),
         m_policy(arg_policy),
         m_result_ptr(arg_result.data()),
         m_result_ptr_device_accessible(
             MemorySpaceAccess<flare::CudaSpace,
-                              typename ViewType::memory_space>::accessible),
+                              typename TensorType::memory_space>::accessible),
         m_result_ptr_host_accessible(
             MemorySpaceAccess<flare::HostSpace,
-                              typename ViewType::memory_space>::accessible),
+                              typename TensorType::memory_space>::accessible),
         m_scratch_space(nullptr),
         m_scratch_flags(nullptr),
         m_unified_space(nullptr),

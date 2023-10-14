@@ -74,9 +74,9 @@ carbin_cc_test(
 )
 
 carbin_cc_test(
-        NAME cuda_reducer_view_size_limit_test
+        NAME cuda_reducer_tensor_size_limit_test
         SOURCES
-        cuda_reducer_view_size_limit_test.cu
+        cuda_reducer_tensor_size_limit_test.cu
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
@@ -123,7 +123,7 @@ carbin_cc_test(
         atomic_operations_unsignedint_test.cu
         atomic_operations_unsignedlongint_test.cu
         atomic_test.cu
-        atomic_view_test.cu
+        atomic_tensor_test.cu
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
@@ -194,7 +194,7 @@ carbin_cc_test(
         reducers_c_test.cu
         reducers_d_test.cu
         reducers_e_test.cu
-        reductions_device_view_test.cu
+        reductions_device_tensor_test.cu
         reductions_test.cu
         shared_alloc_test.cu
         ${TEST_MAIN_SRC}
@@ -206,25 +206,25 @@ carbin_cc_test(
 )
 
 carbin_cc_test(
-        NAME cuda_view_api_test
+        NAME cuda_tensor_api_test
         SOURCES
-        view_64bit_test.cu
-        view_api_a_test.cu
-        view_api_b_test.cu
-        view_api_c_test.cu
-        view_api_d_test.cu
-        view_api_e_test.cu
-        view_copy_a_test.cu
-        view_copy_b_test.cu
-        view_hooks_test.cu
-        #view_layout_stride_assignment_test.cu
-        view_mapping_a_test.cu
-        view_mapping_b_test.cu
-        view_mapping_subview_test.cu
-        #view_memory_access_violation_test.cu
-        view_of_class_test.cu
-        view_resize_test.cu
-        view_subview_test.cu
+        tensor_64bit_test.cu
+        tensor_api_a_test.cu
+        tensor_api_b_test.cu
+        tensor_api_c_test.cu
+        tensor_api_d_test.cu
+        tensor_api_e_test.cu
+        tensor_copy_a_test.cu
+        tensor_copy_b_test.cu
+        tensor_hooks_test.cu
+        #tensor_layout_stride_assignment_test.cu
+        tensor_mapping_a_test.cu
+        tensor_mapping_b_test.cu
+        tensor_mapping_subtensor_test.cu
+        #tensor_memory_access_violation_test.cu
+        tensor_of_class_test.cu
+        tensor_resize_test.cu
+        tensor_subtensor_test.cu
         without_initializing_test.cu
         work_graph_test.cu
         ${TEST_MAIN_SRC}
@@ -236,24 +236,24 @@ carbin_cc_test(
 )
 
 carbin_cc_test(
-        NAME cuda_subview_test
+        NAME cuda_subtensor_test
         SOURCES
-        subview_01_test.cu
-        subview_02_test.cu
-        subview_03_test.cu
-        subview_04_test.cu
-        subview_05_test.cu
-        subview_06_test.cu
-        subview_07_test.cu
-        subview_08_test.cu
-        subview_09_test.cu
-        subview_10_test.cu
-        subview_11_test.cu
-        subview_12_test.cu
-        subview_13_test.cu
-        subview_14_test.cu
-        subview_a_test.cu
-        subview_b_test.cu
+        subtensor_01_test.cu
+        subtensor_02_test.cu
+        subtensor_03_test.cu
+        subtensor_04_test.cu
+        subtensor_05_test.cu
+        subtensor_06_test.cu
+        subtensor_07_test.cu
+        subtensor_08_test.cu
+        subtensor_09_test.cu
+        subtensor_10_test.cu
+        subtensor_11_test.cu
+        subtensor_12_test.cu
+        subtensor_13_test.cu
+        subtensor_14_test.cu
+        subtensor_a_test.cu
+        subtensor_b_test.cu
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}

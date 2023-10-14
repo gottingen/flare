@@ -33,7 +33,7 @@ namespace Test {
             using mag_type = typename flare::ArithTraits<scalar_type>::mag_type;
 
             // Note that Xref and Yref need to always be copies of X and Y
-            // hence the use of create_mirror instead of create_mirror_view.
+            // hence the use of create_mirror instead of create_mirror_tensor.
             vector_type X("X", vector_length), Y("Y", vector_length);
             typename vector_type::HostMirror Xref = flare::create_mirror(Y);
             typename vector_type::HostMirror Yref = flare::create_mirror(X);
@@ -50,8 +50,8 @@ namespace Test {
             flare::blas::swap(X, Y);
             flare::fence();
 
-            typename vector_type::HostMirror Xtest = flare::create_mirror_view(X);
-            typename vector_type::HostMirror Ytest = flare::create_mirror_view(Y);
+            typename vector_type::HostMirror Xtest = flare::create_mirror_tensor(X);
+            typename vector_type::HostMirror Ytest = flare::create_mirror_tensor(Y);
             flare::deep_copy(Xtest, X);
             flare::deep_copy(Ytest, Y);
 
@@ -67,7 +67,7 @@ namespace Test {
 
 template<class scalar_type, class execution_space>
 int test_swap() {
-    using Vector = flare::View<scalar_type *, execution_space>;
+    using Vector = flare::Tensor<scalar_type *, execution_space>;
 
     Test::Impl::test_swap<Vector>(0);
     Test::Impl::test_swap<Vector>(10);

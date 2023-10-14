@@ -144,7 +144,7 @@ namespace TestMemoryPool {
 
     template<class DeviceType>
     struct TestMemoryPool_Functor {
-        using ptrs_type = flare::View<uintptr_t *, DeviceType>;
+        using ptrs_type = flare::Tensor<uintptr_t *, DeviceType>;
         using pool_type = flare::MemoryPool<DeviceType>;
 
         pool_type pool;
@@ -334,7 +334,7 @@ namespace TestMemoryPool {
 
     template<class DeviceType>
     struct TestMemoryPoolCorners {
-        using ptrs_type = flare::View<uintptr_t *, DeviceType>;
+        using ptrs_type = flare::Tensor<uintptr_t *, DeviceType>;
         using pool_type = flare::MemoryPool<DeviceType>;
 
         pool_type pool;
@@ -464,7 +464,7 @@ namespace TestMemoryPool {
             DeviceType,
             std::enable_if_t<std::is_same<flare::HostSpace,
                     typename DeviceType::memory_space>::value>> {
-        using ptrs_type = flare::View<uintptr_t *, DeviceType>;
+        using ptrs_type = flare::Tensor<uintptr_t *, DeviceType>;
         using pool_type = flare::MemoryPool<DeviceType>;
         using memory_space = typename DeviceType::memory_space;
 

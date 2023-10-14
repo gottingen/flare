@@ -14,54 +14,54 @@
 //
 
 #include <flare/core.h>
-#include <flare/dual_view.h>
-#include <flare/dyn_rank_view.h>
-#include <flare/dynamic_view.h>
-#include <flare/offset_view.h>
-#include <flare/scatter_view.h>
+#include <flare/dual_tensor.h>
+#include <flare/dyn_rank_tensor.h>
+#include <flare/dynamic_tensor.h>
+#include <flare/offset_tensor.h>
+#include <flare/scatter_tensor.h>
 
 namespace {
 
-using view_t          = flare::View<int*>;
-using dual_view_t     = flare::DualView<int*>;
-using dyn_rank_view_t = flare::DynRankView<int*>;
-using dynamic_view_t  = flare::experimental::DynamicView<int*>;
-using offset_view_t   = flare::experimental::OffsetView<int*>;
-using scatter_view_t  = flare::experimental::ScatterView<int*>;
+using tensor_t          = flare::Tensor<int*>;
+using dual_tensor_t     = flare::DualTensor<int*>;
+using dyn_rank_tensor_t = flare::DynRankTensor<int*>;
+using dynamic_tensor_t  = flare::experimental::DynamicTensor<int*>;
+using offset_tensor_t   = flare::experimental::OffsetTensor<int*>;
+using scatter_tensor_t  = flare::experimental::ScatterTensor<int*>;
 
-static_assert(flare::is_dual_view_v<dual_view_t>);
-static_assert(!flare::is_dyn_rank_view_v<dual_view_t>);
-static_assert(!flare::is_dynamic_view_v<dual_view_t>);
-static_assert(!flare::experimental::is_offset_view_v<dual_view_t>);
-static_assert(!flare::experimental::is_scatter_view_v<dual_view_t>);
-static_assert(!flare::is_view_v<dual_view_t>);
+static_assert(flare::is_dual_tensor_v<dual_tensor_t>);
+static_assert(!flare::is_dyn_rank_tensor_v<dual_tensor_t>);
+static_assert(!flare::is_dynamic_tensor_v<dual_tensor_t>);
+static_assert(!flare::experimental::is_offset_tensor_v<dual_tensor_t>);
+static_assert(!flare::experimental::is_scatter_tensor_v<dual_tensor_t>);
+static_assert(!flare::is_tensor_v<dual_tensor_t>);
 
-static_assert(!flare::is_dual_view_v<dyn_rank_view_t>);
-static_assert(flare::is_dyn_rank_view_v<dyn_rank_view_t>);
-static_assert(!flare::is_dynamic_view_v<dyn_rank_view_t>);
-static_assert(!flare::experimental::is_offset_view_v<dyn_rank_view_t>);
-static_assert(!flare::experimental::is_scatter_view_v<dyn_rank_view_t>);
-static_assert(!flare::is_view_v<dyn_rank_view_t>);
+static_assert(!flare::is_dual_tensor_v<dyn_rank_tensor_t>);
+static_assert(flare::is_dyn_rank_tensor_v<dyn_rank_tensor_t>);
+static_assert(!flare::is_dynamic_tensor_v<dyn_rank_tensor_t>);
+static_assert(!flare::experimental::is_offset_tensor_v<dyn_rank_tensor_t>);
+static_assert(!flare::experimental::is_scatter_tensor_v<dyn_rank_tensor_t>);
+static_assert(!flare::is_tensor_v<dyn_rank_tensor_t>);
 
-static_assert(!flare::is_dual_view_v<dynamic_view_t>);
-static_assert(!flare::is_dyn_rank_view_v<dynamic_view_t>);
-static_assert(flare::is_dynamic_view_v<dynamic_view_t>);
-static_assert(!flare::experimental::is_offset_view_v<dynamic_view_t>);
-static_assert(!flare::experimental::is_scatter_view_v<dynamic_view_t>);
-static_assert(!flare::is_view_v<dynamic_view_t>);
+static_assert(!flare::is_dual_tensor_v<dynamic_tensor_t>);
+static_assert(!flare::is_dyn_rank_tensor_v<dynamic_tensor_t>);
+static_assert(flare::is_dynamic_tensor_v<dynamic_tensor_t>);
+static_assert(!flare::experimental::is_offset_tensor_v<dynamic_tensor_t>);
+static_assert(!flare::experimental::is_scatter_tensor_v<dynamic_tensor_t>);
+static_assert(!flare::is_tensor_v<dynamic_tensor_t>);
 
-static_assert(!flare::is_dual_view_v<offset_view_t>);
-static_assert(!flare::is_dyn_rank_view_v<offset_view_t>);
-static_assert(!flare::is_dynamic_view_v<offset_view_t>);
-static_assert(flare::experimental::is_offset_view_v<offset_view_t>);
-static_assert(!flare::experimental::is_scatter_view_v<offset_view_t>);
-static_assert(!flare::is_view_v<offset_view_t>);
+static_assert(!flare::is_dual_tensor_v<offset_tensor_t>);
+static_assert(!flare::is_dyn_rank_tensor_v<offset_tensor_t>);
+static_assert(!flare::is_dynamic_tensor_v<offset_tensor_t>);
+static_assert(flare::experimental::is_offset_tensor_v<offset_tensor_t>);
+static_assert(!flare::experimental::is_scatter_tensor_v<offset_tensor_t>);
+static_assert(!flare::is_tensor_v<offset_tensor_t>);
 
-static_assert(!flare::is_dual_view_v<scatter_view_t>);
-static_assert(!flare::is_dyn_rank_view_v<scatter_view_t>);
-static_assert(!flare::is_dynamic_view_v<scatter_view_t>);
-static_assert(!flare::experimental::is_offset_view_v<scatter_view_t>);
-static_assert(flare::experimental::is_scatter_view_v<scatter_view_t>);
-static_assert(!flare::is_view_v<scatter_view_t>);
+static_assert(!flare::is_dual_tensor_v<scatter_tensor_t>);
+static_assert(!flare::is_dyn_rank_tensor_v<scatter_tensor_t>);
+static_assert(!flare::is_dynamic_tensor_v<scatter_tensor_t>);
+static_assert(!flare::experimental::is_offset_tensor_v<scatter_tensor_t>);
+static_assert(flare::experimental::is_scatter_tensor_v<scatter_tensor_t>);
+static_assert(!flare::is_tensor_v<scatter_tensor_t>);
 
 }  // namespace

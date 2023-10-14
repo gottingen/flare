@@ -26,8 +26,8 @@ namespace TestStaticCrsGraph {
 
 template <class Space>
 void run_test_graph() {
-  using dView = flare::StaticCrsGraph<unsigned, Space>;
-  using hView = typename dView::HostMirror;
+  using DTensor = flare::StaticCrsGraph<unsigned, Space>;
+  using hTensor = typename DTensor::HostMirror;
 
   const unsigned LENGTH = 1000;
 
@@ -41,23 +41,23 @@ void run_test_graph() {
   }
 
   {
-    dView d1;
+    DTensor d1;
     REQUIRE_FALSE(d1.is_allocated());
 
-    d1 = flare::create_staticcrsgraph<dView>("d1", graph);
+    d1 = flare::create_staticcrsgraph<DTensor>("d1", graph);
 
-    dView d2(d1);
-    dView d3(d1.entries, d1.row_map);
+    DTensor d2(d1);
+    DTensor d3(d1.entries, d1.row_map);
 
     REQUIRE(d1.is_allocated());
     REQUIRE(d2.is_allocated());
     REQUIRE(d3.is_allocated());
   }
 
-  dView dx;
-  hView hx;
+  DTensor dx;
+  hTensor hx;
 
-  dx = flare::create_staticcrsgraph<dView>("dx", graph);
+  dx = flare::create_staticcrsgraph<DTensor>("dx", graph);
   hx = flare::create_mirror(dx);
 
   REQUIRE_EQ(hx.row_map.extent(0) - 1, LENGTH);
@@ -71,21 +71,21 @@ void run_test_graph() {
     }
   }
 
-  // Test row view access
+  // Test row tensor access
   for (size_t i = 0; i < LENGTH; ++i) {
-    auto rowView = hx.rowConst(i);
-    REQUIRE_EQ(rowView.length, graph[i].size());
-    for (size_t j = 0; j < rowView.length; ++j) {
-      REQUIRE_EQ(rowView.colidx(j), (size_t)graph[i][j]);
-      REQUIRE_EQ(rowView(j), (size_t)graph[i][j]);
+    auto rowTensor = hx.rowConst(i);
+    REQUIRE_EQ(rowTensor.length, graph[i].size());
+    for (size_t j = 0; j < rowTensor.length; ++j) {
+      REQUIRE_EQ(rowTensor.colidx(j), (size_t)graph[i][j]);
+      REQUIRE_EQ(rowTensor(j), (size_t)graph[i][j]);
     }
   }
 }
 
 template <class Space>
 void run_test_graph2() {
-  using dView = flare::StaticCrsGraph<unsigned[3], Space>;
-  using hView = typename dView::HostMirror;
+  using DTensor = flare::StaticCrsGraph<unsigned[3], Space>;
+  using hTensor = typename DTensor::HostMirror;
 
   const unsigned LENGTH = 10;
 
@@ -97,9 +97,9 @@ void run_test_graph2() {
     total_length += (sizes[i] = 6 + i % 4);
   }
 
-  dView dx = flare::create_staticcrsgraph<dView>("test", sizes);
-  hView hx = flare::create_mirror(dx);
-  hView mx = flare::create_mirror(dx);
+  DTensor dx = flare::create_staticcrsgraph<DTensor>("test", sizes);
+  hTensor hx = flare::create_mirror(dx);
+  hTensor mx = flare::create_mirror(dx);
 
   REQUIRE_EQ((size_t)dx.row_map.extent(0), (size_t)LENGTH + 1);
   REQUIRE_EQ((size_t)hx.row_map.extent(0), (size_t)LENGTH + 1);
@@ -144,8 +144,8 @@ template <class Space>
 void run_test_graph3(size_t B, size_t N) {
   srand(10310);
 
-  using dView = flare::StaticCrsGraph<int, Space>;
-  using hView = typename dView::HostMirror;
+  using DTensor = flare::StaticCrsGraph<int, Space>;
+  using hTensor = typename DTensor::HostMirror;
 
   const unsigned LENGTH = 2000;
 
@@ -159,9 +159,9 @@ void run_test_graph3(size_t B, size_t N) {
   sizes[1998] = N;
 
   int C    = 0;
-  dView dx = flare::create_staticcrsgraph<dView>("test", sizes);
+  DTensor dx = flare::create_staticcrsgraph<DTensor>("test", sizes);
   dx.create_block_partitioning(B, C);
-  hView hx = flare::create_mirror(dx);
+  hTensor hx = flare::create_mirror(dx);
 
   for (size_t i = 0; i < B; i++) {
     size_t ne = 0;
@@ -180,27 +180,27 @@ void run_test_graph4() {
   using layout_type        = flare::LayoutRight;
   using space_type         = Space;
   using memory_traits_type = flare::MemoryUnmanaged;
-  using dView = flare::StaticCrsGraph<ordinal_type, layout_type, space_type,
+  using DTensor = flare::StaticCrsGraph<ordinal_type, layout_type, space_type,
                                        memory_traits_type>;
-  using hView = typename dView::HostMirror;
+  using hTensor = typename DTensor::HostMirror;
 
-  dView dx;
+  DTensor dx;
 
   // StaticCrsGraph with Unmanaged trait will contain row_map and entries
   // members with the Unmanaged memory trait. Use of such a StaticCrsGraph
-  // requires an allocaton of memory for the unmanaged views to wrap.
+  // requires an allocaton of memory for the unmanaged tensors to wrap.
   //
   // In this test, a graph (via raw arrays) resides on the host.
-  // The pointers are wrapped by unmanaged Views.
-  // To make use of this on the device, managed device Views are created
-  // (allocation required), and data from the unmanaged host views is deep
-  // copied to the device Views Unmanaged views of the appropriate type wrap the
-  // device data and are assigned to their corresponding unmanaged view members
+  // The pointers are wrapped by unmanaged Tensors.
+  // To make use of this on the device, managed device Tensors are created
+  // (allocation required), and data from the unmanaged host tensors is deep
+  // copied to the device Tensors Unmanaged tensors of the appropriate type wrap the
+  // device data and are assigned to their corresponding unmanaged tensor members
   // of the unmanaged StaticCrsGraph
 
   // Data types for raw pointers storing StaticCrsGraph info
-  using ptr_row_map_type = typename dView::size_type;
-  using ptr_entries_type = typename dView::data_type;
+  using ptr_row_map_type = typename DTensor::size_type;
+  using ptr_entries_type = typename DTensor::data_type;
 
   const ordinal_type numRows = 8;
   const ordinal_type nnz     = 24;
@@ -208,41 +208,41 @@ void run_test_graph4() {
   ptr_entries_type indRaw[]  = {0, 1, 4, 5, 0, 1, 4, 5, 2, 3, 2, 3,
                                4, 5, 4, 5, 2, 3, 6, 7, 2, 3, 6, 7};
 
-  // Wrap pointers in unmanaged host views
-  using local_row_map_type = typename hView::row_map_type;
-  using local_entries_type = typename hView::entries_type;
+  // Wrap pointers in unmanaged host tensors
+  using local_row_map_type = typename hTensor::row_map_type;
+  using local_entries_type = typename hTensor::entries_type;
   local_row_map_type unman_row_map(&(ptrRaw[0]), numRows + 1);
   local_entries_type unman_entries(&(indRaw[0]), nnz);
 
-  hView hx;
-  hx = hView(unman_entries, unman_row_map);
+  hTensor hx;
+  hx = hTensor(unman_entries, unman_row_map);
 
-  // Create the device Views for copying the host arrays into
+  // Create the device Tensors for copying the host arrays into
   // An allocation is needed on the device for the unmanaged StaticCrsGraph to
   // wrap the pointer
-  using d_row_map_view_type =
-      typename flare::View<ptr_row_map_type*, layout_type, space_type>;
-  using d_entries_view_type =
-      typename flare::View<ptr_entries_type*, layout_type, space_type>;
+  using d_row_map_tensor_type =
+      typename flare::Tensor<ptr_row_map_type*, layout_type, space_type>;
+  using d_entries_tensor_type =
+      typename flare::Tensor<ptr_entries_type*, layout_type, space_type>;
 
-  d_row_map_view_type tmp_row_map("tmp_row_map", numRows + 1);
-  d_entries_view_type tmp_entries("tmp_entries", nnz);
+    d_row_map_tensor_type tmp_row_map("tmp_row_map", numRows + 1);
+  d_entries_tensor_type tmp_entries("tmp_entries", nnz);
 
   flare::deep_copy(tmp_row_map, unman_row_map);
   flare::deep_copy(tmp_entries, unman_entries);
 
-  // Wrap the pointer in unmanaged View and assign to the corresponding
+  // Wrap the pointer in unmanaged Tensor and assign to the corresponding
   // StaticCrsGraph member
-  dx.row_map = typename dView::row_map_type(tmp_row_map.data(), numRows + 1);
-  dx.entries = typename dView::entries_type(tmp_entries.data(), nnz);
+  dx.row_map = typename DTensor::row_map_type(tmp_row_map.data(), numRows + 1);
+  dx.entries = typename DTensor::entries_type(tmp_entries.data(), nnz);
 
-  REQUIRE((std::is_same<typename dView::row_map_type::memory_traits,
+  REQUIRE((std::is_same<typename DTensor::row_map_type::memory_traits,
                             flare::MemoryUnmanaged>::value));
-  REQUIRE((std::is_same<typename dView::entries_type::memory_traits,
+  REQUIRE((std::is_same<typename DTensor::entries_type::memory_traits,
                             flare::MemoryUnmanaged>::value));
-  REQUIRE((std::is_same<typename hView::row_map_type::memory_traits,
+  REQUIRE((std::is_same<typename hTensor::row_map_type::memory_traits,
                             flare::MemoryUnmanaged>::value));
-  REQUIRE((std::is_same<typename hView::entries_type::memory_traits,
+  REQUIRE((std::is_same<typename hTensor::entries_type::memory_traits,
                             flare::MemoryUnmanaged>::value));
 }
 

@@ -24,7 +24,7 @@ namespace experimental {
 
 // overload set1
 template <class ExecutionSpace, class InputIterator, class OutputIterator>
-std::enable_if_t<!::flare::is_view<InputIterator>::value, OutputIterator>
+std::enable_if_t<!::flare::is_tensor<InputIterator>::value, OutputIterator>
 unique_copy(const ExecutionSpace& ex, InputIterator first, InputIterator last,
             OutputIterator d_first) {
   return detail::unique_copy_impl("flare::unique_copy_iterator_api_default", ex,
@@ -32,7 +32,7 @@ unique_copy(const ExecutionSpace& ex, InputIterator first, InputIterator last,
 }
 
 template <class ExecutionSpace, class InputIterator, class OutputIterator>
-std::enable_if_t<!::flare::is_view<InputIterator>::value, OutputIterator>
+std::enable_if_t<!::flare::is_tensor<InputIterator>::value, OutputIterator>
 unique_copy(const std::string& label, const ExecutionSpace& ex,
             InputIterator first, InputIterator last, OutputIterator d_first) {
   return detail::unique_copy_impl(label, ex, first, last, d_first);
@@ -41,21 +41,21 @@ unique_copy(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto unique_copy(const ExecutionSpace& ex,
-                 const ::flare::View<DataType1, Properties1...>& source,
-                 const ::flare::View<DataType2, Properties2...>& dest) {
+                 const ::flare::Tensor<DataType1, Properties1...>& source,
+                 const ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
   return ::flare::experimental::unique_copy(
-      "flare::unique_copy_view_api_default", ex, cbegin(source), cend(source),
+      "flare::unique_copy_tensor_api_default", ex, cbegin(source), cend(source),
       begin(dest));
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2>
 auto unique_copy(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType1, Properties1...>& source,
-                 const ::flare::View<DataType2, Properties2...>& dest) {
+                 const ::flare::Tensor<DataType1, Properties1...>& source,
+                 const ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
@@ -84,13 +84,13 @@ OutputIterator unique_copy(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class BinaryPredicate>
 auto unique_copy(const ExecutionSpace& ex,
-                 const ::flare::View<DataType1, Properties1...>& source,
-                 const ::flare::View<DataType2, Properties2...>& dest,
+                 const ::flare::Tensor<DataType1, Properties1...>& source,
+                 const ::flare::Tensor<DataType2, Properties2...>& dest,
                  BinaryPredicate pred) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
-  return detail::unique_copy_impl("flare::unique_copy_view_api_default", ex,
+  return detail::unique_copy_impl("flare::unique_copy_tensor_api_default", ex,
                                 cbegin(source), cend(source), begin(dest),
                                 std::move(pred));
 }
@@ -98,8 +98,8 @@ auto unique_copy(const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class DataType2, class... Properties2, class BinaryPredicate>
 auto unique_copy(const std::string& label, const ExecutionSpace& ex,
-                 const ::flare::View<DataType1, Properties1...>& source,
-                 const ::flare::View<DataType2, Properties2...>& dest,
+                 const ::flare::Tensor<DataType1, Properties1...>& source,
+                 const ::flare::Tensor<DataType2, Properties2...>& dest,
                  BinaryPredicate pred) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);

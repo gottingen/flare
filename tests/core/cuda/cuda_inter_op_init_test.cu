@@ -37,7 +37,7 @@ namespace Test {
         int *p;
         FLARE_IMPL_CUDA_SAFE_CALL(cudaMalloc(&p, sizeof(int) * 100));
 
-        flare::View<int *, flare::MemoryTraits<flare::Unmanaged>> v(p, 100);
+        flare::Tensor<int *, flare::MemoryTraits<flare::Unmanaged>> v(p, 100);
         flare::deep_copy(v, 5);
 
         flare::finalize();

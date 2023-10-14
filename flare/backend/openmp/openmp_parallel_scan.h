@@ -271,16 +271,16 @@ class ParallelScanWithTotal<FunctorType, flare::RangePolicy<Traits...>,
 
   //----------------------------------------
 
-  template <class ViewType>
+  template <class TensorType>
   ParallelScanWithTotal(const FunctorType& arg_functor,
                         const Policy& arg_policy,
-                        const ViewType& arg_result_view)
+                        const TensorType& arg_result_tensor)
       : m_instance(nullptr),
         m_functor(arg_functor),
         m_policy(arg_policy),
-        m_result_ptr(arg_result_view.data()) {
+        m_result_ptr(arg_result_tensor.data()) {
     static_assert(
-        flare::detail::MemorySpaceAccess<typename ViewType::memory_space,
+        flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
                                         flare::HostSpace>::accessible,
         "flare::OpenMP parallel_scan result must be host-accessible!");
     m_instance = arg_policy.space().impl_internal_space_instance();

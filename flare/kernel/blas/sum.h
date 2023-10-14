@@ -23,10 +23,10 @@ namespace flare::blas {
     /// \brief Return the sum of the vector x.
     ///
     /// \tparam execution_space a flare execution space where the kernel will run.
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
     ///
     /// \param space [in] execution space instance where the kernel will run.
-    /// \param x [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
     ///
     /// \return The sum product result; a single value.
     template <class execution_space, class XVector,
@@ -37,8 +37,8 @@ namespace flare::blas {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::sum: execution_space must be a valid flare "
                       "execution space");
-        static_assert(flare::is_view<XVector>::value,
-                      "flare::blas::sum: XVector must be a flare::View.");
+        static_assert(flare::is_tensor<XVector>::value,
+                      "flare::blas::sum: XVector must be a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XVector::memory_space>::accessible,
@@ -47,7 +47,7 @@ namespace flare::blas {
                       "flare::blas::sum: "
                       "Both Vector inputs must have rank 1.");
 
-        using XVector_Internal = flare::View<
+        using XVector_Internal = flare::Tensor<
                 typename XVector::const_value_type*,
                 typename flare::detail::GetUnifiedLayout<XVector>::array_layout,
                 typename XVector::device_type, flare::MemoryTraits<flare::Unmanaged> >;
@@ -55,7 +55,7 @@ namespace flare::blas {
         using layout_t = typename XVector_Internal::array_layout;
 
         using RVector_Internal =
-                flare::View<typename XVector::non_const_value_type, layout_t,
+                flare::Tensor<typename XVector::non_const_value_type, layout_t,
                         flare::HostSpace, flare::MemoryTraits<flare::Unmanaged> >;
 
         typename XVector::non_const_value_type result;
@@ -73,9 +73,9 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue associated
     /// with the execution space of XVector.
     ///
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
     ///
-    /// \param x [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
     ///
     /// \return The sum product result; a single value.
     template <class XVector>
@@ -90,26 +90,26 @@ namespace flare::blas {
     /// This function is non-blocking and thread-safe.
     ///
     /// \tparam execution_space a flare execution space where the kernel will run.
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as RMV, and its entries must be assignable to
     ///   those of RMV.
     ///
     /// \param space [in] execution space instance where the kernel will run.
-    /// \param R [out] Output View (rank 0 or 1) containing the results.
-    /// \param X [in] Input View (rank 1 or 2).
+    /// \param R [out] Output Tensor (rank 0 or 1) containing the results.
+    /// \param X [in] Input Tensor (rank 1 or 2).
     template <class execution_space, class RV, class XMV>
     void sum(const execution_space& space, const RV& R, const XMV& X,
-             typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
+             typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
         static_assert(flare::is_execution_space_v<execution_space>,
                       "flare::blas::sum: execution_space must be a valid flare "
                       "execution space.");
-        static_assert(flare::is_view<RV>::value,
+        static_assert(flare::is_tensor<RV>::value,
                       "flare::blas::sum: "
-                      "R is not a flare::View.");
-        static_assert(flare::is_view<XMV>::value,
+                      "R is not a flare::Tensor.");
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::sum: "
-                      "X is not a flare::View.");
+                      "X is not a flare::Tensor.");
         static_assert(
                 flare::SpaceAccessibility<execution_space,
                         typename XMV::memory_space>::accessible,
@@ -139,13 +139,13 @@ namespace flare::blas {
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         RV, UnifiedXLayout>::array_layout;
 
-        // Create unmanaged versions of the input Views.  RV and XMV may be
+        // Create unmanaged versions of the input Tensors.  RV and XMV may be
         // rank 1 or rank 2.
-        typedef flare::View<typename RV::non_const_data_type, UnifiedRVLayout,
+        typedef flare::Tensor<typename RV::non_const_data_type, UnifiedRVLayout,
                 typename RV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >
                 RV_Internal;
-        typedef flare::View<typename XMV::const_data_type, UnifiedXLayout,
+        typedef flare::Tensor<typename XMV::const_data_type, UnifiedXLayout,
                 typename XMV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >
                 XMV_Internal;
@@ -165,16 +165,16 @@ namespace flare::blas {
     /// The kernel is executed in the default stream/queue associated
     /// with the execution space of XVM.
     ///
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as RMV, and its entries must be assignable to
     ///   those of RMV.
     ///
-    /// \param R [out] Output View (rank 0 or 1) containing the results.
-    /// \param X [in] Input View (rank 1 or 2).
+    /// \param R [out] Output Tensor (rank 0 or 1) containing the results.
+    /// \param X [in] Input Tensor (rank 1 or 2).
     template <class RV, class XMV>
     void sum(const RV& R, const XMV& X,
-             typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
+             typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
         sum(typename XMV::execution_space{}, R, X);
     }
 

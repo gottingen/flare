@@ -40,21 +40,21 @@ OutputIterator copy_n(const std::string& label, const ExecutionSpace& ex,
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class Size, class DataType2, class... Properties2>
 auto copy_n(const ExecutionSpace& ex,
-            const ::flare::View<DataType1, Properties1...>& source, Size count,
-            ::flare::View<DataType2, Properties2...>& dest) {
+            const ::flare::Tensor<DataType1, Properties1...>& source, Size count,
+            ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 
   namespace KE = ::flare::experimental;
-  return detail::copy_n_impl("flare::copy_n_view_api_default", ex,
+  return detail::copy_n_impl("flare::copy_n_tensor_api_default", ex,
                            KE::cbegin(source), count, KE::begin(dest));
 }
 
 template <class ExecutionSpace, class DataType1, class... Properties1,
           class Size, class DataType2, class... Properties2>
 auto copy_n(const std::string& label, const ExecutionSpace& ex,
-            const ::flare::View<DataType1, Properties1...>& source, Size count,
-            ::flare::View<DataType2, Properties2...>& dest) {
+            const ::flare::Tensor<DataType1, Properties1...>& source, Size count,
+            ::flare::Tensor<DataType2, Properties2...>& dest) {
   detail::static_assert_is_admissible_to_flare_std_algorithms(source);
   detail::static_assert_is_admissible_to_flare_std_algorithms(dest);
 

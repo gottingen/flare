@@ -22,47 +22,47 @@ namespace TeamRotateCopy {
 
 namespace KE = flare::experimental;
 
-template <class SourceViewType, class DestViewType, class DistancesViewType>
+template <class SourceTensorType, class DestTensorType, class DistancesTensorType>
 struct TestFunctorA {
-  SourceViewType m_sourceView;
-  DestViewType m_destView;
-  DistancesViewType m_distancesView;
+  SourceTensorType m_sourceTensor;
+  DestTensorType m_destTensor;
+  DistancesTensorType m_distancesTensor;
   std::size_t m_pivotShift;
   int m_apiPick;
 
-  TestFunctorA(const SourceViewType sourceView, const DestViewType destView,
-               const DistancesViewType distancesView, std::size_t pivotShift,
+  TestFunctorA(const SourceTensorType sourceTensor, const DestTensorType destTensor,
+               const DistancesTensorType distancesTensor, std::size_t pivotShift,
                int apiPick)
-      : m_sourceView(sourceView),
-        m_destView(destView),
-        m_distancesView(distancesView),
+      : m_sourceTensor(sourceTensor),
+        m_destTensor(destTensor),
+        m_distancesTensor(distancesTensor),
         m_pivotShift(pivotShift),
         m_apiPick(apiPick) {}
 
   template <class MemberType>
   FLARE_INLINE_FUNCTION void operator()(const MemberType& member) const {
     const auto myRowIndex = member.league_rank();
-    auto myRowViewFrom =
-        flare::subview(m_sourceView, myRowIndex, flare::ALL());
-    auto myRowViewDest = flare::subview(m_destView, myRowIndex, flare::ALL());
+    auto myRowTensorFrom =
+        flare::subtensor(m_sourceTensor, myRowIndex, flare::ALL());
+    auto myRowTensorDest = flare::subtensor(m_destTensor, myRowIndex, flare::ALL());
 
     if (m_apiPick == 0) {
-      auto pivot = KE::cbegin(myRowViewFrom) + m_pivotShift;
+      auto pivot = KE::cbegin(myRowTensorFrom) + m_pivotShift;
       auto it =
-          KE::rotate_copy(member, KE::cbegin(myRowViewFrom), pivot,
-                          KE::cend(myRowViewFrom), KE::begin(myRowViewDest));
+          KE::rotate_copy(member, KE::cbegin(myRowTensorFrom), pivot,
+                          KE::cend(myRowTensorFrom), KE::begin(myRowTensorDest));
 
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) =
-            KE::distance(KE::begin(myRowViewDest), it);
+        m_distancesTensor(myRowIndex) =
+            KE::distance(KE::begin(myRowTensorDest), it);
       });
     } else if (m_apiPick == 1) {
       auto it =
-          KE::rotate_copy(member, myRowViewFrom, m_pivotShift, myRowViewDest);
+          KE::rotate_copy(member, myRowTensorFrom, m_pivotShift, myRowTensorDest);
 
       flare::single(flare::PerTeam(member), [=, *this]() {
-        m_distancesView(myRowIndex) =
-            KE::distance(KE::begin(myRowViewDest), it);
+        m_distancesTensor(myRowIndex) =
+            KE::distance(KE::begin(myRowTensorDest), it);
       });
     }
   }
@@ -72,20 +72,20 @@ template <class LayoutTag, class ValueType>
 void test_A(std::size_t numTeams, std::size_t numCols, std::size_t pivotShift,
             int apiId) {
   /* description:
-     randomly fill a rank-2 view and for a given pivot,
+     randomly fill a rank-2 tensor and for a given pivot,
      do a team-level KE::rotateCopy
    */
 
   // -----------------------------------------------
   // prepare data
   // -----------------------------------------------
-  // create a view in the memory space associated with default exespace
+  // create a tensor in the memory space associated with default exespace
   // with as many rows as the number of teams and fill it with random
   // values from an arbitrary range
-  auto [sourceView, cloneOfSourceViewBeforeOp_h] =
-      create_random_view_and_host_clone(
+  auto [sourceTensor, cloneOfSourceTensorBeforeOp_h] =
+      create_random_tensor_and_host_clone(
           LayoutTag{}, numTeams, numCols,
-          flare::pair<ValueType, ValueType>{11, 523}, "sourceView");
+          flare::pair<ValueType, ValueType>{11, 523}, "sourceTensor");
 
   // -----------------------------------------------
   // launch flare kernel
@@ -93,38 +93,38 @@ void test_A(std::size_t numTeams, std::size_t numCols, std::size_t pivotShift,
   using space_t = flare::DefaultExecutionSpace;
   flare::TeamPolicy<space_t> policy(numTeams, flare::AUTO());
 
-  // create the destination view
-  flare::View<ValueType**> destView("destView", numTeams, numCols);
+  // create the destination tensor
+  flare::Tensor<ValueType**> destTensor("destTensor", numTeams, numCols);
 
   // each team stores the distance of the returned iterator from the
   // beginning of the interval that team operates on and then we check
   // that these distances match the expectation
-  flare::View<std::size_t*> distancesView("distancesView", numTeams);
+  flare::Tensor<std::size_t*> distancesTensor("distancesTensor", numTeams);
 
   // use CTAD for functor
-  TestFunctorA fnc(sourceView, destView, distancesView, pivotShift, apiId);
+  TestFunctorA fnc(sourceTensor, destTensor, distancesTensor, pivotShift, apiId);
   flare::parallel_for(policy, fnc);
 
   // -----------------------------------------------
   // run std algo and check
   // -----------------------------------------------
-  flare::View<ValueType**, flare::HostSpace> stdDestView("stdDestView",
+  flare::Tensor<ValueType**, flare::HostSpace> stdDestTensor("stdDestTensor",
                                                            numTeams, numCols);
-  auto distancesView_h = create_host_space_copy(distancesView);
-  for (std::size_t i = 0; i < cloneOfSourceViewBeforeOp_h.extent(0); ++i) {
+  auto distancesTensor_h = create_host_space_copy(distancesTensor);
+  for (std::size_t i = 0; i < cloneOfSourceTensorBeforeOp_h.extent(0); ++i) {
     auto myRowFrom =
-        flare::subview(cloneOfSourceViewBeforeOp_h, i, flare::ALL());
-    auto myRowDest = flare::subview(stdDestView, i, flare::ALL());
+        flare::subtensor(cloneOfSourceTensorBeforeOp_h, i, flare::ALL());
+    auto myRowDest = flare::subtensor(stdDestTensor, i, flare::ALL());
 
     auto pivot = KE::cbegin(myRowFrom) + pivotShift;
     auto it    = std::rotate_copy(KE::cbegin(myRowFrom), pivot,
                                KE::cend(myRowFrom), KE::begin(myRowDest));
     const std::size_t stdDistance = KE::distance(KE::begin(myRowDest), it);
-    REQUIRE_EQ(stdDistance, distancesView_h(i));
+    REQUIRE_EQ(stdDistance, distancesTensor_h(i));
   }
 
-  auto destViewAfterOp_h = create_host_space_copy(destView);
-  expect_equal_host_views(stdDestView, destViewAfterOp_h);
+  auto destTensorAfterOp_h = create_host_space_copy(destTensor);
+  expect_equal_host_tensors(stdDestTensor, destTensorAfterOp_h);
 }
 
 template <class ValueType>

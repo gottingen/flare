@@ -25,19 +25,19 @@
 namespace flare::detail {
 
     template<class T, class... P>
-    struct ZeroMemset<HostSpace::execution_space, View<T, P...>> {
-        ZeroMemset(const HostSpace::execution_space &exec, const View<T, P...> &dst,
-                   typename View<T, P...>::const_value_type &) {
+    struct ZeroMemset<HostSpace::execution_space, Tensor<T, P...>> {
+        ZeroMemset(const HostSpace::execution_space &exec, const Tensor<T, P...> &dst,
+                   typename Tensor<T, P...>::const_value_type &) {
             // We can't use exec.fence() directly since we don't have a full definition
             // of HostSpace here.
             hostspace_fence(exec);
-            using ValueType = typename View<T, P...>::value_type;
+            using ValueType = typename Tensor<T, P...>::value_type;
             std::memset(dst.data(), 0, sizeof(ValueType) * dst.size());
         }
 
-        ZeroMemset(const View<T, P...> &dst,
-                   typename View<T, P...>::const_value_type &) {
-            using ValueType = typename View<T, P...>::value_type;
+        ZeroMemset(const Tensor<T, P...> &dst,
+                   typename Tensor<T, P...>::const_value_type &) {
+            using ValueType = typename Tensor<T, P...>::value_type;
             std::memset(dst.data(), 0, sizeof(ValueType) * dst.size());
         }
     };

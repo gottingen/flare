@@ -24,11 +24,11 @@ namespace flare::blas {
     /// \brief Return the nrm1 of the vector x.
     ///
     /// \tparam execution_space a flare execution space where the kernel will run.
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
     ///
     /// \param space [in] the execution space instance, possibly containing a
     /// stream/queue where the kernel will be executed.
-    /// \param x [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
     ///
     /// \return The nrm1 product result; a single value.
     template<
@@ -41,21 +41,21 @@ namespace flare::blas {
         static_assert(
                 flare::is_execution_space<execution_space>::value,
                 "flare::blas::nrm1: execution_space must be a flare::execution_space.");
-        static_assert(flare::is_view<XVector>::value,
-                      "flare::blas::nrm1: XVector must be a flare::View.");
+        static_assert(flare::is_tensor<XVector>::value,
+                      "flare::blas::nrm1: XVector must be a flare::Tensor.");
         static_assert(XVector::rank == 1,
                       "flare::blas::nrm1: "
                       "Both Vector inputs must have rank 1.");
         using mag_type = typename flare::detail::InnerProductSpaceTraits<
                 typename XVector::non_const_value_type>::mag_type;
 
-        using XVector_Internal = flare::View<
+        using XVector_Internal = flare::Tensor<
                 typename XVector::const_value_type *,
                 typename flare::detail::GetUnifiedLayout<XVector>::array_layout,
                 typename XVector::device_type, flare::MemoryTraits<flare::Unmanaged> >;
 
         using RVector_Internal =
-                flare::View<mag_type, default_layout, flare::HostSpace,
+                flare::Tensor<mag_type, default_layout, flare::HostSpace,
                         flare::MemoryTraits<flare::Unmanaged> >;
 
         mag_type result;
@@ -70,9 +70,9 @@ namespace flare::blas {
 
     /// \brief Return the nrm1 of the vector x.
     ///
-    /// \tparam XVector Type of the first vector x; a 1-D flare::View.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
     ///
-    /// \param x [in] Input 1-D View.
+    /// \param x [in] Input 1-D Tensor.
     ///
     /// \return The nrm1 product result; a single value.
     template<class XVector>
@@ -89,24 +89,24 @@ namespace flare::blas {
     /// This function is non-blocking and thread-safe
     ///
     /// \tparam execution_space a flare execution space where the kernel will run.
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as RMV, and its entries must be assignable to
     ///   those of RMV.
     ///
     /// \param space [in] the execution space instance, possibly containing a
     /// stream/queue where the kernel will be executed.
-    /// \param R [out] Output 1-D View containing the result
-    /// \param X [in] Input 1-D View.
+    /// \param R [out] Output 1-D Tensor containing the result
+    /// \param X [in] Input 1-D Tensor.
     template<class execution_space, class RV, class XMV>
     void nrm1(const execution_space &space, const RV &R, const XMV &X,
-              typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
-        static_assert(flare::is_view<RV>::value,
+              typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
+        static_assert(flare::is_tensor<RV>::value,
                       "flare::blas::nrm1: "
-                      "R is not a flare::View.");
-        static_assert(flare::is_view<XMV>::value,
+                      "R is not a flare::Tensor.");
+        static_assert(flare::is_tensor<XMV>::value,
                       "flare::blas::nrm1: "
-                      "X is not a flare::View.");
+                      "X is not a flare::Tensor.");
         static_assert(std::is_same<typename RV::value_type,
                               typename RV::non_const_value_type>::value,
                       "flare::blas::nrm1: R is const.  "
@@ -143,15 +143,15 @@ namespace flare::blas {
                 typename flare::detail::GetUnifiedLayoutPreferring<
                         RV, UnifiedXLayout>::array_layout;
 
-        // Create unmanaged versions of the input Views.  RV and XMV may be
+        // Create unmanaged versions of the input Tensors.  RV and XMV may be
         // rank 1 or rank 2.
-        typedef flare::View<typename std::conditional<
+        typedef flare::Tensor<typename std::conditional<
                 RV::rank == 0, typename RV::non_const_value_type,
                 typename RV::non_const_value_type *>::type,
                 UnifiedRVLayout, typename RV::device_type,
                 flare::MemoryTraits<flare::Unmanaged> >
                 RV_Internal;
-        typedef flare::View<
+        typedef flare::Tensor<
                 typename std::conditional<XMV::rank == 1, typename XMV::const_value_type *,
                         typename XMV::const_value_type **>::type,
                 UnifiedXLayout, typename XMV::device_type,
@@ -172,16 +172,16 @@ namespace flare::blas {
     /// This function is non-blocking and thread-safe. The kernel is executed in the
     /// default stream/queue associated with the execution space of XMV.
     ///
-    /// \tparam RMV 1-D or 2-D flare::View specialization.
-    /// \tparam XMV 1-D or 2-D flare::View specialization.  It must have
+    /// \tparam RMV 1-D or 2-D flare::Tensor specialization.
+    /// \tparam XMV 1-D or 2-D flare::Tensor specialization.  It must have
     ///   the same rank as RMV, and its entries must be assignable to
     ///   those of RMV.
     ///
-    /// \param R [out] Output 1-D View containing the result
-    /// \param X [in] Input 1-D View.
+    /// \param R [out] Output 1-D Tensor containing the result
+    /// \param X [in] Input 1-D Tensor.
     template<class RV, class XMV>
     void nrm1(const RV &R, const XMV &X,
-              typename std::enable_if<flare::is_view<RV>::value, int>::type = 0) {
+              typename std::enable_if<flare::is_tensor<RV>::value, int>::type = 0) {
         nrm1(typename XMV::execution_space{}, R, X);
     }
 

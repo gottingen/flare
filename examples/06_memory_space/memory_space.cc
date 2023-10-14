@@ -18,26 +18,26 @@
 
 // The type of a two-dimensional N x 3 array of double.
 // It lives in flare' default memory space.
-using view_type = flare::View<double *[3]>;
+using tensor_type = flare::Tensor<double *[3]>;
 
-// The "HostMirror" type corresponding to view_type above is also a
+// The "HostMirror" type corresponding to tensor_type above is also a
 // two-dimensional N x 3 array of double.  However, it lives in the
-// host memory space corresponding to view_type's memory space.  For
-// example, if view_type lives in CUDA device memory, host_view_type
-// lives in host (CPU) memory.  Furthermore, declaring host_view_type
-// as the host mirror of view_type means that host_view_type has the
-// same layout as view_type.  This makes it easier to copy between the
-// two Views.
+// host memory space corresponding to tensor_type's memory space.  For
+// example, if tensor_type lives in CUDA device memory, host_tensor_type
+// lives in host (CPU) memory.  Furthermore, declaring host_tensor_type
+// as the host mirror of tensor_type means that host_tensor_type has the
+// same layout as tensor_type.  This makes it easier to copy between the
+// two Tensors.
 // Advanced issues: If a memory space is accessible from the host without
 // performance penalties then it is its own host_mirror_space. This is
 // the case for HostSpace, CudaUVMSpace and CudaHostPinnedSpace.
 
-using host_view_type = view_type::HostMirror;
+using host_tensor_type = tensor_type::HostMirror;
 
 struct ReduceFunctor {
-    view_type a;
+    tensor_type a;
 
-    ReduceFunctor(view_type a_) : a(a_) {}
+    ReduceFunctor(tensor_type a_) : a(a_) {}
 
     using value_type = int;  // Specify type for reduction value, lsum
 
@@ -51,15 +51,15 @@ int main() {
     flare::initialize();
 
     {
-        view_type a("A", 10);
-        // If view_type and host_mirror_type live in the same memory space,
-        // a "mirror view" is just an alias, and deep_copy does nothing.
-        // Otherwise, a mirror view of a device View lives in host memory,
+        tensor_type a("A", 10);
+        // If tensor_type and host_mirror_type live in the same memory space,
+        // a "mirror tensor" is just an alias, and deep_copy does nothing.
+        // Otherwise, a mirror tensor of a device Tensor lives in host memory,
         // and deep_copy does a deep copy.
-        host_view_type h_a = flare::create_mirror_view(a);
+        host_tensor_type h_a = flare::create_mirror_tensor(a);
 
-        // The View h_a lives in host (CPU) memory, so it's legal to fill
-        // the view sequentially using ordinary code, like this.
+        // The Tensor h_a lives in host (CPU) memory, so it's legal to fill
+        // the tensor sequentially using ordinary code, like this.
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 3; j++) {
                 h_a(i, j) = i * 10 + j;

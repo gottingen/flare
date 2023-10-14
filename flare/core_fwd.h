@@ -242,7 +242,7 @@ namespace flare {
 namespace flare {
 
     template<class DataType, class... Properties>
-    class View;
+    class Tensor;
 
     namespace detail {
 
@@ -251,14 +251,14 @@ namespace flare {
                 class Enable         = void>
         struct DeepCopy;
 
-        template<class ViewType, class Layout = typename ViewType::array_layout,
-                class ExecSpace = typename ViewType::execution_space,
-                int Rank = ViewType::rank, typename iType = int64_t>
-        struct ViewFill;
+        template<class TensorType, class Layout = typename TensorType::array_layout,
+                class ExecSpace = typename TensorType::execution_space,
+                int Rank = TensorType::rank, typename iType = int64_t>
+        struct TensorFill;
 
-        template<class ViewTypeA, class ViewTypeB, class Layout, class ExecSpace,
+        template<class TensorTypeA, class TensorTypeB, class Layout, class ExecSpace,
                 int Rank, typename iType>
-        struct ViewCopy;
+        struct TensorCopy;
 
         template<class Functor, class Policy>
         struct FunctorPolicyExecutionSpace;

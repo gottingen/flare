@@ -31,7 +31,7 @@ namespace {
             DataTypeFromExtents<BaseType, Extents>::type>;
 
     // Conversion from DataType to extents
-    // 0-rank view
+    // 0-rank tensor
     static_assert(datatype_matches_extent<double, flare::extents<std::size_t>>);
 
     // Only dynamic

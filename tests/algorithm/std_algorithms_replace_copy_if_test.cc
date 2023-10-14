@@ -22,14 +22,14 @@ namespace ReplaceCopyIf {
 
 namespace KE = flare::experimental;
 
-template <class ViewType>
-void fill_view(ViewType dest_view, const std::string& name) {
-  using value_type      = typename ViewType::value_type;
-  using exe_space       = typename ViewType::execution_space;
-  const std::size_t ext = dest_view.extent(0);
-  using aux_view_t      = flare::View<value_type*, exe_space>;
-  aux_view_t aux_view("aux_view", ext);
-  auto v_h = create_mirror_view(flare::HostSpace(), aux_view);
+template <class TensorType>
+void fill_tensor(TensorType dest_tensor, const std::string& name) {
+  using value_type      = typename TensorType::value_type;
+  using exe_space       = typename TensorType::execution_space;
+  const std::size_t ext = dest_tensor.extent(0);
+  using aux_tensor_t      = flare::Tensor<value_type*, exe_space>;
+  aux_tensor_t aux_tensor("aux_tensor", ext);
+  auto v_h = create_mirror_tensor(flare::HostSpace(), aux_tensor);
 
   if (name == "empty") {
     // no op
@@ -86,89 +86,89 @@ void fill_view(ViewType dest_view, const std::string& name) {
     throw std::runtime_error("invalid choice");
   }
 
-  flare::deep_copy(aux_view, v_h);
-  CopyFunctor<aux_view_t, ViewType> F1(aux_view, dest_view);
-  flare::parallel_for("copy", dest_view.extent(0), F1);
+  flare::deep_copy(aux_tensor, v_h);
+  CopyFunctor<aux_tensor_t, TensorType> F1(aux_tensor, dest_tensor);
+  flare::parallel_for("copy", dest_tensor.extent(0), F1);
 }
 
-template <class ViewTypeFrom, class ViewTypeTest, class ValueType>
-void verify_data(const std::string& name, ViewTypeFrom view_from,
-                 ViewTypeTest view_test, ValueType new_value) {
-  //! always careful because views might not be deep copyable
-  auto view_test_dc = create_deep_copyable_compatible_clone(view_test);
-  auto view_test_h =
-      create_mirror_view_and_copy(flare::HostSpace(), view_test_dc);
+template <class TensorTypeFrom, class TensorTypeTest, class ValueType>
+void verify_data(const std::string& name, TensorTypeFrom tensor_from,
+                 TensorTypeTest tensor_test, ValueType new_value) {
+  //! always careful because tensors might not be deep copyable
+  auto tensor_test_dc = create_deep_copyable_compatible_clone(tensor_test);
+  auto tensor_test_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), tensor_test_dc);
 
-  auto view_from_dc = create_deep_copyable_compatible_clone(view_from);
-  auto view_from_h =
-      create_mirror_view_and_copy(flare::HostSpace(), view_from_dc);
+  auto tensor_from_dc = create_deep_copyable_compatible_clone(tensor_from);
+  auto trnsor_from_h =
+      create_mirror_tensor_and_copy(flare::HostSpace(), tensor_from_dc);
 
-  // we check that view_from is unchanged from what it was after filling
-  // while view_test should be changed
+  // we check that tensor_from is unchanged from what it was after filling
+  // while tensor_test should be changed
 
   if (name == "empty") {
     // no op
   }
 
   else if (name == "one-element-a") {
-    REQUIRE_EQ(view_from_h(0), ValueType{1});
-    REQUIRE_EQ(view_test_h(0), view_from_h(0));
+    REQUIRE_EQ(trnsor_from_h(0), ValueType{1});
+    REQUIRE_EQ(tensor_test_h(0), trnsor_from_h(0));
   }
 
   else if (name == "one-element-b") {
-    REQUIRE_EQ(view_from_h(0), ValueType{2});
-    REQUIRE_EQ(view_test_h(0), new_value);
+    REQUIRE_EQ(trnsor_from_h(0), ValueType{2});
+    REQUIRE_EQ(tensor_test_h(0), new_value);
   }
 
   else if (name == "two-elements-a") {
-    REQUIRE_EQ(view_from_h(0), ValueType{1});
-    REQUIRE_EQ(view_from_h(1), ValueType{2});
+    REQUIRE_EQ(trnsor_from_h(0), ValueType{1});
+    REQUIRE_EQ(trnsor_from_h(1), ValueType{2});
 
-    REQUIRE_EQ(view_test_h(0), view_from_h(0));
-    REQUIRE_EQ(view_test_h(1), new_value);
+    REQUIRE_EQ(tensor_test_h(0), trnsor_from_h(0));
+    REQUIRE_EQ(tensor_test_h(1), new_value);
   }
 
   else if (name == "two-elements-b") {
-    REQUIRE_EQ(view_from_h(0), ValueType{2});
-    REQUIRE_EQ(view_from_h(1), ValueType{-1});
+    REQUIRE_EQ(trnsor_from_h(0), ValueType{2});
+    REQUIRE_EQ(trnsor_from_h(1), ValueType{-1});
 
-    REQUIRE_EQ(view_test_h(0), new_value);
-    REQUIRE_EQ(view_test_h(1), view_from_h(1));
+    REQUIRE_EQ(tensor_test_h(0), new_value);
+    REQUIRE_EQ(tensor_test_h(1), trnsor_from_h(1));
   }
 
   else if (name == "small-a") {
-    for (std::size_t i = 0; i < view_test_h.extent(0); ++i) {
+    for (std::size_t i = 0; i < tensor_test_h.extent(0); ++i) {
       if (i == 0 || i == 3 || i == 5 || i == 6) {
-        REQUIRE_EQ(view_from_h(i), ValueType{2});
-        REQUIRE_EQ(view_test_h(i), new_value);
+        REQUIRE_EQ(trnsor_from_h(i), ValueType{2});
+        REQUIRE_EQ(tensor_test_h(i), new_value);
       } else {
         const auto gold = ValueType{-5} + static_cast<ValueType>(i + 1);
-        REQUIRE_EQ(view_from_h(i), gold);
-        REQUIRE_EQ(view_test_h(i), gold);
+        REQUIRE_EQ(trnsor_from_h(i), gold);
+        REQUIRE_EQ(tensor_test_h(i), gold);
       }
     }
   }
 
   else if (name == "small-b") {
-    for (std::size_t i = 0; i < view_test_h.extent(0); ++i) {
+    for (std::size_t i = 0; i < tensor_test_h.extent(0); ++i) {
       if (i < 4) {
-        REQUIRE_EQ(view_from_h(i), ValueType{-1});
-        REQUIRE_EQ(view_test_h(i), view_from_h(i));
+        REQUIRE_EQ(trnsor_from_h(i), ValueType{-1});
+        REQUIRE_EQ(tensor_test_h(i), trnsor_from_h(i));
       } else {
-        REQUIRE_EQ(view_from_h(i), ValueType{2});
-        REQUIRE_EQ(view_test_h(i), new_value);
+        REQUIRE_EQ(trnsor_from_h(i), ValueType{2});
+        REQUIRE_EQ(tensor_test_h(i), new_value);
       }
     }
   }
 
   else if (name == "medium" || name == "large") {
-    for (std::size_t i = 0; i < view_test_h.extent(0); ++i) {
+    for (std::size_t i = 0; i < tensor_test_h.extent(0); ++i) {
       if (i % 2 == 0) {
-        REQUIRE_EQ(view_from_h(i), ValueType{-1});
-        REQUIRE_EQ(view_test_h(i), view_from_h(i));
+        REQUIRE_EQ(trnsor_from_h(i), ValueType{-1});
+        REQUIRE_EQ(tensor_test_h(i), trnsor_from_h(i));
       } else {
-        REQUIRE_EQ(view_from_h(i), ValueType{2});
-        REQUIRE_EQ(view_test_h(i), new_value);
+        REQUIRE_EQ(trnsor_from_h(i), ValueType{2});
+        REQUIRE_EQ(tensor_test_h(i), new_value);
       }
     }
   }
@@ -190,56 +190,56 @@ struct EqualsTwoFunctor {
 template <class Tag, class ValueType, class InfoType>
 void run_single_scenario(const InfoType& scenario_info) {
   const auto name            = std::get<0>(scenario_info);
-  const std::size_t view_ext = std::get<1>(scenario_info);
+  const std::size_t tensor_ext = std::get<1>(scenario_info);
   // std::cout << "replace_copy_if: " << name << ", " <<
-  // view_tag_to_string(Tag{})
+  // tensor_tag_to_string(Tag{})
   //           << ", " << value_type_to_string(ValueType()) << std::endl;
 
   ValueType new_value{43};
-  auto view_from =
-      create_view<ValueType>(Tag{}, view_ext, "replace_copy_if_from");
+  auto tensor_from =
+      create_tensor<ValueType>(Tag{}, tensor_ext, "replace_copy_if_from");
   using pred_type = EqualsTwoFunctor<ValueType>;
 
   {
-    fill_view(view_from, name);
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "replace_copy_if_dest");
-    auto rit = KE::replace_copy_if(exespace(), KE::cbegin(view_from),
-                                   KE::cend(view_from), KE::begin(view_dest),
+    fill_tensor(tensor_from, name);
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "replace_copy_if_dest");
+    auto rit = KE::replace_copy_if(exespace(), KE::cbegin(tensor_from),
+                                   KE::cend(tensor_from), KE::begin(tensor_dest),
                                    pred_type(), new_value);
-    verify_data(name, view_from, view_dest, new_value);
-    REQUIRE_EQ(rit, (KE::begin(view_dest) + view_ext));
+    verify_data(name, tensor_from, tensor_dest, new_value);
+    REQUIRE_EQ(rit, (KE::begin(tensor_dest) + tensor_ext));
   }
 
   {
-    fill_view(view_from, name);
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "replace_copy_if_dest");
-    auto rit = KE::replace_copy_if("label", exespace(), KE::cbegin(view_from),
-                                   KE::cend(view_from), KE::begin(view_dest),
+    fill_tensor(tensor_from, name);
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "replace_copy_if_dest");
+    auto rit = KE::replace_copy_if("label", exespace(), KE::cbegin(tensor_from),
+                                   KE::cend(tensor_from), KE::begin(tensor_dest),
                                    pred_type(), new_value);
-    verify_data(name, view_from, view_dest, new_value);
-    REQUIRE_EQ(rit, (KE::begin(view_dest) + view_ext));
+    verify_data(name, tensor_from, tensor_dest, new_value);
+    REQUIRE_EQ(rit, (KE::begin(tensor_dest) + tensor_ext));
   }
 
   {
-    fill_view(view_from, name);
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "replace_copy_if_dest");
-    auto rit = KE::replace_copy_if(exespace(), view_from, view_dest,
+    fill_tensor(tensor_from, name);
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "replace_copy_if_dest");
+    auto rit = KE::replace_copy_if(exespace(), tensor_from, tensor_dest,
                                    pred_type(), new_value);
-    verify_data(name, view_from, view_dest, new_value);
-    REQUIRE_EQ(rit, (KE::begin(view_dest) + view_ext));
+    verify_data(name, tensor_from, tensor_dest, new_value);
+    REQUIRE_EQ(rit, (KE::begin(tensor_dest) + tensor_ext));
   }
 
   {
-    fill_view(view_from, name);
-    auto view_dest =
-        create_view<ValueType>(Tag{}, view_ext, "replace_copy_if_dest");
-    auto rit = KE::replace_copy_if("label", exespace(), view_from, view_dest,
+    fill_tensor(tensor_from, name);
+    auto tensor_dest =
+        create_tensor<ValueType>(Tag{}, tensor_ext, "replace_copy_if_dest");
+    auto rit = KE::replace_copy_if("label", exespace(), tensor_from, tensor_dest,
                                    pred_type(), new_value);
-    verify_data(name, view_from, view_dest, new_value);
-    REQUIRE_EQ(rit, (KE::begin(view_dest) + view_ext));
+    verify_data(name, tensor_from, tensor_dest, new_value);
+    REQUIRE_EQ(rit, (KE::begin(tensor_dest) + tensor_ext));
   }
 
   flare::fence();
