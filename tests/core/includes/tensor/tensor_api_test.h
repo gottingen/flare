@@ -733,7 +733,7 @@ namespace Test {
         }
 
         template<class MemoryTraits>
-        void static test_mirror_view() {
+        void static test_mirror_tensor() {
             flare::Tensor<double *, Layout, flare::HostSpace> a_org("A", 1000);
             flare::Tensor<double *, Layout, flare::HostSpace, MemoryTraits> a_h = a_org;
             auto a_h2 = flare::create_mirror_tensor(flare::HostSpace(), a_h);
@@ -787,21 +787,21 @@ namespace Test {
         }
 
         template<typename Tensor>
-        static typename Tensor::const_type view_const_cast(Tensor const &v) {
+        static typename Tensor::const_type tensor_const_cast(Tensor const &v) {
             return v;
         }
 
         static void test_allocated() {
             using ExecutionSpace = typename DeviceType::execution_space;
             using dynamic_tensor = flare::Tensor<int *, ExecutionSpace>;
-            using static_view = flare::Tensor<int[5], ExecutionSpace>;
+            using static_tensor = flare::Tensor<int[5], ExecutionSpace>;
             using unmanaged_tensor =
                     flare::Tensor<int *, ExecutionSpace,
                             flare::MemoryTraits<flare::Unmanaged> >;
             int const N = 100;
 
             dynamic_tensor d1;
-            static_view s1;
+            static_tensor s1;
             unmanaged_tensor u1;
             REQUIRE_FALSE(d1.is_allocated());
             REQUIRE_FALSE(s1.is_allocated());
@@ -814,9 +814,9 @@ namespace Test {
             REQUIRE(d2.is_allocated());
             REQUIRE(d3.is_allocated());
 
-            s1 = static_view("s1");
-            static_view s2(s1);
-            static_view s3("s3");
+            s1 = static_tensor("s1");
+            static_tensor s2(s1);
+            static_tensor s3("s3");
             REQUIRE(s1.is_allocated());
             REQUIRE(s2.is_allocated());
             REQUIRE(s3.is_allocated());
@@ -835,20 +835,20 @@ namespace Test {
             flare::Tensor<int *, ExecutionSpace> v("v", N);
             flare::deep_copy(v, 255);
             auto v_m1 = flare::create_mirror_tensor_and_copy(
-                    flare::DefaultHostExecutionSpace(), view_const_cast(v));
+                    flare::DefaultHostExecutionSpace(), tensor_const_cast(v));
             auto v_m2 = flare::create_mirror_tensor_and_copy(ExecutionSpace(),
-                                                           view_const_cast(v));
+                                                           tensor_const_cast(v));
         }
 
         template<class MemoryTraits, class Space>
         struct CopyUnInit {
-            using mirror_view_type = typename flare::detail::MirrorTensorType<
+            using mirror_tensor_type = typename flare::detail::MirrorTensorType<
                     Space, double *, Layout, flare::HostSpace, MemoryTraits>::tensor_type;
 
-            mirror_view_type a_d;
+            mirror_tensor_type a_d;
 
             FLARE_INLINE_FUNCTION
-            CopyUnInit(mirror_view_type &a_d_) : a_d(a_d_) {}
+            CopyUnInit(mirror_tensor_type &a_d_) : a_d(a_d_) {}
 
             FLARE_INLINE_FUNCTION
             void operator()(const typename Space::size_type i) const {
@@ -890,8 +890,8 @@ namespace Test {
         void static testit() {
             test_mirror<flare::MemoryTraits<0> >();
             test_mirror<flare::MemoryTraits<flare::Unmanaged> >();
-            test_mirror_view<flare::MemoryTraits<0> >();
-            test_mirror_view<flare::MemoryTraits<flare::Unmanaged> >();
+            test_mirror_tensor<flare::MemoryTraits<0> >();
+            test_mirror_tensor<flare::MemoryTraits<flare::Unmanaged> >();
             test_mirror_copy<flare::MemoryTraits<0> >();
             test_mirror_copy<flare::MemoryTraits<flare::Unmanaged> >();
             test_mirror_copy_const_data_type();
@@ -1414,20 +1414,20 @@ namespace Test {
         }
 
         static void run_test_subtensor_strided() {
-            using view_left_4 = flare::Tensor<int ****, flare::LayoutLeft, host>;
-            using view_right_4 = flare::Tensor<int ****, flare::LayoutRight, host>;
-            using view_left_2 = flare::Tensor<int **, flare::LayoutLeft, host>;
-            using view_right_2 = flare::Tensor<int **, flare::LayoutRight, host>;
+            using tensor_left_4 = flare::Tensor<int ****, flare::LayoutLeft, host>;
+            using tensor_right_4 = flare::Tensor<int ****, flare::LayoutRight, host>;
+            using tensor_left_2 = flare::Tensor<int **, flare::LayoutLeft, host>;
+            using tensor_right_2 = flare::Tensor<int **, flare::LayoutRight, host>;
 
-            using view_stride_1 = flare::Tensor<int *, flare::LayoutStride, host>;
-            using view_stride_2 = flare::Tensor<int **, flare::LayoutStride, host>;
+            using tensor_stride_1 = flare::Tensor<int *, flare::LayoutStride, host>;
+            using tensor_stride_2 = flare::Tensor<int **, flare::LayoutStride, host>;
 
-            view_left_2 xl2("xl2", 100, 200);
-            view_right_2 xr2("xr2", 100, 200);
-            view_stride_1 yl1 = flare::subtensor(xl2, 0, flare::ALL());
-            view_stride_1 yl2 = flare::subtensor(xl2, 1, flare::ALL());
-            view_stride_1 yr1 = flare::subtensor(xr2, 0, flare::ALL());
-            view_stride_1 yr2 = flare::subtensor(xr2, 1, flare::ALL());
+            tensor_left_2 xl2("xl2", 100, 200);
+            tensor_right_2 xr2("xr2", 100, 200);
+            tensor_stride_1 yl1 = flare::subtensor(xl2, 0, flare::ALL());
+            tensor_stride_1 yl2 = flare::subtensor(xl2, 1, flare::ALL());
+            tensor_stride_1 yr1 = flare::subtensor(xr2, 0, flare::ALL());
+            tensor_stride_1 yr2 = flare::subtensor(xr2, 1, flare::ALL());
 
             REQUIRE_EQ(yl1.extent(0), xl2.extent(1));
             REQUIRE_EQ(yl2.extent(0), xl2.extent(1));
@@ -1439,12 +1439,12 @@ namespace Test {
             REQUIRE_EQ(&yr1(0) - &xr2(0, 0), 0);
             REQUIRE_EQ(&yr2(0) - &xr2(1, 0), 0);
 
-            view_left_4 xl4("xl4", 10, 20, 30, 40);
-            view_right_4 xr4("xr4", 10, 20, 30, 40);
+            tensor_left_4 xl4("xl4", 10, 20, 30, 40);
+            tensor_right_4 xr4("xr4", 10, 20, 30, 40);
 
-            view_stride_2 yl4 =
+            tensor_stride_2 yl4 =
                     flare::subtensor(xl4, 1, flare::ALL(), 2, flare::ALL());
-            view_stride_2 yr4 =
+            tensor_stride_2 yr4 =
                     flare::subtensor(xr4, 1, flare::ALL(), 2, flare::ALL());
 
             REQUIRE_EQ(yl4.extent(0), xl4.extent(1));

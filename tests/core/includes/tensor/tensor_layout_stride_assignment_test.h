@@ -23,7 +23,7 @@
 
 namespace Test {
 
-TEST_CASE("TEST_CATEGORY, view_layoutstride_left_to_layoutleft_assignment") {
+TEST_CASE("TEST_CATEGORY, tensor_layoutstride_left_to_layoutleft_assignment") {
   using exec_space = TEST_EXECSPACE;
 
   srand(123456);  // arbitrary seed for random generator
@@ -302,7 +302,7 @@ TEST_CASE("TEST_CATEGORY, view_layoutstride_left_to_layoutleft_assignment") {
   }
 }
 
-TEST_CASE("TEST_CATEGORY, view_layoutstride_right_to_layoutright_assignment") {
+TEST_CASE("TEST_CATEGORY, tensor_layoutstride_right_to_layoutright_assignment") {
   using exec_space = TEST_EXECSPACE;
 
   srand(123456);  // arbitrary seed for random generator
@@ -581,7 +581,7 @@ TEST_CASE("TEST_CATEGORY, view_layoutstride_right_to_layoutright_assignment") {
   }
 }
 
-TEST_CASE("TEST_CATEGORY_DEATH, view_layoutstride_right_to_layoutleft_assignment") {
+TEST_CASE("TEST_CATEGORY_DEATH, tensor_layoutstride_right_to_layoutleft_assignment") {
   using exec_space = TEST_EXECSPACE;
 
   srand(123456);  // arbitrary seed for random generator
@@ -728,7 +728,7 @@ TEST_CASE("TEST_CATEGORY_DEATH, view_layoutstride_right_to_layoutleft_assignment
   }
 }
 
-TEST_CASE("TEST_CATEGORY_DEATH, view_layoutstride_left_to_layoutright_assignment") {
+TEST_CASE("TEST_CATEGORY_DEATH, tensor_layoutstride_left_to_layoutright_assignment") {
   using exec_space = TEST_EXECSPACE;
 
   srand(123456);  // arbitrary seed for random generator

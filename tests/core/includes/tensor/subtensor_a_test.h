@@ -63,7 +63,7 @@ TEST_CASE("TEST_CATEGORY, tensor_subtensor_right_3") {
   TestTensorSubtensor::test_right_3<TEST_EXECSPACE>();
 }
 
-TEST_CASE("TEST_CATEGORY, view_static_tests") {
+TEST_CASE("TEST_CATEGORY, tensor_static_tests") {
   TestTensorSubtensor::TestSubtensorStaticSizes<TEST_EXECSPACE,
                                           flare::LayoutLeft>()();
   TestTensorSubtensor::TestSubtensorStaticSizes<TEST_EXECSPACE,

@@ -58,7 +58,7 @@ namespace Test {
     };
 
     template<class Space>
-    void view_nested_tensor() {
+    void tensor_nested_tensor() {
         flare::Tensor<int *, Space> tracking("tracking", 1);
 
         typename flare::Tensor<int *, Space>::HostMirror host_tracking =
@@ -84,6 +84,6 @@ namespace Test {
         REQUIRE_EQ(0, host_tracking(0));
     }
 
-    TEST_CASE("TEST_CATEGORY, view_nested_tensor") { view_nested_tensor<TEST_EXECSPACE>(); }
+    TEST_CASE("TEST_CATEGORY, tensor_nested_tensor") { tensor_nested_tensor<TEST_EXECSPACE>(); }
 
 }  // namespace Test

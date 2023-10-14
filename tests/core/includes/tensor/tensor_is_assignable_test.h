@@ -67,7 +67,7 @@ struct TestAssignability {
 
 }  // namespace detail
 
-TEST_CASE("TEST_CATEGORY, view_is_assignable") {
+TEST_CASE("TEST_CATEGORY, tensor_is_assignable") {
   using namespace flare;
   using h_exec = typename DefaultHostExecutionSpace::memory_space;
   using d_exec = typename TEST_EXECSPACE::memory_space;

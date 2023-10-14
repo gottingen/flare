@@ -20,7 +20,7 @@
 
 namespace Test {
 
-    TEST_CASE("TEST_CATEGORY, view_test_unmanaged_subtensor_reset") {
+    TEST_CASE("TEST_CATEGORY, tensor_test_unmanaged_subtensor_reset") {
         TestTensorSubtensor::test_unmanaged_subtensor_reset<TEST_EXECSPACE>();
     }
 

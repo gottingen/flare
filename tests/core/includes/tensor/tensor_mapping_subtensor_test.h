@@ -180,7 +180,7 @@ namespace Test {
         }
     };
 
-    TEST_CASE("TEST_CATEGORY, view_mapping_subtensor") {
+    TEST_CASE("TEST_CATEGORY, tensor__mapping_subtensor") {
         TestTensorMappingSubtensor<TEST_EXECSPACE> f;
         f.run();
     }

@@ -123,11 +123,11 @@ namespace Test {
 
     }  // namespace
 
-    TEST_CASE("TEST_CATEGORY, viewctorprop_embedded_dim") {
+    TEST_CASE("TEST_CATEGORY, tensor_ctorprop_embedded_dim") {
         TestTensorCtorProp_EmbeddedDim<TEST_EXECSPACE>::test_vcpt(2, 3);
     }
 
-    TEST_CASE("TEST_CATEGORY,viewctorpop_view_allocate_without_initializing_backward_compatility") {
+    TEST_CASE("TEST_CATEGORY,tensor_ctorpop_tensor_allocate_without_initializing_backward_compatility") {
         using deprecated_tensor_alloc = flare::TensorAllocateWithoutInitializing;
         flare::Tensor<int **, TEST_EXECSPACE> v(deprecated_tensor_alloc("v"), 5, 7);
     }

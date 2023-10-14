@@ -60,64 +60,64 @@ namespace TestTensorResize {
         }
         {
             using tensor_type = flare::Tensor<int ***, DeviceType>;
-            tensor_type view_3d("view_3d", sizes[0], sizes[1], sizes[2]);
-            const int *oldPointer = view_3d.data();
+            tensor_type tensor_3d("tensor_3d", sizes[0], sizes[1], sizes[2]);
+            const int *oldPointer = tensor_3d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            resize_dispatch(Tag{}, view_3d, sizes[0], sizes[1], sizes[2]);
-            const int *newPointer = view_3d.data();
+            resize_dispatch(Tag{}, tensor_3d, sizes[0], sizes[1], sizes[2]);
+            const int *newPointer = tensor_3d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int ****, DeviceType>;
-            tensor_type view_4d("view_4d", sizes[0], sizes[1], sizes[2], sizes[3]);
-            const int *oldPointer = view_4d.data();
+            tensor_type tensor_4d("tensor_4d", sizes[0], sizes[1], sizes[2], sizes[3]);
+            const int *oldPointer = tensor_4d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            resize_dispatch(Tag{}, view_4d, sizes[0], sizes[1], sizes[2], sizes[3]);
-            const int *newPointer = view_4d.data();
+            resize_dispatch(Tag{}, tensor_4d, sizes[0], sizes[1], sizes[2], sizes[3]);
+            const int *newPointer = tensor_4d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int *****, DeviceType>;
-            tensor_type view_5d("view_5d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_5d("tensor_5d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4]);
-            const int *oldPointer = view_5d.data();
+            const int *oldPointer = tensor_5d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            resize_dispatch(Tag{}, view_5d, sizes[0], sizes[1], sizes[2], sizes[3],
+            resize_dispatch(Tag{}, tensor_5d, sizes[0], sizes[1], sizes[2], sizes[3],
                             sizes[4]);
-            const int *newPointer = view_5d.data();
+            const int *newPointer = tensor_5d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int ******, DeviceType>;
-            tensor_type view_6d("view_6d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_6d("tensor_6d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4], sizes[5]);
-            const int *oldPointer = view_6d.data();
+            const int *oldPointer = tensor_6d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            resize_dispatch(Tag{}, view_6d, sizes[0], sizes[1], sizes[2], sizes[3],
+            resize_dispatch(Tag{}, tensor_6d, sizes[0], sizes[1], sizes[2], sizes[3],
                             sizes[4], sizes[5]);
-            const int *newPointer = view_6d.data();
+            const int *newPointer = tensor_6d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int *******, DeviceType>;
-            tensor_type view_7d("view_7d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_7d("tensor_7d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4], sizes[5], sizes[6]);
-            const int *oldPointer = view_7d.data();
+            const int *oldPointer = tensor_7d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            resize_dispatch(Tag{}, view_7d, sizes[0], sizes[1], sizes[2], sizes[3],
+            resize_dispatch(Tag{}, tensor_7d, sizes[0], sizes[1], sizes[2], sizes[3],
                             sizes[4], sizes[5], sizes[6]);
-            const int *newPointer = view_7d.data();
+            const int *newPointer = tensor_7d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int ********, DeviceType>;
-            tensor_type view_8d("view_8d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_8d("tensor_8d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4], sizes[5], sizes[6], sizes[7]);
-            const int *oldPointer = view_8d.data();
+            const int *oldPointer = tensor_8d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            resize_dispatch(Tag{}, view_8d, sizes[0], sizes[1], sizes[2], sizes[3],
+            resize_dispatch(Tag{}, tensor_8d, sizes[0], sizes[1], sizes[2], sizes[3],
                             sizes[4], sizes[5], sizes[6], sizes[7]);
-            const int *newPointer = view_8d.data();
+            const int *newPointer = tensor_8d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         // Resize without initialization: check if data preserved
@@ -167,16 +167,16 @@ namespace TestTensorResize {
         }
         {
             using tensor_type = flare::Tensor<int ***, DeviceType>;
-            tensor_type view_3d("view_3d", sizes[0], sizes[1], sizes[2]);
+            tensor_type tensor_3d("tensor_3d", sizes[0], sizes[1], sizes[2]);
             typename tensor_type::HostMirror h_tensor_3d_old =
-                    flare::create_mirror(view_3d);
-            flare::deep_copy(view_3d, 333);
-            flare::deep_copy(h_tensor_3d_old, view_3d);
-            resize_dispatch(Tag{}, view_3d, 2 * sizes[0], sizes[1], sizes[2]);
-            REQUIRE_EQ(view_3d.extent(0), 2 * sizes[0]);
+                    flare::create_mirror(tensor_3d);
+            flare::deep_copy(tensor_3d, 333);
+            flare::deep_copy(h_tensor_3d_old, tensor_3d);
+            resize_dispatch(Tag{}, tensor_3d, 2 * sizes[0], sizes[1], sizes[2]);
+            REQUIRE_EQ(tensor_3d.extent(0), 2 * sizes[0]);
             typename tensor_type::HostMirror h_tensor_3d =
-                    flare::create_mirror_tensor(view_3d);
-            flare::deep_copy(h_tensor_3d, view_3d);
+                    flare::create_mirror_tensor(tensor_3d);
+            flare::deep_copy(h_tensor_3d, tensor_3d);
             bool test = true;
             for (size_t i0 = 0; i0 < sizes[0]; ++i0) {
                 for (size_t i1 = 0; i1 < sizes[1]; ++i1) {
@@ -192,16 +192,16 @@ namespace TestTensorResize {
         }
         {
             using tensor_type = flare::Tensor<int ****, DeviceType>;
-            tensor_type view_4d("view_4d", sizes[0], sizes[1], sizes[2], sizes[3]);
+            tensor_type tensor_4d("tensor_4d", sizes[0], sizes[1], sizes[2], sizes[3]);
             typename tensor_type::HostMirror h_tensor_4d_old =
-                    flare::create_mirror(view_4d);
-            flare::deep_copy(view_4d, 444);
-            flare::deep_copy(h_tensor_4d_old, view_4d);
-            resize_dispatch(Tag{}, view_4d, 2 * sizes[0], sizes[1], sizes[2], sizes[3]);
-            REQUIRE_EQ(view_4d.extent(0), 2 * sizes[0]);
+                    flare::create_mirror(tensor_4d);
+            flare::deep_copy(tensor_4d, 444);
+            flare::deep_copy(h_tensor_4d_old, tensor_4d);
+            resize_dispatch(Tag{}, tensor_4d, 2 * sizes[0], sizes[1], sizes[2], sizes[3]);
+            REQUIRE_EQ(tensor_4d.extent(0), 2 * sizes[0]);
             typename tensor_type::HostMirror h_tensor_4d =
-                    flare::create_mirror_tensor(view_4d);
-            flare::deep_copy(h_tensor_4d, view_4d);
+                    flare::create_mirror_tensor(tensor_4d);
+            flare::deep_copy(h_tensor_4d, tensor_4d);
             bool test = true;
             for (size_t i0 = 0; i0 < sizes[0]; ++i0) {
                 for (size_t i1 = 0; i1 < sizes[1]; ++i1) {
@@ -219,18 +219,18 @@ namespace TestTensorResize {
         }
         {
             using tensor_type = flare::Tensor<int *****, DeviceType>;
-            tensor_type view_5d("view_5d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_5d("tensor_5d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4]);
             typename tensor_type::HostMirror h_tensor_5d_old =
-                    flare::create_mirror(view_5d);
-            flare::deep_copy(view_5d, 555);
-            flare::deep_copy(h_tensor_5d_old, view_5d);
-            resize_dispatch(Tag{}, view_5d, 2 * sizes[0], sizes[1], sizes[2], sizes[3],
+                    flare::create_mirror(tensor_5d);
+            flare::deep_copy(tensor_5d, 555);
+            flare::deep_copy(h_tensor_5d_old, tensor_5d);
+            resize_dispatch(Tag{}, tensor_5d, 2 * sizes[0], sizes[1], sizes[2], sizes[3],
                             sizes[4]);
-            REQUIRE_EQ(view_5d.extent(0), 2 * sizes[0]);
+            REQUIRE_EQ(tensor_5d.extent(0), 2 * sizes[0]);
             typename tensor_type::HostMirror h_tensor_5d =
-                    flare::create_mirror_tensor(view_5d);
-            flare::deep_copy(h_tensor_5d, view_5d);
+                    flare::create_mirror_tensor(tensor_5d);
+            flare::deep_copy(h_tensor_5d, tensor_5d);
             bool test = true;
             for (size_t i0 = 0; i0 < sizes[0]; ++i0) {
                 for (size_t i1 = 0; i1 < sizes[1]; ++i1) {
@@ -251,18 +251,18 @@ namespace TestTensorResize {
         }
         {
             using tensor_type = flare::Tensor<int ******, DeviceType>;
-            tensor_type view_6d("view_6d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_6d("tensor_6d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4], sizes[5]);
             typename tensor_type::HostMirror h_tensor_6d_old =
-                    flare::create_mirror(view_6d);
-            flare::deep_copy(view_6d, 666);
-            flare::deep_copy(h_tensor_6d_old, view_6d);
-            resize_dispatch(Tag{}, view_6d, 2 * sizes[0], sizes[1], sizes[2], sizes[3],
+                    flare::create_mirror(tensor_6d);
+            flare::deep_copy(tensor_6d, 666);
+            flare::deep_copy(h_tensor_6d_old, tensor_6d);
+            resize_dispatch(Tag{}, tensor_6d, 2 * sizes[0], sizes[1], sizes[2], sizes[3],
                             sizes[4], sizes[5]);
-            REQUIRE_EQ(view_6d.extent(0), 2 * sizes[0]);
+            REQUIRE_EQ(tensor_6d.extent(0), 2 * sizes[0]);
             typename tensor_type::HostMirror h_tensor_6d =
-                    flare::create_mirror_tensor(view_6d);
-            flare::deep_copy(h_tensor_6d, view_6d);
+                    flare::create_mirror_tensor(tensor_6d);
+            flare::deep_copy(h_tensor_6d, tensor_6d);
             bool test = true;
             for (size_t i0 = 0; i0 < sizes[0]; ++i0) {
                 for (size_t i1 = 0; i1 < sizes[1]; ++i1) {
@@ -285,18 +285,18 @@ namespace TestTensorResize {
         }
         {
             using tensor_type = flare::Tensor<int *******, DeviceType>;
-            tensor_type view_7d("view_7d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_7d("tensor_7d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4], sizes[5], sizes[6]);
             typename tensor_type::HostMirror h_tensor_7d_old =
-                    flare::create_mirror(view_7d);
-            flare::deep_copy(view_7d, 777);
-            flare::deep_copy(h_tensor_7d_old, view_7d);
-            resize_dispatch(Tag{}, view_7d, 2 * sizes[0], sizes[1], sizes[2], sizes[3],
+                    flare::create_mirror(tensor_7d);
+            flare::deep_copy(tensor_7d, 777);
+            flare::deep_copy(h_tensor_7d_old, tensor_7d);
+            resize_dispatch(Tag{}, tensor_7d, 2 * sizes[0], sizes[1], sizes[2], sizes[3],
                             sizes[4], sizes[5], sizes[6]);
-            REQUIRE_EQ(view_7d.extent(0), 2 * sizes[0]);
+            REQUIRE_EQ(tensor_7d.extent(0), 2 * sizes[0]);
             typename tensor_type::HostMirror h_tensor_7d =
-                    flare::create_mirror_tensor(view_7d);
-            flare::deep_copy(h_tensor_7d, view_7d);
+                    flare::create_mirror_tensor(tensor_7d);
+            flare::deep_copy(h_tensor_7d, tensor_7d);
             bool test = true;
             for (size_t i0 = 0; i0 < sizes[0]; ++i0) {
                 for (size_t i1 = 0; i1 < sizes[1]; ++i1) {
@@ -321,18 +321,18 @@ namespace TestTensorResize {
         }
         {
             using tensor_type = flare::Tensor<int ********, DeviceType>;
-            tensor_type view_8d("view_8d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_8d("tensor_8d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4], sizes[5], sizes[6], sizes[7]);
             typename tensor_type::HostMirror h_tensor_8d_old =
-                    flare::create_mirror(view_8d);
-            flare::deep_copy(view_8d, 888);
-            flare::deep_copy(h_tensor_8d_old, view_8d);
-            resize_dispatch(Tag{}, view_8d, 2 * sizes[0], sizes[1], sizes[2], sizes[3],
+                    flare::create_mirror(tensor_8d);
+            flare::deep_copy(tensor_8d, 888);
+            flare::deep_copy(h_tensor_8d_old, tensor_8d);
+            resize_dispatch(Tag{}, tensor_8d, 2 * sizes[0], sizes[1], sizes[2], sizes[3],
                             sizes[4], sizes[5], sizes[6], sizes[7]);
-            REQUIRE_EQ(view_8d.extent(0), 2 * sizes[0]);
+            REQUIRE_EQ(tensor_8d.extent(0), 2 * sizes[0]);
             typename tensor_type::HostMirror h_tensor_8d =
-                    flare::create_mirror_tensor(view_8d);
-            flare::deep_copy(h_tensor_8d, view_8d);
+                    flare::create_mirror_tensor(tensor_8d);
+            flare::deep_copy(h_tensor_8d, tensor_8d);
             bool test = true;
             for (size_t i0 = 0; i0 < sizes[0]; ++i0) {
                 for (size_t i1 = 0; i1 < sizes[1]; ++i1) {

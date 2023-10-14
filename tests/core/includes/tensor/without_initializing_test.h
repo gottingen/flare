@@ -135,7 +135,7 @@ TEST_CASE("TEST_CATEGORY, tensor_alloc") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, view_alloc_exec_space") {
+TEST_CASE("TEST_CATEGORY, tensor_alloc_exec_space") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableFences());
     using tensor_type = flare::Tensor<NonTriviallyCopyable *, TEST_EXECSPACE>;
@@ -157,7 +157,7 @@ TEST_CASE("TEST_CATEGORY, view_alloc_exec_space") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, view_alloc_int") {
+TEST_CASE("TEST_CATEGORY, tensor_alloc_int") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableFences());
     using tensor_type = flare::Tensor<int *, TEST_EXECSPACE>;
@@ -179,7 +179,7 @@ TEST_CASE("TEST_CATEGORY, view_alloc_int") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, view_alloc_exec_space_int") {
+TEST_CASE("TEST_CATEGORY, tensor_alloc_exec_space_int") {
     using namespace flare::Test::Tools;
     listen_tool_events(Config::DisableAll(), Config::EnableFences());
     using tensor_type = flare::Tensor<int *, TEST_EXECSPACE>;
@@ -257,7 +257,7 @@ TEST_CASE("TEST_CATEGORY, resize_exec_space") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, view_allocation_int") {
+TEST_CASE("TEST_CATEGORY, tensor_allocation_int") {
     using ExecutionSpace = TEST_EXECSPACE;
     if (flare::SpaceAccessibility<
             /*AccessSpace=*/flare::HostSpace,
@@ -287,7 +287,7 @@ TEST_CASE("TEST_CATEGORY, view_allocation_int") {
     listen_tool_events(Config::DisableAll());
 }
 
-TEST_CASE("TEST_CATEGORY, view_allocation_exec_space_int") {
+TEST_CASE("TEST_CATEGORY, tensor_allocation_exec_space_int") {
 #ifdef FLARE_ON_CUDA_DEVICE
     if (std::is_same<TEST_EXECSPACE::memory_space, flare::CudaUVMSpace>::value)
       INFO("skipping since the CudaUVMSpace requires additiional fences");
@@ -315,8 +315,8 @@ struct NotDefaultConstructible {
     NotDefaultConstructible() = delete;
 };
 
-TEST_CASE("TEST_CATEGORY, view_not_default_constructible") {
+TEST_CASE("TEST_CATEGORY, tensor_not_default_constructible") {
     using Space = TEST_EXECSPACE;
-    flare::Tensor<NotDefaultConstructible, Space> my_view(flare::tensor_alloc(
+    flare::Tensor<NotDefaultConstructible, Space> my_tensor(flare::tensor_alloc(
             "not_default_constructible", flare::WithoutInitializing));
 }

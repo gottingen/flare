@@ -95,7 +95,7 @@ struct TestTensorMappingAtomic {
   }
 };
 
-TEST_CASE("TEST_CATEGORY, view_mapping_atomic") {
+TEST_CASE("TEST_CATEGORY, tensor_mapping_atomic") {
   TestTensorMappingAtomic<TEST_EXECSPACE> f;
   f.run();
 }
@@ -137,7 +137,7 @@ void test_tensor_mapping_class_value() {
   ExecSpace().fence();
 }
 
-TEST_CASE("TEST_CATEGORY, view_mapping_class_value") {
+TEST_CASE("TEST_CATEGORY, tensor_mapping_class_value") {
   test_tensor_mapping_class_value<TEST_EXECSPACE>();
 }
 
@@ -147,7 +147,7 @@ TEST_CASE("TEST_CATEGORY, view_mapping_class_value") {
 
 namespace Test {
 
-TEST_CASE("TEST_CATEGORY, view_mapping_assignable") {
+TEST_CASE("TEST_CATEGORY, tensor_mapping_assignable") {
   using exec_space = TEST_EXECSPACE;
 
   {  // Assignment of rank-0 Left = Right
@@ -217,7 +217,7 @@ TEST_CASE("TEST_CATEGORY, view_mapping_assignable") {
   }
 }
 
-TEST_CASE("TEST_CATEGORY, view_mapping_trivially_copyable") {
+TEST_CASE("TEST_CATEGORY, tensor_mapping_trivially_copyable") {
   using exec_space = TEST_EXECSPACE;
 
   using dst_traits = flare::TensorTraits<int *, exec_space>;

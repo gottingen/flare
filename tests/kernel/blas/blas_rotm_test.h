@@ -24,13 +24,13 @@
 
 namespace Test {
 
-    template <class vector_view_type, class param_view_type, class vector_ref_type>
-    void set_rotm_inputs(const int &test_case, vector_view_type &X,
-                         vector_view_type &Y, param_view_type &param,
+    template <class vector_tensor_type, class param_tensor_type, class vector_ref_type>
+    void set_rotm_inputs(const int &test_case, vector_tensor_type &X,
+                         vector_tensor_type &Y, param_tensor_type &param,
                          vector_ref_type &Xref, vector_ref_type &Yref) {
         // Initialize X and Y inputs
-        typename vector_view_type::HostMirror X_h = flare::create_mirror_tensor(X);
-        typename vector_view_type::HostMirror Y_h = flare::create_mirror_tensor(Y);
+        typename vector_tensor_type::HostMirror X_h = flare::create_mirror_tensor(X);
+        typename vector_tensor_type::HostMirror Y_h = flare::create_mirror_tensor(Y);
 
         X_h(0) = 0.6;
         X_h(1) = 0.1;
@@ -44,7 +44,7 @@ namespace Test {
         flare::deep_copy(Y, Y_h);
 
         // Initialize Xref, Yref and param (test case dependent)
-        typename param_view_type::HostMirror param_h =
+        typename param_tensor_type::HostMirror param_h =
                 flare::create_mirror_tensor(param);
         switch (test_case) {
             case 0:
@@ -122,13 +122,13 @@ namespace Test {
         return;
     }
 
-    template <class vector_view_type, class vector_ref_type>
-    void check_results(vector_view_type &X, vector_view_type &Y,
+    template <class vector_tensor_type, class vector_ref_type>
+    void check_results(vector_tensor_type &X, vector_tensor_type &Y,
                        vector_ref_type &Xref, vector_ref_type &Yref) {
-        using Scalar = typename vector_view_type::value_type;
+        using Scalar = typename vector_tensor_type::value_type;
 
-        typename vector_view_type::HostMirror X_h = flare::create_mirror_tensor(X);
-        typename vector_view_type::HostMirror Y_h = flare::create_mirror_tensor(Y);
+        typename vector_tensor_type::HostMirror X_h = flare::create_mirror_tensor(X);
+        typename vector_tensor_type::HostMirror Y_h = flare::create_mirror_tensor(Y);
         flare::deep_copy(X_h, X);
         flare::deep_copy(Y_h, Y);
 
@@ -145,13 +145,13 @@ namespace Test {
 
 template <class Scalar, class ExecutionSpace>
 int test_rotm() {
-    using vector_view_type = flare::Tensor<Scalar *, ExecutionSpace>;
+    using vector_tensor_type = flare::Tensor<Scalar *, ExecutionSpace>;
     using vector_ref_type  = flare::Tensor<Scalar *, flare::HostSpace>;
-    using param_view_type  = flare::Tensor<Scalar[5], ExecutionSpace>;
+    using param_tensor_type  = flare::Tensor<Scalar[5], ExecutionSpace>;
 
-    vector_view_type X("X", 4), Y("Y", 4);
+    vector_tensor_type X("X", 4), Y("Y", 4);
     vector_ref_type Xref("Xref", 4), Yref("Yref", 4);
-    param_view_type param("param");
+    param_tensor_type param("param");
 
     for (int test_case = 0; test_case < 4; ++test_case) {
         // Initialize inputs

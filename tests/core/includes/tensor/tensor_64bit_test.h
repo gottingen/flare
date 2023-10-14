@@ -100,7 +100,7 @@ namespace Test {
     }
 
 #ifdef FLARE_ENABLE_LARGE_MEM_TESTS
-    TEST_CASE("TEST_CATEGORY, view_64bit") { test_64bit<TEST_EXECSPACE>(); }
+    TEST_CASE("TEST_CATEGORY, tensor_64bit") { test_64bit<TEST_EXECSPACE>(); }
 #endif
 
 }  // namespace Test

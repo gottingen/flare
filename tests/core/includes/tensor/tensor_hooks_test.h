@@ -118,7 +118,7 @@ template <class DeviceType>
 const typename TestTensorHooks<DeviceType>::test_tensor_type
     *TestTensorHooks<DeviceType>::TestSubscriber::other_ptr = nullptr;
 
-TEST_CASE("TEST_CATEGORY, view_hooks") {
+TEST_CASE("TEST_CATEGORY, tensor_hooks") {
   using ExecSpace = TEST_EXECSPACE;
   TestTensorHooks<ExecSpace>::testTensorHooksCopyConstruct();
   TestTensorHooks<ExecSpace>::testTensorHooksMoveConstruct();

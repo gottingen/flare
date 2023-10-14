@@ -21,12 +21,12 @@
 
 namespace Test {
 
-TEST_CASE("TEST_CATEGORY, view_resize") {
+TEST_CASE("TEST_CATEGORY, tensor_resize") {
   using ExecSpace = TEST_EXECSPACE;
   TestTensorResize::testResize<ExecSpace>();
 }
 
-TEST_CASE("TEST_CATEGORY, view_realloc") {
+TEST_CASE("TEST_CATEGORY, tensor_realloc") {
   using ExecSpace = TEST_EXECSPACE;
   TestTensorRealloc::testRealloc<ExecSpace>();
 }

@@ -25,7 +25,7 @@ TEST_CASE("TEST_CATEGORY, tensor_api_d") {
   TestTensorAPI<double, TEST_EXECSPACE>::run_test_tensor_operator_c();
 }
 
-TEST_CASE("TEST_CATEGORY, view_allocation_error") {
+TEST_CASE("TEST_CATEGORY, tensor_allocation_error") {
   TestTensorAPI<double, TEST_EXECSPACE>::run_test_error();
 }
 

@@ -1060,7 +1060,7 @@ void test_tensor_mapping() {
   }
 }
 
-TEST_CASE("TEST_CATEGORY, view_mapping") { test_tensor_mapping<TEST_EXECSPACE>(); }
+TEST_CASE("TEST_CATEGORY, tensor__mapping") { test_tensor_mapping<TEST_EXECSPACE>(); }
 /*--------------------------------------------------------------------------*/
 
 template <class TensorType>
@@ -1288,7 +1288,7 @@ void test_tensor_mapping_operator() {
   }
 }
 
-TEST_CASE("TEST_CATEGORY, view_mapping_operator") {
+TEST_CASE("TEST_CATEGORY, tensor__mapping_operator") {
   test_tensor_mapping_operator<TEST_EXECSPACE>();
 }
 

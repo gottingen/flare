@@ -1732,7 +1732,7 @@ namespace Test {
 
     }  // namespace
 
-    TEST_CASE("TEST_CATEGORY, view_layouttiled") {
+    TEST_CASE("TEST_CATEGORY, tensor_layouttiled") {
         // These two examples are iterating by tile, then within a tile - not by
         // extents If N# is not a power of two, but want to iterate by tile then
         // within a tile, need to check that mapped index is within extent
@@ -1741,7 +1741,7 @@ namespace Test {
         TestTensorLayoutTiled<TEST_EXECSPACE>::test_tensor_layout_tiled_4d(4, 12, 16, 12);
     }
 
-    TEST_CASE("TEST_CATEGORY, view_layouttiled_subtile") {
+    TEST_CASE("TEST_CATEGORY, tensor_layouttiled_subtile") {
         // These two examples are iterating by tile, then within a tile - not by
         // extents If N# is not a power of two, but want to iterate by tile then
         // within a tile, need to check that mapped index is within extent

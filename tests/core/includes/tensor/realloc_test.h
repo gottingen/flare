@@ -66,82 +66,82 @@ namespace TestTensorRealloc {
         }
         {
             using tensor_type = flare::Tensor<int ***, DeviceType>;
-            tensor_type view_3d("view_3d", sizes[0], sizes[1], sizes[2]);
-            auto const &oldLabel = view_3d.label();
-            const int *oldPointer = view_3d.data();
+            tensor_type tensor_3d("tensor_3d", sizes[0], sizes[1], sizes[2]);
+            auto const &oldLabel = tensor_3d.label();
+            const int *oldPointer = tensor_3d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            realloc_dispatch(Tag{}, view_3d, sizes[0], sizes[1], sizes[2]);
-            auto const &newLabel = view_3d.label();
+            realloc_dispatch(Tag{}, tensor_3d, sizes[0], sizes[1], sizes[2]);
+            auto const &newLabel = tensor_3d.label();
             REQUIRE_EQ(oldLabel, newLabel);
-            const int *newPointer = view_3d.data();
+            const int *newPointer = tensor_3d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int ****, DeviceType>;
-            tensor_type view_4d("view_4d", sizes[0], sizes[1], sizes[2], sizes[3]);
-            auto const &oldLabel = view_4d.label();
-            const int *oldPointer = view_4d.data();
+            tensor_type tensor_4d("tensor_4d", sizes[0], sizes[1], sizes[2], sizes[3]);
+            auto const &oldLabel = tensor_4d.label();
+            const int *oldPointer = tensor_4d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            realloc_dispatch(Tag{}, view_4d, sizes[0], sizes[1], sizes[2], sizes[3]);
-            auto const &newLabel = view_4d.label();
+            realloc_dispatch(Tag{}, tensor_4d, sizes[0], sizes[1], sizes[2], sizes[3]);
+            auto const &newLabel = tensor_4d.label();
             REQUIRE_EQ(oldLabel, newLabel);
-            const int *newPointer = view_4d.data();
+            const int *newPointer = tensor_4d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int *****, DeviceType>;
-            tensor_type view_5d("view_5d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_5d("tensor_5d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4]);
-            auto const &oldLabel = view_5d.label();
-            const int *oldPointer = view_5d.data();
+            auto const &oldLabel = tensor_5d.label();
+            const int *oldPointer = tensor_5d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            realloc_dispatch(Tag{}, view_5d, sizes[0], sizes[1], sizes[2], sizes[3],
+            realloc_dispatch(Tag{}, tensor_5d, sizes[0], sizes[1], sizes[2], sizes[3],
                              sizes[4]);
-            auto const &newLabel = view_5d.label();
+            auto const &newLabel = tensor_5d.label();
             REQUIRE_EQ(oldLabel, newLabel);
-            const int *newPointer = view_5d.data();
+            const int *newPointer = tensor_5d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int ******, DeviceType>;
-            tensor_type view_6d("view_6d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_6d("tensor_6d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4], sizes[5]);
-            const int *oldPointer = view_6d.data();
-            auto const &oldLabel = view_6d.label();
+            const int *oldPointer = tensor_6d.data();
+            auto const &oldLabel = tensor_6d.label();
             REQUIRE_NE(oldPointer, nullptr);
-            realloc_dispatch(Tag{}, view_6d, sizes[0], sizes[1], sizes[2], sizes[3],
+            realloc_dispatch(Tag{}, tensor_6d, sizes[0], sizes[1], sizes[2], sizes[3],
                              sizes[4], sizes[5]);
-            auto const &newLabel = view_6d.label();
+            auto const &newLabel = tensor_6d.label();
             REQUIRE_EQ(oldLabel, newLabel);
-            const int *newPointer = view_6d.data();
+            const int *newPointer = tensor_6d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int *******, DeviceType>;
-            tensor_type view_7d("view_7d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_7d("tensor_7d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4], sizes[5], sizes[6]);
-            auto const &oldLabel = view_7d.label();
-            const int *oldPointer = view_7d.data();
+            auto const &oldLabel = tensor_7d.label();
+            const int *oldPointer = tensor_7d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            realloc_dispatch(Tag{}, view_7d, sizes[0], sizes[1], sizes[2], sizes[3],
+            realloc_dispatch(Tag{}, tensor_7d, sizes[0], sizes[1], sizes[2], sizes[3],
                              sizes[4], sizes[5], sizes[6]);
-            auto const &newLabel = view_7d.label();
+            auto const &newLabel = tensor_7d.label();
             REQUIRE_EQ(oldLabel, newLabel);
-            const int *newPointer = view_7d.data();
+            const int *newPointer = tensor_7d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
         {
             using tensor_type = flare::Tensor<int ********, DeviceType>;
-            tensor_type view_8d("view_8d", sizes[0], sizes[1], sizes[2], sizes[3],
+            tensor_type tensor_8d("tensor_8d", sizes[0], sizes[1], sizes[2], sizes[3],
                               sizes[4], sizes[5], sizes[6], sizes[7]);
-            auto const &oldLabel = view_8d.label();
-            const int *oldPointer = view_8d.data();
+            auto const &oldLabel = tensor_8d.label();
+            const int *oldPointer = tensor_8d.data();
             REQUIRE_NE(oldPointer, nullptr);
-            realloc_dispatch(Tag{}, view_8d, sizes[0], sizes[1], sizes[2], sizes[3],
+            realloc_dispatch(Tag{}, tensor_8d, sizes[0], sizes[1], sizes[2], sizes[3],
                              sizes[4], sizes[5], sizes[6], sizes[7]);
-            auto const &newLabel = view_8d.label();
+            auto const &newLabel = tensor_8d.label();
             REQUIRE_EQ(oldLabel, newLabel);
-            const int *newPointer = view_8d.data();
+            const int *newPointer = tensor_8d.data();
             REQUIRE_EQ(oldPointer, newPointer);
         }
     }

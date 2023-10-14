@@ -226,7 +226,7 @@ struct TestLayout {
   }
 };
 
-TEST_CASE("TEST_CATEGORY, view_irregular_layout") {
+TEST_CASE("TEST_CATEGORY, tensor_irregular_layout") {
   TestLayout<TEST_EXECSPACE> tl;
   tl.run_test();
 }

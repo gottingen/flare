@@ -46,9 +46,7 @@ namespace Test {
 
 using DType = int;
 
-TEST(TEST_CATEGORY_DEATH, view_construction_with_wrong_params_dyn) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
-
+TEST_CASE("TEST_CATEGORY_DEATH, tensor_construction_with_wrong_params_dyn") {
   using DType_0 = DType;
   using DType_1 = DType *;
   using DType_2 = DType **;
@@ -154,7 +152,7 @@ TEST(TEST_CATEGORY_DEATH, view_construction_with_wrong_params_dyn) {
   }
 }
 
-TEST(TEST_CATEGORY_DEATH, view_construction_with_wrong_params_stat) {
+TEST(TEST_CATEGORY_DEATH, tensor_construction_with_wrong_params_stat) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
   using DType_0 = DType;
@@ -262,7 +260,7 @@ TEST(TEST_CATEGORY_DEATH, view_construction_with_wrong_params_stat) {
   }
 }
 
-TEST(TEST_CATEGORY_DEATH, view_construction_with_wrong_params_mix) {
+TEST(TEST_CATEGORY_DEATH, tensor_construction_with_wrong_params_mix) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
 
   using DType_0 = DType;

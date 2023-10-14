@@ -21,7 +21,7 @@
 
 namespace Test {
 
-TEST_CASE("TEST_CATEGORY, view_remap") {
+TEST_CASE("TEST_CATEGORY, tensor_remap") {
   enum { N0 = 3, N1 = 2, N2 = 8, N3 = 9 };
 
 #if defined(FLARE_ON_CUDA_DEVICE)
@@ -71,7 +71,7 @@ TEST_CASE("TEST_CATEGORY, view_remap") {
         }
 }
 
-TEST_CASE("TEST_CATEGORY, view_mirror_nonconst") {
+TEST_CASE("TEST_CATEGORY, tensor_mirror_nonconst") {
   flare::Tensor<int*, TEST_EXECSPACE> d_tensor("d_tensor", 10);
   flare::Tensor<const int*, TEST_EXECSPACE> d_tensor_const = d_tensor;
   auto h_tensor = flare::create_mirror(d_tensor_const);
@@ -117,7 +117,7 @@ void test_stride(Extents... extents) {
   test_left_stride<DataType>(extents...);
 }
 
-TEST_CASE("TEST_CATEGORY, view_stride_method") {
+TEST_CASE("TEST_CATEGORY, tensor_stride_method") {
   test_stride<double[3]>();
   test_stride<double*>(3);
   test_stride<double[3][7][13]>();
@@ -131,27 +131,27 @@ inline void test_anonymous_space() {
   /* apparently TEST_EXECSPACE is sometimes a memory space. */
   using ExecSpace = TEST_EXECSPACE::execution_space;
   int host_array[10];
-  flare::Tensor<int[10], flare::AnonymousSpace> host_anon_stat_view(host_array);
-  flare::Tensor<int*, flare::AnonymousSpace> host_anon_dyn_view(host_array, 10);
+  flare::Tensor<int[10], flare::AnonymousSpace> host_anon_stat_tensor(host_array);
+  flare::Tensor<int*, flare::AnonymousSpace> host_anon_dyn_tensor(host_array, 10);
   flare::Tensor<int*, flare::HostSpace> host_tensor("host_tensor", 10);
-  flare::Tensor<int*, flare::AnonymousSpace> host_anon_assign_view = host_tensor;
+  flare::Tensor<int*, flare::AnonymousSpace> host_anon_assign_tensor = host_tensor;
   for (int i = 0; i < 10; ++i) {
-    host_anon_stat_view(i) = host_anon_dyn_view(i) = 142;
-    host_anon_assign_view(i)                       = 142;
+    host_anon_stat_tensor(i) = host_anon_dyn_tensor(i) = 142;
+    host_anon_assign_tensor(i)                       = 142;
   }
   flare::Tensor<int**, flare::LayoutRight, ExecSpace> d_tensor("d_tensor", 100, 10);
 #ifdef FLARE_ENABLE_CXX11_DISPATCH_LAMBDA
   flare::parallel_for(
       flare::RangePolicy<ExecSpace, int>(0, 100), FLARE_LAMBDA(int i) {
         int* ptr = &(d_tensor(i, 0));
-        flare::Tensor<int[10], flare::AnonymousSpace> d_anon_stat_view(ptr);
-        flare::Tensor<int*, flare::AnonymousSpace> d_anon_dyn_view(ptr, 10);
+        flare::Tensor<int[10], flare::AnonymousSpace> d_anon_stat_tensor(ptr);
+        flare::Tensor<int*, flare::AnonymousSpace> d_anon_dyn_tensor(ptr, 10);
         auto sub = flare::subtensor(d_tensor, i, flare::ALL());
-        flare::Tensor<int*, flare::AnonymousSpace> d_anon_assign_view = sub;
+        flare::Tensor<int*, flare::AnonymousSpace> d_anon_assign_tensor = sub;
         for (int j = 0; j < 10; ++j) {
-          d_anon_stat_view(j) = 50;
-          d_anon_assign_view(j) += 50;
-          d_anon_dyn_view(j) += 42;
+          d_anon_stat_tensor(j) = 50;
+          d_anon_assign_tensor(j) += 50;
+          d_anon_dyn_tensor(j) += 42;
         }
       });
   flare::fence();
@@ -195,7 +195,7 @@ struct TestTensorOverloadResolution {
   }
 };
 
-TEST_CASE("TEST_CATEGORY, view_overload_resolution") {
+TEST_CASE("TEST_CATEGORY, tensor_overload_resolution") {
   TestTensorOverloadResolution<TEST_EXECSPACE>::test_function_overload();
 }
 
@@ -212,7 +212,7 @@ struct TestTensorAllocationLargeRank {
   TensorType v;
 };
 
-TEST_CASE("TEST_CATEGORY, view_allocation_large_rank") {
+TEST_CASE("TEST_CATEGORY, tensor_allocation_large_rank") {
   using ExecutionSpace = typename TEST_EXECSPACE::execution_space;
   using MemorySpace    = typename TEST_EXECSPACE::memory_space;
   constexpr int dim    = 16;
@@ -244,7 +244,7 @@ struct TestTensorShmemSizeOnDevice {
   TensorTestType shmemSize;
 };
 
-TEST_CASE("TEST_CATEGORY, view_shmem_size_on_device") {
+TEST_CASE("TEST_CATEGORY, tensor_shmem_size_on_device") {
   using ExecSpace = typename TEST_EXECSPACE::execution_space;
   using TensorType  = flare::Tensor<int64_t***, ExecSpace>;
 
