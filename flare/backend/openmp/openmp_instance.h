@@ -25,7 +25,7 @@
 #include <flare/backend/openmp/openmp.h>
 
 #include <flare/core/common/traits.h>
-#include <flare/core/common/host_thread_team.h>
+#include <flare/core/parallel/host_thread_team.h>
 
 #include <flare/core/atomic.h>
 

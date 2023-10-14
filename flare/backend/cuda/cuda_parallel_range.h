@@ -999,7 +999,7 @@ class ParallelScanWithTotal<FunctorType, flare::RangePolicy<Traits...>,
       const int size = final_reducer.value_size();
 #ifdef FLARE_IMPL_DEBUG_CUDA_SERIAL_EXECUTION
       if (m_run_serial)
-        DeepCopy<HostSpace, CudaSpace, Cuda>(m_policy.space(), &m_returnvalue,
+          DeepCopy<HostSpace, CudaSpace, Cuda>(m_policy.space(), &m_returnvalue,
                                              m_scratch_space, size);
       else
 #endif

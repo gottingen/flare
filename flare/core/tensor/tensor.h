@@ -1922,10 +1922,7 @@ namespace flare {
 }  // namespace flare
 
 #include <flare/core/tensor/tensor_uniform_type.h>
-#include <flare/core/common/atomic_tensor.h>
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+#include <flare/core/tensor/atomic_tensor.h>
 
 #endif  // FLARE_CORE_TENSOR_TENSOR_H_
 

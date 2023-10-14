@@ -13,14 +13,14 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_CORE_COMMON_HOST_THREAD_TEAM_H_
-#define FLARE_CORE_COMMON_HOST_THREAD_TEAM_H_
+#ifndef FLARE_CORE_PARALLEL_HOST_THREAD_TEAM_H_
+#define FLARE_CORE_PARALLEL_HOST_THREAD_TEAM_H_
 
 #include <flare/core_fwd.h>
 #include <flare/core/pair.h>
 #include <flare/core/atomic.h>
 #include <flare/core/policy/exec_policy.h>
-#include <flare/core/common/functor_analysis.h>
+#include <flare/core/parallel/functor_analysis.h>
 #include <flare/core/common/host_barrier.h>
 
 #include <limits>     // std::numeric_limits
@@ -1018,4 +1018,4 @@ detail::TeamThreadRangeBoundariesStruct<iType,detail::HostThreadTeamMember<Space
 
 }  // namespace flare
 
-#endif  // FLARE_CORE_COMMON_HOST_THREAD_TEAM_H_
+#endif  // FLARE_CORE_PARALLEL_HOST_THREAD_TEAM_H_

@@ -1040,6 +1040,7 @@ namespace flare {
         detail::md_parallel_impl<Rank>(policy, lambda, detail::NoReductionTag());
     }
 }  // namespace flare
+
 namespace flare::detail {
 
     template<typename FunctorType, typename TagType,
@@ -1078,10 +1079,6 @@ namespace flare::detail {
         std::string const &label_ref;
         std::string default_name;
     };
-
-}  // namespace flare::detail
-
-namespace flare::detail {
 
     template<class PatternTag, class... Args>
     struct PatternImplSpecializationFromTag;

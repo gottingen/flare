@@ -28,7 +28,7 @@
 #include <flare/core/common/traits.h>
 #include <flare/core/tensor/tensor_tracker.h>
 #include <flare/core/tensor/tensor_ctor.h>
-#include <flare/core/common/atomic_tensor.h>
+#include <flare/core/tensor/atomic_tensor.h>
 #include <flare/core/profile/tools.h>
 #include <flare/core/common/string_manipulation.h>
 #include <flare/core/common/zero_memset_fwd.h>
@@ -3099,9 +3099,9 @@ namespace flare::detail {
         // when the function is queried with cudaFuncGetAttributes
         void functor_instantiate_workaround() {
 #if defined(FLARE_ON_CUDA_DEVICE)
-                                                                                                                                    if (false) {
-      parallel_for_implementation<DestroyTag>();
-    }
+            if (false) {
+                parallel_for_implementation<DestroyTag>();
+            }
 #endif
         }
     };

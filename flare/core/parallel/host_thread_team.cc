@@ -16,7 +16,7 @@
 
 #include <limits>
 #include <flare/core/defines.h>
-#include <flare/core/common/host_thread_team.h>
+#include <flare/core/parallel/host_thread_team.h>
 #include <flare/core/common/error.h>
 #include <flare/core/common/spinwait.h>
 

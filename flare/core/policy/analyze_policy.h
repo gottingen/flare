@@ -103,7 +103,7 @@ namespace flare::detail {
         using base_t::base_t;
     };
 
-// Non-matching case
+    // Non-matching case
     template<class TraitSpec, class... TraitSpecs, class Trait, class... Traits>
     struct AnalyzeExecPolicyUseMatcher<
             std::enable_if_t<!PolicyTraitMatcher<TraitSpec, Trait>::value>,
@@ -115,7 +115,7 @@ namespace flare::detail {
         using base_t::base_t;
     };
 
-// No match found case:
+    // No match found case:
     template<class>
     struct show_name_of_invalid_execution_policy_trait;
     template<class Trait, class... Traits>

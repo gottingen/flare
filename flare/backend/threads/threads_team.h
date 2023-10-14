@@ -22,7 +22,7 @@
 
 #include <utility>
 #include <flare/core/common/spinwait.h>
-#include <flare/core/common/host_thread_team.h>
+#include <flare/core/parallel/host_thread_team.h>
 
 #include <flare/core/atomic.h>
 

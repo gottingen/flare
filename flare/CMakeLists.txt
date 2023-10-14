@@ -22,7 +22,6 @@ set(FLARE_CORE_SRC
         ${PROJECT_SOURCE_DIR}/flare/core/common/command_line_parsing.cc
         ${PROJECT_SOURCE_DIR}/flare/core/common/cpu_discovery.cc
         ${PROJECT_SOURCE_DIR}/flare/core/common/exec_policy.cc
-        ${PROJECT_SOURCE_DIR}/flare/core/common/host_thread_team.cc
         ${PROJECT_SOURCE_DIR}/flare/core/common/stacktrace.cc
         ${PROJECT_SOURCE_DIR}/flare/core/common/core.cc
         ${PROJECT_SOURCE_DIR}/flare/core/common/error.cc
@@ -35,6 +34,7 @@ set(FLARE_CORE_SRC
         ${PROJECT_SOURCE_DIR}/flare/core/memory/memory_pool.cc
         ${PROJECT_SOURCE_DIR}/flare/core/memory/memory_space.cc
         ${PROJECT_SOURCE_DIR}/flare/core/memory/shared_alloc.cc
+        ${PROJECT_SOURCE_DIR}/flare/core/parallel/host_thread_team.cc
         ${PROJECT_SOURCE_DIR}/flare/core/profile/profiling.cc
         ${PROJECT_SOURCE_DIR}/flare/containers/unordered_map_impl.cc
         ${PROJECT_SOURCE_DIR}/flare/simd/fake.cc

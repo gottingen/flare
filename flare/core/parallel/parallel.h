@@ -29,7 +29,7 @@
 #include <flare/core/profile/tools_generic.h>
 
 #include <flare/core/common/traits.h>
-#include <flare/core/common/functor_analysis.h>
+#include <flare/core/parallel/functor_analysis.h>
 
 #include <cstddef>
 #include <type_traits>
@@ -43,14 +43,14 @@ namespace flare::detail {
     template<class T>
     using device_type_t = typename T::device_type;
 
-//----------------------------------------------------------------------------
-/** \brief  Given a Functor and Execution Policy query an execution space.
- *
- *  if       the Policy has an execution space use that
- *  else if  the Functor has an execution_space use that
- *  else if  the Functor has a device_type use that for backward compatibility
- *  else     use the default
- */
+    //----------------------------------------------------------------------------
+    /** \brief  Given a Functor and Execution Policy query an execution space.
+     *
+     *  if       the Policy has an execution space use that
+     *  else if  the Functor has an execution_space use that
+     *  else if  the Functor has a device_type use that for backward compatibility
+     *  else     use the default
+     */
 
     template<class Functor, class Policy>
     struct FunctorPolicyExecutionSpace {
@@ -90,9 +90,6 @@ namespace flare::detail {
     };
 
 }  // namespace flare::detail
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 
 namespace flare {
 
@@ -163,8 +160,6 @@ namespace flare {
 }  // namespace flare
 
 #include <flare/core/parallel/parallel_reduce.h>
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 
 namespace flare {
 

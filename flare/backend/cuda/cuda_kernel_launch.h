@@ -65,8 +65,7 @@ __global__ static void cuda_parallel_launch_constant_memory() {
 }
 
 template <class DriverType, unsigned int maxTperB, unsigned int minBperSM>
-__global__ __launch_bounds__(
-    maxTperB, minBperSM) static void cuda_parallel_launch_constant_memory() {
+__global__ __launch_bounds__(maxTperB, minBperSM) static void cuda_parallel_launch_constant_memory() {
   const DriverType& driver =
       *((const DriverType*)flare_impl_cuda_constant_memory_buffer);
 

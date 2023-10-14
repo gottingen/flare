@@ -18,10 +18,10 @@
 
 namespace flare::detail {
 
-// Tag class to choose the nested loop specialization
-//   - LastNestLevel means call the actual closure
-//   - ParThread means use TeamThreadRange
-//   - ParVector means use ThreadVectorRange
+    // Tag class to choose the nested loop specialization
+    //   - LastNestLevel means call the actual closure
+    //   - ParThread means use TeamThreadRange
+    //   - ParVector means use ThreadVectorRange
     template<TeamMDRangeLastNestLevel LastNestLevel,
             TeamMDRangeParThread ParThread, TeamMDRangeParVector ParVector>
     struct TeamMDRangeMode {
@@ -30,17 +30,17 @@ namespace flare::detail {
         static constexpr TeamMDRangeParVector par_vector = ParVector;
     };
 
-// Tag class to keep track of the loop nest level and where to deploy thread and
-// vector parallelism
-//   - Rank is flare::Rank<TotalNestLevel, Iter>
-//     - total_nest_level is the total number of loop nests
-//     - iter is whether to go forward or backward through ranks (i.e. the
-//       iteration order for MDRangePolicy)
-//   - ParThreadNestLevel is the nesting level on which to deploy thread
-//   parallelism
-//   - ParVectorNestLevel is the nesting level on which to deploy vector
-//   parallelism
-//   - CurrentNestLevel is the nest level of interest
+    // Tag class to keep track of the loop nest level and where to deploy thread and
+    // vector parallelism
+    //   - Rank is flare::Rank<TotalNestLevel, Iter>
+    //     - total_nest_level is the total number of loop nests
+    //     - iter is whether to go forward or backward through ranks (i.e. the
+    //       iteration order for MDRangePolicy)
+    //   - ParThreadNestLevel is the nesting level on which to deploy thread
+    //   parallelism
+    //   - ParVectorNestLevel is the nesting level on which to deploy vector
+    //   parallelism
+    //   - CurrentNestLevel is the nest level of interest
     template<typename Rank, int ParThreadNestLevel, int ParVectorNestLevel,
             int CurrentNestLevel>
     struct TeamMDRangeNestingTracker {

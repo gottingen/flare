@@ -18,7 +18,7 @@
 
 #include <flare/core/parallel/unique_token.h>
 
-namespace flare::experimental {
+namespace flare {
 
     template<>
     class UniqueToken<Serial, UniqueTokenScope::Instance> {
@@ -73,6 +73,6 @@ namespace flare::experimental {
         void release(int) const noexcept {}
     };
 
-}  // namespace flare::experimental
+}  // namespace flare
 
 #endif  // FLARE_BACKEND_SERIAL_SERIAL_UNIQUE_TOKEN_H_

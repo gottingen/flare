@@ -18,7 +18,7 @@
 
 #include <flare/core/reduction_identity.h>
 #include <flare/core/tensor/tensor.h>
-#include <flare/core/common/functor_analysis.h>
+#include <flare/core/parallel/functor_analysis.h>
 #include <flare/core/profile/tools_generic.h>
 #include <type_traits>
 #include <iostream>
@@ -1615,45 +1615,45 @@ namespace flare {
 
     }  // namespace detail
 
-/** \brief  Parallel reduction
- *
- * parallel_reduce performs parallel reductions with arbitrary functions - i.e.
- * it is not solely data based. The call expects up to 4 arguments:
- *
- *
- * Example of a parallel_reduce functor for a POD (plain old data) value type:
- * \code
- *  class FunctorType { // For POD value type
- *  public:
- *    using execution_space = ...;
- *    using value_type = <podType>;
- *    void operator()( <intType> iwork , <podType> & update ) const ;
- *    void init( <podType> & update ) const ;
- *    void join(       <podType> & update ,
- *               const <podType> & input ) const ;
- *
- *    void final( <podType> & update ) const ;
- *  };
- * \endcode
- *
- * Example of a parallel_reduce functor for an array of POD (plain old data)
- * values:
- * \code
- *  class FunctorType { // For array of POD value
- *  public:
- *    using execution_space = ...;
- *    using value_type = <podType>[];
- *    void operator()( <intType> , <podType> update[] ) const ;
- *    void init( <podType> update[] ) const ;
- *    void join(       <podType> update[] ,
- *               const <podType> input[] ) const ;
- *
- *    void final( <podType> update[] ) const ;
- *  };
- * \endcode
- */
+    /** \brief  Parallel reduction
+     *
+     * parallel_reduce performs parallel reductions with arbitrary functions - i.e.
+     * it is not solely data based. The call expects up to 4 arguments:
+     *
+     *
+     * Example of a parallel_reduce functor for a POD (plain old data) value type:
+     * \code
+     *  class FunctorType { // For POD value type
+     *  public:
+     *    using execution_space = ...;
+     *    using value_type = <podType>;
+     *    void operator()( <intType> iwork , <podType> & update ) const ;
+     *    void init( <podType> & update ) const ;
+     *    void join(       <podType> & update ,
+     *               const <podType> & input ) const ;
+     *
+     *    void final( <podType> & update ) const ;
+     *  };
+     * \endcode
+     *
+     * Example of a parallel_reduce functor for an array of POD (plain old data)
+     * values:
+     * \code
+     *  class FunctorType { // For array of POD value
+     *  public:
+     *    using execution_space = ...;
+     *    using value_type = <podType>[];
+     *    void operator()( <intType> , <podType> update[] ) const ;
+     *    void init( <podType> update[] ) const ;
+     *    void join(       <podType> update[] ,
+     *               const <podType> input[] ) const ;
+     *
+     *    void final( <podType> update[] ) const ;
+     *  };
+     * \endcode
+     */
 
-// ReturnValue is scalar or array: take by reference
+    // ReturnValue is scalar or array: take by reference
 
     template<class PolicyType, class FunctorType, class ReturnType>
     inline std::enable_if_t<flare::is_execution_policy<PolicyType>::value &&
@@ -1670,10 +1670,7 @@ namespace flare {
         detail::ParallelReduceAdaptor<PolicyType, FunctorType, ReturnType>::execute(
                 label, policy, functor, return_value);
         detail::ParallelReduceFence<typename PolicyType::execution_space, ReturnType>::
-        fence(
-                policy.space(),
-                "flare::parallel_reduce: fence due to result being value, not tensor",
-                return_value);
+        fence(policy.space(), "flare::parallel_reduce: fence due to result being value, not tensor", return_value);
     }
 
     template<class PolicyType, class FunctorType, class ReturnType>
@@ -1691,10 +1688,7 @@ namespace flare {
         detail::ParallelReduceAdaptor<PolicyType, FunctorType, ReturnType>::execute(
                 "", policy, functor, return_value);
         detail::ParallelReduceFence<typename PolicyType::execution_space, ReturnType>::
-        fence(
-                policy.space(),
-                "flare::parallel_reduce: fence due to result being value, not tensor",
-                return_value);
+        fence(policy.space(),"flare::parallel_reduce: fence due to result being value, not tensor",return_value);
     }
 
     template<class FunctorType, class ReturnType>
@@ -1703,8 +1697,7 @@ namespace flare {
                               std::is_pointer<ReturnType>::value)>
     parallel_reduce(const size_t &policy, const FunctorType &functor,
                     ReturnType &return_value) {
-        static_assert(
-                !std::is_const<ReturnType>::value,
+        static_assert(!std::is_const<ReturnType>::value,
                 "A const reduction result type is only allowed for a Tensor, pointer or "
                 "reducer return type!");
 
@@ -1715,9 +1708,7 @@ namespace flare {
         detail::ParallelReduceAdaptor<policy_type, FunctorType, ReturnType>::execute(
                 "", policy_type(0, policy), functor, return_value);
         detail::ParallelReduceFence<typename policy_type::execution_space, ReturnType>::
-        fence(
-                typename policy_type::execution_space(),
-                "flare::parallel_reduce: fence due to result being value, not tensor",
+        fence(typename policy_type::execution_space(),"flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
@@ -1738,13 +1729,11 @@ namespace flare {
         detail::ParallelReduceAdaptor<policy_type, FunctorType, ReturnType>::execute(
                 label, policy_type(0, policy), functor, return_value);
         detail::ParallelReduceFence<typename policy_type::execution_space, ReturnType>::
-        fence(
-                typename policy_type::execution_space(),
-                "flare::parallel_reduce: fence due to result being value, not tensor",
+        fence(typename policy_type::execution_space(),"flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
-// ReturnValue as Tensor or Reducer: take by copy to allow for inline construction
+    // ReturnValue as Tensor or Reducer: take by copy to allow for inline construction
 
     template<class PolicyType, class FunctorType, class ReturnType>
     inline std::enable_if_t<flare::is_execution_policy<PolicyType>::value &&
@@ -1757,9 +1746,7 @@ namespace flare {
         detail::ParallelReduceAdaptor<PolicyType, FunctorType, ReturnType>::execute(
                 label, policy, functor, return_value_impl);
         detail::ParallelReduceFence<typename PolicyType::execution_space, ReturnType>::
-        fence(
-                policy.space(),
-                "flare::parallel_reduce: fence due to result being value, not tensor",
+        fence(policy.space(), "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
@@ -1774,9 +1761,7 @@ namespace flare {
         detail::ParallelReduceAdaptor<PolicyType, FunctorType, ReturnType>::execute(
                 "", policy, functor, return_value_impl);
         detail::ParallelReduceFence<typename PolicyType::execution_space, ReturnType>::
-        fence(
-                policy.space(),
-                "flare::parallel_reduce: fence due to result being value, not tensor",
+        fence(policy.space(), "flare::parallel_reduce: fence due to result being value, not tensor",
                 return_value);
     }
 
@@ -1818,7 +1803,7 @@ namespace flare {
                 return_value);
     }
 
-// No Return Argument
+    // No Return Argument
 
     template<class PolicyType, class FunctorType>
     inline void parallel_reduce(
@@ -1843,7 +1828,7 @@ namespace flare {
 
         detail::ParallelReduceAdaptor<PolicyType, FunctorType,
                 result_tensor_type>::execute(label, policy, functor,
-                                           result_tensor);
+                                             result_tensor);
     }
 
     template<class PolicyType, class FunctorType>
@@ -1868,7 +1853,7 @@ namespace flare {
 
         detail::ParallelReduceAdaptor<PolicyType, FunctorType,
                 result_tensor_type>::execute("", policy, functor,
-                                           result_tensor);
+                                             result_tensor);
     }
 
     template<class FunctorType>
@@ -1893,8 +1878,8 @@ namespace flare {
 
         detail::ParallelReduceAdaptor<policy_type, FunctorType,
                 result_tensor_type>::execute("",
-                                           policy_type(0, policy),
-                                           functor, result_tensor);
+                                             policy_type(0, policy),
+                                             functor, result_tensor);
     }
 
     template<class FunctorType>
@@ -1920,8 +1905,8 @@ namespace flare {
 
         detail::ParallelReduceAdaptor<policy_type, FunctorType,
                 result_tensor_type>::execute(label,
-                                           policy_type(0, policy),
-                                           functor, result_tensor);
+                                             policy_type(0, policy),
+                                             functor, result_tensor);
     }
 
 }  // namespace flare

@@ -17,7 +17,7 @@
 #define FLARE_CORE_PROFILE_TOOLS_GENERIC_H_
 
 #include <flare/core/profile/profiling.h>
-#include <flare/core/common/functor_analysis.h>
+#include <flare/core/parallel/functor_analysis.h>
 
 #include <flare/core_fwd.h>
 #include <flare/core/policy/exec_policy.h>

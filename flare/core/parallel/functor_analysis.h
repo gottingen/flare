@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_CORE_COMMON_FUNCTOR_ANALYSIS_H_
-#define FLARE_CORE_COMMON_FUNCTOR_ANALYSIS_H_
+#ifndef FLARE_CORE_PARALLEL_FUNCTOR_ANALYSIS_H_
+#define FLARE_CORE_PARALLEL_FUNCTOR_ANALYSIS_H_
 
 #include <cstddef>
 #include <flare/core_fwd.h>
@@ -60,15 +60,15 @@ namespace flare::detail {
         using type = FunctorPatternInterface::SCAN;
     };
 
-/** \brief  Query Functor and execution policy argument tag for value type.
- *
- *  If 'value_type' is not explicitly declared in the functor and
- * OverrideValueType is void, then attempt to deduce the type from
- * FunctorType::operator() interface used by the pattern and policy.
- *
- *  For the REDUCE pattern generate a Reducer and finalization function
- *  derived from what is available within the functor.
- */
+    /** \brief  Query Functor and execution policy argument tag for value type.
+     *
+     *  If 'value_type' is not explicitly declared in the functor and
+     * OverrideValueType is void, then attempt to deduce the type from
+     * FunctorType::operator() interface used by the pattern and policy.
+     *
+     *  For the REDUCE pattern generate a Reducer and finalization function
+     *  derived from what is available within the functor.
+     */
     template<typename PatternInterface, class Policy, class Functor,
             typename OverrideValueType>
     struct FunctorAnalysis {
@@ -1063,4 +1063,4 @@ namespace flare::detail {
 
 }  // namespace flare::detail
 
-#endif  // FLARE_CORE_COMMON_FUNCTOR_ANALYSIS_H_
+#endif  // FLARE_CORE_PARALLEL_FUNCTOR_ANALYSIS_H_

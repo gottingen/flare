@@ -32,8 +32,8 @@
 #include <flare/core/memory/host_space.h>
 #include <flare/core/memory/scratch_space.h>
 #include <flare/core/memory/memory_traits.h>
-#include <flare/core/common/host_thread_team.h>
-#include <flare/core/common/functor_analysis.h>
+#include <flare/core/parallel/host_thread_team.h>
+#include <flare/core/parallel/functor_analysis.h>
 #include <flare/core/profile/tools.h>
 #include <flare/core/memory/host_shared_ptr.h>
 #include <flare/core/common/initialization_settings.h>

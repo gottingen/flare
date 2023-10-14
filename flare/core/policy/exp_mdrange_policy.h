@@ -27,17 +27,6 @@
 
 namespace flare {
 
-// ------------------------------------------------------------------ //
-// Moved to layout.h for more general accessibility
-/*
-enum class Iterate
-{
-  Default, // Default for the device
-  Left,    // Left indices stride fastest
-  Right,   // Right indices stride fastest
-};
-*/
-
     template<typename ExecSpace>
     struct default_outer_direction {
         using type = Iterate;
@@ -52,8 +41,8 @@ enum class Iterate
 
 }  // namespace flare
 namespace flare::detail {
-// NOTE the comparison below is encapsulated to silent warnings about pointless
-// comparison of unsigned integer with zero
+    // NOTE the comparison below is encapsulated to silent warnings about pointless
+    // comparison of unsigned integer with zero
     template<class T>
     constexpr std::enable_if_t<!std::is_signed<T>::value, bool>
     is_less_than_value_initialized_variable(T) {
@@ -81,12 +70,12 @@ namespace flare::detail {
         return ret;
     }
 
-// NOTE prefer C array U[M] to std::initalizer_list<U> so that the number of
-// elements can be deduced (https://stackoverflow.com/q/40241370)
-// NOTE for some unfortunate reason the policy bounds are stored as signed
-// integer arrays (point_type which is flare::Array<std::int64_t>) so we
-// specify the index type (actual policy index_type from the traits) and check
-// ahead of time that narrowing conversions will be safe.
+    // NOTE prefer C array U[M] to std::initalizer_list<U> so that the number of
+    // elements can be deduced (https://stackoverflow.com/q/40241370)
+    // NOTE for some unfortunate reason the policy bounds are stored as signed
+    // integer arrays (point_type which is flare::Array<std::int64_t>) so we
+    // specify the index type (actual policy index_type from the traits) and check
+    // ahead of time that narrowing conversions will be safe.
     template<class IndexType, class Array, class U, std::size_t M>
     constexpr Array to_array_potentially_narrowing(const U (&init)[M]) {
         using T = typename Array::value_type;
@@ -105,10 +94,10 @@ namespace flare::detail {
         return a;
     }
 
-// NOTE Making a copy even when std::is_same<Array, flare::Array<U, M>>::value
-// is true to reduce code complexity.  You may change this if you have a good
-// reason to.  Intentionally not enabling std::array at this time but this may
-// change too.
+    // NOTE Making a copy even when std::is_same<Array, flare::Array<U, M>>::value
+    // is true to reduce code complexity.  You may change this if you have a good
+    // reason to.  Intentionally not enabling std::array at this time but this may
+    // change too.
     template<class IndexType, class NVCC_WONT_LET_ME_CALL_YOU_Array, class U,
             std::size_t M>
     constexpr NVCC_WONT_LET_ME_CALL_YOU_Array to_array_potentially_narrowing(
