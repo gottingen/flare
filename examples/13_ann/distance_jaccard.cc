@@ -18,7 +18,7 @@
 
 #include <flare/core.h>
 #include <cstdio>
-#include <flare/ann/distance_l2.h>
+#include <flare/ann/distance_jaccard.h>
 #include <flare/bench.h>
 #include <chrono>
 
@@ -32,7 +32,7 @@
 //
 // The first dimension of the Tensor is the dimension over which it is
 // efficient for flare to parallelize.
-using tensor_type = flare::Tensor<double *, flare::Serial>;
+using tensor_type = flare::Tensor<unsigned long *, flare::Serial>;
 
 // parallel_for functor that fills the Tensor given to its constructor.
 // The Tensor must already have been allocated.
@@ -53,7 +53,7 @@ struct InitTensor1 {
         // Acesss the Tensor just like a Fortran array.  The layout depends
         // on the Tensor's memory space, so don't rely on the Tensor's
         // physical memory layout unless you know what you're doing.
-        a(i) = i * 1.0;
+        a(i) = i;
     }
 };
 
@@ -74,7 +74,7 @@ struct InitTensor2 {
         // Acesss the Tensor just like a Fortran array.  The layout depends
         // on the Tensor's memory space, so don't rely on the Tensor's
         // physical memory layout unless you know what you're doing.
-        a(i) = i * 1.0 + 1.0;
+        a(i) = i<<1;
     }
 };
 
@@ -101,18 +101,18 @@ int main(int argc, char* argv[]) {
 
         flare::parallel_for(N, InitTensor1(a));
         flare::parallel_for(N, InitTensor2(b));
-        double dis = flare::ann::distance_l2<tensor_type>(a,b, false);
+        double dis = flare::ann::distance_jaccard<tensor_type>(a,b, false);
         printf("Result flare::ann::distance_l1<tensor_type>(a,b, false): %f\n", dis);
 
-        double dis1 = flare::ann::distance_l2<tensor_type>(a,b);
+        double dis1 = flare::ann::distance_jaccard<tensor_type>(a,b);
         printf("Result flare::ann::distance_l1<tensor_type>(a,b): %f\n", dis1);
         auto bencher = flare::Benchmarker<>{ 64, std::chrono::seconds { 10 } };
         auto stats_nor = bencher([&]()
-                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l2<tensor_type>(a,b, false); });
+                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_jaccard<tensor_type>(a,b, false); });
         std::cout << '\n'
                   << "nor " << stats_nor << '\n';
         auto stats_batch = bencher([&]()
-                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_l2<tensor_type>(a,b); });
+                                 { for(auto i =0; i <  100000; i++) flare::ann::distance_jaccard<tensor_type>(a,b); });
 
         std::cout << '\n'
                   << flare::simd::default_arch::name()<<" batch " << stats_batch << '\n';

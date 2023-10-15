@@ -13,10 +13,10 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_ANN_DISTANCE_L1_H_
-#define FLARE_ANN_DISTANCE_L1_H_
+#ifndef FLARE_ANN_DISTANCE_JACCARD_H_
+#define FLARE_ANN_DISTANCE_JACCARD_H_
 
-#include <flare/ann/distance_l2_impl.h>
+#include <flare/ann/distance_jaccard_impl.h>
 
 namespace flare::ann {
 
@@ -36,16 +36,20 @@ namespace flare::ann {
     template<class XVector, class execution_space,
             typename std::enable_if<flare::is_execution_space_v<execution_space>,
                     int>::type = 0>
-    typename simd_traits<XVector, execution_space>::mag_type
-    distance_l2(const execution_space &space, const XVector &x, const XVector &y, bool batch = true) {
+    double distance_jaccard(const execution_space &space, const XVector &x, const XVector &y, bool batch = true) {
         static_assert(
                 flare::is_execution_space<execution_space>::value,
-                "flare::ann::distance_l2: execution_space must be a flare::execution_space.");
+                "flare::ann::distance_jaccard: execution_space must be a flare::execution_space.");
         static_assert(flare::is_tensor<XVector>::value,
-                      "flare::ann::distance_l2: XVector must be a flare::Tensor.");
+                      "flare::ann::distance_jaccard: XVector must be a flare::Tensor.");
         static_assert(XVector::rank == 1,
-                      "flare::ann::distance_l2: "
+                      "flare::ann::distance_jaccard: "
                       "Both Vector inputs must have rank 1.");
+
+        using x_value_type = typename XVector::non_const_value_type;
+
+        static_assert(std::is_same_v<x_value_type, unsigned long> ||
+                              std::is_same_v<x_value_type, unsigned long long>, " type not supports");
         using mag_type = typename simd_traits<XVector, execution_space>::mag_type;
 
         using XVector_Internal = flare::Tensor<
@@ -54,26 +58,26 @@ namespace flare::ann {
                 typename XVector::device_type, flare::MemoryTraits<flare::Unmanaged> >;
 
         using RVector_Internal =
-                flare::Tensor<mag_type, default_layout, flare::HostSpace,
+                flare::Tensor<flare::kernel::dense::JaccardResult, default_layout, flare::HostSpace,
                         flare::MemoryTraits<flare::Unmanaged> >;
-        mag_type result;
+        flare::kernel::dense::JaccardResult result;
         RVector_Internal R = RVector_Internal(&result);
         if (simd_traits<XVector, execution_space>::is_batch_available && batch) {
-            flare::ann::detail::DistanceL2<execution_space, RVector_Internal, XVector_Internal>::batch_distance(space, R, x,
+            flare::ann::detail::DistanceJaccard<execution_space, RVector_Internal, XVector_Internal>::batch_distance(space, R, x,
                                                                                                           y);
         } else {
-            flare::ann::detail::DistanceL2<execution_space, RVector_Internal, XVector_Internal>::distance(space, R, x,
+            flare::ann::detail::DistanceJaccard<execution_space, RVector_Internal, XVector_Internal>::distance(space, R, x,
                                                                                                           y);
         }
         space.fence();
-        return result;
+        return result.result;
     }
 
     template<class XVector>
-    typename simd_traits<XVector>::mag_type distance_l2(const XVector &x, const XVector &y, bool batch = true) {
-        return distance_l2(typename XVector::execution_space{}, x, y, batch);
+    double distance_jaccard(const XVector &x, const XVector &y, bool batch = true) {
+        return distance_jaccard(typename XVector::execution_space{}, x, y, batch);
     }
 
 }  // namespace flare::ann
 
-#endif  // FLARE_ANN_DISTANCE_L1_H_
+#endif  // FLARE_ANN_DISTANCE_JACCARD_H_

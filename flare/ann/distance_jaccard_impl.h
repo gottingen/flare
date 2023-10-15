@@ -20,13 +20,13 @@
 #include <flare/core/arith_traits.h>
 #include <flare/simd/simd.h>
 #include <flare/core/layout_utility.h>
-#include <flare/kernel/dense/distance_l2.h>
-#include <flare/kernel/dense/batch_distance_l2.h>
+#include <flare/kernel/dense/distance_jaccard.h>
+#include <flare/kernel/dense/batch_distance_jaccard.h>
 
 namespace flare::ann::detail {
 
     template<typename execution_space, typename RV, typename XV>
-    struct DistanceL2 {
+    struct DistanceJaccard {
         using size_type = typename XV::size_type;
 
         static void distance(const execution_space &space, const RV &R, const XV &X, const XV &Y) {
@@ -46,10 +46,10 @@ namespace flare::ann::detail {
             const size_type numRows = X.extent(0);
 
             if (numRows < static_cast<size_type>(INT_MAX)) {
-                flare::kernel::dense::DistanceL2Invoke<execution_space, RV, XV, int>(space, R, X, Y);
+                flare::kernel::dense::DistanceJaccardInvoke<execution_space, RV, XV, int>(space, R, X, Y);
             } else {
                 using index_type = std::int64_t;
-                flare::kernel::dense::DistanceL2Invoke<execution_space, RV, XV, index_type>(space, R, X, Y);
+                flare::kernel::dense::DistanceJaccardInvoke<execution_space, RV, XV, index_type>(space, R, X, Y);
             }
             flare::Profiling::popRegion();
         }
@@ -71,12 +71,12 @@ namespace flare::ann::detail {
             const size_type numRows = X.extent(0);
 
             if (numRows < static_cast<size_type>(INT_MAX)) {
-                FLARE_IF_ON_DEVICE((flare::kernel::dense::DistanceL2Invoke<execution_space, RV, XV, int>(space, R, X, Y);))
-                FLARE_IF_ON_HOST((flare::kernel::dense::DistanceL2BatchInvoke<execution_space, RV, XV, int>(space, R, X, Y);))
+                FLARE_IF_ON_DEVICE((flare::kernel::dense::DistanceJaccardInvoke<execution_space, RV, XV, int>(space, R, X, Y);))
+                FLARE_IF_ON_HOST((flare::kernel::dense::DistanceJaccardBatchInvoke<execution_space, RV, XV, int>(space, R, X, Y);))
             } else {
                 using index_type = std::int64_t;
-               FLARE_IF_ON_HOST((flare::kernel::dense::DistanceL2BatchInvoke<execution_space, RV, XV, index_type>(space, R, X, Y);))
-                FLARE_IF_ON_DEVICE((flare::kernel::dense::DistanceL2Invoke<execution_space, RV, XV, index_type>(space, R, X, Y);))
+               FLARE_IF_ON_HOST((flare::kernel::dense::DistanceJaccardBatchInvoke<execution_space, RV, XV, index_type>(space, R, X, Y);))
+                FLARE_IF_ON_DEVICE((flare::kernel::dense::DistanceJaccardInvoke<execution_space, RV, XV, index_type>(space, R, X, Y);))
             }
             flare::Profiling::popRegion();
         }

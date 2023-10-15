@@ -78,3 +78,12 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
+
+carbin_cc_binary(
+        NAME example_ddistance_jaccard_cc
+        SOURCES
+        distance_jaccard.cc
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::core
+)
