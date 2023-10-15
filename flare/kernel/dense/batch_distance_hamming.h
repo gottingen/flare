@@ -14,15 +14,14 @@
 //
 
 
-#ifndef FLARE_KERNEL_DENSE_BATCH_DISTANCE_JACCARD_H_
-#define FLARE_KERNEL_DENSE_BATCH_DISTANCE_JACCARD_H_
+#ifndef FLARE_KERNEL_DENSE_BATCH_DISTANCE_HAMMING_H_
+#define FLARE_KERNEL_DENSE_BATCH_DISTANCE_HAMMING_H_
 
 #include <flare/core.h>
 #include <flare/core/arith_traits.h>
 #include <flare/core/layout_utility.h>
-#include <flare/kernel/dense/distance_jaccard.h>
-#include <flare/core/bit_manipulation.h>
 #include <flare/kernel/dense/batch_pop_count.h>
+#include <flare/core/bit_manipulation.h>
 
 namespace flare::kernel::dense {
 
@@ -32,17 +31,16 @@ namespace flare::kernel::dense {
     /// \tparam XV 1-D input Tensor
     /// \tparam SizeType Index type.  Use int (32 bits) if possible.
     template<typename DT, typename RV, typename XV, class SizeType = typename XV::size_type>
-    struct BatchDistanceJaccardFunctor {
+    struct BatchDistanceHammingFunctor {
         using size_type = SizeType;
         using xvalue_type = typename DT::mag_type;
         using batch_type = typename DT::batch_type;
-        using value_type = JaccardResult;
 
         typename XV::const_type m_x;
         typename XV::const_type m_y;
-        value_type m_init_value;
+        double m_init_value;
 
-        BatchDistanceJaccardFunctor(const XV &x, const XV &y, value_type init_value = value_type())
+        BatchDistanceHammingFunctor(const XV &x, const XV &y, double init_value = 0.0)
                 : m_x(x), m_y(y), m_init_value(init_value) {
             static_assert(flare::is_tensor<RV>::value,
                           "flare::ann::detail::DistanceL1Functor: "
@@ -63,28 +61,24 @@ namespace flare::kernel::dense {
         }
 
         FLARE_INLINE_FUNCTION
-        void operator()(const size_type &i, value_type &sum) const {
+        void operator()(const size_type &i, double &sum) const {
             auto inx = DT::batch_size * i;
             auto x = batch_type::load_aligned(m_x.data() + inx);
             auto y = batch_type::load_aligned(m_y.data() + inx);
-            sum.sum_and += detail::batch_pop_count<xvalue_type, DT::batch_size>::pop_count(x & y);
-            sum.sum_or += detail::batch_pop_count<xvalue_type, DT::batch_size>::pop_count(x | y);
+            sum += detail::batch_pop_count<xvalue_type, DT::batch_size>::pop_count(x ^ y);
         }
 
-        FLARE_INLINE_FUNCTION void init(value_type &update) const {
-            update.sum_and = m_init_value.sum_and;
-            update.sum_or = m_init_value.sum_or;
-            update.result = -1.0;
+        FLARE_INLINE_FUNCTION void init(double &update) const {
+            update = m_init_value;
         }
 
-        FLARE_INLINE_FUNCTION void join(value_type &update,
-                                        const value_type &source) const {
-            update.sum_and += source.sum_and;
-            update.sum_or += source.sum_or;
+        FLARE_INLINE_FUNCTION void join(double &update,
+                                        const double &source) const {
+            update += source;
         }
 
-        FLARE_INLINE_FUNCTION void final(value_type &update) const {
-            update.result = update.sum_and / update.sum_or;
+        FLARE_INLINE_FUNCTION void final(double &update) const {
+            (void)update;
         }
 
     };
@@ -93,20 +87,19 @@ namespace flare::kernel::dense {
     /// \brief Compute the distance l1 of the single vector (1-D
     ///   Tensor) X, and store the result in the 0-D Tensor r.
     template<typename execution_space, typename RV, typename XV, typename SizeType>
-    void DistanceJaccardBatchInvoke(const execution_space &space, const RV &r, const XV &X, const XV &Y) {
+    void DistanceHammingBatchInvoke(const execution_space &space, const RV &r, const XV &X, const XV &Y) {
         using DT = simd_traits<XV, execution_space>;
         const SizeType numRows = static_cast<SizeType>(X.extent(0));
         SizeType numBatch = numRows / DT::batch_size;
         const SizeType nMod = numRows % DT::batch_size;
         flare::RangePolicy<execution_space, SizeType> batch_policy(space, 0, numBatch);
-        JaccardResult tail_sum;
+        double tail_sum{0.0};
         if (nMod != 0) {
             for (SizeType i = numRows - nMod; i < numRows; ++i) {
-                tail_sum.sum_and += flare::experimental::popcount_builtin(X(i) & Y(i));
-                tail_sum.sum_or += flare::experimental::popcount_builtin(X(i) | Y(i));
+                tail_sum += flare::experimental::popcount_builtin(X(i) ^ Y(i));
             }
         }
-        typedef BatchDistanceJaccardFunctor<DT, RV, XV, SizeType> batch_functor_type;
+        typedef BatchDistanceHammingFunctor<DT, RV, XV, SizeType> batch_functor_type;
         batch_functor_type batch_op(X, Y, tail_sum);
         flare::parallel_reduce("flare::ann::batch_distance_l2", batch_policy, batch_op, r);
         // do it for local
@@ -114,4 +107,4 @@ namespace flare::kernel::dense {
 
 }  // namespace flare::kernel::dense
 
-#endif  // FLARE_KERNEL_DENSE_BATCH_DISTANCE_JACCARD_H_
+#endif  // FLARE_KERNEL_DENSE_BATCH_DISTANCE_HAMMING_H_
