@@ -32,3 +32,31 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
+
+carbin_cc_binary(
+        NAME example_norm_l1_cc
+        SOURCES
+        norm_l1.cc
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::core
+)
+
+carbin_cc_binary(
+        NAME example_norm_l1_cu
+        SOURCES
+        norm_l1.cu
+        COPTS ${CARBIN_CXX_OPTIONS}
+        CUOPTS ${CARBIN_CU_OPTIONS}
+        DEPS
+        flare::core
+)
+
+carbin_cc_binary(
+        NAME example_distance_l2_cc
+        SOURCES
+        distance_l2.cc
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::core
+)

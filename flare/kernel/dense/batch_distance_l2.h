@@ -14,8 +14,8 @@
 //
 
 
-#ifndef FLARE_KERNEL_DENSE_BATCH_DISTANCE_L1_H_
-#define FLARE_KERNEL_DENSE_BATCH_DISTANCE_L1_H_
+#ifndef FLARE_KERNEL_DENSE_BATCH_DISTANCE_L2_H_
+#define FLARE_KERNEL_DENSE_BATCH_DISTANCE_L2_H_
 
 #include <flare/core.h>
 #include <flare/core/arith_traits.h>
@@ -29,7 +29,7 @@ namespace flare::kernel::dense {
     /// \tparam XV 1-D input Tensor
     /// \tparam SizeType Index type.  Use int (32 bits) if possible.
     template<typename DT, typename RV, typename XV, class SizeType = typename XV::size_type>
-    struct BatchDistanceL1Functor {
+    struct BatchDistanceL2Functor {
         using size_type = SizeType;
         using xvalue_type = typename DT::mag_type;
         using batch_type = typename DT::batch_type;
@@ -38,11 +38,11 @@ namespace flare::kernel::dense {
 
         typename XV::const_type m_x;
         typename XV::const_type m_y;
+        bool m_take_sqrt;
         value_type m_init_value;
 
-        BatchDistanceL1Functor(const XV &x, const XV &y, value_type init_value = XAT::zero()) : m_x(x), m_y(y),
-                                                                                                m_init_value(
-                                                                                                        init_value) {
+        BatchDistanceL2Functor(const XV &x, const XV &y, bool take_sqrt = true, value_type init_value = XAT::zero())
+        : m_x(x), m_y(y), m_take_sqrt(take_sqrt), m_init_value(init_value) {
             static_assert(flare::is_tensor<RV>::value,
                           "flare::ann::detail::DistanceL1Functor: "
                           "R is not a flare::Tensor.");
@@ -66,46 +66,49 @@ namespace flare::kernel::dense {
             auto inx = DT::batch_size * i;
             auto a = batch_type::load_aligned(m_x.data() + inx);
             auto b = batch_type::load_aligned(m_y.data() + inx);
-            sum += flare::simd::reduce_add(flare::simd::abs(a - b));
+            auto c = a - b;
+            sum += flare::simd::reduce_add(c* c);
         }
 
-        FLARE_INLINE_FUNCTION void init(value_type &update) const {
+        FLARE_INLINE_FUNCTION void init(value_type& update) const {
             update = m_init_value;
         }
 
-        FLARE_INLINE_FUNCTION void join(value_type &update,
-                                        const value_type &source) const {
+        FLARE_INLINE_FUNCTION void join(value_type& update,
+                                        const value_type& source) const {
             update += source;
         }
 
-        FLARE_INLINE_FUNCTION void final(value_type &update) const {
-            (void) update;
+        FLARE_INLINE_FUNCTION void final(value_type& update) const {
+            (void)update;
         }
+
     };
 
 
     /// \brief Compute the distance l1 of the single vector (1-D
     ///   Tensor) X, and store the result in the 0-D Tensor r.
     template<typename execution_space, typename RV, typename XV, typename SizeType>
-    void DistanceL1BatchInvoke(const execution_space &space, const RV &r, const XV &X, const XV &Y) {
+    void DistanceL2BatchInvoke(const execution_space &space, const RV &r, const XV &X, const XV &Y) {
         using DT = simd_traits<XV, execution_space>;
         const SizeType numRows = static_cast<SizeType>(X.extent(0));
         SizeType numBatch = numRows / DT::batch_size;
         const SizeType nMod = numRows % DT::batch_size;
         flare::RangePolicy<execution_space, SizeType> batch_policy(space, 0, numBatch);
-        // do it for local
-        typename RV::non_const_value_type sum = 0.0;
+        typename RV::non_const_value_type tail_sum = 0.0;
         if (nMod != 0) {
             for (SizeType i = numRows - nMod; i < numRows; ++i) {
                 //sum += flare::ArithTraits<typename RV::non_const_value_type>::abs(X(i) - Y(i));
-                sum += flare::abs(X(i) - Y(i));
+                auto c = X(i) - Y(i);
+                tail_sum += c * c;
             }
         }
-        typedef BatchDistanceL1Functor<DT, RV, XV, SizeType> batch_functor_type;
-        batch_functor_type batch_op(X, Y, sum);
-        flare::parallel_reduce("flare::ann::batch_distance_l1", batch_policy, batch_op, r);
+        typedef BatchDistanceL2Functor<DT, RV, XV, SizeType> batch_functor_type;
+        batch_functor_type batch_op(X, Y, true, tail_sum);
+        flare::parallel_reduce("flare::ann::batch_distance_l2", batch_policy, batch_op, r);
+        // do it for local
     }
 
 }  // namespace flare::kernel::dense
 
-#endif  // FLARE_KERNEL_DENSE_BATCH_DISTANCE_L1_H_
+#endif  // FLARE_KERNEL_DENSE_BATCH_DISTANCE_L2_H_

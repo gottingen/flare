@@ -86,12 +86,12 @@ namespace flare::blas::detail {
         }
     };
 
-/// \brief Column-wise 2-norm functor for multivectors; works for
-///   any layout, but best performance with LayoutLeft.
-///
-/// \tparam RV 1-D output Tensor
-/// \tparam XMV 2-D input Tensor
-/// \tparam SizeType Index type.  Use int (32 bits) if possible.
+    /// \brief Column-wise 2-norm functor for multivectors; works for
+    ///   any layout, but best performance with LayoutLeft.
+    ///
+    /// \tparam RV 1-D output Tensor
+    /// \tparam XMV 2-D input Tensor
+    /// \tparam SizeType Index type.  Use int (32 bits) if possible.
     template <class ExecSpace, class RV, class XV, class size_type>
     struct Nrm2_MV_Functor {
         typedef typename RV::non_const_value_type rvalue_type;
@@ -136,8 +136,8 @@ namespace flare::blas::detail {
         }
     };
 
-/// \brief Compute the 2-norm (or its square) of the single vector (1-D
-///   Tensor) X, and store the result in the 0-D Tensor r.
+    /// \brief Compute the 2-norm (or its square) of the single vector (1-D
+    ///   Tensor) X, and store the result in the 0-D Tensor r.
     template <class execution_space, class RV, class XV, class SizeType>
     void V_Nrm2_Invoke(const execution_space& space, const RV& r, const XV& X,
                        const bool& take_sqrt) {
@@ -149,10 +149,10 @@ namespace flare::blas::detail {
         flare::parallel_reduce("flare::blas::Nrm2::S0", policy, op, r);
     }
 
-/// \brief Compute the 2-norms (or their square) of the columns of the
-///   multivector (2-D Tensor) X, and store result(s) in the 1-D Tensor r.
-// Main version: the result tensor is accessible from execution space, so it can
-// be computed in-place
+    /// \brief Compute the 2-norms (or their square) of the columns of the
+    ///   multivector (2-D Tensor) X, and store result(s) in the 1-D Tensor r.
+    // Main version: the result tensor is accessible from execution space, so it can
+    // be computed in-place
     template <class execution_space, class RV, class XV, class size_type>
     void MV_Nrm2_Invoke(
             const execution_space& space, const RV& r, const XV& x, bool take_sqrt,
