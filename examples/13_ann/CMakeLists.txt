@@ -69,3 +69,12 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
+
+carbin_cc_binary(
+        NAME example_distance_ip_cc
+        SOURCES
+        distance_ip.cc
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::core
+)

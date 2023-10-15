@@ -16,12 +16,12 @@
 #ifndef FLARE_ANN_DISTANCE_L1_H_
 #define FLARE_ANN_DISTANCE_L1_H_
 
-#include <flare/ann/distance_l1_impl.h>
+#include <flare/ann/distance_ip_impl.h>
 
 namespace flare::ann {
 
-    /// \brief Return the L1 distance of the two vectors x and y.
-    /// d = sum(abs(X(i) - Y(i)))
+    /// \brief Return the Inner Product distance of the two vectors x and y.
+    /// d = sum(X(i) * Y(i))
     /// \tparam execution_space the flare execution space where the kernel
     ///         will be executed.
     /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
@@ -37,14 +37,14 @@ namespace flare::ann {
             typename std::enable_if<flare::is_execution_space_v<execution_space>,
                     int>::type = 0>
     typename simd_traits<XVector, execution_space>::mag_type
-    distance_l1(const execution_space &space, const XVector &x, const XVector &y, bool batch = true) {
+    distance_ip(const execution_space &space, const XVector &x, const XVector &y, bool batch = true) {
         static_assert(
                 flare::is_execution_space<execution_space>::value,
-                "flare::ann::distance_l1: execution_space must be a flare::execution_space.");
+                "flare::ann::distance_ip: execution_space must be a flare::execution_space.");
         static_assert(flare::is_tensor<XVector>::value,
-                      "flare::ann::distance_l1: XVector must be a flare::Tensor.");
+                      "flare::ann::distance_ip: XVector must be a flare::Tensor.");
         static_assert(XVector::rank == 1,
-                      "flare::ann::distance_l1: "
+                      "flare::ann::distance_ip: "
                       "Both Vector inputs must have rank 1.");
         using mag_type = typename simd_traits<XVector, execution_space>::mag_type;
 
@@ -59,10 +59,10 @@ namespace flare::ann {
         mag_type result;
         RVector_Internal R = RVector_Internal(&result);
         if (simd_traits<XVector, execution_space>::is_batch_available && batch) {
-            flare::ann::detail::DistanceL1<execution_space, RVector_Internal, XVector_Internal>::batch_distance(space, R, x,
+            flare::ann::detail::DistanceIP<execution_space, RVector_Internal, XVector_Internal>::batch_distance(space, R, x,
                                                                                                           y);
         } else {
-            flare::ann::detail::DistanceL1<execution_space, RVector_Internal, XVector_Internal>::distance(space, R, x,
+            flare::ann::detail::DistanceIP<execution_space, RVector_Internal, XVector_Internal>::distance(space, R, x,
                                                                                                           y);
         }
         space.fence();
@@ -70,8 +70,8 @@ namespace flare::ann {
     }
 
     template<class XVector>
-    typename simd_traits<XVector>::mag_type distance_l1(const XVector &x, const XVector &y, bool batch = true) {
-        return distance_l1(typename XVector::execution_space{}, x, y, batch);
+    typename simd_traits<XVector>::mag_type distance_ip(const XVector &x, const XVector &y, bool batch = true) {
+        return distance_ip(typename XVector::execution_space{}, x, y, batch);
     }
 
 }  // namespace flare::ann

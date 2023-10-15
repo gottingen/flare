@@ -21,7 +21,7 @@
 namespace flare::ann {
 
     /// \brief Return the L2 distance of the two vectors x and y.
-    ///
+    /// d = sqrt(sum((X(i) - Y(i)) ^2)
     /// \tparam execution_space the flare execution space where the kernel
     ///         will be executed.
     /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
