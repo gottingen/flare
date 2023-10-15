@@ -60,3 +60,12 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
+
+carbin_cc_binary(
+        NAME example_norm_l2_cc
+        SOURCES
+        norm_l2.cc
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::core
+)
