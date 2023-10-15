@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-//
-// Created by jeff on 23-10-11.
-//
+
 
 #include <flare/ann/distance_l1.h>

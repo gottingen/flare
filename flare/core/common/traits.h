@@ -25,8 +25,8 @@
 
 namespace flare::detail {
 
-//----------------------------------------------------------------------------
-// Help with C++11 variadic argument packs
+    //----------------------------------------------------------------------------
+    // Help with C++11 variadic argument packs
 
     template<unsigned I, typename... Pack>
     struct get_type {
@@ -211,34 +211,34 @@ namespace flare::detail {
         using value_type = void;
     };
 
-//----------------------------------------------------------------------------
-// These 'constexpr'functions can be used as
-// both regular functions and meta-function.
+    //----------------------------------------------------------------------------
+    // These 'constexpr'functions can be used as
+    // both regular functions and meta-function.
 
-/**\brief  There exists integral 'k' such that N = 2^k */
+    /**\brief  There exists integral 'k' such that N = 2^k */
     FLARE_INLINE_FUNCTION
     constexpr bool is_integral_power_of_two(const size_t N) {
         return (0 < N) && (0 == (N & (N - 1)));
     }
 
-/**\brief  Return integral 'k' such that N = 2^k, assuming valid.  */
+    /**\brief  Return integral 'k' such that N = 2^k, assuming valid.  */
     FLARE_INLINE_FUNCTION
     constexpr unsigned integral_power_of_two_assume_valid(const size_t N) {
         return N == 1 ? 0 : 1 + integral_power_of_two_assume_valid(N >> 1);
     }
 
-/**\brief  Return integral 'k' such that N = 2^k, if exists.
- *         If does not exist return ~0u.
- */
+    /**\brief  Return integral 'k' such that N = 2^k, if exists.
+     *         If does not exist return ~0u.
+     */
     FLARE_INLINE_FUNCTION
     constexpr unsigned integral_power_of_two(const size_t N) {
         return is_integral_power_of_two(N) ? integral_power_of_two_assume_valid(N)
                                            : ~0u;
     }
 
-/** \brief  If power of two then return power,
- *          otherwise return ~0u.
- */
+    /** \brief  If power of two then return power,
+     *          otherwise return ~0u.
+     */
     FLARE_FORCEINLINE_FUNCTION
     unsigned power_of_two_if_valid(const unsigned N) {
         unsigned p = ~0u;
@@ -247,8 +247,6 @@ namespace flare::detail {
         }
         return p;
     }
-
-//----------------------------------------------------------------------------
 
     template<typename T, T v, bool NonZero = (v != T(0))>
     struct integral_nonzero_constant {
@@ -271,8 +269,6 @@ namespace flare::detail {
 
         FLARE_INLINE_FUNCTION integral_nonzero_constant(const T &v) : value(v) {}
     };
-
-//----------------------------------------------------------------------------
 
     template<class T>
     struct make_all_extents_into_pointers {

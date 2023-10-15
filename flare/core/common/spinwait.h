@@ -13,14 +13,12 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_SPINWAIT_HPP
-#define FLARE_SPINWAIT_HPP
+#ifndef FLARE_SPIN_WAIT_H_
+#define FLARE_SPIN_WAIT_H_
 
 #include <flare/core/defines.h>
 #include <flare/core/atomic.h>
-
 #include <cstdint>
-
 #include <type_traits>
 
 namespace flare::detail {
@@ -103,4 +101,4 @@ namespace flare::detail {
 
 }  // namespace flare::detail
 
-#endif /* #ifndef FLARE_SPINWAIT_HPP */
+#endif  // FLARE_SPIN_WAIT_H_
