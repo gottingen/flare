@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_ANN_DISTANCE_L1_H_
-#define FLARE_ANN_DISTANCE_L1_H_
+#ifndef FLARE_ANN_DISTANCE_IP_H_
+#define FLARE_ANN_DISTANCE_IP_H_
 
 #include <flare/ann/distance_ip_impl.h>
 
@@ -76,4 +76,4 @@ namespace flare::ann {
 
 }  // namespace flare::ann
 
-#endif  // FLARE_ANN_DISTANCE_L1_H_
+#endif  // FLARE_ANN_DISTANCE_IP_H_
