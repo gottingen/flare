@@ -23,7 +23,7 @@
 namespace flare::ann {
 
     /// \brief Return the norm_l2 of the vector x.
-    ///
+    /// n = sqrt(sum(X(i)^2))
     /// \tparam execution_space a flare execution space where the kernel will run.
     /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
     ///

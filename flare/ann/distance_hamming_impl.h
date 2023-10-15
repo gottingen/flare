@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_ANN_DISTANCE_HAMMIING_IMPL_H_
-#define FLARE_ANN_DISTANCE_HAMMIING_IMPL_H_
+#ifndef FLARE_ANN_DISTANCE_HAMMING_IMPL_H_
+#define FLARE_ANN_DISTANCE_HAMMING_IMPL_H_
 
 #include <flare/core.h>
 #include <flare/core/arith_traits.h>
@@ -84,4 +84,4 @@ namespace flare::ann::detail {
 
 }  // namespace flare::ann::detail
 
-#endif  // FLARE_ANN_DISTANCE_HAMMIING_IMPL_H_
+#endif  // FLARE_ANN_DISTANCE_HAMMING_IMPL_H_

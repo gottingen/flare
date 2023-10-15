@@ -26,24 +26,36 @@
 
 namespace flare::ann::detail {
 
+    /// \brief base normalize of the vector x.
+    /// X(i) = X(i) / norm norm:
+    /// \tparam execution_space a flare execution space where the kernel will run.
+    /// \tparam XVector Type of the first vector x; a 1-D flare::Tensor.
+    ///
+    /// \param space [in] the execution space instance, possibly containing a
+    /// stream/queue where the kernel will be executed.
+    /// \param X [in] Input 1-D Tensor.
+    /// \param R [out] output 1-D Tensor, can be same  with X.
+    ///
+    /// \return void
+
     template <class execution_space, class RMV, class XMV>
     struct NormalizeDiv{
         using size_type = typename XMV::size_type;
 
         static void normalize(const execution_space& space, const RMV& R, const XMV& X, typename RMV::non_const_value_type norm) {
             static_assert(flare::is_tensor<RMV>::value,
-                          "flare::ann::NormalizeL1::normalize<1-D>:"
+                          "flare::ann::NormalizeDiv::normalize<1-D>:"
                           "RMV is not a flare::Tensor.");
             static_assert(flare::is_tensor<XMV>::value,
-                          "flare::ann::NormalizeL1::normalize<1-D>:"
+                          "flare::ann::NormalizeDiv::normalize<1-D>:"
                           "XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 1,
-                          "flare::ann::NormalizeL1::normalize<1-D>:"
+                          "flare::ann::NormalizeDiv::normalize<1-D>:"
                           "RMV is not rank 1.");
             static_assert(XMV::rank == 1,
-                          "flare::ann::NormalizeL1::normalize<1-D>:"
+                          "flare::ann::NormalizeDiv::normalize<1-D>:"
                           "XMV is not rank 1.");
-            flare::Profiling::pushRegion("flare::blas::abs");
+            flare::Profiling::pushRegion("flare::ann::normalize");
             const size_type numRows = X.extent(0);
 
             if (numRows < static_cast<size_type>(INT_MAX)) {
@@ -58,18 +70,18 @@ namespace flare::ann::detail {
 
         static void batch_normalize(const execution_space& space, const RMV& R, const XMV& X, typename RMV::non_const_value_type norm) {
             static_assert(flare::is_tensor<RMV>::value,
-                          "flare::ann::NormalizeL1::normalize<1-D>:"
+                          "flare::ann::NormalizeDiv::batch_normalize<1-D>:"
                           "RMV is not a flare::Tensor.");
             static_assert(flare::is_tensor<XMV>::value,
-                          "flare::ann::NormalizeL1::normalize<1-D>:"
+                          "flare::ann::NormalizeDiv::batch_normalize<1-D>:"
                           "XMV is not a flare::Tensor.");
             static_assert(RMV::rank == 1,
-                          "flare::ann::NormalizeL1::normalize<1-D>:"
+                          "flare::ann::NormalizeDiv::batch_normalize<1-D>:"
                           "RMV is not rank 1.");
             static_assert(XMV::rank == 1,
-                          "flare::ann::NormalizeL1::normalize<1-D>:"
+                          "flare::ann::NormalizeDiv::batch_normalize<1-D>:"
                           "XMV is not rank 1.");
-            flare::Profiling::pushRegion("flare::blas::abs");
+            flare::Profiling::pushRegion("flare::ann::batch_normalize");
             const size_type numRows = X.extent(0);
 
             if (numRows < static_cast<size_type>(INT_MAX)) {
