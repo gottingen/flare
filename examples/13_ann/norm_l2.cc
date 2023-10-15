@@ -56,13 +56,14 @@ struct InitTensor1 {
 
 struct InitTensor2 {
     tensor_type a;
-
+    tensor_type b;
+    double norm;
     // Tensors have "tensor semantics."  This means that they behave like
     // pointers, not like std::vector.  Their copy constructor and
     // operator= only do shallow copies.  Thus, you can pass Tensor
     // objects around by "value"; they won't do a deep copy unless you
     // explicitly ask for a deep copy.
-    InitTensor2(tensor_type a_) : a(a_) {}
+    InitTensor2(tensor_type a_,tensor_type b_, double n) : a(a_), b(b_), norm(n){}
 
     // Fill the Tensor with some data.  The parallel_for loop will iterate
     // over the Tensor's first dimension N.
@@ -71,7 +72,7 @@ struct InitTensor2 {
         // Acesss the Tensor just like a Fortran array.  The layout depends
         // on the Tensor's memory space, so don't rely on the Tensor's
         // physical memory layout unless you know what you're doing.
-        a(i) = i * 1.0 + 1.0;
+        b(i) = a(i)/norm;
     }
 };
 
@@ -94,13 +95,24 @@ int main(int argc, char* argv[]) {
         // The string "A" is just the label; it only matters for debugging.
         // Different Tensors may have the same label.
         tensor_type a("A", N);
-
+        tensor_type b("A", N);
+        tensor_type c("A", N);
         flare::parallel_for(N, InitTensor1(a));
         double dis = flare::ann::norm_l2<tensor_type>(a);
-        printf("Result flare::ann::norm_l2<tensor_type>(a,b, true): %f\n", dis);
+        printf("Result flare::ann::norm_l2<tensor_type>(a,true): %f\n", dis);
 
         double dis1 = flare::ann::norm_l2<tensor_type>(a, false);
+
+        flare::parallel_for(N, InitTensor2(a, b, dis1));
+        dis = flare::ann::norm_l2<tensor_type>(b);
+
+        printf("Result flare::ann::norm_l2<tensor_type>(b,true): %f\n", dis);
+
         printf("Result flare::ann::norm_l2<tensor_type>(a,b, false): %f\n", dis1);
+
+        flare::ann::normalize_l2(c,a);
+        double dis_c = flare::ann::norm_l2<tensor_type>(c);
+        printf("Result flare::ann::norm_l2<tensor_type>(c false): %f\n", dis_c);
 
         auto bencher = flare::Benchmarker<>{ 64, std::chrono::seconds { 10 } };
         auto stats_nor = bencher([&]()
@@ -112,6 +124,8 @@ int main(int argc, char* argv[]) {
 
         std::cout << '\n'
                   << flare::simd::default_arch::name()<<" batch " << stats_batch << '\n';
+
+
 
     }  // use this scope to ensure the lifetime of "A" ends before finalize
     flare::finalize();
