@@ -32,17 +32,17 @@ namespace flare::ann::detail {
         static void distance(const execution_space &space, const RV &R, const XV &X, const XV &Y) {
             static_assert(flare::is_tensor<RV>::value,
                           "flare::ann::detail::"
-                          "DistanceL2<1-D>: RV is not a flare::Tensor.");
+                          "BatchDistanceIP<1-D>: RV is not a flare::Tensor.");
             static_assert(flare::is_tensor<XV>::value,
                           "flare::ann::detail::"
-                          "DistanceL2<1-D>: XV is not a flare::Tensor.");
+                          "BatchDistanceIP<1-D>: XV is not a flare::Tensor.");
             static_assert(RV::rank == 0,
-                          "flare::ann::detail::DistanceL2<1-D>: "
+                          "flare::ann::detail::BatchDistanceIP<1-D>: "
                           "RV is not rank 0.");
             static_assert(XV::rank == 1,
-                          "flare::ann::detail::DistanceL2<1-D>: "
+                          "flare::ann::detail::BatchDistanceIP<1-D>: "
                           "XV is not rank 1.");
-            flare::Profiling::pushRegion("flare::ann::DistanceL2");
+            flare::Profiling::pushRegion("flare::ann::BatchDistanceIP");
             const size_type numRows = X.extent(0);
 
             if (numRows < static_cast<size_type>(INT_MAX)) {
@@ -57,26 +57,31 @@ namespace flare::ann::detail {
         static void batch_distance(const execution_space &space, const RV &R, const XV &X, const XV &Y) {
             static_assert(flare::is_tensor<RV>::value,
                           "flare::ann::detail::"
-                          "BatchDistanceL1<1-D>: RV is not a flare::Tensor.");
+                          "BatchDistanceIP<1-D>: RV is not a flare::Tensor.");
             static_assert(flare::is_tensor<XV>::value,
                           "flare::ann::detail::"
-                          "DistanceL2<1-D>: XV is not a flare::Tensor.");
+                          "BatchDistanceIP<1-D>: XV is not a flare::Tensor.");
             static_assert(RV::rank == 0,
-                          "flare::ann::detail::BatchDistanceL1<1-D>: "
+                          "flare::ann::detail::BatchDistanceIP<1-D>: "
                           "RV is not rank 0.");
             static_assert(XV::rank == 1,
-                          "flare::ann::detail::BatchDistanceL1<1-D>: "
+                          "flare::ann::detail::BatchDistanceIP<1-D>: "
                           "XV is not rank 1.");
-            flare::Profiling::pushRegion("flare::ann::BatchDistanceL1");
+            flare::Profiling::pushRegion("flare::ann::BatchDistanceIP");
             const size_type numRows = X.extent(0);
 
             if (numRows < static_cast<size_type>(INT_MAX)) {
-                FLARE_IF_ON_DEVICE((flare::kernel::dense::DistanceIPInvoke<execution_space, RV, XV, int>(space, R, X, Y);))
-                FLARE_IF_ON_HOST((flare::kernel::dense::DistanceIPBatchInvoke<execution_space, RV, XV, int>(space, R, X, Y);))
+                FLARE_IF_ON_DEVICE(
+                        (flare::kernel::dense::DistanceIPInvoke<execution_space, RV, XV, int>(space, R, X, Y);))
+                FLARE_IF_ON_HOST(
+                        (flare::kernel::dense::DistanceIPBatchInvoke<execution_space, RV, XV, int>(space, R, X, Y);))
             } else {
                 using index_type = std::int64_t;
-               FLARE_IF_ON_HOST((flare::kernel::dense::DistanceIPBatchInvoke<execution_space, RV, XV, index_type>(space, R, X, Y);))
-                FLARE_IF_ON_DEVICE((flare::kernel::dense::DistanceIPInvoke<execution_space, RV, XV, index_type>(space, R, X, Y);))
+                FLARE_IF_ON_HOST(
+                        (flare::kernel::dense::DistanceIPBatchInvoke<execution_space, RV, XV, index_type>(space, R, X,
+                                                                                                          Y);))
+                FLARE_IF_ON_DEVICE(
+                        (flare::kernel::dense::DistanceIPInvoke<execution_space, RV, XV, index_type>(space, R, X, Y);))
             }
             flare::Profiling::popRegion();
         }

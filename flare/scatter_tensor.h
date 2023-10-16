@@ -1099,8 +1099,8 @@ class ScatterTensor<DataType, flare::LayoutRight, DeviceType, Op,
   }
 
  protected:
-  using unique_token_type = flare::experimental::UniqueToken<
-      execution_space, flare::experimental::UniqueTokenScope::Global>;
+  using unique_token_type = flare::UniqueToken<
+      execution_space, flare::UniqueTokenScope::Global>;
 
   unique_token_type unique_token;
   internal_tensor_type internal_tensor;
@@ -1343,8 +1343,8 @@ class ScatterTensor<DataType, flare::LayoutLeft, DeviceType, Op,
   }
 
  protected:
-  using unique_token_type = flare::experimental::UniqueToken<
-      execution_space, flare::experimental::UniqueTokenScope::Global>;
+  using unique_token_type = flare::UniqueToken<
+      execution_space, flare::UniqueTokenScope::Global>;
 
   unique_token_type unique_token;
   internal_tensor_type internal_tensor;
