@@ -17,7 +17,7 @@
 
 #include <complex>
 
-#include "flare/simd/rem_pio2.h"
+#include <flare/simd/rem_pio2.h>
 #include <flare/simd/types/generic_arch.h>
 #include <flare/simd/types/utils.h>
 #include <flare/simd/arch/constants.h>

@@ -16,7 +16,7 @@
 #ifndef FLARE_SIMD_TYPES_AVX2_REGISTER_H_
 #define FLARE_SIMD_TYPES_AVX2_REGISTER_H_
 
-#include "flare/simd/types/avx_register.h"
+#include <flare/simd/types/avx_register.h>
 
 namespace flare::simd {
     /**

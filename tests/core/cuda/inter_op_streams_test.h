@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-#include "flare/core.h"
+#include <flare/core.h>
 
 namespace Test {
 

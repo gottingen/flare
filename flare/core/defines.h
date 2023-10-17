@@ -48,6 +48,7 @@
 #endif
 
 #include <flare/core/core_config.h>
+#include <flare/core/common/os.h>
 #include <flare/backend/cuda/nvidia_gpu_architectures.h>
 
 //----------------------------------------------------------------------------

@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include "flare/core/tensor/macros.h"
-#include "flare/core/tensor/trait_backports.h"
+#include <flare/core/tensor/macros.h>
+#include <flare/core/tensor/trait_backports.h>
 
 #if !defined(_MDSPAN_USE_ATTRIBUTE_NO_UNIQUE_ADDRESS)
 #  include "flare/core/tensor/no_unique_address.h"

@@ -15,7 +15,7 @@
 
 #include <doctest.h>
 
-#include "flare/core.h"
+#include <flare/core.h>
 /*
 template <class ExecutionSpace>
 void test_flare_printf() {
