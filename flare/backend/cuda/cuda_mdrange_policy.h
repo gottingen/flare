@@ -20,38 +20,39 @@
 
 namespace flare {
 
-template <>
-struct default_outer_direction<flare::Cuda> {
-  using type                     = Iterate;
-  static constexpr Iterate value = Iterate::Left;
-};
+    template<>
+    struct default_outer_direction<flare::Cuda> {
+        using type = Iterate;
+        static constexpr Iterate value = Iterate::Left;
+    };
 
-template <>
-struct default_inner_direction<flare::Cuda> {
-  using type                     = Iterate;
-  static constexpr Iterate value = Iterate::Left;
-};
+    template<>
+    struct default_inner_direction<flare::Cuda> {
+        using type = Iterate;
+        static constexpr Iterate value = Iterate::Left;
+    };
+}  // namespace flare
 
-namespace detail {
+namespace flare::detail {
 
-// Settings for MDRangePolicy
-template <>
-inline TileSizeProperties get_tile_size_properties<flare::Cuda>(
-    const flare::Cuda& space) {
-  TileSizeProperties properties;
-  properties.max_threads =
-      space.impl_internal_space_instance()->m_maxThreadsPerSM;
-  properties.default_largest_tile_size = 16;
-  properties.default_tile_size         = 2;
-  properties.max_total_tile_size       = 512;
-  return properties;
-}
+    // Settings for MDRangePolicy
+    template<>
+    inline TileSizeProperties get_tile_size_properties<flare::Cuda>(
+            const flare::Cuda &space) {
+        TileSizeProperties properties;
+        properties.max_threads =
+                space.impl_internal_space_instance()->m_maxThreadsPerSM;
+        properties.default_largest_tile_size = 16;
+        properties.default_tile_size = 2;
+        properties.max_total_tile_size = 512;
+        return properties;
+    }
 
-// Settings for TeamMDRangePolicy
-template <typename Rank, TeamMDRangeThreadAndVector ThreadAndVector>
-struct ThreadAndVectorNestLevel<Rank, Cuda, ThreadAndVector>
-    : AcceleratorBasedNestLevel<Rank, ThreadAndVector> {};
+    // Settings for TeamMDRangePolicy
+    template<typename Rank, TeamMDRangeThreadAndVector ThreadAndVector>
+    struct ThreadAndVectorNestLevel<Rank, Cuda, ThreadAndVector>
+            : AcceleratorBasedNestLevel<Rank, ThreadAndVector> {
+    };
 
-}  // Namespace detail
-}  // Namespace flare
+}  // Namespace flare::detail
 #endif  // FLARE_BACKEND_CUDA_CUDA_MDRANGE_POLICY_H_

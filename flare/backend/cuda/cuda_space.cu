@@ -50,41 +50,39 @@ const std::unique_ptr<flare::Cuda> &flare::detail::cuda_get_deep_copy_space(
     return space;
 }
 
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
-        namespace {
+    namespace {
 
-            static std::atomic<int> num_uvm_allocations(0);
+        static std::atomic<int> num_uvm_allocations(0);
 
-        }  // namespace
+    }  // namespace
 
-        void DeepCopyCuda(void *dst, const void *src, size_t n) {
-            FLARE_IMPL_CUDA_SAFE_CALL((CudaInternal::singleton().cuda_memcpy_wrapper(
-                    dst, src, n, cudaMemcpyDefault)));
-        }
+    void DeepCopyCuda(void *dst, const void *src, size_t n) {
+        FLARE_IMPL_CUDA_SAFE_CALL((CudaInternal::singleton().cuda_memcpy_wrapper(
+                dst, src, n, cudaMemcpyDefault)));
+    }
 
-        void DeepCopyAsyncCuda(const Cuda &instance, void *dst, const void *src,
-                               size_t n) {
-            FLARE_IMPL_CUDA_SAFE_CALL(
-                    (instance.impl_internal_space_instance()->cuda_memcpy_async_wrapper(
-                            dst, src, n, cudaMemcpyDefault)));
-        }
+    void DeepCopyAsyncCuda(const Cuda &instance, void *dst, const void *src,
+                           size_t n) {
+        FLARE_IMPL_CUDA_SAFE_CALL(
+                (instance.impl_internal_space_instance()->cuda_memcpy_async_wrapper(
+                        dst, src, n, cudaMemcpyDefault)));
+    }
 
-        void DeepCopyAsyncCuda(void *dst, const void *src, size_t n) {
-            cudaStream_t s = cuda_get_deep_copy_stream();
-            FLARE_IMPL_CUDA_SAFE_CALL(
-                    (CudaInternal::singleton().cuda_memcpy_async_wrapper(
-                            dst, src, n, cudaMemcpyDefault, s)));
-            detail::cuda_stream_synchronize(
-                    s,
-                    flare::Tools::experimental::SpecialSynchronizationCases::
-                    DeepCopyResourceSynchronization,
-                    "flare::detail::DeepCopyAsyncCuda: Deep Copy Stream Sync");
-        }
+    void DeepCopyAsyncCuda(void *dst, const void *src, size_t n) {
+        cudaStream_t s = cuda_get_deep_copy_stream();
+        FLARE_IMPL_CUDA_SAFE_CALL(
+                (CudaInternal::singleton().cuda_memcpy_async_wrapper(
+                        dst, src, n, cudaMemcpyDefault, s)));
+        detail::cuda_stream_synchronize(
+                s,
+                flare::Tools::experimental::SpecialSynchronizationCases::
+                DeepCopyResourceSynchronization,
+                "flare::detail::DeepCopyAsyncCuda: Deep Copy Stream Sync");
+    }
 
-    }  // namespace detail
-}  // namespace flare
+}  // namespace flare::detail
 
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -419,197 +417,193 @@ namespace flare {
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
 #ifdef FLARE_ENABLE_DEBUG
-        SharedAllocationRecord<void, void>
-            SharedAllocationRecord<flare::CudaSpace, void>::s_root_record;
+    SharedAllocationRecord<void, void>
+        SharedAllocationRecord<flare::CudaSpace, void>::s_root_record;
 
-        SharedAllocationRecord<void, void>
-            SharedAllocationRecord<flare::CudaUVMSpace, void>::s_root_record;
+    SharedAllocationRecord<void, void>
+        SharedAllocationRecord<flare::CudaUVMSpace, void>::s_root_record;
 
-        SharedAllocationRecord<void, void>
-            SharedAllocationRecord<flare::CudaHostPinnedSpace, void>::s_root_record;
+    SharedAllocationRecord<void, void>
+        SharedAllocationRecord<flare::CudaHostPinnedSpace, void>::s_root_record;
 #endif
 
-        SharedAllocationRecord<flare::CudaSpace, void>::~SharedAllocationRecord() {
-            auto alloc_size = SharedAllocationRecord<void, void>::m_alloc_size;
-            m_space.deallocate(m_label.c_str(),
-                               SharedAllocationRecord<void, void>::m_alloc_ptr,
-                               alloc_size, (alloc_size - sizeof(SharedAllocationHeader)));
-        }
+    SharedAllocationRecord<flare::CudaSpace, void>::~SharedAllocationRecord() {
+        auto alloc_size = SharedAllocationRecord<void, void>::m_alloc_size;
+        m_space.deallocate(m_label.c_str(),
+                           SharedAllocationRecord<void, void>::m_alloc_ptr,
+                           alloc_size, (alloc_size - sizeof(SharedAllocationHeader)));
+    }
 
-        void SharedAllocationRecord<flare::CudaSpace, void>::deep_copy_header_no_exec(
-                void *ptr, const void *header) {
-            flare::Cuda exec;
-            flare::detail::DeepCopy<CudaSpace, HostSpace>(exec, ptr, header,
-                                                          sizeof(SharedAllocationHeader));
-            exec.fence(
-                    "SharedAllocationRecord<flare::CudaSpace, "
-                    "void>::SharedAllocationRecord(): fence after copying header from "
-                    "HostSpace");
-        }
+    void SharedAllocationRecord<flare::CudaSpace, void>::deep_copy_header_no_exec(
+            void *ptr, const void *header) {
+        flare::Cuda exec;
+        flare::detail::DeepCopy<CudaSpace, HostSpace>(exec, ptr, header,
+                                                      sizeof(SharedAllocationHeader));
+        exec.fence(
+                "SharedAllocationRecord<flare::CudaSpace, "
+                "void>::SharedAllocationRecord(): fence after copying header from "
+                "HostSpace");
+    }
 
-        SharedAllocationRecord<flare::CudaUVMSpace, void>::~SharedAllocationRecord() {
-            m_space.deallocate(m_label.c_str(),
-                               SharedAllocationRecord<void, void>::m_alloc_ptr,
-                               SharedAllocationRecord<void, void>::m_alloc_size,
-                               (SharedAllocationRecord<void, void>::m_alloc_size -
-                                sizeof(SharedAllocationHeader)));
-        }
+    SharedAllocationRecord<flare::CudaUVMSpace, void>::~SharedAllocationRecord() {
+        m_space.deallocate(m_label.c_str(),
+                           SharedAllocationRecord<void, void>::m_alloc_ptr,
+                           SharedAllocationRecord<void, void>::m_alloc_size,
+                           (SharedAllocationRecord<void, void>::m_alloc_size -
+                            sizeof(SharedAllocationHeader)));
+    }
 
-        SharedAllocationRecord<flare::CudaHostPinnedSpace,
-                void>::~SharedAllocationRecord() {
-            m_space.deallocate(m_label.c_str(),
-                               SharedAllocationRecord<void, void>::m_alloc_ptr,
-                               SharedAllocationRecord<void, void>::m_alloc_size,
-                               (SharedAllocationRecord<void, void>::m_alloc_size -
-                                sizeof(SharedAllocationHeader)));
-        }
+    SharedAllocationRecord<flare::CudaHostPinnedSpace,
+            void>::~SharedAllocationRecord() {
+        m_space.deallocate(m_label.c_str(),
+                           SharedAllocationRecord<void, void>::m_alloc_ptr,
+                           SharedAllocationRecord<void, void>::m_alloc_size,
+                           (SharedAllocationRecord<void, void>::m_alloc_size -
+                            sizeof(SharedAllocationHeader)));
+    }
 
 
-        SharedAllocationRecord<flare::CudaSpace, void>::SharedAllocationRecord(
-                const flare::CudaSpace &arg_space, const std::string &arg_label,
-                const size_t arg_alloc_size,
-                const SharedAllocationRecord<void, void>::function_type arg_dealloc)
-        // Pass through allocated [ SharedAllocationHeader , user_memory ]
-        // Pass through deallocation function
-                : base_t(
+    SharedAllocationRecord<flare::CudaSpace, void>::SharedAllocationRecord(
+            const flare::CudaSpace &arg_space, const std::string &arg_label,
+            const size_t arg_alloc_size,
+            const SharedAllocationRecord<void, void>::function_type arg_dealloc)
+    // Pass through allocated [ SharedAllocationHeader , user_memory ]
+    // Pass through deallocation function
+            : base_t(
 #ifdef FLARE_ENABLE_DEBUG
-                &SharedAllocationRecord<flare::CudaSpace, void>::s_root_record,
+            &SharedAllocationRecord<flare::CudaSpace, void>::s_root_record,
 #endif
-                detail::checked_allocation_with_header(arg_space, arg_label,
-                                                       arg_alloc_size),
-                sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
-                arg_label),
-                  m_space(arg_space) {
+            detail::checked_allocation_with_header(arg_space, arg_label,
+                                                   arg_alloc_size),
+            sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
+            arg_label),
+              m_space(arg_space) {
 
-            SharedAllocationHeader header;
+        SharedAllocationHeader header;
 
-            this->base_t::_fill_host_accessible_header_info(header, arg_label);
+        this->base_t::_fill_host_accessible_header_info(header, arg_label);
 
-            // Copy to device memory
-            flare::Cuda exec;
-            flare::detail::DeepCopy<CudaSpace, HostSpace>(
-                    exec, RecordBase::m_alloc_ptr, &header, sizeof(SharedAllocationHeader));
-            exec.fence(
-                    "SharedAllocationRecord<flare::CudaSpace, "
-                    "void>::SharedAllocationRecord(): fence after copying header from "
-                    "HostSpace");
-        }
+        // Copy to device memory
+        flare::Cuda exec;
+        flare::detail::DeepCopy<CudaSpace, HostSpace>(
+                exec, RecordBase::m_alloc_ptr, &header, sizeof(SharedAllocationHeader));
+        exec.fence(
+                "SharedAllocationRecord<flare::CudaSpace, "
+                "void>::SharedAllocationRecord(): fence after copying header from "
+                "HostSpace");
+    }
 
-        SharedAllocationRecord<flare::CudaSpace, void>::SharedAllocationRecord(
-                const flare::Cuda &arg_exec_space, const flare::CudaSpace &arg_space,
-                const std::string &arg_label, const size_t arg_alloc_size,
-                const SharedAllocationRecord<void, void>::function_type arg_dealloc)
-        // Pass through allocated [ SharedAllocationHeader , user_memory ]
-        // Pass through deallocation function
-                : base_t(
+    SharedAllocationRecord<flare::CudaSpace, void>::SharedAllocationRecord(
+            const flare::Cuda &arg_exec_space, const flare::CudaSpace &arg_space,
+            const std::string &arg_label, const size_t arg_alloc_size,
+            const SharedAllocationRecord<void, void>::function_type arg_dealloc)
+    // Pass through allocated [ SharedAllocationHeader , user_memory ]
+    // Pass through deallocation function
+            : base_t(
 #ifdef FLARE_ENABLE_DEBUG
-                &SharedAllocationRecord<flare::CudaSpace, void>::s_root_record,
+            &SharedAllocationRecord<flare::CudaSpace, void>::s_root_record,
 #endif
-                detail::checked_allocation_with_header(arg_exec_space, arg_space,
-                                                       arg_label, arg_alloc_size),
-                sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
-                arg_label),
-                  m_space(arg_space) {
+            detail::checked_allocation_with_header(arg_exec_space, arg_space,
+                                                   arg_label, arg_alloc_size),
+            sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
+            arg_label),
+              m_space(arg_space) {
 
-            SharedAllocationHeader header;
+        SharedAllocationHeader header;
 
-            this->base_t::_fill_host_accessible_header_info(header, arg_label);
+        this->base_t::_fill_host_accessible_header_info(header, arg_label);
 
-            // Copy to device memory
-            flare::detail::DeepCopy<CudaSpace, HostSpace>(arg_exec_space,
-                                                          RecordBase::m_alloc_ptr, &header,
-                                                          sizeof(SharedAllocationHeader));
-        }
+        // Copy to device memory
+        flare::detail::DeepCopy<CudaSpace, HostSpace>(arg_exec_space,
+                                                      RecordBase::m_alloc_ptr, &header,
+                                                      sizeof(SharedAllocationHeader));
+    }
 
-        SharedAllocationRecord<flare::CudaUVMSpace, void>::SharedAllocationRecord(
-                const flare::CudaUVMSpace &arg_space, const std::string &arg_label,
-                const size_t arg_alloc_size,
-                const SharedAllocationRecord<void, void>::function_type arg_dealloc)
-        // Pass through allocated [ SharedAllocationHeader , user_memory ]
-        // Pass through deallocation function
-                : base_t(
+    SharedAllocationRecord<flare::CudaUVMSpace, void>::SharedAllocationRecord(
+            const flare::CudaUVMSpace &arg_space, const std::string &arg_label,
+            const size_t arg_alloc_size,
+            const SharedAllocationRecord<void, void>::function_type arg_dealloc)
+    // Pass through allocated [ SharedAllocationHeader , user_memory ]
+    // Pass through deallocation function
+            : base_t(
 #ifdef FLARE_ENABLE_DEBUG
-                &SharedAllocationRecord<flare::CudaUVMSpace, void>::s_root_record,
+            &SharedAllocationRecord<flare::CudaUVMSpace, void>::s_root_record,
 #endif
-                detail::checked_allocation_with_header(arg_space, arg_label,
-                                                       arg_alloc_size),
-                sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
-                arg_label),
-                  m_space(arg_space) {
-            this->base_t::_fill_host_accessible_header_info(*base_t::m_alloc_ptr,
-                                                            arg_label);
-        }
+            detail::checked_allocation_with_header(arg_space, arg_label,
+                                                   arg_alloc_size),
+            sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
+            arg_label),
+              m_space(arg_space) {
+        this->base_t::_fill_host_accessible_header_info(*base_t::m_alloc_ptr,
+                                                        arg_label);
+    }
 
-        SharedAllocationRecord<flare::CudaHostPinnedSpace, void>::
-        SharedAllocationRecord(
-                const flare::CudaHostPinnedSpace &arg_space,
-                const std::string &arg_label, const size_t arg_alloc_size,
-                const SharedAllocationRecord<void, void>::function_type arg_dealloc)
-        // Pass through allocated [ SharedAllocationHeader , user_memory ]
-        // Pass through deallocation function
-                : base_t(
+    SharedAllocationRecord<flare::CudaHostPinnedSpace, void>::
+    SharedAllocationRecord(
+            const flare::CudaHostPinnedSpace &arg_space,
+            const std::string &arg_label, const size_t arg_alloc_size,
+            const SharedAllocationRecord<void, void>::function_type arg_dealloc)
+    // Pass through allocated [ SharedAllocationHeader , user_memory ]
+    // Pass through deallocation function
+            : base_t(
 #ifdef FLARE_ENABLE_DEBUG
-                &SharedAllocationRecord<flare::CudaHostPinnedSpace,
-                                        void>::s_root_record,
+            &SharedAllocationRecord<flare::CudaHostPinnedSpace,
+                                    void>::s_root_record,
 #endif
-                detail::checked_allocation_with_header(arg_space, arg_label,
-                                                       arg_alloc_size),
-                sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
-                arg_label),
-                  m_space(arg_space) {
-            this->base_t::_fill_host_accessible_header_info(*base_t::m_alloc_ptr,
-                                                            arg_label);
-        }
+            detail::checked_allocation_with_header(arg_space, arg_label,
+                                                   arg_alloc_size),
+            sizeof(SharedAllocationHeader) + arg_alloc_size, arg_dealloc,
+            arg_label),
+              m_space(arg_space) {
+        this->base_t::_fill_host_accessible_header_info(*base_t::m_alloc_ptr,
+                                                        arg_label);
+    }
 
-        void cuda_prefetch_pointer(const Cuda &space, const void *ptr, size_t bytes,
-                                   bool to_device) {
-            if ((ptr == nullptr) || (bytes == 0)) return;
-            cudaPointerAttributes attr;
-            FLARE_IMPL_CUDA_SAFE_CALL((
-                                              space.impl_internal_space_instance()->cuda_pointer_get_attributes_wrapper(
-                                                      &attr, ptr)));
-            // I measured this and it turns out prefetching towards the host slows
-            // DualTensor syncs down. Probably because the latency is not too bad in the
-            // first place for the pull down. If we want to change that provde
-            // cudaCpuDeviceId as the device if to_device is false
-            bool is_managed = attr.type == cudaMemoryTypeManaged;
-            if (to_device && is_managed &&
-                space.cuda_device_prop().concurrentManagedAccess) {
-                FLARE_IMPL_CUDA_SAFE_CALL(
-                        (space.impl_internal_space_instance()->cuda_mem_prefetch_async_wrapper(
-                                ptr, bytes, space.cuda_device())));
-            }
+    void cuda_prefetch_pointer(const Cuda &space, const void *ptr, size_t bytes,
+                               bool to_device) {
+        if ((ptr == nullptr) || (bytes == 0)) return;
+        cudaPointerAttributes attr;
+        FLARE_IMPL_CUDA_SAFE_CALL((
+                                          space.impl_internal_space_instance()->cuda_pointer_get_attributes_wrapper(
+                                                  &attr, ptr)));
+        // I measured this and it turns out prefetching towards the host slows
+        // DualTensor syncs down. Probably because the latency is not too bad in the
+        // first place for the pull down. If we want to change that provde
+        // cudaCpuDeviceId as the device if to_device is false
+        bool is_managed = attr.type == cudaMemoryTypeManaged;
+        if (to_device && is_managed &&
+            space.cuda_device_prop().concurrentManagedAccess) {
+            FLARE_IMPL_CUDA_SAFE_CALL(
+                    (space.impl_internal_space_instance()->cuda_mem_prefetch_async_wrapper(
+                            ptr, bytes, space.cuda_device())));
         }
+    }
 
-    }  // namespace detail
-}  // namespace flare
+}  // namespace flare::detail
 
 #include <flare/core/memory/shared_alloc_impl.h>
 
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
-// To avoid additional compilation cost for something that's (mostly?) not
-// performance sensitive, we explicity instantiate these CRTP base classes here,
-// where we have access to the associated *_timpl.hpp header files.
-        template
-        class SharedAllocationRecordCommon<flare::CudaSpace>;
+    // To avoid additional compilation cost for something that's (mostly?) not
+    // performance sensitive, we explicity instantiate these CRTP base classes here,
+    // where we have access to the associated *_timpl.hpp header files.
+    template
+    class SharedAllocationRecordCommon<flare::CudaSpace>;
 
-        template
-        class HostInaccessibleSharedAllocationRecordCommon<flare::CudaSpace>;
+    template
+    class HostInaccessibleSharedAllocationRecordCommon<flare::CudaSpace>;
 
-        template
-        class SharedAllocationRecordCommon<flare::CudaUVMSpace>;
+    template
+    class SharedAllocationRecordCommon<flare::CudaUVMSpace>;
 
-        template
-        class SharedAllocationRecordCommon<flare::CudaHostPinnedSpace>;
+    template
+    class SharedAllocationRecordCommon<flare::CudaHostPinnedSpace>;
 
-    }  // end namespace detail
-}  // end namespace flare
+}  // end namespace flare::detail
 
 #else
 void FLARE_CORE_SRC_CUDA_CUDASPACE_PREVENT_LINK_ERROR() {}
