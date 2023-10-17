@@ -36,11 +36,13 @@ endif ()
 # so you can and system pthread and rt, dl already add to
 # CARBIN_SYSTEM_DYLINK, using it for fun.
 ##########################################################
+if(FLARE_BUILD_OPENMP)
 set(CARBIN_DEPS_LINK
         #${TURBO_LIB}
         ${CARBIN_SYSTEM_DYLINK}
         OpenMP::OpenMP_CXX
         )
+endif (FLARE_BUILD_OPENMP)
 list(REMOVE_DUPLICATES CARBIN_DEPS_LINK)
 carbin_print_list_label("Denpendcies:" CARBIN_DEPS_LINK)
 if(FLARE_BUILD_CUDA)

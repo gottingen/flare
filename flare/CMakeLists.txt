@@ -41,6 +41,13 @@ set(FLARE_CORE_SRC
         ${PROJECT_SOURCE_DIR}/flare/ann/distance_l1_impl.cc
 )
 
+if(FLARE_BUILD_THREADS)
+    set(FLARE_CORE_SRC
+            ${FLARE_CORE_SRC}
+            ${PROJECT_SOURCE_DIR}/flare/backend/threads/threads_exec.cc
+    )
+endif (FLARE_BUILD_THREADS)
+
 if(FLARE_BUILD_OPENMP)
     set(FLARE_CORE_SRC
             ${FLARE_CORE_SRC}

@@ -331,7 +331,6 @@ namespace flare {
 }  // namespace flare
 
 #include <flare/core/tensor/crs.h>
-#include <flare/core/graph/work_graph_policy.h>
 // Including this in parallel_reduce.h led to a circular dependency
 // because flare::Sum is used in combined_reducer.hpp and the default.
 // The real answer is to finally break up parallel_reduce.h into

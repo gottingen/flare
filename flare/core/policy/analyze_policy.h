@@ -22,7 +22,7 @@
 #include <flare/core/traits/policy_trait_adaptor.h>
 
 #include <flare/core/traits/execution_space_trait.h>
-#include <flare/core/traits/graph_kernel_trait.h>
+//#include <flare/core/traits/graph_kernel_trait.h>
 #include <flare/core/traits/index_type_trait.h>
 #include <flare/core/policy/iteration_pattern_trait.h>
 #include <flare/core/traits/launch_bounds_trait.h>

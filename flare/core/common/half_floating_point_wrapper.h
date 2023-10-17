@@ -23,14 +23,14 @@
 #include <string>
 
 namespace flare::experimental::detail {
-/// @brief templated struct for determining if half_t is an alias to float.
-/// @tparam T The type to specialize on.
+    /// @brief templated struct for determining if half_t is an alias to float.
+    /// @tparam T The type to specialize on.
     template<class T>
     struct is_float16 : std::false_type {
     };
 
-/// @brief templated struct for determining if bhalf_t is an alias to float.
-/// @tparam T The type to specialize on.
+    /// @brief templated struct for determining if bhalf_t is an alias to float.
+    /// @tparam T The type to specialize on.
     template<class T>
     struct is_bfloat16 : std::false_type {
     };
@@ -1059,55 +1059,65 @@ namespace flare::experimental {
 #define FLARE_IMPL_BHALF_TYPE_DEFINED
 #define FLARE_BHALF_T_IS_FLOAT true
 namespace flare {
-namespace detail {
-struct bhalf_impl_t {
-  using type = float;
-};
-}  // namespace detail
+    namespace detail {
+        struct bhalf_impl_t {
+            using type = float;
+        };
+    }  // namespace detail
 
-namespace experimental {
+    namespace experimental {
 
-using bhalf_t = flare::detail::bhalf_impl_t::type;
+        using bhalf_t = flare::detail::bhalf_impl_t::type;
 
 // cast_to_bhalf
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(float val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(bool val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(double val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(short val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(unsigned short val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(int val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(unsigned int val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(long val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(unsigned long val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(long long val) { return bhalf_t(val); }
-FLARE_INLINE_FUNCTION
-bhalf_t cast_to_bhalf(unsigned long long val) { return bhalf_t(val); }
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(float val) { return bhalf_t(val); }
 
-// cast_from_bhalf
-template <class T>
-FLARE_INLINE_FUNCTION std::enable_if_t<
-    std::is_same<T, float>::value || std::is_same<T, bool>::value ||
-        std::is_same<T, double>::value || std::is_same<T, short>::value ||
-        std::is_same<T, unsigned short>::value || std::is_same<T, int>::value ||
-        std::is_same<T, unsigned int>::value || std::is_same<T, long>::value ||
-        std::is_same<T, unsigned long>::value ||
-        std::is_same<T, long long>::value ||
-        std::is_same<T, unsigned long long>::value,
-    T>
-cast_from_bhalf(bhalf_t val) {
-  return T(val);
-}
-}  // namespace experimental
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(bool val) { return bhalf_t(val); }
+
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(double val) { return bhalf_t(val); }
+
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(short val) { return bhalf_t(val); }
+
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(unsigned short val) { return bhalf_t(val); }
+
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(int val) { return bhalf_t(val); }
+
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(unsigned int val) { return bhalf_t(val); }
+
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(long val) { return bhalf_t(val); }
+
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(unsigned long val) { return bhalf_t(val); }
+
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(long long val) { return bhalf_t(val); }
+
+        FLARE_INLINE_FUNCTION
+        bhalf_t cast_to_bhalf(unsigned long long val) { return bhalf_t(val); }
+
+        // cast_from_bhalf
+        template<class T>
+        FLARE_INLINE_FUNCTION std::enable_if_t<
+                std::is_same<T, float>::value || std::is_same<T, bool>::value ||
+                std::is_same<T, double>::value || std::is_same<T, short>::value ||
+                std::is_same<T, unsigned short>::value || std::is_same<T, int>::value ||
+                std::is_same<T, unsigned int>::value || std::is_same<T, long>::value ||
+                std::is_same<T, unsigned long>::value ||
+                std::is_same<T, long long>::value ||
+                std::is_same<T, unsigned long long>::value,
+                T>
+        cast_from_bhalf(bhalf_t val) {
+            return T(val);
+        }
+    }  // namespace experimental
 }  // namespace flare
 #else
 #define FLARE_BHALF_T_IS_FLOAT false

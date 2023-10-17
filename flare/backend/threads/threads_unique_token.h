@@ -19,7 +19,6 @@
 #include <flare/core/parallel/unique_token.h>
 
 namespace flare {
-namespace experimental {
 
 template <>
 class UniqueToken<Threads, UniqueTokenScope::Instance> {
@@ -122,7 +121,6 @@ class UniqueToken<Threads, UniqueTokenScope::Global> {
   void release(int) const noexcept {}
 };
 
-}  // namespace experimental
 }  // namespace flare
 
 #endif  // FLARE_BACKEND_THREADS_THREADS_UNIQUE_TOKEN_H_

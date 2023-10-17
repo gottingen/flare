@@ -15,17 +15,6 @@
 #
 
 carbin_cc_test(
-        NAME core_serial_graph_test
-        SOURCES
-        serial_graph_test.cc
-        ${TEST_MAIN_SRC}
-        COPTS ${CARBIN_CXX_OPTIONS}
-        DEPS
-        ${CUDA_CUDA_LIBRARY}
-        flare::core
-)
-
-carbin_cc_test(
         NAME serial_atomic_operations_test
         SOURCES
         atomic_operations_complexdouble_test.cc
@@ -139,7 +128,6 @@ carbin_cc_test(
         tensor_resize_test.cc
         tensor_subtensor_test.cc
         without_initializing_test.cc
-        work_graph_test.cc
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS

@@ -59,7 +59,7 @@ namespace flare::detail {
     struct WorkItemPropertyTrait;
     struct LaunchBoundsTrait;
     struct OccupancyControlTrait;
-    struct GraphKernelTrait;
+    //struct GraphKernelTrait;
     struct WorkTagTrait;
 
     // Keep these sorted by frequency of use to reduce compilation time
@@ -74,7 +74,7 @@ namespace flare::detail {
                     WorkItemPropertyTrait,
                     LaunchBoundsTrait,
                     OccupancyControlTrait,
-                    GraphKernelTrait,
+                    //GraphKernelTrait,
                     // This one has to be last, unfortunately:
                     WorkTagTrait
             >;

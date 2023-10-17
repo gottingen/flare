@@ -29,8 +29,8 @@
 #include <flare/backend/cuda/cuda_abort.h>
 #include <flare/backend/cuda/cuda_error.h>
 #include <flare/backend/cuda/cuda_instance.h>
-#include <flare/core/graph/graph_impl_fwd.h>
-#include <flare/backend/cuda/cuda_graph_node_kernel.h>
+//#include <flare/core/graph/graph_impl_fwd.h>
+//#include <flare/backend/cuda/cuda_graph_node_kernel.h>
 #include <flare/backend/cuda/cuda_block_size_deduction.h>
 
 /** \brief  Access to constant memory on the device */
@@ -335,7 +335,7 @@ namespace flare::detail {
             (base_t::get_kernel_func())<<<grid, block, shmem,
                     cuda_instance->get_stream()>>>(driver);
         }
-
+        /*
         inline static void create_parallel_launch_graph_node(
                 DriverType const &driver, dim3 const &grid, dim3 const &block, int shmem,
                 CudaInternal const *cuda_instance) {
@@ -371,18 +371,23 @@ namespace flare::detail {
 
                 FLARE_IMPL_CUDA_SAFE_CALL(
                         (cuda_instance->cuda_graph_add_kernel_node_wrapper(
-                                &graph_node, graph, /* dependencies = */ nullptr,
-                                /* numDependencies = */ 0, &params)));
+                                &graph_node, graph, // dependencies =
+                                nullptr,
+                                // numDependencies =
+                                0, &params)));
             } else {
                 // We still need an empty node for the dependency structure
                 FLARE_IMPL_CUDA_SAFE_CALL(
                         (cuda_instance->cuda_graph_add_empty_node_wrapper(
                                 &graph_node, graph,
-                                /* dependencies = */ nullptr,
-                                /* numDependencies = */ 0)));
+                                // dependencies =
+                                nullptr,
+                                // numDependencies =
+                                0)));
             }
             FLARE_ENSURES(bool(graph_node))
         }
+        */
     };
 
 
@@ -430,7 +435,7 @@ namespace flare::detail {
             (base_t::get_kernel_func())<<<grid, block, shmem,
                     cuda_instance->get_stream()>>>(driver_ptr);
         }
-
+        /*
         inline static void create_parallel_launch_graph_node(
                 DriverType const &driver, dim3 const &grid, dim3 const &block, int shmem,
                 CudaInternal const *cuda_instance) {
@@ -476,18 +481,23 @@ namespace flare::detail {
 
                 FLARE_IMPL_CUDA_SAFE_CALL(
                         (cuda_instance->cuda_graph_add_kernel_node_wrapper(
-                                &graph_node, graph, /* dependencies = */ nullptr,
-                                /* numDependencies = */ 0, &params)));
+                                &graph_node, graph, // dependencies =
+                                nullptr,
+                                // numDependencies =
+                                0, &params)));
             } else {
                 // We still need an empty node for the dependency structure
                 FLARE_IMPL_CUDA_SAFE_CALL(
                         (cuda_instance->cuda_graph_add_empty_node_wrapper(
                                 &graph_node, graph,
-                                /* dependencies = */ nullptr,
-                                /* numDependencies = */ 0)));
+                                // dependencies =
+                                nullptr,
+                                // numDependencies =
+                                0)));
             }
             FLARE_ENSURES(bool(graph_node))
         }
+        */
     };
 
     template<class DriverType, unsigned int MaxThreadsPerBlock,
@@ -555,7 +565,7 @@ namespace flare::detail {
             FLARE_IMPL_CUDA_SAFE_CALL((cuda_instance->cuda_event_record_wrapper(
                     CudaInternal::constantMemReusable)));
         }
-
+        /*
         inline static void create_parallel_launch_graph_node(
                 DriverType const &driver, dim3 const &grid, dim3 const &block, int shmem,
                 CudaInternal const *cuda_instance) {
@@ -573,7 +583,7 @@ namespace flare::detail {
                     experimental::CudaLaunchMechanism::GlobalMemory>;
             global_launch_impl_t::create_parallel_launch_graph_node(
                     driver, grid, block, shmem, cuda_instance);
-        }
+        }*/
     };
 
     template<class DriverType, class LaunchBounds,
@@ -637,7 +647,7 @@ namespace flare::detail {
         }
     };
 
-
+    /*
     template<class DriverType, class LaunchBounds = flare::LaunchBounds<>,
             experimental::CudaLaunchMechanism LaunchMechanism =
             DeduceCudaLaunchMechanism<DriverType>::launch_mechanism,
@@ -647,8 +657,11 @@ namespace flare::detail {
     // General launch mechanism
     template<class DriverType, class LaunchBounds,
             experimental::CudaLaunchMechanism LaunchMechanism>
-    struct CudaParallelLaunch<DriverType, LaunchBounds, LaunchMechanism,
-            /* DoGraph = */ false>
+            */
+    template<class DriverType, class LaunchBounds = flare::LaunchBounds<>,
+            experimental::CudaLaunchMechanism LaunchMechanism =
+            DeduceCudaLaunchMechanism<DriverType>::launch_mechanism>
+    struct CudaParallelLaunch
             : CudaParallelLaunchImpl<DriverType, LaunchBounds, LaunchMechanism> {
         using base_t =
                 CudaParallelLaunchImpl<DriverType, LaunchBounds, LaunchMechanism>;
@@ -660,10 +673,12 @@ namespace flare::detail {
     };
 
     // Launch mechanism for creating graph nodes
+    /*
     template<class DriverType, class LaunchBounds,
             experimental::CudaLaunchMechanism LaunchMechanism>
     struct CudaParallelLaunch<DriverType, LaunchBounds, LaunchMechanism,
-            /* DoGraph = */ true>
+            // DoGraph =
+            true>
             : CudaParallelLaunchImpl<DriverType, LaunchBounds, LaunchMechanism> {
         using base_t =
                 CudaParallelLaunchImpl<DriverType, LaunchBounds, LaunchMechanism>;
@@ -672,7 +687,7 @@ namespace flare::detail {
         CudaParallelLaunch(Args &&... args) {
             base_t::create_parallel_launch_graph_node((Args &&) args...);
         }
-    };
+    };*/
 
 }  // namespace flare::detail
 

@@ -30,6 +30,7 @@
 #include <flare/core/common/cpu_discovery.h>
 #include <flare/core/profile/tools.h>
 #include <flare/core/common/exec_space_manager.h>
+#include <flare/backend/threads/threads_exec.h>
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------

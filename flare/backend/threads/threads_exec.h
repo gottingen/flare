@@ -24,7 +24,7 @@
 #include <flare/core/common/spinwait.h>
 
 #include <flare/core/atomic.h>
-
+#include <flare/backend/threads/threads.h>
 #include <flare/core/common/concurrent_bitset.h>
 
 //----------------------------------------------------------------------------

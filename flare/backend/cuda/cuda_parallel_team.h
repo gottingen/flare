@@ -806,7 +806,7 @@ namespace flare::detail {
             const bool need_device_set = ReducerType::has_init_member_function() ||
                                          ReducerType::has_final_member_function() ||
                                          !m_result_ptr_host_accessible ||
-                                         Policy::is_graph_kernel::value ||
+                                         //Policy::is_graph_kernel::value ||
                                          !std::is_same<ReducerType, InvalidType>::value;
             if (!is_empty_range || need_device_set) {
                 const int block_count = std::max(

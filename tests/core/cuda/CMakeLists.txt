@@ -38,7 +38,7 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::core
 )
-
+#[[
 carbin_cc_test(
         NAME core_cuda_graph_test
         SOURCES
@@ -50,7 +50,7 @@ carbin_cc_test(
         ${CUDA_CUDA_LIBRARY}
         flare::core
 )
-
+]]
 carbin_cc_test(
         NAME core_cuda_inter_op_init_test
         SOURCES
@@ -226,7 +226,6 @@ carbin_cc_test(
         tensor_resize_test.cu
         tensor_subtensor_test.cu
         without_initializing_test.cu
-        work_graph_test.cu
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS}
         CUOPTS ${CARBIN_CU_OPTIONS}
