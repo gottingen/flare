@@ -26,44 +26,44 @@
 #include <flare/runtime/taskflow.h>
 
 int main() {
-  
-  // create an executor of only one worker to enable 
-  // deterministic behavior
-  flare::rt::Executor executor(1);
 
-  flare::rt::Taskflow taskflow;
+    // create an executor of only one worker to enable
+    // deterministic behavior
+    flare::rt::Executor executor(1);
 
-  int counter {0};
-  
-  // Here we create five tasks and print thier execution
-  // orders which should align with assigned priorities
-  auto [A, B, C, D, E] = taskflow.emplace(
-    [] () { },
-    [&] () { 
-      std::cout << "Task B: " << counter++ << '\n';  // 0
-    },
-    [&] () { 
-      std::cout << "Task C: " << counter++ << '\n';  // 2
-    },
-    [&] () { 
-      std::cout << "Task D: " << counter++ << '\n';  // 1
-    },
-    [] () { }
-  );
+    flare::rt::Taskflow taskflow;
 
-  A.precede(B, C, D); 
-  E.succeed(B, C, D);
-  
-  // By default, all tasks are of flare::rt::TaskPriority::HIGH
-  B.priority(flare::rt::TaskPriority::HIGH);
-  C.priority(flare::rt::TaskPriority::LOW);
-  D.priority(flare::rt::TaskPriority::NORMAL);
+    int counter{0};
 
-  assert(B.priority() == flare::rt::TaskPriority::HIGH);
-  assert(C.priority() == flare::rt::TaskPriority::LOW);
-  assert(D.priority() == flare::rt::TaskPriority::NORMAL);
-  
-  // we should see B, D, and C in their priority order
-  executor.run(taskflow).wait();
+    // Here we create five tasks and print thier execution
+    // orders which should align with assigned priorities
+    auto [A, B, C, D, E] = taskflow.emplace(
+            []() {},
+            [&]() {
+                std::cout << "Task B: " << counter++ << '\n';  // 0
+            },
+            [&]() {
+                std::cout << "Task C: " << counter++ << '\n';  // 2
+            },
+            [&]() {
+                std::cout << "Task D: " << counter++ << '\n';  // 1
+            },
+            []() {}
+    );
+
+    A.precede(B, C, D);
+    E.succeed(B, C, D);
+
+    // By default, all tasks are of flare::rt::TaskPriority::HIGH
+    B.priority(flare::rt::TaskPriority::HIGH);
+    C.priority(flare::rt::TaskPriority::LOW);
+    D.priority(flare::rt::TaskPriority::NORMAL);
+
+    assert(B.priority() == flare::rt::TaskPriority::HIGH);
+    assert(C.priority() == flare::rt::TaskPriority::LOW);
+    assert(D.priority() == flare::rt::TaskPriority::NORMAL);
+
+    // we should see B, D, and C in their priority order
+    executor.run(taskflow).wait();
 }
 

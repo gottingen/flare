@@ -1234,7 +1234,9 @@ void flare::finalize() {
 void flare::fence() { fence("flare::fence: Unnamed Global Fence"); }
 #endif
 
-void flare::fence(const std::string &name) { fence_internal(name); }
+void flare::fence(const std::string &name) {
+    fence_internal(name);
+}
 
 namespace {
     void print_helper(std::ostream &os,

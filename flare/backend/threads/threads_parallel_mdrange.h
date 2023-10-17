@@ -17,7 +17,7 @@
 #define FLARE_BACKEND_THREADS_THREADS_PARALLEL_MDRANGE_H_
 
 #include <flare/core/parallel/parallel.h>
-
+#include <flare/backend/threads/threads_exec.h>
 #include <flare/core/policy/exp_mdrange_policy.h>
 
 namespace flare {
