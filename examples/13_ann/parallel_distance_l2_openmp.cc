@@ -130,6 +130,7 @@ int main(int argc, char* argv[]) {
             );
         std::cout << '\n'
                   << "nor " << stats_nor << '\n';
+        /*
         auto stats_batch = bencher([&]() {
             for(auto i =0; i <  L; i++) {
                 flare::ann::distance_l2<tensor_type>(a, b);
@@ -148,6 +149,7 @@ int main(int argc, char* argv[]) {
                                 {  for_each(executor, L, a, b,true); });
         std::cout << '\n'
                   << "parallel batch " << stats_pt << '\n';
+                  */
 
     }  // use this scope to ensure the lifetime of "A" ends before finalize
     flare::finalize();

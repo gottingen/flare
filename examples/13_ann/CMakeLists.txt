@@ -97,9 +97,27 @@ carbin_cc_binary(
         flare::core
 )
 carbin_cc_binary(
-        NAME example_parallel_distance_l2_cc
+        NAME example_parallel_distance_l2_openmp
         SOURCES
-        parallel_distance_l2.cc
+        parallel_distance_l2_openmp.cc
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::core
+)
+
+carbin_cc_binary(
+        NAME example_parallel_distance_l2_batch
+        SOURCES
+        parallel_distance_l2_batch.cc
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::core
+)
+
+carbin_cc_binary(
+        NAME example_distance_l2_batch
+        SOURCES
+        distance_l2_batch.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
         flare::core
