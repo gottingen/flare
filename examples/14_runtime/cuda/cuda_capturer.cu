@@ -16,57 +16,57 @@
 
 // Kernel: saxpy
 __global__ void saxpy(int n, float a, float *x, float *y) {
-  int i = blockIdx.x*blockDim.x + threadIdx.x;
-  if (i < n) {
-    y[i] = a*x[i] + y[i];
-  }
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n) {
+        y[i] = a * x[i] + y[i];
+    }
 }
 
 // Function: main
 int main() {
-  
-  const unsigned N = 1<<20;
 
-  std::vector<float> hx(N, 1.0f), hy(N, 2.0f);
+    const unsigned N = 1 << 20;
 
-  auto dx = flare::rt::cuda_malloc_device<float>(N);
-  auto dy = flare::rt::cuda_malloc_device<float>(N);
+    std::vector<float> hx(N, 1.0f), hy(N, 2.0f);
 
-  flare::rt::cudaFlowCapturer cf;
+    auto dx = flare::rt::cuda_malloc_device<float>(N);
+    auto dy = flare::rt::cuda_malloc_device<float>(N);
 
-  auto h2d_x  = cf.copy(dx, hx.data(), N).name("h2d_x");
-  auto h2d_y  = cf.copy(dy, hy.data(), N).name("h2d_y");
-  auto d2h_x  = cf.copy(hx.data(), dx, N).name("d2h_x");
-  auto d2h_y  = cf.copy(hy.data(), dy, N).name("d2h_y");
-  auto kernel = cf.kernel((N+255)/256, 256, 0, saxpy, N, 2.0f, dx, dy)
-                  .name("saxpy");
-  kernel.succeed(h2d_x, h2d_y)
-        .precede(d2h_x, d2h_y);
+    flare::rt::cudaFlowCapturer cf;
 
-  // execute the cudaflow capturer
-  std::cout << "running cudaflow capturer ...\n";
-  flare::rt::cudaStream stream;
-  cf.run(stream);
-  stream.synchronize();
+    auto h2d_x = cf.copy(dx, hx.data(), N).name("h2d_x");
+    auto h2d_y = cf.copy(dy, hy.data(), N).name("h2d_y");
+    auto d2h_x = cf.copy(hx.data(), dx, N).name("d2h_x");
+    auto d2h_y = cf.copy(hy.data(), dy, N).name("d2h_y");
+    auto kernel = cf.kernel((N + 255) / 256, 256, 0, saxpy, N, 2.0f, dx, dy)
+            .name("saxpy");
+    kernel.succeed(h2d_x, h2d_y)
+            .precede(d2h_x, d2h_y);
 
-  // inspect the result
-  float max_error = 0.0f;
-  for (size_t i = 0; i < N; i++) {
-    max_error = std::max(max_error, abs(hx[i]-1.0f));
-    max_error = std::max(max_error, abs(hy[i]-4.0f));
-  }
-  std::cout << "saxpy finished with max error: " << max_error << '\n';
+    // execute the cudaflow capturer
+    std::cout << "running cudaflow capturer ...\n";
+    flare::rt::cudaStream stream;
+    cf.run(stream);
+    stream.synchronize();
 
-  // free memory
-  flare::rt::cuda_free(dx);
-  flare::rt::cuda_free(dy);
-  
-  // dump the cudaFlow graph
-  cf.dump(std::cout);
+    // inspect the result
+    float max_error = 0.0f;
+    for (size_t i = 0; i < N; i++) {
+        max_error = std::max(max_error, abs(hx[i] - 1.0f));
+        max_error = std::max(max_error, abs(hy[i] - 4.0f));
+    }
+    std::cout << "saxpy finished with max error: " << max_error << '\n';
 
-  // dump the native CUDA graph
-  cf.dump_native_graph(std::cout);
+    // free memory
+    flare::rt::cuda_free(dx);
+    flare::rt::cuda_free(dy);
 
-  return 0;
+    // dump the cudaFlow graph
+    cf.dump(std::cout);
+
+    // dump the native CUDA graph
+    cf.dump_native_graph(std::cout);
+
+    return 0;
 }
 

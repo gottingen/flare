@@ -19,207 +19,207 @@
 #include <flare/core/parallel/parallel.h>
 
 namespace flare {
-namespace detail {
+    namespace detail {
 
-template <class FunctorType, class... Properties>
-class ParallelFor<FunctorType, flare::TeamPolicy<Properties...>,
-                  flare::Threads> {
- private:
-  using Policy =
-      flare::detail::TeamPolicyInternal<flare::Threads, Properties...>;
-  using WorkTag = typename Policy::work_tag;
-  using Member  = typename Policy::member_type;
+        template<class FunctorType, class... Properties>
+        class ParallelFor<FunctorType, flare::TeamPolicy<Properties...>,
+                flare::Threads> {
+        private:
+            using Policy =
+                    flare::detail::TeamPolicyInternal<flare::Threads, Properties...>;
+            using WorkTag = typename Policy::work_tag;
+            using Member = typename Policy::member_type;
 
-  const FunctorType m_functor;
-  const Policy m_policy;
-  const size_t m_shared;
+            const FunctorType m_functor;
+            const Policy m_policy;
+            const size_t m_shared;
 
-  template <class TagType, class Schedule>
-  inline static std::enable_if_t<std::is_void<TagType>::value &&
-                                 std::is_same<Schedule, flare::Static>::value>
-  exec_team(const FunctorType &functor, Member member) {
-    for (; member.valid_static(); member.next_static()) {
-      functor(member);
-    }
-  }
+            template<class TagType, class Schedule>
+            inline static std::enable_if_t<std::is_void<TagType>::value &&
+                                           std::is_same<Schedule, flare::Static>::value>
+            exec_team(const FunctorType &functor, Member member) {
+                for (; member.valid_static(); member.next_static()) {
+                    functor(member);
+                }
+            }
 
-  template <class TagType, class Schedule>
-  inline static std::enable_if_t<!std::is_void<TagType>::value &&
-                                 std::is_same<Schedule, flare::Static>::value>
-  exec_team(const FunctorType &functor, Member member) {
-    const TagType t{};
-    for (; member.valid_static(); member.next_static()) {
-      functor(t, member);
-    }
-  }
+            template<class TagType, class Schedule>
+            inline static std::enable_if_t<!std::is_void<TagType>::value &&
+                                           std::is_same<Schedule, flare::Static>::value>
+            exec_team(const FunctorType &functor, Member member) {
+                const TagType t{};
+                for (; member.valid_static(); member.next_static()) {
+                    functor(t, member);
+                }
+            }
 
-  template <class TagType, class Schedule>
-  inline static std::enable_if_t<std::is_void<TagType>::value &&
-                                 std::is_same<Schedule, flare::Dynamic>::value>
-  exec_team(const FunctorType &functor, Member member) {
-    for (; member.valid_dynamic(); member.next_dynamic()) {
-      functor(member);
-    }
-  }
+            template<class TagType, class Schedule>
+            inline static std::enable_if_t<std::is_void<TagType>::value &&
+                                           std::is_same<Schedule, flare::Dynamic>::value>
+            exec_team(const FunctorType &functor, Member member) {
+                for (; member.valid_dynamic(); member.next_dynamic()) {
+                    functor(member);
+                }
+            }
 
-  template <class TagType, class Schedule>
-  inline static std::enable_if_t<!std::is_void<TagType>::value &&
-                                 std::is_same<Schedule, flare::Dynamic>::value>
-  exec_team(const FunctorType &functor, Member member) {
-    const TagType t{};
-    for (; member.valid_dynamic(); member.next_dynamic()) {
-      functor(t, member);
-    }
-  }
+            template<class TagType, class Schedule>
+            inline static std::enable_if_t<!std::is_void<TagType>::value &&
+                                           std::is_same<Schedule, flare::Dynamic>::value>
+            exec_team(const FunctorType &functor, Member member) {
+                const TagType t{};
+                for (; member.valid_dynamic(); member.next_dynamic()) {
+                    functor(t, member);
+                }
+            }
 
-  static void exec(ThreadsExec &exec, const void *arg) {
-    const ParallelFor &self = *((const ParallelFor *)arg);
+            static void exec(ThreadsExec &exec, const void *arg) {
+                const ParallelFor &self = *((const ParallelFor *) arg);
 
-    ParallelFor::exec_team<WorkTag, typename Policy::schedule_type::type>(
-        self.m_functor, Member(&exec, self.m_policy, self.m_shared));
+                ParallelFor::exec_team<WorkTag, typename Policy::schedule_type::type>(
+                        self.m_functor, Member(&exec, self.m_policy, self.m_shared));
 
-    exec.barrier();
-    exec.fan_in();
-  }
-  template <typename Policy>
-  Policy fix_policy(Policy policy) {
-    if (policy.impl_vector_length() < 0) {
-      policy.impl_set_vector_length(1);
-    }
-    if (policy.team_size() < 0) {
-      policy.impl_set_team_size(
-          policy.team_size_recommended(m_functor, ParallelForTag{}));
-    }
-    return policy;
-  }
+                exec.barrier();
+                exec.fan_in();
+            }
 
- public:
-  inline void execute() const {
-    ThreadsExec::resize_scratch(
-        0, Policy::member_type::team_reduce_size() + m_shared);
+            template<typename Policy>
+            Policy fix_policy(Policy policy) {
+                if (policy.impl_vector_length() < 0) {
+                    policy.impl_set_vector_length(1);
+                }
+                if (policy.team_size() < 0) {
+                    policy.impl_set_team_size(
+                            policy.team_size_recommended(m_functor, ParallelForTag{}));
+                }
+                return policy;
+            }
 
-    ThreadsExec::start(&ParallelFor::exec, this);
+        public:
+            inline void execute() const {
+                ThreadsExec::resize_scratch(0, Policy::member_type::team_reduce_size() + m_shared);
 
-    ThreadsExec::fence();
-  }
+                ThreadsExec::start(&ParallelFor::exec, this);
 
-  ParallelFor(const FunctorType &arg_functor, const Policy &arg_policy)
-      : m_functor(arg_functor),
-        m_policy(fix_policy(arg_policy)),
-        m_shared(m_policy.scratch_size(0) + m_policy.scratch_size(1) +
-                 FunctorTeamShmemSize<FunctorType>::value(
-                     arg_functor, m_policy.team_size())) {}
-};
+                ThreadsExec::fence();
+            }
 
-template <class CombinedFunctorReducerType, class... Properties>
-class ParallelReduce<CombinedFunctorReducerType,
-                     flare::TeamPolicy<Properties...>, flare::Threads> {
- private:
-  using Policy =
-      flare::detail::TeamPolicyInternal<flare::Threads, Properties...>;
-  using FunctorType = typename CombinedFunctorReducerType::functor_type;
-  using ReducerType = typename CombinedFunctorReducerType::reducer_type;
-  using WorkTag     = typename Policy::work_tag;
-  using Member      = typename Policy::member_type;
+            ParallelFor(const FunctorType &arg_functor, const Policy &arg_policy)
+                    : m_functor(arg_functor),
+                      m_policy(fix_policy(arg_policy)),
+                      m_shared(m_policy.scratch_size(0) + m_policy.scratch_size(1) +
+                               FunctorTeamShmemSize<FunctorType>::value(
+                                       arg_functor, m_policy.team_size())) {}
+        };
 
-  using pointer_type   = typename ReducerType::pointer_type;
-  using reference_type = typename ReducerType::reference_type;
+        template<class CombinedFunctorReducerType, class... Properties>
+        class ParallelReduce<CombinedFunctorReducerType,
+                flare::TeamPolicy<Properties...>, flare::Threads> {
+        private:
+            using Policy =
+                    flare::detail::TeamPolicyInternal<flare::Threads, Properties...>;
+            using FunctorType = typename CombinedFunctorReducerType::functor_type;
+            using ReducerType = typename CombinedFunctorReducerType::reducer_type;
+            using WorkTag = typename Policy::work_tag;
+            using Member = typename Policy::member_type;
 
-  const CombinedFunctorReducerType m_functor_reducer;
-  const Policy m_policy;
-  const pointer_type m_result_ptr;
-  const size_t m_shared;
+            using pointer_type = typename ReducerType::pointer_type;
+            using reference_type = typename ReducerType::reference_type;
 
-  template <class TagType>
-  inline static std::enable_if_t<std::is_void<TagType>::value> exec_team(
-      const FunctorType &functor, Member member, reference_type update) {
-    for (; member.valid_static(); member.next_static()) {
-      functor(member, update);
-    }
-  }
+            const CombinedFunctorReducerType m_functor_reducer;
+            const Policy m_policy;
+            const pointer_type m_result_ptr;
+            const size_t m_shared;
 
-  template <class TagType>
-  inline static std::enable_if_t<!std::is_void<TagType>::value> exec_team(
-      const FunctorType &functor, Member member, reference_type update) {
-    const TagType t{};
-    for (; member.valid_static(); member.next_static()) {
-      functor(t, member, update);
-    }
-  }
+            template<class TagType>
+            inline static std::enable_if_t<std::is_void<TagType>::value> exec_team(
+                    const FunctorType &functor, Member member, reference_type update) {
+                for (; member.valid_static(); member.next_static()) {
+                    functor(member, update);
+                }
+            }
 
-  static void exec(ThreadsExec &exec, const void *arg) {
-    const ParallelReduce &self = *((const ParallelReduce *)arg);
+            template<class TagType>
+            inline static std::enable_if_t<!std::is_void<TagType>::value> exec_team(
+                    const FunctorType &functor, Member member, reference_type update) {
+                const TagType t{};
+                for (; member.valid_static(); member.next_static()) {
+                    functor(t, member, update);
+                }
+            }
 
-    ParallelReduce::template exec_team<WorkTag>(
-        self.m_functor_reducer.get_functor(),
-        Member(&exec, self.m_policy, self.m_shared),
-        self.m_functor_reducer.get_reducer().init(
-            static_cast<pointer_type>(exec.reduce_memory())));
+            static void exec(ThreadsExec &exec, const void *arg) {
+                const ParallelReduce &self = *((const ParallelReduce *) arg);
 
-    exec.fan_in_reduce(self.m_functor_reducer.get_reducer());
-  }
+                ParallelReduce::template exec_team<WorkTag>(
+                        self.m_functor_reducer.get_functor(),
+                        Member(&exec, self.m_policy, self.m_shared),
+                        self.m_functor_reducer.get_reducer().init(
+                                static_cast<pointer_type>(exec.reduce_memory())));
 
- public:
-  inline void execute() const {
-    const ReducerType &reducer = m_functor_reducer.get_reducer();
+                exec.fan_in_reduce(self.m_functor_reducer.get_reducer());
+            }
 
-    if (m_policy.league_size() * m_policy.team_size() == 0) {
-      if (m_result_ptr) {
-        reducer.init(m_result_ptr);
-        reducer.final(m_result_ptr);
-      }
-    } else {
-      ThreadsExec::resize_scratch(
-          reducer.value_size(),
-          Policy::member_type::team_reduce_size() + m_shared);
+        public:
+            inline void execute() const {
+                const ReducerType &reducer = m_functor_reducer.get_reducer();
 
-      ThreadsExec::start(&ParallelReduce::exec, this);
+                if (m_policy.league_size() * m_policy.team_size() == 0) {
+                    if (m_result_ptr) {
+                        reducer.init(m_result_ptr);
+                        reducer.final(m_result_ptr);
+                    }
+                } else {
+                    ThreadsExec::resize_scratch(
+                            reducer.value_size(),
+                            Policy::member_type::team_reduce_size() + m_shared);
 
-      ThreadsExec::fence();
+                    ThreadsExec::start(&ParallelReduce::exec, this);
 
-      if (m_result_ptr) {
-        const pointer_type data =
-            (pointer_type)ThreadsExec::root_reduce_scratch();
+                    ThreadsExec::fence();
 
-        const unsigned n = reducer.value_count();
-        for (unsigned i = 0; i < n; ++i) {
-          m_result_ptr[i] = data[i];
-        }
-      }
-    }
-  }
+                    if (m_result_ptr) {
+                        const pointer_type data =
+                                (pointer_type) ThreadsExec::root_reduce_scratch();
 
-  template <typename Policy>
-  Policy fix_policy(Policy policy) {
-    if (policy.impl_vector_length() < 0) {
-      policy.impl_set_vector_length(1);
-    }
-    if (policy.team_size() < 0) {
-      policy.impl_set_team_size(policy.team_size_recommended(
-          m_functor_reducer.get_functor(), m_functor_reducer.get_reducer(),
-          ParallelReduceTag{}));
-    }
-    return policy;
-  }
+                        const unsigned n = reducer.value_count();
+                        for (unsigned i = 0; i < n; ++i) {
+                            m_result_ptr[i] = data[i];
+                        }
+                    }
+                }
+            }
 
-  template <class TensorType>
-  inline ParallelReduce(const CombinedFunctorReducerType &arg_functor_reducer,
-                        const Policy &arg_policy, const TensorType &arg_result)
-      : m_functor_reducer(arg_functor_reducer),
-        m_policy(fix_policy(arg_policy)),
-        m_result_ptr(arg_result.data()),
-        m_shared(m_policy.scratch_size(0) + m_policy.scratch_size(1) +
-                 FunctorTeamShmemSize<FunctorType>::value(
-                     arg_functor_reducer.get_functor(), m_policy.team_size())) {
-    static_assert(
-        flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
-                                        flare::HostSpace>::accessible,
-        "flare::Threads reduce result must be a Tensor accessible from "
-        "HostSpace");
-  }
-};
+            template<typename Policy>
+            Policy fix_policy(Policy policy) {
+                if (policy.impl_vector_length() < 0) {
+                    policy.impl_set_vector_length(1);
+                }
+                if (policy.team_size() < 0) {
+                    policy.impl_set_team_size(policy.team_size_recommended(
+                            m_functor_reducer.get_functor(), m_functor_reducer.get_reducer(),
+                            ParallelReduceTag{}));
+                }
+                return policy;
+            }
 
-}  // namespace detail
+            template<class TensorType>
+            inline ParallelReduce(const CombinedFunctorReducerType &arg_functor_reducer,
+                                  const Policy &arg_policy, const TensorType &arg_result)
+                    : m_functor_reducer(arg_functor_reducer),
+                      m_policy(fix_policy(arg_policy)),
+                      m_result_ptr(arg_result.data()),
+                      m_shared(m_policy.scratch_size(0) + m_policy.scratch_size(1) +
+                               FunctorTeamShmemSize<FunctorType>::value(
+                                       arg_functor_reducer.get_functor(), m_policy.team_size())) {
+                static_assert(
+                        flare::detail::MemorySpaceAccess<typename TensorType::memory_space,
+                                flare::HostSpace>::accessible,
+                        "flare::Threads reduce result must be a Tensor accessible from "
+                        "HostSpace");
+            }
+        };
+
+    }  // namespace detail
 }  // namespace flare
 
 #endif  // FLARE_BACKEND_THREADS_THREADS_PARALLEL_TEAM_H_

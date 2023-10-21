@@ -120,8 +120,8 @@ namespace flare::detail {
 
 #undef FLARE_IMPL_TENSOR_DIMENSION
 
-// MSVC does not do empty base class optimization by default.
-// Per standard it is required for standard layout types
+    // MSVC does not do empty base class optimization by default.
+    // Per standard it is required for standard layout types
     template<size_t... Vals>
     struct FLARE_IMPL_ENFORCE_EMPTY_BASE_OPTIMIZATION TensorDimension
             : public TensorDimension0<variadic_size_t<0u, Vals...>::value,

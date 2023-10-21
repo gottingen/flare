@@ -1539,20 +1539,20 @@ namespace flare {
         };
     }  // namespace detail
 
-//----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------
 
-/*! \fn void parallel_reduce(label,policy,functor,return_argument)
-    \brief Perform a parallel reduction.
-    \param label An optional Label giving the call name. Must be able to
-   construct a std::string from the argument. \param policy A flare Execution
-   Policy, such as an integer, a RangePolicy or a TeamPolicy. \param functor A
-   functor with a reduction operator, and optional init, join and final
-   functions. \param return_argument A return argument which can be a scalar, a
-   Tensor, or a ReducerStruct. This argument can be left out if the functor has a
-   final function.
-*/
+    /*! \fn void parallel_reduce(label,policy,functor,return_argument)
+        \brief Perform a parallel reduction.
+        \param label An optional Label giving the call name. Must be able to
+       construct a std::string from the argument. \param policy A flare Execution
+       Policy, such as an integer, a RangePolicy or a TeamPolicy. \param functor A
+       functor with a reduction operator, and optional init, join and final
+       functions. \param return_argument A return argument which can be a scalar, a
+       Tensor, or a ReducerStruct. This argument can be left out if the functor has a
+       final function.
+    */
 
-// Parallel Reduce Blocking behavior
+    // Parallel Reduce Blocking behavior
 
     namespace detail {
         template<typename T>

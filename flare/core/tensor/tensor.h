@@ -102,22 +102,22 @@ namespace flare::detail {
 
 namespace flare {
 
-/** \class TensorTraits
- *  \brief Traits class for accessing attributes of a Tensor.
- *
- * This is an implementation detail of Tensor.  It is only of interest
- * to developers implementing a new specialization of Tensor.
- *
- * Template argument options:
- *   - Tensor< DataType >
- *   - Tensor< DataType , Space >
- *   - Tensor< DataType , Space , MemoryTraits >
- *   - Tensor< DataType , ArrayLayout >
- *   - Tensor< DataType , ArrayLayout , Space >
- *   - Tensor< DataType , ArrayLayout , MemoryTraits >
- *   - Tensor< DataType , ArrayLayout , Space , MemoryTraits >
- *   - Tensor< DataType , MemoryTraits >
- */
+    /** \class TensorTraits
+     *  \brief Traits class for accessing attributes of a Tensor.
+     *
+     * This is an implementation detail of Tensor.  It is only of interest
+     * to developers implementing a new specialization of Tensor.
+     *
+     * Template argument options:
+     *   - Tensor< DataType >
+     *   - Tensor< DataType , Space >
+     *   - Tensor< DataType , Space , MemoryTraits >
+     *   - Tensor< DataType , ArrayLayout >
+     *   - Tensor< DataType , ArrayLayout , Space >
+     *   - Tensor< DataType , ArrayLayout , MemoryTraits >
+     *   - Tensor< DataType , ArrayLayout , Space , MemoryTraits >
+     *   - Tensor< DataType , MemoryTraits >
+     */
 
     template<class DataType, class... Properties>
     struct TensorTraits;
@@ -1144,7 +1144,7 @@ namespace flare {
         access(I0 i0, I1 i1, I2 i2, I3 i3, I4 i4, Is... extra) const {
             check_access_member_function_valid_args(i0, i1, i2, i3, i4, extra...);
             FLARE_IMPL_TENSOR_OPERATOR_VERIFY(m_track, m_map, i0, i1, i2, i3, i4,
-                                            extra...)
+                                              extra...)
             return m_map.m_impl_handle[m_map.m_impl_offset(i0, i1, i2, i3, i4)];
         }
 
@@ -1157,7 +1157,7 @@ namespace flare {
         access(I0 i0, I1 i1, I2 i2, I3 i3, I4 i4, Is... extra) const {
             check_access_member_function_valid_args(i0, i1, i2, i3, i4, extra...);
             FLARE_IMPL_TENSOR_OPERATOR_VERIFY(m_track, m_map, i0, i1, i2, i3, i4,
-                                            extra...)
+                                              extra...)
             return m_map.reference(i0, i1, i2, i3, i4);
         }
 
@@ -1173,7 +1173,7 @@ namespace flare {
         access(I0 i0, I1 i1, I2 i2, I3 i3, I4 i4, I5 i5, Is... extra) const {
             check_access_member_function_valid_args(i0, i1, i2, i3, i4, i5, extra...);
             FLARE_IMPL_TENSOR_OPERATOR_VERIFY(m_track, m_map, i0, i1, i2, i3, i4, i5,
-                                            extra...)
+                                              extra...)
             return m_map.m_impl_handle[m_map.m_impl_offset(i0, i1, i2, i3, i4, i5)];
         }
 
@@ -1186,7 +1186,7 @@ namespace flare {
         access(I0 i0, I1 i1, I2 i2, I3 i3, I4 i4, I5 i5, Is... extra) const {
             check_access_member_function_valid_args(i0, i1, i2, i3, i4, i5, extra...);
             FLARE_IMPL_TENSOR_OPERATOR_VERIFY(m_track, m_map, i0, i1, i2, i3, i4, i5,
-                                            extra...)
+                                              extra...)
             return m_map.reference(i0, i1, i2, i3, i4, i5);
         }
 
@@ -1203,7 +1203,7 @@ namespace flare {
             check_access_member_function_valid_args(i0, i1, i2, i3, i4, i5, i6,
                                                     extra...);
             FLARE_IMPL_TENSOR_OPERATOR_VERIFY(m_track, m_map, i0, i1, i2, i3, i4, i5, i6,
-                                            extra...)
+                                              extra...)
             return m_map.m_impl_handle[m_map.m_impl_offset(i0, i1, i2, i3, i4, i5, i6)];
         }
 
@@ -1217,7 +1217,7 @@ namespace flare {
             check_access_member_function_valid_args(i0, i1, i2, i3, i4, i5, i6,
                                                     extra...);
             FLARE_IMPL_TENSOR_OPERATOR_VERIFY(m_track, m_map, i0, i1, i2, i3, i4, i5, i6,
-                                            extra...)
+                                              extra...)
             return m_map.reference(i0, i1, i2, i3, i4, i5, i6);
         }
 
@@ -1236,7 +1236,7 @@ namespace flare {
             check_access_member_function_valid_args(i0, i1, i2, i3, i4, i5, i6, i7,
                                                     extra...);
             FLARE_IMPL_TENSOR_OPERATOR_VERIFY(m_track, m_map, i0, i1, i2, i3, i4, i5, i6,
-                                            i7, extra...)
+                                              i7, extra...)
             return m_map
                     .m_impl_handle[m_map.m_impl_offset(i0, i1, i2, i3, i4, i5, i6, i7)];
         }
@@ -1253,7 +1253,7 @@ namespace flare {
             check_access_member_function_valid_args(i0, i1, i2, i3, i4, i5, i6, i7,
                                                     extra...);
             FLARE_IMPL_TENSOR_OPERATOR_VERIFY(m_track, m_map, i0, i1, i2, i3, i4, i5, i6,
-                                            i7, extra...)
+                                              i7, extra...)
             return m_map.reference(i0, i1, i2, i3, i4, i5, i6, i7);
         }
 
@@ -1340,18 +1340,16 @@ namespace flare {
 
         template<class RT, class... RP, class Arg0, class... Args>
         FLARE_INLINE_FUNCTION Tensor(const Tensor<RT, RP...> &src_tensor, const Arg0 arg0,
-                                   Args... args)
+                                     Args... args)
                 : m_track(src_tensor), m_map() {
             using SrcType = Tensor<RT, RP...>;
 
-            using Mapping = flare::detail::TensorMapping<void, typename SrcType::traits,
-                    Arg0, Args...>;
+            using Mapping = flare::detail::TensorMapping<void, typename SrcType::traits, Arg0, Args...>;
 
             using DstType = typename Mapping::type;
 
             static_assert(
-                    flare::detail::TensorMapping<traits, typename DstType::traits,
-                            typename traits::specialize>::is_assignable,
+                    flare::detail::TensorMapping<traits, typename DstType::traits, typename traits::specialize>::is_assignable,
                     "Subtensor construction requires compatible tensor and subtensor arguments");
 
             Mapping::assign(m_map, src_tensor.m_map, arg0, args...);
@@ -1458,8 +1456,8 @@ namespace flare {
                 const size_t arg_N6 = FLARE_IMPL_CTOR_DEFAULT_ARG,
                 const size_t arg_N7 = FLARE_IMPL_CTOR_DEFAULT_ARG)
                 : Tensor(arg_prop,
-                       typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
-                                                     arg_N4, arg_N5, arg_N6, arg_N7)) {
+                         typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
+                                                       arg_N4, arg_N5, arg_N6, arg_N7)) {
             static_assert(traits::array_layout::is_extent_constructible,
                           "Layout is not constructible from extent arguments. Use "
                           "overload taking a layout object instead.");
@@ -1478,8 +1476,8 @@ namespace flare {
                 const size_t arg_N6 = FLARE_IMPL_CTOR_DEFAULT_ARG,
                 const size_t arg_N7 = FLARE_IMPL_CTOR_DEFAULT_ARG)
                 : Tensor(arg_prop,
-                       typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
-                                                     arg_N4, arg_N5, arg_N6, arg_N7)) {
+                         typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
+                                                       arg_N4, arg_N5, arg_N6, arg_N7)) {
             static_assert(traits::array_layout::is_extent_constructible,
                           "Layout is not constructible from extent arguments. Use "
                           "overload taking a layout object instead.");
@@ -1507,8 +1505,8 @@ namespace flare {
                 const size_t arg_N6 = FLARE_IMPL_CTOR_DEFAULT_ARG,
                 const size_t arg_N7 = FLARE_IMPL_CTOR_DEFAULT_ARG)
                 : Tensor(detail::TensorCtorProp<std::string>(arg_label),
-                       typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
-                                                     arg_N4, arg_N5, arg_N6, arg_N7)) {
+                         typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
+                                                       arg_N4, arg_N5, arg_N6, arg_N7)) {
             static_assert(traits::array_layout::is_extent_constructible,
                           "Layout is not constructible from extent arguments. Use "
                           "overload taking a layout object instead.");
@@ -1572,8 +1570,8 @@ namespace flare {
                 const size_t arg_N6 = FLARE_IMPL_CTOR_DEFAULT_ARG,
                 const size_t arg_N7 = FLARE_IMPL_CTOR_DEFAULT_ARG)
                 : Tensor(detail::TensorCtorProp<pointer_type>(arg_ptr),
-                       typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
-                                                     arg_N4, arg_N5, arg_N6, arg_N7)) {
+                         typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
+                                                       arg_N4, arg_N5, arg_N6, arg_N7)) {
             static_assert(traits::array_layout::is_extent_constructible,
                           "Layout is not constructible from extent arguments. Use "
                           "overload taking a layout object instead.");
@@ -1630,10 +1628,10 @@ namespace flare {
                 const typename traits::execution_space::scratch_memory_space &arg_space,
                 const typename traits::array_layout &arg_layout)
                 : Tensor(detail::TensorCtorProp<pointer_type>(reinterpret_cast<pointer_type>(
-                                                                  arg_space.get_shmem_aligned(
-                                                                          map_type::memory_span(arg_layout),
-                                                                          scratch_value_alignment))),
-                       arg_layout) {}
+                                                                      arg_space.get_shmem_aligned(
+                                                                              map_type::memory_span(arg_layout),
+                                                                              scratch_value_alignment))),
+                         arg_layout) {}
 
         explicit FLARE_INLINE_FUNCTION Tensor(
                 const typename traits::execution_space::scratch_memory_space &arg_space,
@@ -1646,13 +1644,13 @@ namespace flare {
                 const size_t arg_N6 = FLARE_IMPL_CTOR_DEFAULT_ARG,
                 const size_t arg_N7 = FLARE_IMPL_CTOR_DEFAULT_ARG)
                 : Tensor(detail::TensorCtorProp<pointer_type>(
-                               reinterpret_cast<pointer_type>(arg_space.get_shmem_aligned(
-                                       map_type::memory_span(typename traits::array_layout(
-                                               arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6,
-                                               arg_N7)),
-                                       scratch_value_alignment))),
-                       typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
-                                                     arg_N4, arg_N5, arg_N6, arg_N7)) {
+                                 reinterpret_cast<pointer_type>(arg_space.get_shmem_aligned(
+                                         map_type::memory_span(typename traits::array_layout(
+                                                 arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6,
+                                                 arg_N7)),
+                                         scratch_value_alignment))),
+                         typename traits::array_layout(arg_N0, arg_N1, arg_N2, arg_N3,
+                                                       arg_N4, arg_N5, arg_N6, arg_N7)) {
             static_assert(traits::array_layout::is_extent_constructible,
                           "Layout is not constructible from extent arguments. Use "
                           "overload taking a layout object instead.");
@@ -1704,8 +1702,6 @@ namespace flare {
         }
 
     }  // namespace detail
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 
     namespace detail {
         template<class ValueType, class TypeList>
@@ -1716,8 +1712,8 @@ namespace flare {
             using type = TensorTraits<ValueType, Properties...>;
         };
 
-// It is not safe to assume that subtensors of tensors with the Aligned memory trait
-// are also aligned. Hence, just remove that attribute for subtensors.
+        // It is not safe to assume that subtensors of tensors with the Aligned memory trait
+        // are also aligned. Hence, just remove that attribute for subtensors.
         template<class D, class... P>
         struct RemoveAlignedMemoryTrait {
         private:
@@ -1753,10 +1749,7 @@ namespace flare {
     template<class V, class... Args>
     using Subtensor = decltype(subtensor(std::declval<V>(), std::declval<Args>()...));
 
-} /* namespace flare */
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+}  // namespace flare
 
 namespace flare {
 
@@ -1787,132 +1780,125 @@ namespace flare {
         return !(operator==(lhs, rhs));
     }
 
-} /* namespace flare */
+}  // namespace flare
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
 
-namespace flare {
-    namespace detail {
+namespace flare::detail {
 
-        inline void shared_allocation_tracking_disable() {
-            flare::detail::SharedAllocationRecord<void, void>::tracking_disable();
-        }
+    inline void shared_allocation_tracking_disable() {
+        flare::detail::SharedAllocationRecord<void, void>::tracking_disable();
+    }
 
-        inline void shared_allocation_tracking_enable() {
-            flare::detail::SharedAllocationRecord<void, void>::tracking_enable();
-        }
+    inline void shared_allocation_tracking_enable() {
+        flare::detail::SharedAllocationRecord<void, void>::tracking_enable();
+    }
 
-    } /* namespace detail */
-} /* namespace flare */
+}  // namespace flare::detail
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+namespace flare::detail {
 
-namespace flare {
-    namespace detail {
+    template<class Specialize, typename A, typename B>
+    struct CommonTensorValueType;
 
-        template<class Specialize, typename A, typename B>
-        struct CommonTensorValueType;
+    template<typename A, typename B>
+    struct CommonTensorValueType<void, A, B> {
+        using value_type = std::common_type_t<A, B>;
+    };
 
-        template<typename A, typename B>
-        struct CommonTensorValueType<void, A, B> {
-            using value_type = std::common_type_t<A, B>;
-        };
+    template<class Specialize, class ValueType>
+    struct CommonTensorAllocProp;
 
-        template<class Specialize, class ValueType>
-        struct CommonTensorAllocProp;
-
-        template<class ValueType>
-        struct CommonTensorAllocProp<void, ValueType> {
-            using value_type = ValueType;
-            using scalar_array_type = ValueType;
-
-            template<class... Tensors>
-            FLARE_INLINE_FUNCTION CommonTensorAllocProp(const Tensors &...) {}
-        };
+    template<class ValueType>
+    struct CommonTensorAllocProp<void, ValueType> {
+        using value_type = ValueType;
+        using scalar_array_type = ValueType;
 
         template<class... Tensors>
-        struct DeduceCommonTensorAllocProp;
+        FLARE_INLINE_FUNCTION CommonTensorAllocProp(const Tensors &...) {}
+    };
+
+    template<class... Tensors>
+    struct DeduceCommonTensorAllocProp;
 
 // Base case must provide types for:
 // 1. specialize  2. value_type  3. is_tensor  4. prop_type
-        template<class FirstTensor>
-        struct DeduceCommonTensorAllocProp<FirstTensor> {
-            using specialize = typename FirstTensor::traits::specialize;
+    template<class FirstTensor>
+    struct DeduceCommonTensorAllocProp<FirstTensor> {
+        using specialize = typename FirstTensor::traits::specialize;
 
-            using value_type = typename FirstTensor::traits::value_type;
+        using value_type = typename FirstTensor::traits::value_type;
 
-            enum : bool {
-                is_tensor = is_tensor < FirstTensor > ::value
-            };
-
-            using prop_type = CommonTensorAllocProp<specialize, value_type>;
+        enum : bool {
+            is_tensor = is_tensor < FirstTensor > ::value
         };
 
-        template<class FirstTensor, class... NextTensors>
-        struct DeduceCommonTensorAllocProp<FirstTensor, NextTensors...> {
-            using NextTraits = DeduceCommonTensorAllocProp<NextTensors...>;
+        using prop_type = CommonTensorAllocProp<specialize, value_type>;
+    };
 
-            using first_specialize = typename FirstTensor::traits::specialize;
-            using first_value_type = typename FirstTensor::traits::value_type;
+    template<class FirstTensor, class... NextTensors>
+    struct DeduceCommonTensorAllocProp<FirstTensor, NextTensors...> {
+        using NextTraits = DeduceCommonTensorAllocProp<NextTensors...>;
 
-            enum : bool {
-                first_is_tensor = is_tensor < FirstTensor > ::value
-            };
+        using first_specialize = typename FirstTensor::traits::specialize;
+        using first_value_type = typename FirstTensor::traits::value_type;
 
-            using next_specialize = typename NextTraits::specialize;
-            using next_value_type = typename NextTraits::value_type;
-
-            enum : bool {
-                next_is_tensor = NextTraits::is_tensor
-            };
-
-            // common types
-
-            // determine specialize type
-            // if first and next specialize differ, but are not the same specialize, error
-            // out
-            static_assert(!(!std::is_same<first_specialize, next_specialize>::value &&
-                            !std::is_void<first_specialize>::value &&
-                            !std::is_void<next_specialize>::value),
-                          "flare DeduceCommonTensorAllocProp ERROR: Only one non-void "
-                          "specialize trait allowed");
-
-            // otherwise choose non-void specialize if either/both are non-void
-            using specialize = std::conditional_t<
-                    std::is_same<first_specialize, next_specialize>::value, first_specialize,
-                    std::conditional_t<(std::is_void<first_specialize>::value &&
-                                        !std::is_void<next_specialize>::value),
-                            next_specialize, first_specialize>>;
-
-            using value_type = typename CommonTensorValueType<specialize, first_value_type,
-                    next_value_type>::value_type;
-
-            enum : bool {
-                is_tensor = (first_is_tensor && next_is_tensor)
-            };
-
-            using prop_type = CommonTensorAllocProp<specialize, value_type>;
+        enum : bool {
+            first_is_tensor = is_tensor < FirstTensor > ::value
         };
 
-    }  // end namespace detail
+        using next_specialize = typename NextTraits::specialize;
+        using next_value_type = typename NextTraits::value_type;
 
+        enum : bool {
+            next_is_tensor = NextTraits::is_tensor
+        };
+
+        // common types
+
+        // determine specialize type
+        // if first and next specialize differ, but are not the same specialize, error
+        // out
+        static_assert(!(!std::is_same<first_specialize, next_specialize>::value &&
+                        !std::is_void<first_specialize>::value &&
+                        !std::is_void<next_specialize>::value),
+                      "flare DeduceCommonTensorAllocProp ERROR: Only one non-void "
+                      "specialize trait allowed");
+
+        // otherwise choose non-void specialize if either/both are non-void
+        using specialize = std::conditional_t<
+                std::is_same<first_specialize, next_specialize>::value, first_specialize,
+                std::conditional_t<(std::is_void<first_specialize>::value &&
+                                    !std::is_void<next_specialize>::value),
+                        next_specialize, first_specialize>>;
+
+        using value_type = typename CommonTensorValueType<specialize, first_value_type,
+                next_value_type>::value_type;
+
+        enum : bool {
+            is_tensor = (first_is_tensor && next_is_tensor)
+        };
+
+        using prop_type = CommonTensorAllocProp<specialize, value_type>;
+    };
+
+}  // namespace flare::detail
+
+namespace flare {
     template<class... Tensors>
     using DeducedCommonPropsType =
             typename detail::DeduceCommonTensorAllocProp<Tensors...>::prop_type;
 
-// This function is required in certain scenarios where users customize
-// flare Tensor internals. One example are dynamic length embedded ensemble
-// types. The function is used to propagate necessary information
-// (like the ensemble size) when creating new tensors.
-// However, most of the time it is called with a single tensor.
-// Furthermore, the propagated information is not just for tensor allocations.
-// From what I can tell, the type of functionality provided by
-// common_tensor_alloc_prop is the equivalent of propagating accessors in mdspan,
-// a mechanism we will eventually use to replace this clunky approach here, when
-// we are finally mdspan based.
-// TODO: get rid of this when we have mdspan
+    // This function is required in certain scenarios where users customize
+    // flare Tensor internals. One example are dynamic length embedded ensemble
+    // types. The function is used to propagate necessary information
+    // (like the ensemble size) when creating new tensors.
+    // However, most of the time it is called with a single tensor.
+    // Furthermore, the propagated information is not just for tensor allocations.
+    // From what I can tell, the type of functionality provided by
+    // common_tensor_alloc_prop is the equivalent of propagating accessors in mdspan,
+    // a mechanism we will eventually use to replace this clunky approach here, when
+    // we are finally mdspan based.
+    // TODO: get rid of this when we have mdspan
     template<class... Tensors>
     FLARE_INLINE_FUNCTION DeducedCommonPropsType<Tensors...> common_tensor_alloc_prop(
             Tensors const &... tensors) {
