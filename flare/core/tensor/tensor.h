@@ -1820,8 +1820,8 @@ namespace flare::detail {
     template<class... Tensors>
     struct DeduceCommonTensorAllocProp;
 
-// Base case must provide types for:
-// 1. specialize  2. value_type  3. is_tensor  4. prop_type
+    // Base case must provide types for:
+    // 1. specialize  2. value_type  3. is_tensor  4. prop_type
     template<class FirstTensor>
     struct DeduceCommonTensorAllocProp<FirstTensor> {
         using specialize = typename FirstTensor::traits::specialize;

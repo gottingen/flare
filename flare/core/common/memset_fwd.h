@@ -13,14 +13,17 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_CORE_COMMON_ZERO_MEMSET_FWD_H_
-#define FLARE_CORE_COMMON_ZERO_MEMSET_FWD_H_
+#ifndef FLARE_CORE_COMMON_MEMSET_FWD_H_
+#define FLARE_CORE_COMMON_MEMSET_FWD_H_
 
 namespace flare::detail {
 
     template<typename ExecutionSpace, class TensorType>
     struct ZeroMemset;
 
+    template<typename ExecutionSpace, class TensorType>
+    struct Memset;
+
 }  // namespace flare::detail
 
-#endif  // FLARE_CORE_COMMON_ZERO_MEMSET_FWD_H_
+#endif  // FLARE_CORE_COMMON_MEMSET_FWD_H_

@@ -17,7 +17,7 @@
 #define FLARE_BACKEND_SERIAL_SERIAL_ZERO_MEMSET_H_
 
 #include <flare/core/defines.h>
-#include <flare/core/common/zero_memset_fwd.h>
+#include <flare/core/common/memset_fwd.h>
 #include <flare/backend/serial/serial.h>
 
 #include <type_traits>

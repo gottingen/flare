@@ -31,7 +31,7 @@
 #include <flare/core/tensor/atomic_tensor.h>
 #include <flare/core/profile/tools.h>
 #include <flare/core/common/string_manipulation.h>
-#include <flare/core/common/zero_memset_fwd.h>
+#include <flare/core/common/memset_fwd.h>
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
@@ -3515,9 +3515,9 @@ namespace flare::detail {
 
         //----------------------------------------
         /*  Allocate and construct mapped array.
-   *  Allocate via shared allocation record and
-   *  return that record for allocation tracking.
-   */
+         *  Allocate via shared allocation record and
+         *  return that record for allocation tracking.
+         */
         template<class... P>
         flare::detail::SharedAllocationRecord<> *allocate_shared(
                 flare::detail::TensorCtorProp<P...> const &arg_prop,

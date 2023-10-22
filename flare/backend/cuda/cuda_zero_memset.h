@@ -17,7 +17,7 @@
 
 #include <flare/core/defines.h>
 #include <flare/backend/cuda/cuda.h>
-#include <flare/core/common/zero_memset_fwd.h>
+#include <flare/core/common/memset_fwd.h>
 
 namespace flare::detail {
 

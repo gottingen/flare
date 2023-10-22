@@ -13,12 +13,12 @@
 // limitations under the License.
 //
 
-#ifndef FLARE_CORE_MEMORY_HOST_SPACE_ZERO_MEMSET_H_
-#define FLARE_CORE_MEMORY_HOST_SPACE_ZERO_MEMSET_H_
+#ifndef FLARE_CORE_MEMORY_HOST_SPACE_MEMSET_H_
+#define FLARE_CORE_MEMORY_HOST_SPACE_MEMSET_H_
 
 #include <flare/core/defines.h>
 #include <flare/core/memory/host_space.h>
-#include <flare/core/common/zero_memset_fwd.h>
+#include <flare/core/common/memset_fwd.h>
 
 #include <iostream>
 
@@ -44,4 +44,4 @@ namespace flare::detail {
 
 }  // end namespace flare::detail
 
-#endif  // FLARE_CORE_MEMORY_HOST_SPACE_ZERO_MEMSET_H_
+#endif  // FLARE_CORE_MEMORY_HOST_SPACE_MEMSET_H_

@@ -20,7 +20,7 @@
 #include <flare/core/parallel/parallel.h>
 #include <flare/core/policy/exp_mdrange_policy.h>
 #include <flare/core/memory/layout.h>
-#include <flare/core/memory/host_space_zero_memset.h>
+#include <flare/core/memory/host_space_memset.h>
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ namespace flare::detail {
         using policy_type = flare::RangePolicy<ExecSpace, flare::IndexType<iType>>;
 
         TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
-                 const ExecSpace &space)
+                   const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for("flare::TensorFill-1D",
                                 policy_type(space, 0, a.extent(0)), *this);
@@ -79,7 +79,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
-                 const ExecSpace &space)
+                   const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for("flare::TensorFill-2D",
                                 policy_type(space, {0, 0}, {a.extent(0), a.extent(1)}),
@@ -101,7 +101,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
-                 const ExecSpace &space)
+                   const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for(
                     "flare::TensorFill-3D",
@@ -126,7 +126,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
-                 const ExecSpace &space)
+                   const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for(
                     "flare::TensorFill-4D",
@@ -153,7 +153,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
-                 const ExecSpace &space)
+                   const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for("flare::TensorFill-5D",
                                 policy_type(space, {0, 0, 0, 0, 0},
@@ -180,7 +180,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
-                 const ExecSpace &space)
+                   const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for("flare::TensorFill-6D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
@@ -207,7 +207,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
-                 const ExecSpace &space)
+                   const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for("flare::TensorFill-7D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
@@ -235,7 +235,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorFill(const TensorType &a_, typename TensorType::const_value_type &val_,
-                 const ExecSpace &space)
+                   const ExecSpace &space)
                 : a(a_), val(val_) {
             flare::parallel_for("flare::TensorFill-8D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
@@ -263,7 +263,7 @@ namespace flare::detail {
         using value_type = typename TensorTypeA::value_type;
 
         TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
-                 const ExecSpace space = ExecSpace())
+                   const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for("flare::TensorCopy-1D",
                                 policy_type(space, 0, a.extent(0)), *this);
@@ -291,7 +291,7 @@ namespace flare::detail {
         using value_type = typename TensorTypeA::value_type;
 
         TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
-                 const ExecSpace space = ExecSpace())
+                   const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for("flare::TensorCopy-2D",
                                 policy_type(space, {0, 0}, {a.extent(0), a.extent(1)}),
@@ -321,7 +321,7 @@ namespace flare::detail {
         using value_type = typename TensorTypeA::value_type;
 
         TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
-                 const ExecSpace space = ExecSpace())
+                   const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for(
                     "flare::TensorCopy-3D",
@@ -351,7 +351,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
-                 const ExecSpace space = ExecSpace())
+                   const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for(
                     "flare::TensorCopy-4D",
@@ -383,7 +383,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
-                 const ExecSpace space = ExecSpace())
+                   const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for("flare::TensorCopy-5D",
                                 policy_type(space, {0, 0, 0, 0, 0},
@@ -415,7 +415,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
-                 const ExecSpace space = ExecSpace())
+                   const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for("flare::TensorCopy-6D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
@@ -447,7 +447,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
-                 const ExecSpace space = ExecSpace())
+                   const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for("flare::TensorCopy-7D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
@@ -480,7 +480,7 @@ namespace flare::detail {
                 flare::MDRangePolicy<ExecSpace, iterate_type, flare::IndexType<iType>>;
 
         TensorCopy(const TensorTypeA &a_, const TensorTypeB &b_,
-                 const ExecSpace space = ExecSpace())
+                   const ExecSpace space = ExecSpace())
                 : a(a_), b(b_) {
             flare::parallel_for("flare::TensorCopy-8D",
                                 policy_type(space, {0, 0, 0, 0, 0, 0},
@@ -501,7 +501,7 @@ namespace flare::detail {
 
     template<class ExecutionSpace, class DstType, class SrcType>
     void tensor_copy(const ExecutionSpace &space, const DstType &dst,
-                   const SrcType &src) {
+                     const SrcType &src) {
         using dst_memory_space = typename DstType::memory_space;
         using src_memory_space = typename SrcType::memory_space;
 
@@ -702,7 +702,7 @@ namespace flare::detail {
         src_subtensor_type src_sub;
 
         CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
-                      Args...)
+                        Args...)
                 : dst_sub(dst, arg0), src_sub(src, arg0) {}
     };
 
@@ -714,7 +714,7 @@ namespace flare::detail {
         src_subtensor_type src_sub;
 
         CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
-                      const Arg1 &arg1, Args...)
+                        const Arg1 &arg1, Args...)
                 : dst_sub(dst, arg0, arg1), src_sub(src, arg0, arg1) {}
     };
 
@@ -727,7 +727,7 @@ namespace flare::detail {
         src_subtensor_type src_sub;
 
         CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
-                      const Arg1 &arg1, const Arg2 &arg2, Args...)
+                        const Arg1 &arg1, const Arg2 &arg2, Args...)
                 : dst_sub(dst, arg0, arg1, arg2), src_sub(src, arg0, arg1, arg2) {}
     };
 
@@ -742,8 +742,8 @@ namespace flare::detail {
         src_subtensor_type src_sub;
 
         CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
-                      const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
-                      const Args...)
+                        const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
+                        const Args...)
                 : dst_sub(dst, arg0, arg1, arg2, arg3),
                   src_sub(src, arg0, arg1, arg2, arg3) {}
     };
@@ -760,8 +760,8 @@ namespace flare::detail {
         src_subtensor_type src_sub;
 
         CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
-                      const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
-                      const Arg4 &arg4, const Args...)
+                        const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
+                        const Arg4 &arg4, const Args...)
                 : dst_sub(dst, arg0, arg1, arg2, arg3, arg4),
                   src_sub(src, arg0, arg1, arg2, arg3, arg4) {}
     };
@@ -778,8 +778,8 @@ namespace flare::detail {
         src_subtensor_type src_sub;
 
         CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
-                      const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
-                      const Arg4 &arg4, const Arg5 &arg5, const Args...)
+                        const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
+                        const Arg4 &arg4, const Arg5 &arg5, const Args...)
                 : dst_sub(dst, arg0, arg1, arg2, arg3, arg4, arg5),
                   src_sub(src, arg0, arg1, arg2, arg3, arg4, arg5) {}
     };
@@ -796,8 +796,8 @@ namespace flare::detail {
         src_subtensor_type src_sub;
 
         CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
-                      const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
-                      const Arg4 &arg4, const Arg5 &arg5, const Arg6 &arg6, Args...)
+                        const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
+                        const Arg4 &arg4, const Arg5 &arg5, const Arg6 &arg6, Args...)
                 : dst_sub(dst, arg0, arg1, arg2, arg3, arg4, arg5, arg6),
                   src_sub(src, arg0, arg1, arg2, arg3, arg4, arg5, arg6) {}
     };
@@ -816,9 +816,9 @@ namespace flare::detail {
         src_subtensor_type src_sub;
 
         CommonSubtensor(const DstType &dst, const SrcType &src, const Arg0 &arg0,
-                      const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
-                      const Arg4 &arg4, const Arg5 &arg5, const Arg6 &arg6,
-                      const Arg7 &arg7)
+                        const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3,
+                        const Arg4 &arg4, const Arg5 &arg5, const Arg6 &arg6,
+                        const Arg7 &arg7)
                 : dst_sub(dst, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7),
                   src_sub(src, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {}
     };
@@ -834,7 +834,7 @@ namespace flare::detail {
 
         template<typename... OptExecSpace>
         TensorRemap(const DstType &dst, const SrcType &src,
-                  const OptExecSpace &... exec_space) {
+                    const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
                     "OptExecSpace must be either empty or be an execution space!");
@@ -856,7 +856,7 @@ namespace flare::detail {
 
         template<typename... OptExecSpace>
         TensorRemap(const DstType &dst, const SrcType &src,
-                  const OptExecSpace &... exec_space) {
+                    const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
                     "OptExecSpace must be either empty or be an execution space!");
@@ -870,7 +870,7 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 2, flare::ALL_t, p_type>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(1) == src.extent(1)) {
@@ -879,7 +879,7 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 2, p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, ext0, flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -887,7 +887,7 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 2, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             }
         }
@@ -899,7 +899,7 @@ namespace flare::detail {
 
         template<typename... OptExecSpace>
         TensorRemap(const DstType &dst, const SrcType &src,
-                  const OptExecSpace &... exec_space) {
+                    const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
                     "OptExecSpace must be either empty or be an execution space!");
@@ -911,9 +911,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 3, flare::ALL_t, p_type,
                                     flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1,
-                                                   flare::ALL);
+                                                     flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
@@ -921,7 +921,7 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 3, flare::ALL_t, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(2) == src.extent(2)) {
@@ -931,7 +931,7 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 3, p_type, p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -940,7 +940,7 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 3, p_type, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             }
         }
@@ -952,7 +952,7 @@ namespace flare::detail {
 
         template<typename... OptExecSpace>
         TensorRemap(const DstType &dst, const SrcType &src,
-                  const OptExecSpace &... exec_space) {
+                    const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
                     "OptExecSpace must be either empty or be an execution space!");
@@ -965,9 +965,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 4, flare::ALL_t, p_type, p_type,
                                     flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2,
-                                                   flare::ALL);
+                                                     flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
@@ -977,7 +977,7 @@ namespace flare::detail {
                                     p_type>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(7) == src.extent(7)) {
@@ -988,7 +988,7 @@ namespace flare::detail {
                             p_type, p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -998,7 +998,7 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 4, p_type, p_type, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             }
         }
@@ -1010,7 +1010,7 @@ namespace flare::detail {
 
         template<typename... OptExecSpace>
         TensorRemap(const DstType &dst, const SrcType &src,
-                  const OptExecSpace &... exec_space) {
+                    const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
                     "OptExecSpace must be either empty or be an execution space!");
@@ -1024,9 +1024,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 5, flare::ALL_t, p_type, p_type,
                                     p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
-                                                   flare::ALL);
+                                                     flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
@@ -1036,9 +1036,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 5, flare::ALL_t, p_type, p_type,
                                     p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
-                                                   ext4);
+                                                     ext4);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(4) == src.extent(4)) {
@@ -1050,9 +1050,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 5, p_type, p_type, p_type, p_type,
                                     flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3,
-                                                   flare::ALL);
+                                                     flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -1063,7 +1063,7 @@ namespace flare::detail {
                             p_type, p_type, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             }
         }
@@ -1075,7 +1075,7 @@ namespace flare::detail {
 
         template<typename... OptExecSpace>
         TensorRemap(const DstType &dst, const SrcType &src,
-                  const OptExecSpace &... exec_space) {
+                    const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
                     "OptExecSpace must be either empty or be an execution space!");
@@ -1090,9 +1090,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 6, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
-                                                   ext4, flare::ALL);
+                                                     ext4, flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
@@ -1103,9 +1103,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 6, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
-                                                   ext4, ext5);
+                                                     ext4, ext5);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(5) == src.extent(5)) {
@@ -1119,9 +1119,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 6, p_type, p_type, p_type, p_type,
                                     p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
-                                                   flare::ALL);
+                                                     flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -1134,9 +1134,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 6, p_type, p_type, p_type, p_type,
                                     p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
-                                                   ext5);
+                                                     ext5);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             }
         }
@@ -1148,7 +1148,7 @@ namespace flare::detail {
 
         template<typename... OptExecSpace>
         TensorRemap(const DstType &dst, const SrcType &src,
-                  const OptExecSpace &... exec_space) {
+                    const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
                     "OptExecSpace must be either empty or be an execution space!");
@@ -1164,9 +1164,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 7, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
-                                                   ext4, ext5, flare::ALL);
+                                                     ext4, ext5, flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
@@ -1178,9 +1178,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 7, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
-                                                   ext4, ext5, ext6);
+                                                     ext4, ext5, ext6);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(6) == src.extent(6)) {
@@ -1194,9 +1194,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 7, p_type, p_type, p_type, p_type,
                                     p_type, p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
-                                                   ext5, flare::ALL);
+                                                     ext5, flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -1209,9 +1209,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 7, p_type, p_type, p_type, p_type,
                                     p_type, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
-                                                   ext5, ext6);
+                                                     ext5, ext6);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             }
         }
@@ -1223,7 +1223,7 @@ namespace flare::detail {
 
         template<typename... OptExecSpace>
         TensorRemap(const DstType &dst, const SrcType &src,
-                  const OptExecSpace &... exec_space) {
+                    const OptExecSpace &... exec_space) {
             static_assert(
                     sizeof...(OptExecSpace) <= 1,
                     "OptExecSpace must be either empty or be an execution space!");
@@ -1240,9 +1240,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 8, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type, p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
-                                                   ext4, ext5, ext6, flare::ALL);
+                                                     ext4, ext5, ext6, flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
                     p_type ext2(0, std::min(dst.extent(2), src.extent(2)));
@@ -1255,9 +1255,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 8, flare::ALL_t, p_type, p_type,
                                     p_type, p_type, p_type, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, flare::ALL, ext1, ext2, ext3,
-                                                   ext4, ext5, ext6, ext7);
+                                                     ext4, ext5, ext6, ext7);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             } else {
                 if (dst.extent(7) == src.extent(7)) {
@@ -1272,9 +1272,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 8, p_type, p_type, p_type, p_type,
                                     p_type, p_type, p_type, flare::ALL_t>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
-                                                   ext5, ext6, flare::ALL);
+                                                     ext5, ext6, flare::ALL);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 } else {
                     p_type ext0(0, std::min(dst.extent(0), src.extent(0)));
                     p_type ext1(0, std::min(dst.extent(1), src.extent(1)));
@@ -1288,9 +1288,9 @@ namespace flare::detail {
                             CommonSubtensor<DstType, SrcType, 8, p_type, p_type, p_type, p_type,
                                     p_type, p_type, p_type, p_type>;
                     sv_adapter_type common_subtensor(dst, src, ext0, ext1, ext2, ext3, ext4,
-                                                   ext5, ext6, ext7);
+                                                     ext5, ext6, ext7);
                     tensor_copy(exec_space..., common_subtensor.dst_sub,
-                              common_subtensor.src_sub);
+                                common_subtensor.src_sub);
                 }
             }
         }
@@ -1313,14 +1313,14 @@ namespace flare::detail {
         if (dst.span() < static_cast<size_t>(std::numeric_limits<int>::max())) {
             flare::detail::TensorFill<TensorTypeFlat, flare::LayoutRight, ExecutionSpace,
                     TensorTypeFlat::rank, int>(dst_flat, value,
-                                             exec_space);
+                                               exec_space);
         } else
             flare::detail::TensorFill<TensorTypeFlat, flare::LayoutRight, ExecutionSpace,
                     TensorTypeFlat::rank, int64_t>(dst_flat, value,
-                                                 exec_space);
+                                                   exec_space);
     }
 
-// Default implementation for execution spaces that don't provide a definition
+    // Default implementation for execution spaces that don't provide a definition
     template<typename ExecutionSpace, class TensorType>
     struct ZeroMemset {
         ZeroMemset(const ExecutionSpace &exec_space, const TensorType &dst,
@@ -1497,7 +1497,7 @@ namespace flare {
         }
     }
 
-/** \brief  Deep copy into a value in Host memory from a tensor.  */
+    /** \brief  Deep copy into a value in Host memory from a tensor.  */
     template<class ST, class... SP>
     inline void deep_copy(
             typename TensorTraits<ST, SP...>::non_const_value_type &dst,
@@ -1533,8 +1533,8 @@ namespace flare {
         }
     }
 
-//----------------------------------------------------------------------------
-/** \brief  A deep copy between tensors of compatible type, and rank zero.  */
+    //----------------------------------------------------------------------------
+    /** \brief  A deep copy between tensors of compatible type, and rank zero.  */
     template<class DT, class... DP, class ST, class... SP>
     inline void deep_copy(
             const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
@@ -1583,10 +1583,10 @@ namespace flare {
         }
     }
 
-//----------------------------------------------------------------------------
-/** \brief  A deep copy between tensors of the default specialization, compatible
- * type, same non-zero rank, same contiguous layout.
- */
+    //----------------------------------------------------------------------------
+    /** \brief  A deep copy between tensors of the default specialization, compatible
+     * type, same non-zero rank, same contiguous layout.
+     */
     template<class DT, class... DP, class ST, class... SP>
     inline void deep_copy(
             const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
@@ -1772,12 +1772,12 @@ namespace flare {
         }
     }
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------
     namespace experimental {
-/** \brief  A local deep copy between tensors of the default specialization,
- * compatible type, same non-zero rank.
- */
+        /** \brief  A local deep copy between tensors of the default specialization,
+         * compatible type, same non-zero rank.
+         */
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION
         local_deep_copy_contiguous(const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -1786,7 +1786,7 @@ namespace flare {
                                 [&](const int &i) { dst.data()[i] = src.data()[i]; });
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy_contiguous(
                 const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src) {
@@ -1795,7 +1795,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -1814,7 +1814,7 @@ namespace flare {
             team.team_barrier();
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -1842,7 +1842,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -1872,7 +1872,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -1905,7 +1905,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -1940,7 +1940,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -1977,7 +1977,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -2017,7 +2017,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
@@ -2034,7 +2034,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
@@ -2052,7 +2052,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
@@ -2072,7 +2072,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
@@ -2093,7 +2093,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
@@ -2115,7 +2115,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
@@ -2138,7 +2138,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class DT, class... DP, class ST, class... SP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const Tensor<DT, DP...> &dst, const Tensor<ST, SP...> &src,
@@ -2162,9 +2162,9 @@ namespace flare {
                                                     src(i0, i1, i2, i3, i4, i5, i6);
             }
         }
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-/** \brief  Deep copy a value into a tensor.  */
+        //----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
+        /** \brief  Deep copy a value into a tensor.  */
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy_contiguous(
                 const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -2175,7 +2175,7 @@ namespace flare {
                                 [&](const int &i) { dst.data()[i] = value; });
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy_contiguous(
                 const Tensor<DT, DP...> &dst,
@@ -2232,7 +2232,7 @@ namespace flare {
             }
         }
 
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         template<class TeamType, class DT, class... DP>
         void FLARE_INLINE_FUNCTION local_deep_copy(
                 const TeamType &team, const Tensor<DT, DP...> &dst,
@@ -3575,7 +3575,7 @@ namespace flare::detail {
                      typename flare::Tensor<T, P...>::HostMirror::data_type>::value),
             typename flare::Tensor<T, P...>::HostMirror>
     create_mirror_tensor(const flare::Tensor<T, P...> &src,
-                       const detail::TensorCtorProp<TensorCtorArgs...> &) {
+                         const detail::TensorCtorProp<TensorCtorArgs...> &) {
         check_tensor_ctor_args_create_mirror<TensorCtorArgs...>();
         return src;
     }
@@ -3591,7 +3591,7 @@ namespace flare::detail {
                       typename flare::Tensor<T, P...>::HostMirror::data_type>::value),
             typename flare::Tensor<T, P...>::HostMirror>
     create_mirror_tensor(const flare::Tensor<T, P...> &src,
-                       const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
+                         const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
         return flare::detail::create_mirror(src, arg_prop);
     }
 
@@ -3606,7 +3606,7 @@ namespace flare::detail {
                     typename detail::TensorCtorProp<TensorCtorArgs...>::memory_space,
                     T, P...>::tensor_type>
     create_mirror_tensor(const flare::Tensor<T, P...> &src,
-                       const detail::TensorCtorProp<TensorCtorArgs...> &) {
+                         const detail::TensorCtorProp<TensorCtorArgs...> &) {
         check_tensor_ctor_args_create_mirror<TensorCtorArgs...>();
         return src;
     }
@@ -3622,7 +3622,7 @@ namespace flare::detail {
                     typename detail::TensorCtorProp<TensorCtorArgs...>::memory_space,
                     T, P...>::tensor_type>
     create_mirror_tensor(const flare::Tensor<T, P...> &src,
-                       const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
+                         const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop) {
         return flare::detail::create_mirror(src, arg_prop);
     }
 }  // namespace flare::detail
@@ -3691,7 +3691,7 @@ namespace flare {
 
     template<class T, class... P, class... TensorCtorArgs>
     auto create_mirror_tensor(const detail::TensorCtorProp<TensorCtorArgs...> &arg_prop,
-                            const flare::Tensor<T, P...> &v) {
+                              const flare::Tensor<T, P...> &v) {
         return detail::create_mirror_tensor(v, arg_prop);
     }
 
