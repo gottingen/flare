@@ -1097,12 +1097,12 @@ namespace flare::detail {
         // correct and errors out during compilation. Same for the other places where
         // I changed this.
 #ifdef FLARE_IMPL_WINDOWS_CUDA
-                                                                                                                                FLARE_FUNCTION TensorOffset() : m_dim(dimension_type()) {}
-  FLARE_FUNCTION TensorOffset(const TensorOffset& src) { m_dim = src.m_dim; }
-  FLARE_FUNCTION TensorOffset& operator=(const TensorOffset& src) {
-    m_dim = src.m_dim;
-    return *this;
-  }
+    FLARE_FUNCTION TensorOffset() : m_dim(dimension_type()) {}
+    FLARE_FUNCTION TensorOffset(const TensorOffset& src) { m_dim = src.m_dim; }
+    FLARE_FUNCTION TensorOffset& operator=(const TensorOffset& src) {
+        m_dim = src.m_dim;
+        return *this;
+    }
 #else
 
         TensorOffset() = default;
@@ -1165,8 +1165,8 @@ namespace flare::detail {
         }
     };
 
-//----------------------------------------------------------------------------
-// LayoutLeft AND ( 1 < rank AND 0 < rank_dynamic ) : has padding / striding
+    //----------------------------------------------------------------------------
+    // LayoutLeft AND ( 1 < rank AND 0 < rank_dynamic ) : has padding / striding
     template<class Dimension>
     struct TensorOffset<
             Dimension, flare::LayoutLeft,
@@ -3588,9 +3588,9 @@ namespace flare::detail {
         }
     };
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-/** \brief  Assign compatible default mappings */
+    //----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------
+    /** \brief  Assign compatible default mappings */
 
     template<class DstTraits, class SrcTraits>
     class TensorMapping<
@@ -3728,9 +3728,9 @@ namespace flare::detail {
         }
     };
 
-//----------------------------------------------------------------------------
-// Create new specialization for SrcType of LayoutStride. Runtime check for
-// compatible layout
+    //----------------------------------------------------------------------------
+    // Create new specialization for SrcType of LayoutStride. Runtime check for
+    // compatible layout
     template<class DstTraits, class SrcTraits>
     class TensorMapping<
             DstTraits, SrcTraits,
@@ -3881,21 +3881,21 @@ namespace flare::detail {
         }
     };
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-// Subtensor mapping.
-// Deduce destination tensor type from source tensor traits and subtensor arguments
+    //----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------
+    // Subtensor mapping.
+    // Deduce destination tensor type from source tensor traits and subtensor arguments
 
     template<class, class ValueType, class Exts, class... Args>
     struct SubTensorDataTypeImpl;
 
-/* base case */
+    /* base case */
     template<class ValueType>
     struct SubTensorDataTypeImpl<void, ValueType, flare::experimental::Extents<>> {
         using type = ValueType;
     };
 
-/* for integral args, subtensor doesn't have that dimension */
+    /* for integral args, subtensor doesn't have that dimension */
     template<class ValueType, ptrdiff_t Ext, ptrdiff_t... Exts, class Integral,
             class... Args>
     struct SubTensorDataTypeImpl<
@@ -3905,7 +3905,7 @@ namespace flare::detail {
                     flare::experimental::Extents<Exts...>, Args...> {
     };
 
-/* for ALL slice, subtensor has the same dimension */
+    /* for ALL slice, subtensor has the same dimension */
     template<class ValueType, ptrdiff_t Ext, ptrdiff_t... Exts, class... Args>
     struct SubTensorDataTypeImpl<void, ValueType,
             flare::experimental::Extents<Ext, Exts...>,
@@ -3914,10 +3914,10 @@ namespace flare::detail {
                     flare::experimental::Extents<Exts...>, Args...> {
     };
 
-/* for pair-style slice, subtensor has dynamic dimension, since pair doesn't give
- * static sizes */
-/* Since we don't allow interleaving of dynamic and static extents, make all of
- * the dimensions to the left dynamic  */
+    /* for pair-style slice, subtensor has dynamic dimension, since pair doesn't give
+     * static sizes */
+    /* Since we don't allow interleaving of dynamic and static extents, make all of
+     * the dimensions to the left dynamic  */
     template<class ValueType, ptrdiff_t Ext, ptrdiff_t... Exts, class PairLike,
             class... Args>
     struct SubTensorDataTypeImpl<
@@ -3932,7 +3932,7 @@ namespace flare::detail {
     struct SubTensorDataType : SubTensorDataTypeImpl<void, ValueType, Exts, Args...> {
     };
 
-//----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------
 
     template<class SrcTraits, class... Args>
     class TensorMapping<
@@ -4092,7 +4092,7 @@ namespace flare::detail {
         tensor_error_operator_bounds<R + 1>(buf + n, len - n, map, args...);
     }
 
-/* Check #3: is the Tensor managed as determined by the MemoryTraits? */
+    /* Check #3: is the Tensor managed as determined by the MemoryTraits? */
     template<class MapType, bool is_managed = (MapType::is_managed != 0)>
     struct OperatorBoundsErrorOnDevice;
 
@@ -4128,11 +4128,11 @@ namespace flare::detail {
         }
     };
 
-/* Check #2: does the TensorMapping have the printable_label_typedef defined?
-   See above that only the non-specialized standard-layout TensorMapping has
-   this defined by default.
-   The existence of this alias indicates the existence of MapType::is_managed
- */
+    /* Check #2: does the TensorMapping have the printable_label_typedef defined?
+       See above that only the non-specialized standard-layout TensorMapping has
+       this defined by default.
+       The existence of this alias indicates the existence of MapType::is_managed
+     */
     template<class T>
     using printable_label_typedef_t = typename T::printable_label_typedef;
 
@@ -4176,7 +4176,7 @@ namespace flare::detail {
         }
     }
 
-// primary template: memory space is accessible, do nothing.
+    // primary template: memory space is accessible, do nothing.
     template<class MemorySpace, class AccessSpace,
             bool = SpaceAccessibility<AccessSpace, MemorySpace>::accessible>
     struct RuntimeCheckTensorMemoryAccessViolation {
@@ -4186,8 +4186,8 @@ namespace flare::detail {
                                                              Map const &) {}
     };
 
-// explicit specialization: memory access violation will occur, call abort with
-// the specified error message.
+    // explicit specialization: memory access violation will occur, call abort with
+    // the specified error message.
     template<class MemorySpace, class AccessSpace>
     struct RuntimeCheckTensorMemoryAccessViolation<MemorySpace, AccessSpace, false> {
         template<class Track, class Map>

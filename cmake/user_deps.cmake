@@ -47,6 +47,7 @@ list(REMOVE_DUPLICATES CARBIN_DEPS_LINK)
 carbin_print_list_label("Denpendcies:" CARBIN_DEPS_LINK)
 if(FLARE_BUILD_CUDA)
     find_package(CUDA REQUIRED)
+    set(CARBIN_DEPS_LINK ${CARBIN_DEPS_LINK} ${CUDA_CUDA_LIBRARY})
 endif ()
 
 

@@ -142,7 +142,6 @@ carbin_cc_library(
         ${CARBIN_CXX_OPTIONS}
         DEPS
         ${CARBIN_DEPS_LINK}
-        ${CUDA_CUDA_LIBRARY}
         flare::core
         PUBLIC
         CUDA

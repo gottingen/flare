@@ -40,11 +40,11 @@ namespace flare {
             };
         };
 
-/// \class LogicalMemorySpace
-/// \brief
-///
-/// LogicalMemorySpace is a space that is identical to another space,
-/// but differentiable by name and template argument
+        /// \class LogicalMemorySpace
+        /// \brief
+        ///
+        /// LogicalMemorySpace is a space that is identical to another space,
+        /// but differentiable by name and template argument
         template<class BaseSpace, class DefaultBaseExecutionSpace = void,
                 class Namer                = DefaultMemorySpaceNamer,
                 class SharesAccessWithBase = LogicalSpaceSharesAccess::shared_access>
