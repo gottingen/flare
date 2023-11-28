@@ -62,6 +62,8 @@ if(FLARE_BUILD_SERIAL)
     )
 endif (FLARE_BUILD_SERIAL)
 
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/flare/core/core_config.h.in ${PROJECT_BINARY_DIR}/flare/core/core_config.h @ONLY)
+
 if(FLARE_BUILD_CUDA)
     set(FLARE_CORE_SRC
             ${FLARE_CORE_SRC}
@@ -74,24 +76,31 @@ if(FLARE_BUILD_CUDA)
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/dot_impl.cu
     )
     include_directories(${CUDA_INCLUDE_DIRS})
+    carbin_cc_library(
+            NAMESPACE flare
+            NAME core
+            SOURCES
+            ${FLARE_CORE_SRC}
+            COPTS
+            ${CARBIN_CXX_OPTIONS}
+            DEPS
+            ${CARBIN_DEPS_LINK}
+            PUBLIC
+            CUDA
+    )
+else ()
+    carbin_cc_library(
+            NAMESPACE flare
+            NAME core
+            SOURCES
+            ${FLARE_CORE_SRC}
+            COPTS
+            ${CARBIN_CXX_OPTIONS}
+            DEPS
+            ${CARBIN_DEPS_LINK}
+            PUBLIC
+    )
 endif ()
-
-
-CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/flare/core/core_config.h.in ${PROJECT_BINARY_DIR}/flare/core/core_config.h @ONLY)
-message(STATUS ${CUDA_CUDA_LIBRARY})
-carbin_cc_library(
-        NAMESPACE flare
-        NAME core
-        SOURCES
-        ${FLARE_CORE_SRC}
-        COPTS
-        ${CARBIN_CXX_OPTIONS}
-        DEPS
-        ${CARBIN_DEPS_LINK}
-        ${CUDA_CUDA_LIBRARY}
-        PUBLIC
-        CUDA
-)
 
 set(FLARE_BLAS_SRC
         ${PROJECT_SOURCE_DIR}/flare/kernel/blas/abs_impl.cc
@@ -131,18 +140,30 @@ if(FLARE_BUILD_CUDA)
             ${PROJECT_SOURCE_DIR}/flare/kernel/blas/update_impl.cu
     )
     include_directories(${CUDA_INCLUDE_DIRS})
+    carbin_cc_library(
+            NAMESPACE flare
+            NAME blas
+            SOURCES
+            ${FLARE_BLAS_SRC}
+            COPTS
+            ${CARBIN_CXX_OPTIONS}
+            DEPS
+            ${CARBIN_DEPS_LINK}
+            flare::core
+            PUBLIC
+            CUDA
+    )
+else ()
+    carbin_cc_library(
+            NAMESPACE flare
+            NAME blas
+            SOURCES
+            ${FLARE_BLAS_SRC}
+            COPTS
+            ${CARBIN_CXX_OPTIONS}
+            DEPS
+            ${CARBIN_DEPS_LINK}
+            flare::core
+            PUBLIC
+    )
 endif ()
-
-carbin_cc_library(
-        NAMESPACE flare
-        NAME blas
-        SOURCES
-        ${FLARE_BLAS_SRC}
-        COPTS
-        ${CARBIN_CXX_OPTIONS}
-        DEPS
-        ${CARBIN_DEPS_LINK}
-        flare::core
-        PUBLIC
-        CUDA
-)

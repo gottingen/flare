@@ -65,7 +65,7 @@ foreach(Tag Threads;Serial;OpenMP;Cuda)
               COPTS ${CARBIN_CXX_OPTIONS}
               CUOPTS ${CARBIN_CU_OPTIONS}
               DEPS
-              ${CUDA_CUDA_LIBRARY}
+              ${CARBIN_DEPS_LINK}
               flare::core
       )
     else ()
@@ -76,7 +76,7 @@ foreach(Tag Threads;Serial;OpenMP;Cuda)
               ${TEST_MAIN_SRC}
               COPTS ${CARBIN_CXX_OPTIONS}
               DEPS
-              ${CUDA_CUDA_LIBRARY}
+              ${CARBIN_DEPS_LINK}
               flare::core
       )
     endif ()

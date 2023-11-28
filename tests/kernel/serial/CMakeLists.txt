@@ -22,7 +22,7 @@ carbin_cc_test(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::blas
 )
 
@@ -33,7 +33,7 @@ carbin_cc_test(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::blas
 )
 
@@ -44,7 +44,7 @@ carbin_cc_test(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::blas
 )
 
@@ -55,6 +55,6 @@ carbin_cc_test(
         ${TEST_MAIN_SRC}
         COPTS ${CARBIN_CXX_OPTIONS} "-Wno-unused-but-set-parameter"
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::blas
 )

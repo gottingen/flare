@@ -22,7 +22,7 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
-
+if (FLARE_BUILD_CUDA)
 carbin_cc_binary(
         NAME example_simple_reduce_cu
         SOURCES
@@ -32,6 +32,7 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
+endif ()
 
 carbin_cc_binary(
         NAME example_simple_reduce_lambda_cc
@@ -41,7 +42,7 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
-
+if (FLARE_BUILD_CUDA)
 carbin_cc_binary(
         NAME example_simple_reduce_lambda_cu
         SOURCES
@@ -51,3 +52,4 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
+endif ()

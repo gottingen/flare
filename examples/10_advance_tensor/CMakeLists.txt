@@ -24,30 +24,10 @@ carbin_cc_binary(
 )
 
 carbin_cc_binary(
-        NAME example_data_layouts_cu
-        SOURCES
-        data_layouts.cu
-        COPTS ${CARBIN_CXX_OPTIONS}
-        CUOPTS ${CARBIN_CU_OPTIONS}
-        DEPS
-        flare::core
-)
-
-carbin_cc_binary(
         NAME example_memory_traits_cc
         SOURCES
         memory_traits.cc
         COPTS ${CARBIN_CXX_OPTIONS}
-        DEPS
-        flare::core
-)
-
-carbin_cc_binary(
-        NAME example_memory_traits_cu
-        SOURCES
-        memory_traits.cu
-        COPTS ${CARBIN_CXX_OPTIONS}
-        CUOPTS ${CARBIN_CU_OPTIONS}
         DEPS
         flare::core
 )
@@ -61,15 +41,6 @@ carbin_cc_binary(
         flare::core
 )
 
-carbin_cc_binary(
-        NAME example_subtensors_cu
-        SOURCES
-        subtensors.cu
-        COPTS ${CARBIN_CXX_OPTIONS}
-        CUOPTS ${CARBIN_CU_OPTIONS}
-        DEPS
-        flare::core
-)
 
 carbin_cc_binary(
         NAME example_dual_tensor_cc
@@ -80,12 +51,45 @@ carbin_cc_binary(
         flare::core
 )
 
-carbin_cc_binary(
-        NAME example_dual_tensor_cu
-        SOURCES
-        dual_tensor.cu
-        COPTS ${CARBIN_CXX_OPTIONS}
-        CUOPTS ${CARBIN_CU_OPTIONS}
-        DEPS
-        flare::core
-)
+if (FLARE_BUILD_CUDA)
+    carbin_cc_binary(
+            NAME example_data_layouts_cu
+            SOURCES
+            data_layouts.cu
+            COPTS ${CARBIN_CXX_OPTIONS}
+            CUOPTS ${CARBIN_CU_OPTIONS}
+            DEPS
+            flare::core
+    )
+
+    carbin_cc_binary(
+            NAME example_memory_traits_cu
+            SOURCES
+            memory_traits.cu
+            COPTS ${CARBIN_CXX_OPTIONS}
+            CUOPTS ${CARBIN_CU_OPTIONS}
+            DEPS
+            flare::core
+    )
+
+    carbin_cc_binary(
+            NAME example_subtensors_cu
+            SOURCES
+            subtensors.cu
+            COPTS ${CARBIN_CXX_OPTIONS}
+            CUOPTS ${CARBIN_CU_OPTIONS}
+            DEPS
+            flare::core
+    )
+
+    carbin_cc_binary(
+            NAME example_dual_tensor_cu
+            SOURCES
+            dual_tensor.cu
+            COPTS ${CARBIN_CXX_OPTIONS}
+            CUOPTS ${CARBIN_CU_OPTIONS}
+            DEPS
+            flare::core
+    )
+
+endif ()

@@ -23,6 +23,7 @@ carbin_cc_binary(
         flare::core
 )
 
+if (FLARE_BUILD_CUDA)
 carbin_cc_binary(
         NAME example_query_device_cu
         SOURCES
@@ -32,3 +33,4 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
+endif ()

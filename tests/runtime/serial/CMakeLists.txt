@@ -20,7 +20,7 @@ carbin_cc_test(
         asyncs_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -30,7 +30,7 @@ carbin_cc_test(
         basics_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -40,7 +40,7 @@ carbin_cc_test(
         cancellation_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -50,7 +50,7 @@ carbin_cc_test(
         compositions_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -60,7 +60,7 @@ carbin_cc_test(
         control_flow_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -70,7 +70,7 @@ carbin_cc_test(
         data_pipelines_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -80,7 +80,7 @@ carbin_cc_test(
         deferred_pipelines_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -90,7 +90,7 @@ carbin_cc_test(
         deferred_scalable_pipelines_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -100,7 +100,7 @@ carbin_cc_test(
         dependent_asyncs_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -110,7 +110,7 @@ carbin_cc_test(
         exceptions_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -120,7 +120,7 @@ carbin_cc_test(
         find_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -130,7 +130,7 @@ carbin_cc_test(
         for_each_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -140,7 +140,7 @@ carbin_cc_test(
         movable_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -150,7 +150,7 @@ carbin_cc_test(
         pipelines_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -160,7 +160,7 @@ carbin_cc_test(
         priorities_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -170,7 +170,7 @@ carbin_cc_test(
         reduce_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -180,7 +180,7 @@ carbin_cc_test(
         runtimes_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -190,7 +190,7 @@ carbin_cc_test(
         scalable_pipelines_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -200,7 +200,7 @@ carbin_cc_test(
         scan_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -210,7 +210,7 @@ carbin_cc_test(
         semaphores_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -220,7 +220,7 @@ carbin_cc_test(
         serializer_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -230,7 +230,7 @@ carbin_cc_test(
         sort_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -240,7 +240,7 @@ carbin_cc_test(
         subflows_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -250,7 +250,7 @@ carbin_cc_test(
         transform_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -260,7 +260,7 @@ carbin_cc_test(
         traversals_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -270,7 +270,7 @@ carbin_cc_test(
         utility_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )
 
@@ -280,6 +280,6 @@ carbin_cc_test(
         work_stealing_test.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )

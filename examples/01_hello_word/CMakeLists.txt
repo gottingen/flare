@@ -23,12 +23,14 @@ carbin_cc_binary(
         flare::core
 )
 
-carbin_cc_binary(
-        NAME example_hello_world_cu
-        SOURCES
-        hello_world.cu
-        COPTS ${CARBIN_CXX_OPTIONS}
-        CUOPTS ${CARBIN_CU_OPTIONS}
-        DEPS
-        flare::core
-)
+if (FLARE_BUILD_CUDA)
+    carbin_cc_binary(
+            NAME example_hello_world_cu
+            SOURCES
+            hello_world.cu
+            COPTS ${CARBIN_CXX_OPTIONS}
+            CUOPTS ${CARBIN_CU_OPTIONS}
+            DEPS
+            flare::core
+    )
+endif ()

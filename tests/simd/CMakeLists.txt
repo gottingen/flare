@@ -59,6 +59,6 @@ carbin_cc_test(
         simd_test_main.cc
         COPTS ${CARBIN_CXX_OPTIONS}
         DEPS
-        ${CUDA_CUDA_LIBRARY}
+        ${CARBIN_DEPS_LINK}
         flare::core
 )

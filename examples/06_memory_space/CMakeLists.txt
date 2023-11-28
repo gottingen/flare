@@ -22,13 +22,14 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
-
-carbin_cc_binary(
-        NAME example_memory_space_cu
-        SOURCES
-        memory_space.cu
-        COPTS ${CARBIN_CXX_OPTIONS}
-        CUOPTS ${CARBIN_CU_OPTIONS}
-        DEPS
-        flare::core
-)
+if (FLARE_BUILD_CUDA)
+    carbin_cc_binary(
+            NAME example_memory_space_cu
+            SOURCES
+            memory_space.cu
+            COPTS ${CARBIN_CXX_OPTIONS}
+            CUOPTS ${CARBIN_CU_OPTIONS}
+            DEPS
+            flare::core
+    )
+endif ()

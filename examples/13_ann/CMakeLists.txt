@@ -22,7 +22,7 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
-
+if (FLARE_BUILD_CUDA)
 carbin_cc_binary(
         NAME example_distance_l1_cu
         SOURCES
@@ -32,16 +32,6 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
-
-carbin_cc_binary(
-        NAME example_norm_l1_cc
-        SOURCES
-        norm_l1.cc
-        COPTS ${CARBIN_CXX_OPTIONS}
-        DEPS
-        flare::core
-)
-
 carbin_cc_binary(
         NAME example_norm_l1_cu
         SOURCES
@@ -51,6 +41,17 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
+endif ()
+carbin_cc_binary(
+        NAME example_norm_l1_cc
+        SOURCES
+        norm_l1.cc
+        COPTS ${CARBIN_CXX_OPTIONS}
+        DEPS
+        flare::core
+)
+
+
 
 carbin_cc_binary(
         NAME example_distance_l2_cc

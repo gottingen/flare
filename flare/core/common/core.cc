@@ -129,15 +129,6 @@ namespace {
         }
     }
 
-#ifndef FLARE_ON_CUDA_DEVICE
-
-    int get_device_count() {
-        flare::abort("implementation bug");
-        return -1;
-    }
-
-#endif
-
     unsigned get_process_id() {
 #ifdef _WIN32
         return unsigned(GetCurrentProcessId());
@@ -361,6 +352,16 @@ std::vector<int> flare::detail::get_visible_devices(
     return visible_devices;
 }
 
+namespace flare::detail {
+#ifndef FLARE_ON_CUDA_DEVICE
+
+    int get_device_count() {
+        flare::abort("implementation bug");
+        return -1;
+    }
+
+#endif
+}  // namespace flare::detail
 int flare::detail::get_gpu(const InitializationSettings &settings) {
     std::vector<int> visible_devices =
             get_visible_devices(settings, get_device_count());

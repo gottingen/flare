@@ -43,7 +43,7 @@ option(CARBIN_INSTALL_LIB "avoid centos install to lib64" ON)
 #user defines
 ######################################
 
-option(FLARE_BUILD_CUDA "" ON)
+option(FLARE_BUILD_CUDA "" OFF)
 
 option(FLARE_BUILD_OPENMP "" ON)
 

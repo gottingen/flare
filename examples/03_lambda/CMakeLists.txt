@@ -22,7 +22,7 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
-
+if (FLARE_BUILD_CUDA)
 carbin_cc_binary(
         NAME hello_world_lambda_cu
         SOURCES
@@ -32,3 +32,4 @@ carbin_cc_binary(
         DEPS
         flare::core
 )
+endif ()
