@@ -1,0 +1,16 @@
+/*******************************************************
+ * Copyright (c) 2014, Flare
+ * All rights reserved.
+ *
+ * This file is distributed under 3-clause BSD license.
+ * The complete license agreement can be obtained at:
+ * http://arrayfire.com/licenses/BSD-3-Clause
+ ********************************************************/
+
+#pragma once
+
+#define FLY_VERSION "@Flare_VERSION@"
+#define FLY_VERSION_MAJOR @Flare_VERSION_MAJOR@
+#define FLY_VERSION_MINOR @Flare_VERSION_MINOR@
+#define FLY_VERSION_PATCH @Flare_VERSION_PATCH@
+#define FLY_API_VERSION_CURRENT   @Flare_API_VERSION_CURRENT@

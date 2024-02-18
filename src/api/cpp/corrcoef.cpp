@@ -1,0 +1,37 @@
+/*******************************************************
+ * Copyright (c) 2014, Flare
+ * All rights reserved.
+ *
+ * This file is distributed under 3-clause BSD license.
+ * The complete license agreement can be obtained at:
+ * http://arrayfire.com/licenses/BSD-3-Clause
+ ********************************************************/
+
+#include <fly/array.h>
+#include <fly/statistics.h>
+#include "error.hpp"
+
+namespace fly {
+
+#define INSTANTIATE_CORRCOEF(T)                               \
+    template<>                                                \
+    FLY_API T corrcoef(const array& X, const array& Y) {        \
+        double real;                                          \
+        FLY_THROW(fly_corrcoef(&real, NULL, X.get(), Y.get())); \
+        return (T)real;                                       \
+    }
+
+INSTANTIATE_CORRCOEF(float);
+INSTANTIATE_CORRCOEF(double);
+INSTANTIATE_CORRCOEF(int);
+INSTANTIATE_CORRCOEF(unsigned int);
+INSTANTIATE_CORRCOEF(char);
+INSTANTIATE_CORRCOEF(unsigned char);
+INSTANTIATE_CORRCOEF(long long);
+INSTANTIATE_CORRCOEF(unsigned long long);
+INSTANTIATE_CORRCOEF(short);
+INSTANTIATE_CORRCOEF(unsigned short);
+
+#undef INSTANTIATE_CORRCOEF
+
+}  // namespace fly

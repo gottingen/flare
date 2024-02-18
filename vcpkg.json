@@ -1,0 +1,87 @@
+{
+    "name": "arrayfire",
+    "version": "3.9.0",
+    "homepage": "https://github.com/arrayfire/arrayfire",
+    "description": "Flare is a HPC general-purpose library targeting parallel and massively-parallel architectures such as CPUs, GPUs, etc.",
+    "supports": "x64",
+    "dependencies": [
+        "boost-math",
+        "boost-stacktrace",
+        "spdlog",
+        "freeimage",
+        "span-lite"
+    ],
+    "overrides": [
+        {
+            "name": "fmt",
+            "version": "8.1.1"
+        },
+        {
+            "name": "spdlog",
+            "version": "1.9.2"
+        }
+    ],
+    "features": {
+        "tests": {
+            "description": "Build with tests",
+            "dependencies": [
+                "gtest"
+            ]
+        },
+        "forge": {
+            "description": "Build Forge",
+            "dependencies": [
+                {
+                    "name": "freetype",
+                    "default-features": false
+                },
+                {
+                    "name": "fontconfig",
+                    "platform": "!windows"
+                },
+                "glfw3",
+                "glad"
+            ]
+        },
+        "openblasfftw": {
+            "description": "Build with OpenBLAS/FFTW",
+            "dependencies": [
+                {
+                    "name": "fftw3",
+                    "features": [ "threads" ]
+                },
+                {
+                    "name": "openblas",
+                    "features": [ "threads" ]
+                },
+                "lapack"
+            ]
+        },
+        "cuda": {
+            "description": "Build CUDA backend",
+            "dependencies": [
+                "cuda"
+            ]
+        },
+        "opencl": {
+            "description": "Build OpenCL backend",
+            "dependencies": [
+                "boost-compute",
+                "opencl"
+            ]
+        },
+        "mkl": {
+            "description": "Build with MKL",
+            "dependencies": [
+                "intel-mkl"
+            ]
+        },
+        "cudnn": {
+            "description": "Build CUDA with support for cuDNN",
+            "dependencies": [
+                "cudnn"
+            ]
+        }
+    },
+    "builtin-baseline": "9d47b24eacbd1cd94f139457ef6cd35e5d92cc84"
+}

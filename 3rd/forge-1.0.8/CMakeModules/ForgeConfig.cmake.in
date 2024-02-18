@@ -1,0 +1,85 @@
+# Copyright (c) 2018, ArrayFire
+# All rights reserved.
+#
+# This file is distributed under 3-clause BSD license.
+# The complete license agreement can be obtained at:
+# http://arrayfire.com/licenses/BSD-3-Clause
+
+# Forge
+# -----
+#
+# This is the cmake configuration file for Forge library. It provides
+# the following imported targets.
+#
+# ``Forge::forge`` - the target for Forge
+#
+# This target can be used to link with your application using the
+# ``target_link_library`` command. Here is an example of how to use these
+# targets in your application:
+#
+#   add_executable(mybinary source.cpp)
+#   target_link_library(mybinary PRIVATE Forge::forge)
+#
+# This example creates a mybinary executable from the source.cpp file and links
+# against the Forge library. Note you do *not* need to set the include
+# directories as they are automatically included with the target.
+#
+# This is the recommended way of linking against Forge
+#
+#
+# Legacy Variables
+# ----------------
+#
+# Defines the following variables:
+# Forge_INCLUDE_DIRS  - Path to Forge include directory.
+# Forge_LIBRARIES     - Path to Forge libraries used in link commands.
+# Forge_FOUND         - True if Forge backend has been found.
+#
+# You may provide a hint to where Forge's root directory may be located
+# by setting Forge_DIR. You do not need to set this if you installed
+# Forge using the official installers or the package manager(please submit
+# a bug report if any issues). If CMake is unable to locate Forge then
+# set the Forge_DIR to the directory of this file.
+#
+# If you are trying to link against a source build then this should be set to
+# the build directory.
+
+@PACKAGE_INIT@
+
+set_and_check(Forge_INCLUDE_DIRS @PACKAGE_INCLUDE_DIRS@)
+
+set(Forge_FOUND OFF)
+
+if (NOT TARGET Forge::forge AND
+        NOT TARGET forge AND
+        EXISTS @PACKAGE_CMAKE_DIR@/ForgeTargets.cmake)
+    include(@PACKAGE_CMAKE_DIR@/ForgeTargets.cmake)
+endif ()
+
+if (TARGET Forge::forge)
+    get_property(configs TARGET Forge::forge PROPERTY IMPORTED_CONFIGURATIONS)
+    if(NOT configs)
+        set(configs "NOCONFIG")
+    endif()
+    foreach(config IN LISTS configs)
+        get_property(loc TARGET Forge::forge PROPERTY IMPORTED_LOCATION_${config})
+
+        # break if any of the imported configurations exist. All configs write to the same
+        # location so they are not working as CMake intended. Its fine for single config
+        # installers like ours.
+        if(EXISTS ${loc})
+            set(Forge_BINARY_EXISTS TRUE)
+            break()
+        endif()
+    endforeach()
+endif ()
+
+if ((TARGET Forge::forge AND Forge_BINARY_EXISTS) OR TARGET forge)
+    set(Forge_FOUND ON)
+    if (TARGET forge AND NOT TARGET Forge::forge)
+        add_library(Forge::forge ALIAS forge)
+    endif ()
+    set(Forge_LIBRARIES Forge::forge)
+else ()
+    set(Forge_FOUND OFF)
+endif ()

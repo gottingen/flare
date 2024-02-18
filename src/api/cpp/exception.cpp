@@ -1,0 +1,59 @@
+/*******************************************************
+ * Copyright (c) 2014, Flare
+ * All rights reserved.
+ *
+ * This file is distributed under 3-clause BSD license.
+ * The complete license agreement can be obtained at:
+ * http://arrayfire.com/licenses/BSD-3-Clause
+ ********************************************************/
+
+#include <fly/exception.h>
+#include <algorithm>
+#include <cstdio>
+#include <cstring>  // strncpy
+
+#ifdef OS_WIN
+#define snprintf _snprintf
+#endif
+
+namespace fly {
+
+exception::exception() : m_msg{}, m_err(FLY_ERR_UNKNOWN) {
+    strncpy(m_msg, "unknown exception", sizeof(m_msg));
+}
+
+exception::exception(const char *msg) : m_msg{}, m_err(FLY_ERR_UNKNOWN) {
+    strncpy(m_msg, msg, sizeof(m_msg) - 1);
+    m_msg[sizeof(m_msg) - 1] = '\0';
+}
+
+exception::exception(const char *file, unsigned line, fly_err err)
+    : m_msg{}, m_err(err) {
+    snprintf(m_msg, sizeof(m_msg) - 1, "Flare Exception (%s:%d):\nIn %s:%u",
+             fly_err_to_string(err), static_cast<int>(err), file, line);
+
+    m_msg[sizeof(m_msg) - 1] = '\0';
+}
+
+exception::exception(const char *msg, const char *file, unsigned line,
+                     fly_err err)
+    : m_msg{}, m_err(err) {
+    snprintf(m_msg, sizeof(m_msg) - 1,
+             "Flare Exception (%s:%d):\n%s\nIn %s:%u",
+             fly_err_to_string(err), static_cast<int>(err), msg, file, line);
+
+    m_msg[sizeof(m_msg) - 1] = '\0';
+}
+
+exception::exception(const char *msg, const char *func, const char *file,
+                     unsigned line, fly_err err)
+    : m_msg{}, m_err(err) {
+    snprintf(m_msg, sizeof(m_msg) - 1,
+             "Flare Exception (%s:%d):\n%s\nIn function %s\nIn file %s:%u",
+             fly_err_to_string(err), static_cast<int>(err), msg, func, file,
+             line);
+
+    m_msg[sizeof(m_msg) - 1] = '\0';
+}
+
+}  // namespace fly

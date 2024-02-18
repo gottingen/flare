@@ -1,0 +1,259 @@
+{
+  "version": 2,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "ninja-all-off-debug",
+      "hidden": true,
+      "description": "Base preset with all backends off with Debug build configuration",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "String",
+          "value": "Debug"
+        },
+        "FLY_COMPUTE_LIBRARY": {
+          "type": "String",
+          "value": "Intel-MKL"
+        },
+        "FLY_BUILD_CPU": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "FLY_BUILD_CUDA": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "FLY_BUILD_OPENCL": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "FLY_BUILD_UNIFIED": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "FLY_BUILD_FORGE": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "FLY_BUILD_DOCS": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "FLY_BUILD_EXAMPLES": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "FLY_TEST_WITH_MTX_FILES": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "CMAKE_INSTALL_PREFIX": {
+          "type": "PATH",
+          "value": "${sourceDir}/build/${presetName}/pkg"
+        }
+      }
+    },
+    {
+      "name": "ninja-cpu-mkl-debug",
+      "description": "Build CPU Backend using Intel MKL in Debug Configuration with Ninja Generator",
+      "inherits": "ninja-all-off-debug",
+      "cacheVariables": {
+        "FLY_BUILD_CPU": "ON"
+      }
+    },
+    {
+      "name": "ninja-cpu-mkl-relwithdebinfo",
+      "description": "Build CPU Backend using Intel MKL in RelWithDebInfo Configuration with Ninja Generator",
+      "inherits": "ninja-cpu-mkl-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "ninja-cpu-debug",
+      "description": "Build CPU Backend with FFTW and a BLAS library using Ninja Generator in Debug Configuration",
+      "inherits": "ninja-cpu-mkl-debug",
+      "cacheVariables": {
+        "FLY_COMPUTE_LIBRARY": "FFTW/LAPCK/BLAS"
+      }
+    },
+    {
+      "name": "ninja-cpu-relwithdebinfo",
+      "description": "Build CPU Backend with FFTW and a BLAS library using Ninja Generator in RelWithDebInfo Configuration",
+      "inherits": "ninja-cpu-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "ninja-cuda-debug",
+      "description": "Build CUDA Backend in debug configuration using Ninja Generator",
+      "inherits": "ninja-all-off-debug",
+      "cacheVariables": {
+        "FLY_BUILD_CUDA": "ON"
+      }
+    },
+    {
+      "name": "ninja-cuda-relwithdebinfo",
+      "description": "Build CUDA Backend in RelWithDebInfo configuration using Ninja Generator",
+      "inherits": "ninja-cuda-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "ninja-opencl-mkl-debug",
+      "description": "Build OpenCL Backend in debug configuration using Ninja Generator",
+      "inherits": "ninja-all-off-debug",
+      "cacheVariables": {
+        "FLY_BUILD_OPENCL": "ON"
+      }
+    },
+    {
+      "name": "ninja-opencl-mkl-relwithdebinfo",
+      "description": "Build OpenCL Backend in RelWithDebInfo configuration using Ninja Generator. This preset uses Intel MKL for CPU fallback code.",
+      "inherits": "ninja-opencl-mkl-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "ninja-opencl-debug",
+      "description": "Build OpenCL Backend in debug configuration using Ninja Generator",
+      "inherits": "ninja-opencl-mkl-debug",
+      "cacheVariables": {
+        "FLY_COMPUTE_LIBRARY": "FFTW/LAPCK/BLAS"
+      }
+    },
+    {
+      "name": "ninja-opencl-relwithdebinfo",
+      "description": "Build OpenCL Backend in RelWithDebInfo configuration using Ninja Generator",
+      "inherits": "ninja-opencl-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+        "name": "ninja-all-mkl-debug",
+        "description": "Build all feasible backends using Ninja Generator in Debug Configuraiton",
+        "inherits": "ninja-all-off-debug",
+        "cacheVariables": {
+            "FLY_BUILD_CPU": "ON",
+            "FLY_BUILD_CUDA": "ON",
+            "FLY_BUILD_OPENCL": "ON",
+            "FLY_BUILD_UNIFIED": "ON"
+        }
+    },
+    {
+        "name": "ninja-all-mkl-relwithdebinfo",
+        "description": "Build all feasible backends using Ninja Generator in RelWithDebInfo Configuraiton",
+        "inherits": "ninja-all-mkl-debug",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+        }
+    },
+    {
+        "name": "ninja-all-debug",
+        "description": "Build all feasible backends using Ninja Generator in Debug Configuraiton",
+        "inherits": "ninja-all-mkl-debug",
+        "cacheVariables": {
+            "FLY_COMPUTE_LIBRARY": "FFTW/LAPCK/BLAS"
+        }
+    },
+    {
+        "name": "ninja-all-relwithdebinfo",
+        "description": "Build all feasible backends using Ninja Generator in RelWithDebInfo Configuraiton",
+        "inherits": "ninja-all-debug",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+        }
+    },
+    {
+        "name": "ninja-all-mkl-local-install",
+        "description": "Build all feasible backends using Ninja Generator in RelWithDebInfo Configuraiton",
+        "inherits": "ninja-all-mkl-relwithdebinfo",
+        "cacheVariables": {
+            "BUILD_TESTING": "OFF"
+        }
+    },
+    {
+        "name": "ninja-all-mkl-standalone-install",
+        "description": "Build all feasible backends using Ninja Generator in RelWithDebInfo Configuraiton",
+        "inherits": "ninja-all-mkl-local-install",
+        "cacheVariables": {
+            "FLY_INSTALL_STANDALONE": "ON"
+        }
+    },
+    {
+      "name": "ninja-docs",
+      "description": "Build Flare Documentation, needs doxygen installed",
+      "inherits": "ninja-all-off-debug",
+      "cacheVariables": {
+          "BUILD_TESTING": "OFF",
+          "FLY_BUILD_FORGE": "OFF",
+          "FLY_BUILD_DOCS": "ON"
+      }
+    },
+    {
+        "name": "ninja-any-debug",
+        "description": "Build available backends in Debug configuration using Ninja Generator",
+        "binaryDir": "${sourceDir}/build/${presetName}",
+        "generator": "Ninja",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Debug",
+            "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/${presetName}/pkg"
+        }
+    },
+    {
+        "name": "ninja-any-relwithdebinfo",
+        "description": "Build available backends in RelWithDebInfo configuration using Ninja Generator",
+        "inherits": "ninja-any-debug",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+        }
+    },
+    {
+      "name": "msvc2019",
+      "hidden": true,
+      "description": "Base preset for Visual Studio 16 2019 generator.",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64"
+    },
+    {
+      "name": "msvc2019-cpu-mkl",
+      "description": "Build CPU Backend using Intel MKL with MSVC 2019 Generator",
+      "inherits": [ "msvc2019", "ninja-cpu-mkl-debug" ]
+    },
+    {
+      "name": "msvc2019-cuda",
+      "description": "Build CUDA Backend with MSVC 2019 Generator",
+      "inherits": [ "msvc2019", "ninja-cuda-debug" ]
+    },
+    {
+      "name": "msvc2019-opencl-mkl",
+      "description": "Build OpenCL Backend with MSVC 2019 Generator. Uses MKL for CPU fallback.",
+      "inherits": [ "msvc2019", "ninja-opencl-mkl-debug" ]
+    },
+    {
+      "name": "msvc2019-all-mkl",
+      "description": "Build all feasible Backends with MSVC 2019 Generator. Uses MKL for CPU fallback.",
+      "inherits": [ "msvc2019", "ninja-all-mkl-debug" ]
+    },
+    {
+      "name": "msvc2019-all-mkl-local-install",
+      "description": "Build all feasible Backends with MSVC 2019 Generator. Installs to specified path prefix.",
+      "inherits": [ "msvc2019", "ninja-all-mkl-local-install" ]
+    },
+    {
+      "name": "msvc2019-all-mkl-standalone-install",
+      "description": "Build all feasible Backends with MSVC 2019 Generator. Also packages dependencies while installing to specified path prefix.",
+      "inherits": [ "msvc2019", "ninja-all-mkl-standalone-install" ]
+    }
+  ]
+}

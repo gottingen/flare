@@ -1,0 +1,16 @@
+/*******************************************************
+ * Copyright (c) 2014, ArrayFire
+ * All rights reserved.
+ *
+ * This file is distributed under 3-clause BSD license.
+ * The complete license agreement can be obtained at:
+ * http://arrayfire.com/licenses/BSD-3-Clause
+ ********************************************************/
+
+#pragma once
+
+#define FG_VERSION "@FG_VERSION@"
+#define FG_VERSION_MAJOR @FG_VERSION_MAJOR@
+#define FG_VERSION_MINOR @FG_VERSION_MINOR@
+#define FG_VERSION_PATCH @FG_VERSION_PATCH@
+#define FG_API_VERSION_CURRENT   @FG_API_VERSION_CURRENT@

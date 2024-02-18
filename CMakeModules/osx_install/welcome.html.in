@@ -1,0 +1,27 @@
+<html>
+<body>
+    <h1>Welcome To Flare ${FLY_VERSION}</h1>
+
+    <p>
+    Flare is a high performance software library for parallel computing
+    with an easy-to-use API. Its <em>array</em> based function set makes parallel
+    programming simple.
+    </p>
+
+    <p> 
+    Flare's multiple backends (<strong>CUDA</strong>,
+    <strong>OpenCL</strong>and native <strong>CPU</strong>) make it platform
+    independent and highly portable.
+    </p>
+
+    <p>
+    A few lines of code in Flare can replace dozens of lines of parallel
+    compute code, saving you valuable time and lowering development costs.
+    </p>
+
+    <p>
+    Follow these steps to install the Flare libraries.
+    </p>
+</body>
+
+</html>
