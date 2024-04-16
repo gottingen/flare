@@ -20,7 +20,7 @@
 #define FLY_ONEAPI_MEM_DEBUG 0
 #endif
 
-namespace spdlog {
+namespace clog {
 class logger;
 }
 
@@ -119,7 +119,7 @@ class DeviceManager {
 
     ~DeviceManager();
 
-    spdlog::logger* getLogger();
+    clog::logger* getLogger();
 
    protected:
     DeviceManager();
@@ -134,7 +134,7 @@ class DeviceManager {
 
    private:
     // Attributes
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<clog::logger> logger;
     std::mutex deviceMutex;
     std::vector<std::unique_ptr<sycl::device>> mDevices;
     std::vector<std::unique_ptr<sycl::context>> mContexts;

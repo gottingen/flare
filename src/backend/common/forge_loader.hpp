@@ -25,7 +25,7 @@
 /* Other */
 #endif
 
-#include <glad/glad.h>
+#include <theia/glad/glad.h>
 
 #if defined(__clang__)
 /* Clang/LLVM */

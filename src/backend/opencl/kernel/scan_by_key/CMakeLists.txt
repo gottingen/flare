@@ -36,7 +36,7 @@ foreach(SBK_BINARY_OP ${SBK_BINARY_OPS})
         ../common
         ../../../include
         ${CMAKE_CURRENT_BINARY_DIR}
-        $<TARGET_PROPERTY:fly_spdlog,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:collie::collie,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:OpenCL::OpenCL,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:Boost::boost,INTERFACE_INCLUDE_DIRECTORIES>
         ${Flare_BINARY_DIR}/include
@@ -53,17 +53,10 @@ foreach(SBK_BINARY_OP ${SBK_BINARY_OPS})
         ${forge_binary_dir}/include
       )
     endif()
-    if(TARGET glad::glad)
       target_include_directories(opencl_scan_by_key_${SBK_BINARY_OP}
         SYSTEM INTERFACE
-        $<TARGET_PROPERTY:glad::glad,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:theia::glad,INTERFACE_INCLUDE_DIRECTORIES>
       )
-    else()
-      target_include_directories(opencl_scan_by_key_${SBK_BINARY_OP}
-        SYSTEM INTERFACE
-        $<TARGET_PROPERTY:fly_glad,INTERFACE_INCLUDE_DIRECTORIES>
-      )
-    endif()
 
     set_target_properties(opencl_scan_by_key_${SBK_BINARY_OP}
       PROPERTIES
@@ -78,7 +71,7 @@ foreach(SBK_BINARY_OP ${SBK_BINARY_OPS})
       PRIVATE
         ${opencl_compile_definitions}
         $<TARGET_PROPERTY:Boost::boost,INTERFACE_COMPILE_DEFINITIONS>
-        $<TARGET_PROPERTY:fly_spdlog,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:collie::collie,INTERFACE_COMPILE_DEFINITIONS>
         TYPE=${SBK_BINARY_OP} FLY_DLL)
     target_sources(opencl_scan_by_key
       INTERFACE $<TARGET_OBJECTS:opencl_scan_by_key_${SBK_BINARY_OP}>)

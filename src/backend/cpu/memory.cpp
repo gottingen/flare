@@ -15,7 +15,7 @@
 #include <err_cpu.hpp>
 #include <platform.hpp>
 #include <queue.hpp>
-#include <spdlog/spdlog.h>
+#include <collie/log/logging.h>
 #include <types.hpp>
 #include <fly/dim4.hpp>
 

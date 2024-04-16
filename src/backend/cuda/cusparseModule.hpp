@@ -109,7 +109,7 @@ class cusparseModule {
 
     MODULE_MEMBER(cusparseZnnz);
 
-    spdlog::logger* getLogger() const noexcept;
+    clog::logger* getLogger() const noexcept;
 };
 
 cusparseModule& getCusparsePlugin() noexcept;

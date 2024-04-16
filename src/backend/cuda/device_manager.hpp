@@ -46,7 +46,7 @@ class DeviceManager {
     static DeviceManager& getInstance();
     ~DeviceManager();
 
-    spdlog::logger* getLogger();
+    clog::logger* getLogger();
 
     friend MemoryManagerBase& memoryManager();
 
@@ -118,7 +118,7 @@ class DeviceManager {
 
     int setActiveDevice(int device, int nId = -1);
 
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<clog::logger> logger;
 
     /// A matrix of booleans where true indicates that the corresponding
     /// corrdinate devices can access each other buffers. False indicates

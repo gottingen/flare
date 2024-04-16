@@ -25,7 +25,7 @@ class program_cache;
 }
 }  // namespace boost
 
-namespace spdlog {
+namespace clog {
 class logger;
 }
 

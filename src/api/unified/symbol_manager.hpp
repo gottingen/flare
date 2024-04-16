@@ -15,7 +15,7 @@
 #include <fly/backend.h>
 #include <fly/defines.h>
 
-#include <spdlog/spdlog.h>
+#include <collie/log/logging.h>
 #include <array>
 #include <cstdlib>
 #include <string>
@@ -57,7 +57,7 @@ class FlySymbolManager {
     fly::Backend getDefaultBackend() { return defaultBackend; }
     LibHandle getDefaultHandle() { return defaultHandle; }
 
-    spdlog::logger* getLogger();
+    clog::logger* getLogger();
     LibHandle getHandle(int idx) { return bkndHandles[idx]; }
 
    protected:
@@ -77,7 +77,7 @@ class FlySymbolManager {
     unsigned numBackends;
     int backendsAvailable;
     fly_backend defaultBackend;
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<clog::logger> logger;
 };
 
 fly_err setBackend(fly::Backend bknd);

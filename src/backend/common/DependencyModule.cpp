@@ -178,7 +178,7 @@ string DependencyModule::getErrorMessage() noexcept {
     return common::getErrorMessage();
 }
 
-spdlog::logger* DependencyModule::getLogger() const noexcept {
+clog::logger* DependencyModule::getLogger() const noexcept {
     return logger.get();
 }
 

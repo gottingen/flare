@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace spdlog {
+namespace clog {
 class logger;
 }
 namespace flare {
@@ -33,10 +33,10 @@ class AllocatorInterface {
     virtual size_t getMaxMemorySize(int id)       = 0;
     virtual void *nativeAlloc(const size_t bytes) = 0;
     virtual void nativeFree(void *ptr)            = 0;
-    virtual spdlog::logger *getLogger() final { return this->logger.get(); }
+    virtual clog::logger *getLogger() final { return this->logger.get(); }
 
    protected:
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<clog::logger> logger;
 };
 
 }  // namespace common

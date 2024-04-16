@@ -89,7 +89,6 @@ endif()
 
 target_link_libraries(flycommon_interface
   INTERFACE
-    fly_spdlog
     Boost::boost
     ${CMAKE_DL_LIBS}
 )
@@ -101,11 +100,7 @@ if(TARGET fmt::fmt)
   )
 endif()
 
-if(TARGET glad::glad)
-  target_link_libraries(flycommon_interface INTERFACE glad::glad)
-else()
-  target_link_libraries(flycommon_interface INTERFACE fly_glad)
-endif()
+target_link_libraries(flycommon_interface INTERFACE theia::glad)
 
 if(FLY_BUILD_FORGE AND NOT Forge_FOUND)
   add_dependencies(flycommon_interface forge)
@@ -114,7 +109,9 @@ endif()
 target_include_directories(flycommon_interface
   SYSTEM INTERFACE
     $<$<PLATFORM_ID:Darwin>:${OPENGL_INCLUDE_DIR}>)
-
+target_include_directories(flycommon_interface
+        INTERFACE
+        ${collie_INCLUDE_DIR})
 target_include_directories(flycommon_interface
   INTERFACE
     ${Flare_SOURCE_DIR}/src/backend

@@ -28,7 +28,7 @@
 #include <err_cuda.hpp>
 #include <memory.hpp>
 #include <platform.hpp>
-#include <spdlog/spdlog.h>
+#include <collie/log/logging.h>
 #include <fly/cuda.h>
 #include <fly/version.h>
 // cuda_gl_interop.h does not include OpenGL headers for ARM
@@ -204,7 +204,7 @@ bool checkDeviceWithRuntime(int runtime, pair<int, int> compute) {
         begin(Toolkit2MaxCompute), end(Toolkit2MaxCompute),
         [runtime](cuNVRTCcompute c) { return c.cudaVersion == runtime; });
     if (rt == end(Toolkit2MaxCompute)) {
-        spdlog::get("platform")
+        clog::get("platform")
             ->warn(
                 "CUDA runtime version({}) not recognized. Please "
                 "create an issue or a pull request on the Flare repository "
@@ -245,7 +245,7 @@ void checkAndSetDevMaxCompute(pair<int, int> &computeCapability) {
 
         if (computeCapability.second > minorVersion) {
             computeCapability = make_pair(tkitMaxCompute->major, minorVersion);
-            spdlog::get("platform")
+            clog::get("platform")
                 ->warn(
                     "The compute capability for the current device({}.{}) "
                     "exceeds maximum supported by Flare's CUDA "
@@ -264,7 +264,7 @@ void checkAndSetDevMaxCompute(pair<int, int> &computeCapability) {
         if (computeCapability.second > minorVersion) {
             computeCapability =
                 make_pair(Toolkit2MaxCompute[0].major, minorVersion);
-            spdlog::get("platform")
+            clog::get("platform")
                 ->warn(
                     "CUDA runtime version({}) not recognized. Targeting "
                     "compute {}.{} for this device which is the latest compute "
@@ -280,7 +280,7 @@ void checkAndSetDevMaxCompute(pair<int, int> &computeCapability) {
     } else if (computeCapability.first < 3) {
         // all compute versions prior to Kepler, we don't support
         // don't change the computeCapability.
-        spdlog::get("platform")
+        clog::get("platform")
             ->warn(
                 "The compute capability of the current device({}.{}) "
                 "lower than the minimum compute version Flare "
@@ -440,7 +440,7 @@ void DeviceManager::resetMemoryManagerPinned() {
 /// \param[in] driver_version   The version integer returned by
 ///                             cudaDriverGetVersion
 /// \note: only works in debug builds
-void debugRuntimeCheck(spdlog::logger *logger, int runtime_version,
+void debugRuntimeCheck(clog::logger *logger, int runtime_version,
                        int driver_version) {
     auto runtime_it =
         find_if(begin(CudaToDriverVersion), end(CudaToDriverVersion),
@@ -453,7 +453,7 @@ void debugRuntimeCheck(spdlog::logger *logger, int runtime_version,
                     return driver_version == ver.version;
                 });
 
-    auto getLogger = [&logger]() -> spdlog::logger * { return logger; };
+    auto getLogger = [&logger]() -> clog::logger * { return logger; };
 
     // If the runtime version is not part of the CudaToDriverVersion array,
     // display a message in the trace. Do not throw an error unless this is
@@ -671,7 +671,7 @@ DeviceManager::DeviceManager()
              cuDevices[getActiveDeviceId()].prop.name);
 }
 
-spdlog::logger *DeviceManager::getLogger() { return logger.get(); }
+clog::logger *DeviceManager::getLogger() { return logger.get(); }
 
 void DeviceManager::sortDevices(sort_mode mode) {
     switch (mode) {

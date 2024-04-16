@@ -132,8 +132,8 @@ constexpr size_t linkLogSize = 2048;
         FLY_ERROR(nvrtc_err_msg.data(), FLY_ERR_INTERNAL);     \
     } while (0)
 
-spdlog::logger *getLogger() {
-    static std::shared_ptr<spdlog::logger> logger(
+clog::logger *getLogger() {
+    static std::shared_ptr<clog::logger> logger(
         flare::common::loggerFactory("jit"));
     return logger.get();
 }

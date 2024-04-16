@@ -13,7 +13,7 @@
 
 #include <common/Logger.hpp>
 #include <common/module_loading.hpp>
-#include <spdlog/spdlog.h>
+#include <collie/log/logging.h>
 
 #include <cmath>
 #include <functional>
@@ -109,7 +109,7 @@ LibHandle openDynLibrary(const fly_backend bknd_idx) {
     bool show_load_path = show_flag == "1";
 
     // FIXME(umar): avoid this if at all possible
-    auto getLogger = [&] { return spdlog::get("unified"); };
+    auto getLogger = [&] { return clog::get("unified"); };
 
     string pathPrefixes[] = {
         "",   // empty prefix i.e. just the library name will enable search in
@@ -171,7 +171,7 @@ LibHandle openDynLibrary(const fly_backend bknd_idx) {
     return retVal;
 }
 
-spdlog::logger* FlySymbolManager::getLogger() { return logger.get(); }
+clog::logger* FlySymbolManager::getLogger() { return logger.get(); }
 
 fly::Backend& getActiveBackend() {
     thread_local fly_backend activeBackend =

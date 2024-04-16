@@ -26,7 +26,7 @@ foreach(SBK_TYPE ${SBK_TYPES})
       SYSTEM PRIVATE
         $<TARGET_PROPERTY:OpenCL::OpenCL,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:Boost::boost,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:fly_spdlog,INTERFACE_INCLUDE_DIRECTORIES>)
+        $<TARGET_PROPERTY:collie::collie,INTERFACE_INCLUDE_DIRECTORIES>)
 
     target_include_directories(opencl_sort_by_key_${SBK_TYPE}
       PRIVATE
@@ -51,17 +51,10 @@ foreach(SBK_TYPE ${SBK_TYPES})
           ${forge_source_dir}/include
       )
     endif()
-    if(TARGET glad::glad)
       target_include_directories(opencl_sort_by_key_${SBK_TYPE}
         SYSTEM INTERFACE
-          $<TARGET_PROPERTY:glad::glad,INTERFACE_INCLUDE_DIRECTORIES>
+          $<TARGET_PROPERTY:theia::glad,INTERFACE_INCLUDE_DIRECTORIES>
       )
-    else()
-      target_include_directories(opencl_sort_by_key_${SBK_TYPE}
-        SYSTEM INTERFACE
-          $<TARGET_PROPERTY:fly_glad,INTERFACE_INCLUDE_DIRECTORIES>
-      )
-    endif()
 
     set_target_properties(opencl_sort_by_key_${SBK_TYPE}
       PROPERTIES

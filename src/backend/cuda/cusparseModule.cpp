@@ -161,7 +161,7 @@ cusparseModule::cusparseModule()
 #endif
 }
 
-spdlog::logger* cusparseModule::getLogger() const noexcept {
+clog::logger* cusparseModule::getLogger() const noexcept {
     return module.getLogger();
 }
 

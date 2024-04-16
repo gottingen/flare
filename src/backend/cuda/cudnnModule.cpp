@@ -45,7 +45,7 @@ constexpr std::array<common::Version, 11> cudnnVersions = {
 };
 // clang-format on
 
-spdlog::logger* cudnnModule::getLogger() const noexcept {
+clog::logger* cudnnModule::getLogger() const noexcept {
     return module.getLogger();
 }
 

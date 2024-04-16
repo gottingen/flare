@@ -12,7 +12,7 @@
 #include <boost/stacktrace.hpp>
 #include <common/FlareTypesIO.hpp>
 #include <common/jit/NodeIO.hpp>
-#include <spdlog/fmt/bundled/format.h>
+#include <collie/strings/format.h>
 #include <iostream>
 
 #define DBGTRACE(msg)                                              \

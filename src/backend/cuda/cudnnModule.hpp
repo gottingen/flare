@@ -98,7 +98,7 @@ class cudnnModule {
     MODULE_MEMBER(cudnnSetStream);
     MODULE_MEMBER(cudnnSetTensor4dDescriptor);
 
-    spdlog::logger* getLogger() const noexcept;
+    clog::logger* getLogger() const noexcept;
 
     /// Returns the version of the cuDNN loaded at runtime
     common::Version getVersion() const noexcept { return module.getVersion(); }

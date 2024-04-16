@@ -65,8 +65,8 @@ constexpr bool canOptimizeCast(fly::dtype outer, fly::dtype inner) {
 #ifdef FLY_CPU
 template<typename To, typename Ti>
 struct CastWrapper {
-    static spdlog::logger *getLogger() noexcept {
-        static std::shared_ptr<spdlog::logger> logger =
+    static clog::logger *getLogger() noexcept {
+        static std::shared_ptr<clog::logger> logger =
             common::loggerFactory("ast");
         return logger.get();
     }
@@ -112,8 +112,8 @@ struct CastWrapper {
 
 template<typename To, typename Ti>
 struct CastWrapper {
-    static spdlog::logger *getLogger() noexcept {
-        static std::shared_ptr<spdlog::logger> logger =
+    static clog::logger *getLogger() noexcept {
+        static std::shared_ptr<clog::logger> logger =
             common::loggerFactory("ast");
         return logger.get();
     }

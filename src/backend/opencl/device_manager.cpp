@@ -373,7 +373,7 @@ DeviceManager::DeviceManager()
     FLY_TRACE("Default device: {}", getActiveDeviceId());
 }
 
-spdlog::logger* DeviceManager::getLogger() { return logger.get(); }
+clog::logger* DeviceManager::getLogger() { return logger.get(); }
 
 DeviceManager& DeviceManager::getInstance() {
     static auto* my_instance = new DeviceManager();

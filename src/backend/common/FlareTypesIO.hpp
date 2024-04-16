@@ -9,7 +9,7 @@
 
 #pragma once
 #include <common/Version.hpp>
-#include <spdlog/fmt/ostr.h>
+#include <collie/strings/format.h>
 #include <fly/dim4.hpp>
 #include <fly/seq.h>
 #include <complex>

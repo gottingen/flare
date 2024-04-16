@@ -38,7 +38,7 @@ class program_cache;
 }
 }  // namespace boost
 
-namespace spdlog {
+namespace clog {
 class logger;
 }
 
@@ -148,7 +148,7 @@ class DeviceManager {
 
     ~DeviceManager();
 
-    spdlog::logger* getLogger();
+    clog::logger* getLogger();
 
    protected:
     using clfftSetupData = clfftSetupData_;
@@ -165,7 +165,7 @@ class DeviceManager {
 
    private:
     // Attributes
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<clog::logger> logger;
     std::mutex deviceMutex;
     std::vector<std::unique_ptr<cl::Device>> mDevices;
     std::vector<std::unique_ptr<cl::Context>> mContexts;

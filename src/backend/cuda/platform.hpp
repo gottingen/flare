@@ -34,7 +34,7 @@ struct cudnnContext;
 typedef struct cudnnContext* cudnnHandle_t;
 #endif
 
-namespace spdlog {
+namespace clog {
 class logger;
 }
 

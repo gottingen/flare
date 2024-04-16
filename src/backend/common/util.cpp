@@ -198,7 +198,7 @@ bool isDirectoryWritable(const string& path) {
     return true;
 }
 
-#ifndef NOSPDLOG
+#ifndef NO_COLLIE_LOG
 string& getCacheDirectory() {
     static once_flag flag;
     static string cacheDirectory;
@@ -215,7 +215,7 @@ string& getCacheDirectory() {
 
         auto env_path = getEnvVar(JIT_KERNEL_CACHE_DIRECTORY_ENV_NAME);
         if (!env_path.empty() && !isDirectoryWritable(env_path)) {
-            spdlog::get("platform")
+            clog::get("platform")
                 ->warn(
                     "The environment variable {}({}) is "
                     "not writeable. Falling back to default.",

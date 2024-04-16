@@ -19,7 +19,7 @@
 namespace flare {
 namespace opencl {
 namespace kernel_logger {
-inline auto getLogger() -> spdlog::logger* {
+inline auto getLogger() -> clog::logger* {
     static auto logger = common::loggerFactory("kernel");
     return logger.get();
 }

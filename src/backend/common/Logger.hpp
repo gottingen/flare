@@ -30,7 +30,7 @@
 /* Other */
 #endif
 
-#include <spdlog/spdlog.h>
+#include <collie/log/logging.h>
 
 #if defined(__clang__)
 /* Clang/LLVM */
@@ -50,7 +50,7 @@
 
 namespace flare {
 namespace common {
-std::shared_ptr<spdlog::logger> loggerFactory(const std::string& name);
+std::shared_ptr<clog::logger> loggerFactory(const std::string& name);
 std::string bytesToString(size_t bytes);
 }  // namespace common
 }  // namespace flare

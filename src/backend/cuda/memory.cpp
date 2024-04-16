@@ -20,7 +20,7 @@
 #include <cuda_runtime_api.h>
 #include <err_cuda.hpp>
 #include <platform.hpp>
-#include <spdlog/spdlog.h>
+#include <collie/log/logging.h>
 #include <types.hpp>
 #include <fly/dim4.hpp>
 

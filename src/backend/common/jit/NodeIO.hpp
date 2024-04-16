@@ -9,7 +9,7 @@
 
 #pragma once
 #include <common/jit/Node.hpp>
-#include <spdlog/fmt/bundled/format.h>
+#include <collie/strings/format.h>
 
 #include <common/util.hpp>
 

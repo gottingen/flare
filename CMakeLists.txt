@@ -98,7 +98,6 @@ option(FLY_WITH_STACKTRACE  "Add stacktraces to the error messages." ON)
 option(FLY_CACHE_KERNELS_TO_DISK "Enable caching kernels to disk" ON)
 option(FLY_WITH_STATIC_MKL "Link against static Intel MKL libraries" OFF)
 option(FLY_WITH_STATIC_CUDA_NUMERIC_LIBS "Link libflycuda with static numeric libraries(cublas, cufft, etc.)" OFF)
-option(FLY_WITH_SPDLOG_HEADER_ONLY "Build Flare with header only version of spdlog" ON)
 option(FLY_WITH_FMT_HEADER_ONLY "Build Flare with header only version of fmt" OFF)
 option(FLY_WITH_FAST_MATH "Use lower precision but high performance numeric optimizations" OFF)
 option(FLY_CTEST_SEPARATED "Run tests separately when called from ctest(increases test times)" OFF)
@@ -245,33 +244,8 @@ endif()
 #forge is included in ALL target if FLY_BUILD_FORGE is ON
 #otherwise, forge is not built at all
 include(fly_configure_forge_dep)
-# spdlog
-add_library(fly_spdlog INTERFACE)
-
-add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/spdlog-1.9.2 EXCLUDE_FROM_ALL)
-
-if(FLY_WITH_SPDLOG_HEADER_ONLY)
-  set_target_properties(fly_spdlog
-    PROPERTIES
-      INTERFACE_COMPILE_DEFINITIONS "FMT_HEADER_ONLY=1"
-      INTERFACE_LINK_LIBRARIES "spdlog_header_only")
-else()
-  target_compile_options(spdlog
-    PRIVATE
-      $<$<BOOL:${has_cxx_fp_model}>:-fp-model precise>)
-  set_target_properties(fly_spdlog
-    PROPERTIES
-      INTERFACE_LINK_LIBRARIES "spdlog")
-endif()
-
-
-add_subdirectory(${PROJECT_SOURCE_DIR}/3rd/glad EXCLUDE_FROM_ALL)
-
-add_library(fly_glad STATIC $<TARGET_OBJECTS:af_glad_obj_lib>)
-target_link_libraries(fly_glad PUBLIC ${CMAKE_DL_LIBS})
-target_include_directories(fly_glad
-  SYSTEM PUBLIC
-    $<BUILD_INTERFACE:$<TARGET_PROPERTY:af_glad_obj_lib,INTERFACE_INCLUDE_DIRECTORIES>>)
+find_package(collie REQUIRED PATHS ${PROJECT_SOURCE_DIR}/carbin)
+find_package(theia REQUIRED PATHS ${PROJECT_SOURCE_DIR}/carbin)
 
 
 set(ASSETS_DIR ${PROJECT_SOURCE_DIR}/3rd/assets)
@@ -595,37 +569,13 @@ mark_as_advanced(
   CUDA_SDK_ROOT_DIR
   CUDA_USE_STATIC_CUDA_RUNTIME
   CUDA_rt_LIBRARY
-  SPDLOG_BUILD_EXAMPLES
-  SPDLOG_BUILD_TESTING
   ADDR2LINE_PROGRAM
   Backtrace_LIBRARY
   FLY_WITH_STATIC_MKL
   GIT
   Forge_DIR
   glad_DIR
-  spdlog_DIR
   FG_BUILD_OFFLINE
-  SPDLOG_BUILD_ALL
-  SPDLOG_BUILD_BENCH
-  SPDLOG_BUILD_EXAMPLE
-  SPDLOG_BUILD_EXAMPLE_HO
-  SPDLOG_BUILD_SHARED
-  SPDLOG_BUILD_TESTS
-  SPDLOG_BUILD_TESTS_HO
-  SPDLOG_BUILD_WARNINGS
-  SPDLOG_CLOCK_COARSE
-  SPDLOG_DISABLE_DEFAULT_LOGGER
-  SPDLOG_ENABLE_PCH
-  SPDLOG_INSTALL
-  SPDLOG_NO_ATOMIC_LEVELS
-  SPDLOG_NO_EXCEPTIONS
-  SPDLOG_NO_THREAD_ID
-  SPDLOG_NO_TLS
-  SPDLOG_PREVENT_CHILD_FD
-  SPDLOG_SANITIZE_ADDRESS
-  SPDLOG_TIDY
-  SPDLOG_WCHAR_FILENAMES
-  SPDLOG_WCHAR_SUPPORT
   cub_include_dir
   fmt_DIR
   )

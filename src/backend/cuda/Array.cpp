@@ -62,7 +62,7 @@ void checkAndMigrate(Array<T> &arr) {
     int arr_id = arr.getDevId();
     int cur_id = detail::getActiveDeviceId();
     if (!isDeviceBufferAccessible(arr_id, cur_id)) {
-        static auto getLogger = [&] { return spdlog::get("platform"); };
+        static auto getLogger = [&] { return clog::get("platform"); };
         FLY_TRACE("Migrating array from {} to {}.", arr_id, cur_id);
         auto migrated_data = memAlloc<T>(arr.elements());
         CUDA_CHECK(
@@ -270,7 +270,7 @@ Node_ptr Array<T>::getNode() const {
 template<typename T>
 kJITHeuristics passesJitHeuristics(span<Node *> root_nodes) {
     if (!evalFlag()) { return kJITHeuristics::Pass; }
-    static auto getLogger = [&] { return spdlog::get("jit"); };
+    static auto getLogger = [&] { return clog::get("jit"); };
     for (Node *n : root_nodes) {
         if (n->getHeight() > static_cast<int>(getMaxJitSize())) {
             FLY_TRACE(

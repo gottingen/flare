@@ -33,7 +33,7 @@ using flare::oneapi::Module;
 using fmt::format;
 // using flare::oneapi::getActiveDeviceId;
 // using flare::oneapi::getDevice;
-using spdlog::logger;
+using clog::logger;
 using sycl::bundle_state;
 using sycl::kernel_bundle;
 

@@ -88,7 +88,6 @@ target_include_directories(fly
 
 target_link_libraries(fly
   PRIVATE
-    fly_spdlog
     cpp_api_interface
     Threads::Threads
     Boost::boost

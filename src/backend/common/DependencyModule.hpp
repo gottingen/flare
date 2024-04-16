@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-namespace spdlog {
+namespace clog {
 class logger;
 }
 namespace flare {
@@ -34,7 +34,7 @@ namespace common {
 /// we use in Flare
 class DependencyModule {
     LibHandle handle;
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<clog::logger> logger;
     std::vector<void*> functions;
     Version version;
 
@@ -76,7 +76,7 @@ class DependencyModule {
     /// library
     static std::string getErrorMessage() noexcept;
 
-    spdlog::logger* getLogger() const noexcept;
+    clog::logger* getLogger() const noexcept;
 };
 
 }  // namespace common

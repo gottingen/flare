@@ -8,13 +8,13 @@
  ********************************************************/
 
 #ifdef _WIN32
-#include <windows.h>  // spdlog needs this
+#include <windows.h>  // clog needs this
 #endif
 
 #include <common/Logger.hpp>
 #include <common/util.hpp>
 
-#include <spdlog/sinks/stdout_sinks.h>
+#include <collie/log/sinks/stdout_sinks.h>
 #include <array>
 #include <cstdlib>
 #include <memory>
@@ -25,9 +25,9 @@ using std::array;
 using std::shared_ptr;
 using std::string;
 
-using spdlog::get;
-using spdlog::logger;
-using spdlog::stdout_logger_mt;
+using clog::get;
+using clog::logger;
+using clog::stdout_logger_mt;
 
 namespace flare {
 namespace common {
@@ -42,9 +42,9 @@ shared_ptr<logger> loggerFactory(const string& name) {
         string env_var = getEnvVar("FLY_TRACE");
         if (env_var.find("all") != string::npos ||
             env_var.find(name) != string::npos) {
-            logger->set_level(spdlog::level::trace);
+            logger->set_level(clog::level::trace);
         } else {
-            logger->set_level(spdlog::level::off);
+            logger->set_level(clog::level::off);
         }
     }
     return logger;

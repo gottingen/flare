@@ -7,19 +7,10 @@
     "dependencies": [
         "boost-math",
         "boost-stacktrace",
-        "spdlog",
         "freeimage",
         "span-lite"
     ],
     "overrides": [
-        {
-            "name": "fmt",
-            "version": "8.1.1"
-        },
-        {
-            "name": "spdlog",
-            "version": "1.9.2"
-        }
     ],
     "features": {
         "tests": {

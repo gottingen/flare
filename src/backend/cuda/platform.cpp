@@ -35,7 +35,7 @@
 #include <driver.h>
 #include <err_cuda.hpp>
 #include <memory.hpp>
-#include <spdlog/spdlog.h>
+#include <collie/log/logging.h>
 #include <utility.hpp>
 #include <fly/cuda.h>
 #include <fly/device.h>
@@ -114,7 +114,7 @@ unique_handle<cudnnHandle_t> *nnManager(const int deviceId) {
     auto *handle        = &cudnnHandles[deviceId];
     cudnnStatus_t error = CUDNN_STATUS_SUCCESS;
     call_once(initFlags[deviceId], [handle, &error] {
-        auto getLogger = [&] { return spdlog::get("platform"); };
+        auto getLogger = [&] { return clog::get("platform"); };
         FLY_TRACE("Initializing cuDNN");
         error = static_cast<cudnnStatus_t>(handle->create());
 

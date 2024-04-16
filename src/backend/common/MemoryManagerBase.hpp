@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace spdlog {
+namespace clog {
 class logger;
 }
 
@@ -63,7 +63,7 @@ class MemoryManagerBase {
     size_t getMaxMemorySize(int id) { return nmi_->getMaxMemorySize(id); }
     void *nativeAlloc(const size_t bytes) { return nmi_->nativeAlloc(bytes); }
     void nativeFree(void *ptr) { nmi_->nativeFree(ptr); }
-    virtual spdlog::logger *getLogger() final { return nmi_->getLogger(); }
+    virtual clog::logger *getLogger() final { return nmi_->getLogger(); }
     virtual void setAllocator(std::unique_ptr<AllocatorInterface> nmi) {
         nmi_ = std::move(nmi);
     }

@@ -40,7 +40,7 @@ using cl::Error;
 using cl::Program;
 using fmt::format;
 using nonstd::span;
-using spdlog::logger;
+using clog::logger;
 
 using std::begin;
 using std::end;

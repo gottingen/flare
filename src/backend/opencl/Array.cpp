@@ -197,7 +197,7 @@ void checkAndMigrate(Array<T> &arr) {
     int arr_id = arr.getDevId();
     int cur_id = detail::getActiveDeviceId();
     if (!isDeviceBufferAccessible(arr_id, cur_id)) {
-        auto getLogger = [&] { return spdlog::get("platform"); };
+        auto getLogger = [&] { return clog::get("platform"); };
         FLY_TRACE("Migrating array from {} to {}.", arr_id, cur_id);
         auto migrated_data           = memAlloc<T>(arr.elements());
         void *mapped_migrated_buffer = getQueue().enqueueMapBuffer(

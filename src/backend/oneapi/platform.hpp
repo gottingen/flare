@@ -17,7 +17,7 @@
 #include <string>
 
 // Forward declarations
-namespace spdlog {
+namespace clog {
 class logger;
 }
 
