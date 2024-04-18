@@ -74,7 +74,7 @@ find_package(Doxygen)
 find_package(FLY_MKL)
 find_package(GTest REQUIRED)
 find_package(CLBlast QUIET)
-find_package(Boost 1.70 ${FLY_REQUIRED})
+find_package(Boost 1.70 REQUIRED)
 
 # CLFFT used in Flare requires a specific fork
 #find_package(clFFT QUIET)

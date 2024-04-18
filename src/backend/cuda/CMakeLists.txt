@@ -114,15 +114,7 @@ mark_as_advanced(
     CUDA_architecture_build_targets)
 
 if(CUDA_VERSION_MAJOR VERSION_LESS 11)
-  find_package(CUB)
-  if(NOT TARGET CUB::CUB)
-    fly_dep_check_and_populate(${cub_prefix}
-      URI https://github.com/NVIDIA/cub.git
-      REF 1.10.0
-    )
-    find_package(CUB REQUIRED
-      PATHS ${${cub_prefix}_SOURCE_DIR})
-  endif()
+  message(FATAL_ERROR "cuda version must larger then 11")
 endif()
 
 file(GLOB jit_src "kernel/jit.cuh")
