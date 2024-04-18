@@ -25,9 +25,9 @@
 #include <surface.hpp>
 
 using fly::dim4;
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 using flare::common::getGLType;
 using flare::common::makeContextCurrent;
 using flare::common::modDims;
@@ -35,7 +35,7 @@ using flare::common::step_round;
 using detail::Array;
 using detail::copy_surface;
 using detail::createEmptyArray;
-using detail::forgeManager;
+using detail::theiaManager;
 using detail::getScalar;
 using detail::reduce_all;
 using detail::uchar;
@@ -46,7 +46,7 @@ template<typename T>
 fg_chart setup_surface(fg_window window, const fly_array xVals,
                        const fly_array yVals, const fly_array zVals,
                        const fly_cell* const props) {
-    ForgeModule& _ = forgePlugin();
+    TheiaModule& _ = theiaPlugin();
     Array<T> xIn   = getArray<T>(xVals);
     Array<T> yIn   = getArray<T>(yVals);
     Array<T> zIn   = getArray<T>(zVals);
@@ -87,7 +87,7 @@ fg_chart setup_surface(fg_window window, const fly_array xVals,
     join(out, 0, inputs);
     Array<T> Z = out;
 
-    ForgeManager& fgMngr = forgeManager();
+    TheiaManager& fgMngr = theiaManager();
 
     // Get the chart for the current grid position (if any)
     fg_chart chart = NULL;
@@ -100,14 +100,14 @@ fg_chart setup_surface(fg_window window, const fly_array xVals,
     fg_surface surface =
         fgMngr.getSurface(chart, Z_dims[0], Z_dims[1], getGLType<T>());
 
-    FG_CHECK(_.fg_set_surface_color(surface, 0.0, 1.0, 0.0, 1.0));
+    THEIA_CHECK(_.fg_set_surface_color(surface, 0.0, 1.0, 0.0, 1.0));
 
     // If chart axes limits do not have a manual override
     // then compute and set axes limits
     if (!fgMngr.getChartAxesOverride(chart)) {
         float cmin[3], cmax[3];
         T dmin[3], dmax[3];
-        FG_CHECK(_.fg_get_chart_axes_limits(
+        THEIA_CHECK(_.fg_get_chart_axes_limits(
             &cmin[0], &cmax[0], &cmin[1], &cmax[1], &cmin[2], &cmax[2], chart));
         dmin[0] = getScalar<T>(reduce_all<fly_min_t, T, T>(xIn));
         dmax[0] = getScalar<T>(reduce_all<fly_max_t, T, T>(xIn));
@@ -134,7 +134,7 @@ fg_chart setup_surface(fg_window window, const fly_array xVals,
             if (cmax[2] < dmax[2]) { cmax[2] = step_round(dmax[2], true); }
         }
 
-        FG_CHECK(_.fg_set_chart_axes_limits(chart, cmin[0], cmax[0], cmin[1],
+        THEIA_CHECK(_.fg_set_chart_axes_limits(chart, cmin[0], cmax[0], cmin[1],
                                             cmax[1], cmin[2], cmax[2]));
     }
     copy_surface<T>(Z, surface);
@@ -195,16 +195,16 @@ fly_err fly_draw_surface(const fly_window window, const fly_array xVals,
                 break;
             default: TYPE_ERROR(1, Xtype);
         }
-        auto gridDims = forgeManager().getWindowGrid(window);
+        auto gridDims = theiaManager().getWindowGrid(window);
 
-        ForgeModule& _ = forgePlugin();
+        TheiaModule& _ = theiaPlugin();
         if (props->col > -1 && props->row > -1) {
-            FG_CHECK(_.fg_draw_chart_to_cell(
+            THEIA_CHECK(_.fg_draw_chart_to_cell(
                 window, gridDims.first, gridDims.second,
                 props->row * gridDims.second + props->col, chart,
                 props->title));
         } else {
-            FG_CHECK(_.fg_draw_chart(window, chart));
+            THEIA_CHECK(_.fg_draw_chart(window, chart));
         }
     }
     CATCHALL;

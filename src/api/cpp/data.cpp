@@ -10,7 +10,7 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wparentheses"
-#include <half.hpp>
+#include <fly/half.hpp>
 #pragma GCC diagnostic pop
 
 #include <fly/arith.h>

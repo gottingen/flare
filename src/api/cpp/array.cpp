@@ -24,7 +24,7 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wparentheses"
-#include "half.hpp"  //note: NOT common. From extern/half/include/half.hpp
+#include <fly/half.hpp>  //note: NOT common. From extern/half/include/half.hpp
 #pragma GCC diagnostic pop
 
 #ifdef FLY_CUDA

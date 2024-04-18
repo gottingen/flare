@@ -29,16 +29,16 @@
 
 using fly::dim4;
 using flare::common::cast;
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 using flare::common::getGLType;
 using flare::common::makeContextCurrent;
 using detail::arithOp;
 using detail::Array;
 using detail::copy_image;
 using detail::createValueArray;
-using detail::forgeManager;
+using detail::theiaManager;
 using detail::uchar;
 using detail::uint;
 using detail::ushort;
@@ -68,7 +68,7 @@ static fg_image convert_and_copy_image(const fly_array in) {
 
     Array<T> imgData = reorder(_in, rdims);
 
-    ForgeManager& fgMngr = forgeManager();
+    TheiaManager& fgMngr = theiaManager();
 
     // The inDims[2] * 100 is a hack to convert to fg_channel_format
     // TODO(pradeep): Write a proper conversion function
@@ -106,16 +106,16 @@ fly_err fly_draw_image(const fly_window window, const fly_array in,
             default: TYPE_ERROR(1, type);
         }
 
-        ForgeModule& _ = forgePlugin();
-        auto gridDims  = forgeManager().getWindowGrid(window);
-        FG_CHECK(_.fg_set_window_colormap(window, (fg_color_map)props->cmap));
+        TheiaModule& _ = theiaPlugin();
+        auto gridDims  = theiaManager().getWindowGrid(window);
+        THEIA_CHECK(_.fg_set_window_colormap(window, (fg_color_map)props->cmap));
         if (props->col > -1 && props->row > -1) {
-            FG_CHECK(_.fg_draw_image_to_cell(
+            THEIA_CHECK(_.fg_draw_image_to_cell(
                 window, gridDims.first, gridDims.second,
                 props->row * gridDims.second + props->col, image, props->title,
                 true));
         } else {
-            FG_CHECK(_.fg_draw_image(window, image, true));
+            THEIA_CHECK(_.fg_draw_image(window, image, true));
         }
     }
     CATCHALL;

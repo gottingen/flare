@@ -12,23 +12,23 @@
 #include <platform.hpp>
 #include <queue.hpp>
 
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace cpu {
 
 template<typename T>
 void copy_histogram(const Array<T> &data, fg_histogram hist) {
-    ForgeModule &_ = forgePlugin();
+    TheiaModule &_ = theiaPlugin();
     data.eval();
     getQueue().sync();
 
     CheckGL("Begin copy_histogram");
     unsigned bytes = 0, buffer = 0;
-    FG_CHECK(_.fg_get_histogram_vertex_buffer(&buffer, hist));
-    FG_CHECK(_.fg_get_histogram_vertex_buffer_size(&bytes, hist));
+    THEIA_CHECK(_.fg_get_histogram_vertex_buffer(&buffer, hist));
+    THEIA_CHECK(_.fg_get_histogram_vertex_buffer_size(&bytes, hist));
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferSubData(GL_ARRAY_BUFFER, 0, bytes, data.get());

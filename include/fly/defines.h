@@ -448,8 +448,8 @@ typedef enum {
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-// FORGE / Graphics Related Enums
-// These enums have values corresponsding to Forge enums in forge defines.h
+// theia / Graphics Related Enums
+// These enums have values corresponsding to Theia enums in theia defines.h
 ////////////////////////////////////////////////////////////////////////////////
 typedef enum {
     FLY_COLORMAP_DEFAULT = 0,    ///< Default grayscale map

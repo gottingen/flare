@@ -15,9 +15,9 @@
 #include <plot.hpp>
 
 using fly::dim4;
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace cuda {
@@ -42,10 +42,10 @@ void copy_plot(const Array<T> &P, fg_plot plot) {
 
         POST_LAUNCH_CHECK();
     } else {
-        ForgeModule &_ = common::forgePlugin();
+        TheiaModule &_ = common::theiaPlugin();
         unsigned bytes = 0, buffer = 0;
-        FG_CHECK(_.fg_get_plot_vertex_buffer(&buffer, plot));
-        FG_CHECK(_.fg_get_plot_vertex_buffer_size(&bytes, plot));
+        THEIA_CHECK(_.fg_get_plot_vertex_buffer(&buffer, plot));
+        THEIA_CHECK(_.fg_get_plot_vertex_buffer_size(&bytes, plot));
 
         CheckGL("Begin CUDA fallback-resource copy");
         glBindBuffer(GL_ARRAY_BUFFER, buffer);

@@ -26,7 +26,7 @@ class logger;
 
 namespace flare {
 namespace common {
-class ForgeManager;
+class TheiaManager;
 class MemoryManagerBase;
 }  // namespace common
 }  // namespace flare
@@ -61,7 +61,7 @@ class DeviceManager {
 
     void resetMemoryManagerPinned();
 
-    friend flare::common::ForgeManager& forgeManager();
+    friend flare::common::TheiaManager& theiaManager();
 
     friend GraphicsResourceManager& interopManager();
 
@@ -145,7 +145,7 @@ class DeviceManager {
     std::vector<int> mPlatforms;
     unsigned mUserDeviceOffset;
 
-    std::unique_ptr<flare::common::ForgeManager> fgMngr;
+    std::unique_ptr<flare::common::TheiaManager> fgMngr;
     std::unique_ptr<MemoryManagerBase> memManager;
     std::unique_ptr<MemoryManagerBase> pinnedMemManager;
     std::unique_ptr<GraphicsResourceManager> gfxManagers[MAX_DEVICES];

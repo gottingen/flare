@@ -474,7 +474,7 @@ endif()
 #   list(APPEND CPACK_COMPONENTS_ALL forge)
 #   fly_component(
 #     COMPONENT forge
-#     DISPLAY_NAME "Forge Vizualiation"
+#     DISPLAY_NAME "Theia Vizualiation"
 #     DESCRIPTION "Visualization Library"
 #     INSTALL_TYPES Extra)
 # endif ()

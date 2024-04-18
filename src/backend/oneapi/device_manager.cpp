@@ -31,7 +31,7 @@
 #include <string>
 #include <vector>
 
-using flare::common::ForgeManager;
+using flare::common::TheiaManager;
 using flare::common::getEnvVar;
 using std::begin;
 using std::end;
@@ -98,7 +98,7 @@ DeviceManager::DeviceManager()
             FLY_ERR_RUNTIME);
     }
 
-    fgMngr = std::make_unique<ForgeManager>();
+    fgMngr = std::make_unique<TheiaManager>();
 
     FLY_TRACE("Found {} sycl platforms", platforms.size());
     // Iterate through platforms, get all available devices and store them
@@ -216,7 +216,7 @@ DeviceManager::DeviceManager()
     // Define FLY_DISABLE_GRAPHICS with any value to disable initialization
     string noGraphicsENV = getEnvVar("FLY_DISABLE_GRAPHICS");
     if (fgMngr->plugin().isLoaded() && noGraphicsENV.empty()) {
-        // TODO: handle forge shared contexts
+        // TODO: handle theia shared contexts
     }
 
     mUserDeviceOffset = mDevices.size();

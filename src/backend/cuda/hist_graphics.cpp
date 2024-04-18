@@ -14,9 +14,9 @@
 #include <err_cuda.hpp>
 #include <hist_graphics.hpp>
 
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace cuda {
@@ -41,10 +41,10 @@ void copy_histogram(const Array<T> &data, fg_histogram hist) {
 
         POST_LAUNCH_CHECK();
     } else {
-        ForgeModule &_ = common::forgePlugin();
+        TheiaModule &_ = common::theiaPlugin();
         unsigned bytes = 0, buffer = 0;
-        FG_CHECK(_.fg_get_histogram_vertex_buffer(&buffer, hist));
-        FG_CHECK(_.fg_get_histogram_vertex_buffer_size(&bytes, hist));
+        THEIA_CHECK(_.fg_get_histogram_vertex_buffer(&buffer, hist));
+        THEIA_CHECK(_.fg_get_histogram_vertex_buffer_size(&bytes, hist));
 
         CheckGL("Begin CUDA fallback-resource copy");
         glBindBuffer(GL_ARRAY_BUFFER, buffer);

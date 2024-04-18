@@ -40,7 +40,7 @@ class logger;
 
 namespace flare {
 namespace common {
-class ForgeManager;
+class TheiaManager;
 class MemoryManagerBase;
 }  // namespace common
 }  // namespace flare
@@ -143,7 +143,7 @@ void setMemoryManagerPinned(std::unique_ptr<MemoryManagerBase> mgr);
 
 void resetMemoryManagerPinned();
 
-flare::common::ForgeManager& forgeManager();
+flare::common::TheiaManager& theiaManager();
 
 GraphicsResourceManager& interopManager();
 

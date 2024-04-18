@@ -41,18 +41,10 @@ foreach(SBK_BINARY_OP ${SBK_BINARY_OPS})
         $<TARGET_PROPERTY:Boost::boost,INTERFACE_INCLUDE_DIRECTORIES>
         ${Flare_BINARY_DIR}/include
       )
-    if(TARGET Forge::forge)
       target_include_directories(opencl_scan_by_key_${SBK_BINARY_OP}
         SYSTEM INTERFACE
-        $<TARGET_PROPERTY:Forge::forge,INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:theia::theia,INCLUDE_DIRECTORIES>
       )
-    else()
-      target_include_directories(opencl_scan_by_key_${SBK_BINARY_OP}
-        SYSTEM INTERFACE
-        ${forge_source_dir}/include
-        ${forge_binary_dir}/include
-      )
-    endif()
       target_include_directories(opencl_scan_by_key_${SBK_BINARY_OP}
         SYSTEM INTERFACE
         $<TARGET_PROPERTY:theia::glad,INTERFACE_INCLUDE_DIRECTORIES>

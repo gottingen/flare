@@ -558,7 +558,7 @@ DeviceManager::DeviceManager()
     : logger(common::loggerFactory("platform"))
     , cuDevices(0)
     , nDevices(0)
-    , fgMngr(new flare::common::ForgeManager()) {
+    , fgMngr(new flare::common::TheiaManager()) {
     try {
         checkCudaVsDriverVersion();
 

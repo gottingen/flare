@@ -745,11 +745,11 @@ static fly_err fly_check(fly_array *out, const fly_array in) {
     return FLY_SUCCESS;
 }
 
-#define CHECK(fn)                                      \
+#define FN_CHECK(fn)                                      \
     fly_err fly_##fn(fly_array *out, const fly_array in) { \
         return fly_check<fly_##fn##_t>(out, in);         \
     }
 
-CHECK(isinf)
-CHECK(isnan)
-CHECK(iszero)
+FN_CHECK(isinf)
+FN_CHECK(isnan)
+FN_CHECK(iszero)

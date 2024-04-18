@@ -16,15 +16,15 @@
 #include <stdexcept>
 #include <vector>
 
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace opencl {
 
 template<typename T>
 void copy_image(const Array<T> &in, fg_image image) {
-    ForgeModule &_ = forgePlugin();
+    TheiaModule &_ = theiaPlugin();
     if (isGLSharingSupported()) {
         CheckGL("Begin opencl resource copy");
 
@@ -33,7 +33,7 @@ void copy_image(const Array<T> &in, fg_image image) {
         const cl::Buffer *d_X = in.get();
 
         unsigned bytes = 0;
-        FG_CHECK(_.fg_get_image_size(&bytes, image));
+        THEIA_CHECK(_.fg_get_image_size(&bytes, image));
 
         std::vector<cl::Memory> shared_objects;
         shared_objects.push_back(*(res[0].get()));
@@ -56,8 +56,8 @@ void copy_image(const Array<T> &in, fg_image image) {
     } else {
         CheckGL("Begin OpenCL fallback-resource copy");
         unsigned bytes = 0, buffer = 0;
-        FG_CHECK(_.fg_get_image_size(&bytes, image));
-        FG_CHECK(_.fg_get_pixel_buffer(&buffer, image));
+        THEIA_CHECK(_.fg_get_image_size(&bytes, image));
+        THEIA_CHECK(_.fg_get_pixel_buffer(&buffer, image));
 
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer);
         glBufferData(GL_PIXEL_UNPACK_BUFFER, bytes, 0, GL_STREAM_DRAW);

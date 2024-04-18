@@ -118,7 +118,7 @@ class DeviceManager {
 
     void resetMemoryManagerPinned();
 
-    friend flare::common::ForgeManager& forgeManager();
+    friend flare::common::TheiaManager& theiaManager();
 
     void setMemoryManager(std::unique_ptr<MemoryManagerBase> mgr);
 
@@ -137,7 +137,7 @@ class DeviceManager {
 
     // Attributes
     std::vector<queue> queues;
-    std::unique_ptr<flare::common::ForgeManager> fgMngr;
+    std::unique_ptr<flare::common::TheiaManager> fgMngr;
     const CPUInfo cinfo;
     std::unique_ptr<MemoryManagerBase> memManager;
     std::mutex mutex;

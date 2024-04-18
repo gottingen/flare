@@ -14,8 +14,8 @@
 #include <surface.hpp>
 
 using fly::dim4;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 using cl::Memory;
 using std::vector;
 
@@ -24,12 +24,12 @@ namespace opencl {
 
 template<typename T>
 void copy_surface(const Array<T> &P, fg_surface surface) {
-    ForgeModule &_ = forgePlugin();
+    TheiaModule &_ = theiaPlugin();
     if (isGLSharingSupported()) {
         CheckGL("Begin OpenCL resource copy");
         const cl::Buffer *d_P = P.get();
         unsigned bytes        = 0;
-        FG_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
+        THEIA_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
 
         auto res = interopManager().getSurfaceResources(surface);
 
@@ -53,8 +53,8 @@ void copy_surface(const Array<T> &P, fg_surface surface) {
         CheckGL("End OpenCL resource copy");
     } else {
         unsigned bytes = 0, buffer = 0;
-        FG_CHECK(_.fg_get_surface_vertex_buffer(&buffer, surface));
-        FG_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
+        THEIA_CHECK(_.fg_get_surface_vertex_buffer(&buffer, surface));
+        THEIA_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
 
         CheckGL("Begin OpenCL fallback-resource copy");
         glBindBuffer(GL_ARRAY_BUFFER, buffer);

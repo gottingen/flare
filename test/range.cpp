@@ -9,7 +9,7 @@
 
 #include <flare.h>
 #include <gtest/gtest.h>
-#include <half.hpp>
+#include <fly/half.hpp>
 #include <testHelpers.hpp>
 #include <fly/defines.h>
 #include <fly/dim4.hpp>

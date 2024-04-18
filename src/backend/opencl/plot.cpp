@@ -14,20 +14,20 @@
 #include <plot.hpp>
 
 using fly::dim4;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace opencl {
 
 template<typename T>
 void copy_plot(const Array<T> &P, fg_plot plot) {
-    ForgeModule &_ = forgePlugin();
+    TheiaModule &_ = theiaPlugin();
     if (isGLSharingSupported()) {
         CheckGL("Begin OpenCL resource copy");
         const cl::Buffer *d_P = P.get();
         unsigned bytes        = 0;
-        FG_CHECK(_.fg_get_plot_vertex_buffer_size(&bytes, plot));
+        THEIA_CHECK(_.fg_get_plot_vertex_buffer_size(&bytes, plot));
 
         auto res = interopManager().getPlotResources(plot);
 
@@ -51,8 +51,8 @@ void copy_plot(const Array<T> &P, fg_plot plot) {
         CheckGL("End OpenCL resource copy");
     } else {
         unsigned bytes = 0, buffer = 0;
-        FG_CHECK(_.fg_get_plot_vertex_buffer(&buffer, plot));
-        FG_CHECK(_.fg_get_plot_vertex_buffer_size(&bytes, plot));
+        THEIA_CHECK(_.fg_get_plot_vertex_buffer(&buffer, plot));
+        THEIA_CHECK(_.fg_get_plot_vertex_buffer_size(&bytes, plot));
 
         CheckGL("Begin OpenCL fallback-resource copy");
         glBindBuffer(GL_ARRAY_BUFFER, buffer);

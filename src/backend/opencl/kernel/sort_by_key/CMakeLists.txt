@@ -39,18 +39,10 @@ foreach(SBK_TYPE ${SBK_TYPES})
         ${Flare_BINARY_DIR}/include
         ${CMAKE_CURRENT_BINARY_DIR})
 
-    if(TARGET Forge::forge)
       target_include_directories(opencl_sort_by_key_${SBK_TYPE}
         SYSTEM INTERFACE
-          $<TARGET_PROPERTY:Forge::forge,INCLUDE_DIRECTORIES>
+          $<TARGET_PROPERTY:theia::theia,INCLUDE_DIRECTORIES>
       )
-    else()
-      target_include_directories(opencl_sort_by_key_${SBK_TYPE}
-        SYSTEM INTERFACE
-          ${forge_source_dir}/include
-          ${forge_source_dir}/include
-      )
-    endif()
       target_include_directories(opencl_sort_by_key_${SBK_TYPE}
         SYSTEM INTERFACE
           $<TARGET_PROPERTY:theia::glad,INTERFACE_INCLUDE_DIRECTORIES>

@@ -13,7 +13,7 @@
 #include <fly/dim4.hpp>
 #include <fly/traits.hpp>
 
-#include <half.hpp>
+#include <fly/half.hpp>
 
 #include <string>
 #include <vector>

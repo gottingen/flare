@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <common/forge_loader.hpp>
+#include <common/theia_loader.hpp>
 #include <fly/graphics.h>
 
 #include <map>
@@ -37,10 +37,10 @@ void makeContextCurrent(fg_window window);
 
 double step_round(const double in, const bool dir);
 
-/// \brief The singleton manager class for Forge resources
+/// \brief The singleton manager class for Theia resources
 ///
 /// Only device manager class can create objects of this class.
-/// You have to call forgeManager() defined in platform.hpp to
+/// You have to call theiaManager() defined in platform.hpp to
 /// access the object. It manages the windows, and other
 /// renderables (given below) that are drawed onto chosen window.
 /// Renderables:
@@ -50,18 +50,18 @@ double step_round(const double in, const bool dir);
 ///      fg_surface
 ///      fg_vector_field
 ///
-class ForgeManager {
+class TheiaManager {
    public:
     using WindowGridDims = std::pair<int, int>;
 
-    ForgeManager();
-    ForgeManager(ForgeManager const&)            = delete;
-    ForgeManager& operator=(ForgeManager const&) = delete;
-    ForgeManager(ForgeManager&&)                 = delete;
-    ForgeManager& operator=(ForgeManager&&)      = delete;
+    TheiaManager();
+    TheiaManager(TheiaManager const&)            = delete;
+    TheiaManager& operator=(TheiaManager const&) = delete;
+    TheiaManager(TheiaManager&&)                 = delete;
+    TheiaManager& operator=(TheiaManager&&)      = delete;
 
-    /// \brief Module used to invoke forge API calls
-    common::ForgeModule& plugin();
+    /// \brief Module used to invoke theia API calls
+    common::TheiaModule& plugin();
 
     /// \brief The main window with which all other windows share GL context
     fg_window getMainWindow();
@@ -94,7 +94,7 @@ class ForgeManager {
     /// \brief Get grid layout of a window
     ///
     /// This function fetches the grid layout set for given window, probably
-    /// which was set by the function \ref ForgeManager::setWindowChartGrid
+    /// which was set by the function \ref TheiaManager::setWindowChartGrid
     ///
     /// \param[in] window is the target rendering context
     WindowGridDims getWindowGrid(const fg_window window);
@@ -102,7 +102,7 @@ class ForgeManager {
     /// \brief Find/Create a Chart
     ///
     /// This function tries to find a chart fitting the given attributes
-    /// from forge resource cache. If a match is found, the matching chart
+    /// from theia resource cache. If a match is found, the matching chart
     /// resource handle is returned. If no match is found, a new chart
     /// with given parameters is created, cached and returned.
     ///
@@ -120,7 +120,7 @@ class ForgeManager {
     /// \brief Find/Create an Image
     ///
     /// This function tries to find an image fitting the given attributes
-    /// from forge resource cache. If a match is found, the matching image
+    /// from theia resource cache. If a match is found, the matching image
     /// resource handle is returned. If no match is found, a new image
     /// with given parameters is created, cached and returned.
     ///
@@ -135,15 +135,15 @@ class ForgeManager {
     /// \param[in] type is type of data to be stored in image buffer
     ///
     /// \note The width and height of image needs to fall in the range of
-    /// [0, 2^16] for the ForgeManager to correctly retrieve the necessary
-    /// Forge Image object. This is an implementation limitation on how big
+    /// [0, 2^16] for the TheiaManager to correctly retrieve the necessary
+    /// Theia Image object. This is an implementation limitation on how big
     /// of an image can be rendered using arrayfire graphics funtionality
     fg_image getImage(int w, int h, fg_channel_format mode, fg_dtype type);
 
     /// \brief Find/Create an Image to render in a Chart
     ///
     /// This function tries to find an image fitting the given attributes
-    /// from forge resource cache. If a match is found, the matching image
+    /// from theia resource cache. If a match is found, the matching image
     /// resource handle is returned. If no match is found, a new image
     /// with given parameters is created, cached and returned.
     ///
@@ -154,8 +154,8 @@ class ForgeManager {
     /// \param[in] type is type of data to be stored in image buffer
     ///
     /// \note The width and height of image needs to fall in the range of
-    /// [0, 2^16] for the ForgeManager to correctly retrieve the necessary
-    /// Forge Image object. This is an implementation limitation on how big
+    /// [0, 2^16] for the TheiaManager to correctly retrieve the necessary
+    /// Theia Image object. This is an implementation limitation on how big
     /// of an image can be rendered using arrayfire graphics funtionality
     fg_image getImage(fg_chart chart, int w, int h, fg_channel_format mode,
                       fg_dtype type);
@@ -163,7 +163,7 @@ class ForgeManager {
     /// \brief Find/Create a Plot to render in a Chart
     ///
     /// This function tries to find a plot fitting the given attributes
-    /// from forge resource cache. If a match is found, the matching plot
+    /// from theia resource cache. If a match is found, the matching plot
     /// resource handle is returned. If no match is found, a new plot
     /// with given parameters is created, cached and returned.
     ///
@@ -175,7 +175,7 @@ class ForgeManager {
     ///            points passed in the data buffer, \ref fg_marker_type
     ///
     /// \note \p nPoints needs to fall in the range of [0, 2^48]
-    /// for the ForgeManager to correctly retrieve the necessary Forge
+    /// for the TheiaManager to correctly retrieve the necessary Theia
     /// plot object. This is an implementation limitation on how big of a
     /// plot can be rendered using arrayfire graphics funtionality
     fg_plot getPlot(fg_chart chart, int nPoints, fg_dtype dtype,
@@ -184,7 +184,7 @@ class ForgeManager {
     /// \brief Find/Create a Histogram to render in a Chart
     ///
     /// This function tries to find a histogram fitting the given attributes
-    /// from forge resource cache. If a match is found, the matching histogram
+    /// from theia resource cache. If a match is found, the matching histogram
     /// resource handle is returned. If no match is found, a new histogram
     /// with given parameters is created, cached and returned.
     ///
@@ -193,7 +193,7 @@ class ForgeManager {
     /// \param[in] type is type of data to be stored in histogram buffer
     ///
     /// \note \p nBins needs to fall in the range of [0, 2^48]
-    /// for the ForgeManager to correctly retrieve the necessary Forge
+    /// for the TheiaManager to correctly retrieve the necessary Theia
     /// histogram object. This is an implementation limitation on how big
     /// of a histogram can be rendered using arrayfire graphics funtionality
     fg_histogram getHistogram(fg_chart chart, int nBins, fg_dtype type);
@@ -201,7 +201,7 @@ class ForgeManager {
     /// \brief Find/Create a Surface to render in a Chart
     ///
     /// This function tries to find a surface fitting the given attributes
-    /// from forge resource cache. If a match is found, the matching surface
+    /// from theia resource cache. If a match is found, the matching surface
     /// resource handle is returned. If no match is found, a new surface
     /// with given parameters is created, cached and returned.
     ///
@@ -211,7 +211,7 @@ class ForgeManager {
     /// \param[in] type is type of data to be stored in image buffer
     ///
     /// \note \p nX * \p nY needs to fall in the range of [0, 2^48]
-    /// for the ForgeManager to correctly retrieve the necessary Forge Surface
+    /// for the TheiaManager to correctly retrieve the necessary Theia Surface
     /// object. This is an implementation limitation on how big of a surface
     /// can be rendered using arrayfire graphics funtionality
     fg_surface getSurface(fg_chart chart, int nX, int nY, fg_dtype type);
@@ -219,7 +219,7 @@ class ForgeManager {
     /// \brief Find/Create a Vector Field to render in a Chart
     ///
     /// This function tries to find a vector field fitting the given attributes
-    /// from forge resource cache. If a match is found, the matching vector
+    /// from theia resource cache. If a match is found, the matching vector
     /// field resource handle is returned. If no match is found, a new vector
     /// field with given parameters is created, cached and returned.
     ///
@@ -228,7 +228,7 @@ class ForgeManager {
     /// \param[in] type is type of data to be stored in plot buffer
     ///
     /// \note \p nPoints needs to fall in the range of [0, 2^48]
-    /// for the ForgeManager to correctly retrieve the necessary Forge vector
+    /// for the TheiaManager to correctly retrieve the necessary Theia vector
     /// field object. This is an implementation limitation on how big of a
     /// vector field can be rendered using arrayfire graphics funtionality
     fg_vector_field getVectorField(fg_chart chart, int nPoints, fg_dtype type);
@@ -263,7 +263,7 @@ class ForgeManager {
         void* handle;                                                    \
         struct Deleter {                                                 \
             void operator()(OBJECT* pHandle) const {                     \
-                if (pHandle) { forgePlugin().RELEASE(pHandle->handle); } \
+                if (pHandle) { theiaPlugin().RELEASE(pHandle->handle); } \
             }                                                            \
         };                                                               \
     }
@@ -296,7 +296,7 @@ class ForgeManager {
     using SurfaceMapIterator   = std::map<ChartKey, SurfacePtr>::iterator;
     using VecFieldMapIterator  = std::map<ChartKey, VectorFieldPtr>::iterator;
 
-    std::unique_ptr<common::ForgeModule> mPlugin;
+    std::unique_ptr<common::TheiaModule> mPlugin;
     std::unique_ptr<Window, Window::Deleter> mMainWindow;
 
     std::map<fg_window, ChartList> mChartMap;

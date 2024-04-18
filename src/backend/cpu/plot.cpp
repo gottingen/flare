@@ -15,23 +15,23 @@
 #include <queue.hpp>
 
 using fly::dim4;
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace cpu {
 
 template<typename T>
 void copy_plot(const Array<T> &P, fg_plot plot) {
-    ForgeModule &_ = forgePlugin();
+    TheiaModule &_ = theiaPlugin();
     P.eval();
     getQueue().sync();
 
     CheckGL("Before CopyArrayToVBO");
     unsigned bytes = 0, buffer = 0;
-    FG_CHECK(_.fg_get_plot_vertex_buffer(&buffer, plot));
-    FG_CHECK(_.fg_get_plot_vertex_buffer_size(&bytes, plot));
+    THEIA_CHECK(_.fg_get_plot_vertex_buffer(&buffer, plot));
+    THEIA_CHECK(_.fg_get_plot_vertex_buffer_size(&bytes, plot));
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferSubData(GL_ARRAY_BUFFER, 0, bytes, P.get());

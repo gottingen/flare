@@ -16,7 +16,7 @@
 #include <fly/internal.h>
 
 #include <gtest/gtest.h>
-#include <half.hpp>
+#include <fly/half.hpp>
 #include <relative_difference.hpp>
 
 #include <algorithm>

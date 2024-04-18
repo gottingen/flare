@@ -10,7 +10,7 @@
 #pragma once
 
 #include <common/DependencyModule.hpp>
-#include <forge.h>
+#include <theia/theia.h>
 
 #if defined(__clang__)
 /* Clang/LLVM */
@@ -46,9 +46,9 @@
 namespace flare {
 namespace common {
 
-class ForgeModule : public DependencyModule {
+class TheiaModule : public DependencyModule {
    public:
-    ForgeModule();
+    TheiaModule();
 
     MODULE_MEMBER(fg_create_window);
     MODULE_MEMBER(fg_get_window_context_handle);
@@ -120,13 +120,13 @@ class ForgeModule : public DependencyModule {
     MODULE_MEMBER(fg_err_to_string);
 };
 
-ForgeModule& forgePlugin();
+TheiaModule& theiaPlugin();
 
-#define FG_CHECK(fn)                                        \
+#define THEIA_CHECK(fn)                                        \
     do {                                                    \
         fg_err e = (fn);                                    \
         if (e != FG_ERR_NONE) {                             \
-            FLY_ERROR("forge call failed", FLY_ERR_INTERNAL); \
+            FLY_ERROR("theia call failed", FLY_ERR_INTERNAL); \
         }                                                   \
     } while (0);
 

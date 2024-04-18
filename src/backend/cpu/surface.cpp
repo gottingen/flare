@@ -15,23 +15,23 @@
 #include <surface.hpp>
 
 using fly::dim4;
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace cpu {
 
 template<typename T>
 void copy_surface(const Array<T> &P, fg_surface surface) {
-    ForgeModule &_ = common::forgePlugin();
+    TheiaModule &_ = common::theiaPlugin();
     P.eval();
     getQueue().sync();
 
     CheckGL("Before CopyArrayToVBO");
     unsigned bytes = 0, buffer = 0;
-    FG_CHECK(_.fg_get_surface_vertex_buffer(&buffer, surface));
-    FG_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
+    THEIA_CHECK(_.fg_get_surface_vertex_buffer(&buffer, surface));
+    THEIA_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferSubData(GL_ARRAY_BUFFER, 0, bytes, P.get());

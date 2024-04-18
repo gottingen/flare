@@ -17,24 +17,24 @@
 #include <platform.hpp>
 #include <queue.hpp>
 
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace cpu {
 
 template<typename T>
 void copy_image(const Array<T> &in, fg_image image) {
-    ForgeModule &_ = forgePlugin();
+    TheiaModule &_ = theiaPlugin();
 
     CheckGL("Before CopyArrayToImage");
     const T *d_X = in.get();
     getQueue().sync();
 
     unsigned data_size = 0, buffer = 0;
-    FG_CHECK(_.fg_get_pixel_buffer(&buffer, image));
-    FG_CHECK(_.fg_get_image_size(&data_size, image));
+    THEIA_CHECK(_.fg_get_pixel_buffer(&buffer, image));
+    THEIA_CHECK(_.fg_get_image_size(&data_size, image));
 
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer);
     glBufferSubData(GL_PIXEL_UNPACK_BUFFER, 0, data_size, d_X);

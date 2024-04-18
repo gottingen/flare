@@ -23,12 +23,12 @@ namespace oneapi {
 template<typename T>
 void copy_surface(const Array<T> &P, fg_surface surface) {
     ONEAPI_NOT_SUPPORTED("copy_surface Not supported");
-    // ForgeModule &_ = common::forgePlugin();
+    // TheiaModule &_ = common::theiaPlugin();
     // if (isGLSharingSupported()) {
     //     CheckGL("Begin OpenCL resource copy");
     //     const cl::Buffer *d_P = P.get();
     //     unsigned bytes        = 0;
-    //     FG_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
+    //     THEIA_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
 
     //     auto res = interopManager().getSurfaceResources(surface);
 
@@ -54,8 +54,8 @@ void copy_surface(const Array<T> &P, fg_surface surface) {
     //     CheckGL("End OpenCL resource copy");
     // } else {
     //     unsigned bytes = 0, buffer = 0;
-    //     FG_CHECK(_.fg_get_surface_vertex_buffer(&buffer, surface));
-    //     FG_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
+    //     THEIA_CHECK(_.fg_get_surface_vertex_buffer(&buffer, surface));
+    //     THEIA_CHECK(_.fg_get_surface_vertex_buffer_size(&bytes, surface));
 
     //     CheckGL("Begin OpenCL fallback-resource copy");
     //     glBindBuffer(GL_ARRAY_BUFFER, buffer);

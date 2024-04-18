@@ -20,10 +20,6 @@ if(FLY_BUILD_OPENCL)
   list(APPEND VCPKG_MANIFEST_FEATURES "opencl")
 endif()
 
-if(FLY_BUILD_FORGE)
-  list(APPEND VCPKG_MANIFEST_FEATURES "forge")
-endif()
-
 if(BUILD_TESTING)
   list(APPEND VCPKG_MANIFEST_FEATURES "tests")
 endif()

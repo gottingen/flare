@@ -24,16 +24,16 @@
 #include <transpose.hpp>
 
 using fly::dim4;
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 using flare::common::getFGMarker;
 using flare::common::getGLType;
 using flare::common::makeContextCurrent;
 using flare::common::step_round;
 using detail::Array;
 using detail::copy_plot;
-using detail::forgeManager;
+using detail::theiaManager;
 using detail::reduce;
 using detail::uchar;
 using detail::uint;
@@ -44,7 +44,7 @@ template<typename T, int order>
 fg_chart setup_plot(fg_window window, const fly_array in_,
                     const fly_cell* const props, fg_plot_type ptype,
                     fg_marker_type mtype) {
-    ForgeModule& _ = forgePlugin();
+    TheiaModule& _ = theiaPlugin();
 
     Array<T> in = getArray<T>(in_);
 
@@ -58,7 +58,7 @@ fg_chart setup_plot(fg_window window, const fly_array in_,
 
     fly::dim4 tdims = in.dims();  // transposed dimensions
 
-    ForgeManager& fgMngr = forgeManager();
+    TheiaManager& fgMngr = theiaManager();
 
     // Get the chart for the current grid position (if any)
     fg_chart chart      = NULL;
@@ -74,14 +74,14 @@ fg_chart setup_plot(fg_window window, const fly_array in_,
         fgMngr.getPlot(chart, tdims[1], getGLType<T>(), ptype, mtype);
 
     // Flare LOGO Orange shade
-    FG_CHECK(_.fg_set_plot_color(plot, 0.929f, 0.529f, 0.212f, 1.0));
+    THEIA_CHECK(_.fg_set_plot_color(plot, 0.929f, 0.529f, 0.212f, 1.0));
 
     // If chart axes limits do not have a manual override
     // then compute and set axes limits
     if (!fgMngr.getChartAxesOverride(chart)) {
         float cmin[3], cmax[3];
         T dmin[3], dmax[3];
-        FG_CHECK(_.fg_get_chart_axes_limits(
+        THEIA_CHECK(_.fg_get_chart_axes_limits(
             &cmin[0], &cmax[0], &cmin[1], &cmax[1], &cmin[2], &cmax[2], chart));
         copyData(dmin, reduce<fly_min_t, T, T>(in, 1));
         copyData(dmax, reduce<fly_max_t, T, T>(in, 1));
@@ -105,7 +105,7 @@ fg_chart setup_plot(fg_window window, const fly_array in_,
                 if (cmax[2] < dmax[2]) { cmax[2] = step_round(dmax[2], true); }
             }
         }
-        FG_CHECK(_.fg_set_chart_axes_limits(chart, cmin[0], cmax[0], cmin[1],
+        THEIA_CHECK(_.fg_set_chart_axes_limits(chart, cmin[0], cmax[0], cmin[1],
                                             cmax[1], cmin[2], cmax[2]));
     }
     copy_plot<T>(in, plot);
@@ -173,16 +173,16 @@ fly_err plotWrapper(const fly_window window, const fly_array in,
             default: TYPE_ERROR(1, type);
         }
 
-        auto gridDims = forgeManager().getWindowGrid(window);
+        auto gridDims = theiaManager().getWindowGrid(window);
 
-        ForgeModule& _ = forgePlugin();
+        TheiaModule& _ = theiaPlugin();
         if (props->col > -1 && props->row > -1) {
-            FG_CHECK(_.fg_draw_chart_to_cell(
+            THEIA_CHECK(_.fg_draw_chart_to_cell(
                 window, gridDims.first, gridDims.second,
                 props->row * gridDims.second + props->col, chart,
                 props->title));
         } else {
-            FG_CHECK(_.fg_draw_chart(window, chart));
+            THEIA_CHECK(_.fg_draw_chart(window, chart));
         }
     }
     CATCHALL;
@@ -245,16 +245,16 @@ fly_err plotWrapper(const fly_window window, const fly_array X, const fly_array 
                 break;
             default: TYPE_ERROR(1, xType);
         }
-        auto gridDims = forgeManager().getWindowGrid(window);
+        auto gridDims = theiaManager().getWindowGrid(window);
 
-        ForgeModule& _ = forgePlugin();
+        TheiaModule& _ = theiaPlugin();
         if (props->col > -1 && props->row > -1) {
-            FG_CHECK(_.fg_draw_chart_to_cell(
+            THEIA_CHECK(_.fg_draw_chart_to_cell(
                 window, gridDims.first, gridDims.second,
                 props->row * gridDims.second + props->col, chart,
                 props->title));
         } else {
-            FG_CHECK(_.fg_draw_chart(window, chart));
+            THEIA_CHECK(_.fg_draw_chart(window, chart));
         }
 
         FLY_CHECK(fly_release_array(in));
@@ -312,16 +312,16 @@ fly_err plotWrapper(const fly_window window, const fly_array X, const fly_array 
                 break;
             default: TYPE_ERROR(1, xType);
         }
-        auto gridDims = forgeManager().getWindowGrid(window);
+        auto gridDims = theiaManager().getWindowGrid(window);
 
-        ForgeModule& _ = forgePlugin();
+        TheiaModule& _ = theiaPlugin();
         if (props->col > -1 && props->row > -1) {
-            FG_CHECK(_.fg_draw_chart_to_cell(
+            THEIA_CHECK(_.fg_draw_chart_to_cell(
                 window, gridDims.first, gridDims.second,
                 props->row * gridDims.second + props->col, chart,
                 props->title));
         } else {
-            FG_CHECK(_.fg_draw_chart(window, chart));
+            THEIA_CHECK(_.fg_draw_chart(window, chart));
         }
 
         FLY_CHECK(fly_release_array(in));

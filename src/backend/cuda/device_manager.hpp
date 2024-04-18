@@ -68,7 +68,7 @@ class DeviceManager {
 
     void resetMemoryManagerPinned();
 
-    friend flare::common::ForgeManager& forgeManager();
+    friend flare::common::TheiaManager& theiaManager();
 
     friend GraphicsResourceManager& interopManager();
 
@@ -132,7 +132,7 @@ class DeviceManager {
     int nDevices;
     cudaStream_t streams[MAX_DEVICES]{};
 
-    std::unique_ptr<flare::common::ForgeManager> fgMngr;
+    std::unique_ptr<flare::common::TheiaManager> fgMngr;
 
     std::unique_ptr<MemoryManagerBase> memManager;
 

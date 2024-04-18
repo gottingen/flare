@@ -617,7 +617,7 @@ void resetMemoryManagerPinned() {
     return DeviceManager::getInstance().resetMemoryManagerPinned();
 }
 
-flare::common::ForgeManager& forgeManager() {
+flare::common::TheiaManager& theiaManager() {
     return *(DeviceManager::getInstance().fgMngr);
 }
 

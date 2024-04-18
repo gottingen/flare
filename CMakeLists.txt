@@ -60,7 +60,9 @@ else()
   set(MKL_INTERFACE_INTEGER_SIZE 4)
 endif()
 
-list(APPEND CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/carbin)
+if(EXISTS ${PROJECT_SOURCE_DIR}/carbin)
+  list(APPEND CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/carbin)
+endif ()
 find_package(CUDA 10.2)
 find_package(cuDNN 4.0)
 find_package(OpenCL 1.2)
@@ -90,8 +92,6 @@ option(FLY_BUILD_UNIFIED  "Build Backend-Independent Flare API"   ON)
 option(FLY_BUILD_DOCS     "Create Flare Documentation"            ${DOXYGEN_FOUND})
 option(FLY_BUILD_EXAMPLES "Build Examples"                            ON)
 option(FLY_WITH_CUDNN     "Use cuDNN for convolveNN functions"        ${cuDNN_FOUND})
-option(FLY_BUILD_FORGE
-    "Forge libs are not built by default as it is not link time dependency" ON)
 
 option(FLY_WITH_NONFREE  "Build Flare nonfree algorithms"   OFF)
 option(FLY_WITH_LOGGING  "Build Flare with logging support" ON)
@@ -240,10 +240,8 @@ if(${FLY_BUILD_CPU} OR ${FLY_BUILD_OPENCL})
   endif()
 endif()
 
-#Configure forge submodule
-#forge is included in ALL target if FLY_BUILD_FORGE is ON
-#otherwise, forge is not built at all
-include(fly_configure_forge_dep)
+
+#include(fly_configure_forge_dep)
 find_package(collie REQUIRED PATHS ${PROJECT_SOURCE_DIR}/carbin)
 find_package(theia REQUIRED PATHS ${PROJECT_SOURCE_DIR}/carbin)
 
@@ -573,9 +571,5 @@ mark_as_advanced(
   Backtrace_LIBRARY
   FLY_WITH_STATIC_MKL
   GIT
-  Forge_DIR
-  glad_DIR
   FG_BUILD_OFFLINE
-  cub_include_dir
-  fmt_DIR
   )

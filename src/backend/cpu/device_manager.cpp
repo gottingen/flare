@@ -124,7 +124,7 @@ namespace cpu {
 
 DeviceManager::DeviceManager()
     : queues(MAX_QUEUES)
-    , fgMngr(new common::ForgeManager())
+    , fgMngr(new common::TheiaManager())
     , memManager(new common::DefaultMemoryManager(
           getDeviceCount(), common::MAX_BUFFERS,
           FLY_MEM_DEBUG || FLY_CPU_MEM_DEBUG)) {

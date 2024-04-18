@@ -19,15 +19,15 @@
 #include <reduce.hpp>
 #include <fly/graphics.h>
 
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 using flare::common::getGLType;
 using flare::common::makeContextCurrent;
 using flare::common::step_round;
 using detail::Array;
 using detail::copy_histogram;
-using detail::forgeManager;
+using detail::theiaManager;
 using detail::getScalar;
 using detail::uchar;
 using detail::uint;
@@ -37,13 +37,13 @@ template<typename T>
 fg_chart setup_histogram(fg_window const window, const fly_array in,
                          const double minval, const double maxval,
                          const fly_cell* const props) {
-    ForgeModule& _ = forgePlugin();
+    TheiaModule& _ = theiaPlugin();
 
     const Array<T> histogramInput = getArray<T>(in);
     dim_t nBins                   = histogramInput.elements();
 
-    // Retrieve Forge Histogram with nBins and array type
-    ForgeManager& fgMngr = forgeManager();
+    // Retrieve theia Histogram with nBins and array type
+    TheiaManager& fgMngr = theiaManager();
 
     // Get the chart for the current grid position (if any)
     fg_chart chart = NULL;
@@ -57,13 +57,13 @@ fg_chart setup_histogram(fg_window const window, const fly_array in,
     fg_histogram hist = fgMngr.getHistogram(chart, nBins, getGLType<T>());
 
     // Set histogram bar colors to Flare's orange
-    FG_CHECK(_.fg_set_histogram_color(hist, 0.929f, 0.486f, 0.2745f, 1.0f));
+    THEIA_CHECK(_.fg_set_histogram_color(hist, 0.929f, 0.486f, 0.2745f, 1.0f));
 
     // If chart axes limits do not have a manual override
     // then compute and set axes limits
     if (!fgMngr.getChartAxesOverride(chart)) {
         float xMin, xMax, yMin, yMax, zMin, zMax;
-        FG_CHECK(_.fg_get_chart_axes_limits(&xMin, &xMax, &yMin, &yMax, &zMin,
+        THEIA_CHECK(_.fg_get_chart_axes_limits(&xMin, &xMax, &yMin, &yMax, &zMin,
                                             &zMax, chart));
         T freqMax =
             getScalar<T>(detail::reduce_all<fly_max_t, T, T>(histogramInput));
@@ -88,7 +88,7 @@ fg_chart setup_histogram(fg_window const window, const fly_array in,
             // For histogram, always set yMin to 0.
             yMin = 0;
         }
-        FG_CHECK(_.fg_set_chart_axes_limits(chart, xMin, xMax, yMin, yMax, zMin,
+        THEIA_CHECK(_.fg_set_chart_axes_limits(chart, xMin, xMax, yMin, yMax, zMin,
                                             zMax));
     }
 
@@ -137,16 +137,16 @@ fly_err fly_draw_hist(const fly_window window, const fly_array X,
                 break;
             default: TYPE_ERROR(1, Xtype);
         }
-        auto gridDims = forgeManager().getWindowGrid(window);
+        auto gridDims = theiaManager().getWindowGrid(window);
 
-        ForgeModule& _ = forgePlugin();
+        TheiaModule& _ = theiaPlugin();
         if (props->col > -1 && props->row > -1) {
-            FG_CHECK(_.fg_draw_chart_to_cell(
+            THEIA_CHECK(_.fg_draw_chart_to_cell(
                 window, gridDims.first, gridDims.second,
                 props->row * gridDims.second + props->col, chart,
                 props->title));
         } else {
-            FG_CHECK(_.fg_draw_chart(window, chart));
+            THEIA_CHECK(_.fg_draw_chart(window, chart));
         }
     }
     CATCHALL;

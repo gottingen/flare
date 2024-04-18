@@ -15,9 +15,9 @@
 #include <vector_field.hpp>
 
 using fly::dim4;
-using flare::common::ForgeManager;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace cuda {
@@ -58,14 +58,14 @@ void copy_vector_field(const Array<T> &points, const Array<T> &directions,
 
         POST_LAUNCH_CHECK();
     } else {
-        ForgeModule &_ = forgePlugin();
+        TheiaModule &_ = theiaPlugin();
         CheckGL("Begin CUDA fallback-resource copy");
         unsigned size1 = 0, size2 = 0;
         unsigned buff1 = 0, buff2 = 0;
-        FG_CHECK(_.fg_get_vector_field_vertex_buffer_size(&size1, vfield));
-        FG_CHECK(_.fg_get_vector_field_direction_buffer_size(&size2, vfield));
-        FG_CHECK(_.fg_get_vector_field_vertex_buffer(&buff1, vfield));
-        FG_CHECK(_.fg_get_vector_field_direction_buffer(&buff2, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_vertex_buffer_size(&size1, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_direction_buffer_size(&size2, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_vertex_buffer(&buff1, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_direction_buffer(&buff2, vfield));
 
         // Points
         glBindBuffer(GL_ARRAY_BUFFER, buff1);

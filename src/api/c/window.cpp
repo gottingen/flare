@@ -15,15 +15,15 @@
 #include <common/graphics_common.hpp>
 #include <platform.hpp>
 
-using flare::common::ForgeManager;
-using flare::common::forgePlugin;
+using flare::common::TheiaManager;
+using flare::common::theiaPlugin;
 using flare::common::step_round;
-using detail::forgeManager;
+using detail::theiaManager;
 
 fly_err fly_create_window(fly_window* out, const int width, const int height,
                         const char* const title) {
     try {
-        fg_window temp = forgeManager().getWindow(width, height, title, false);
+        fg_window temp = theiaManager().getWindow(width, height, title, false);
         std::swap(*out, temp);
     }
     CATCHALL;
@@ -34,7 +34,7 @@ fly_err fly_set_position(const fly_window wind, const unsigned x,
                        const unsigned y) {
     try {
         if (wind == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
-        FG_CHECK(forgePlugin().fg_set_window_position(wind, x, y));
+        THEIA_CHECK(theiaPlugin().fg_set_window_position(wind, x, y));
     }
     CATCHALL;
     return FLY_SUCCESS;
@@ -43,7 +43,7 @@ fly_err fly_set_position(const fly_window wind, const unsigned x,
 fly_err fly_set_title(const fly_window wind, const char* const title) {
     try {
         if (wind == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
-        FG_CHECK(forgePlugin().fg_set_window_title(wind, title));
+        THEIA_CHECK(theiaPlugin().fg_set_window_title(wind, title));
     }
     CATCHALL;
     return FLY_SUCCESS;
@@ -52,7 +52,7 @@ fly_err fly_set_title(const fly_window wind, const char* const title) {
 fly_err fly_set_size(const fly_window wind, const unsigned w, const unsigned h) {
     try {
         if (wind == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
-        FG_CHECK(forgePlugin().fg_set_window_size(wind, w, h));
+        THEIA_CHECK(theiaPlugin().fg_set_window_size(wind, w, h));
     }
     CATCHALL;
     return FLY_SUCCESS;
@@ -61,7 +61,7 @@ fly_err fly_set_size(const fly_window wind, const unsigned w, const unsigned h) 
 fly_err fly_grid(const fly_window wind, const int rows, const int cols) {
     try {
         if (wind == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
-        forgeManager().setWindowChartGrid(wind, rows, cols);
+        theiaManager().setWindowChartGrid(wind, rows, cols);
     }
     CATCHALL;
     return FLY_SUCCESS;
@@ -74,7 +74,7 @@ fly_err fly_set_axes_limits_compute(const fly_window window, const fly_array x,
     try {
         if (window == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
 
-        ForgeManager& fgMngr = forgeManager();
+        TheiaManager& fgMngr = theiaManager();
 
         fg_chart chart = nullptr;
 
@@ -109,7 +109,7 @@ fly_err fly_set_axes_limits_compute(const fly_window window, const fly_array x,
         }
 
         fgMngr.setChartAxesOverride(chart);
-        FG_CHECK(forgePlugin().fg_set_chart_axes_limits(chart, xmin, xmax, ymin,
+        THEIA_CHECK(theiaPlugin().fg_set_chart_axes_limits(chart, xmin, xmax, ymin,
                                                         ymax, zmin, zmax));
     }
     CATCHALL;
@@ -123,7 +123,7 @@ fly_err fly_set_axes_limits_2d_3d(const fly_window window, const float xmin,
     try {
         if (window == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
 
-        ForgeManager& fgMngr = forgeManager();
+        TheiaManager& fgMngr = theiaManager();
 
         fg_chart chart = nullptr;
         // The ctype here below doesn't really matter as it is only fetching
@@ -149,7 +149,7 @@ fly_err fly_set_axes_limits_2d_3d(const fly_window window, const float xmin,
         }
 
         fgMngr.setChartAxesOverride(chart);
-        FG_CHECK(forgePlugin().fg_set_chart_axes_limits(
+        THEIA_CHECK(theiaPlugin().fg_set_chart_axes_limits(
             chart, _xmin, _xmax, _ymin, _ymax, 0.0f, 0.0f));
     }
     CATCHALL;
@@ -164,7 +164,7 @@ fly_err fly_set_axes_limits_3d(const fly_window window, const float xmin,
     try {
         if (window == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
 
-        ForgeManager& fgMngr = forgeManager();
+        TheiaManager& fgMngr = theiaManager();
 
         fg_chart chart = nullptr;
         // The ctype here below doesn't really matter as it is only fetching
@@ -194,7 +194,7 @@ fly_err fly_set_axes_limits_3d(const fly_window window, const float xmin,
         }
 
         fgMngr.setChartAxesOverride(chart);
-        FG_CHECK(forgePlugin().fg_set_chart_axes_limits(
+        THEIA_CHECK(theiaPlugin().fg_set_chart_axes_limits(
             chart, _xmin, _xmax, _ymin, _ymax, _zmin, _zmax));
     }
     CATCHALL;
@@ -207,7 +207,7 @@ fly_err fly_set_axes_titles(const fly_window window, const char* const xtitle,
     try {
         if (window == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
 
-        ForgeManager& fgMngr = forgeManager();
+        TheiaManager& fgMngr = theiaManager();
 
         fg_chart chart = nullptr;
 
@@ -219,7 +219,7 @@ fly_err fly_set_axes_titles(const fly_window window, const char* const xtitle,
             chart = fgMngr.getChart(window, 0, 0, ctype);
         }
 
-        FG_CHECK(forgePlugin().fg_set_chart_axes_titles(chart, xtitle, ytitle,
+        THEIA_CHECK(theiaPlugin().fg_set_chart_axes_titles(chart, xtitle, ytitle,
                                                         ztitle));
     }
     CATCHALL;
@@ -237,7 +237,7 @@ fly_err fly_set_axes_label_format(const fly_window window,
         ARG_ASSERT(2, xformat != nullptr);
         ARG_ASSERT(3, yformat != nullptr);
 
-        ForgeManager& fgMngr = forgeManager();
+        TheiaManager& fgMngr = theiaManager();
 
         fg_chart chart = nullptr;
 
@@ -250,11 +250,11 @@ fly_err fly_set_axes_label_format(const fly_window window,
         }
 
         if (ctype == FG_CHART_2D) {
-            FG_CHECK(forgePlugin().fg_set_chart_label_format(chart, xformat,
+            THEIA_CHECK(theiaPlugin().fg_set_chart_label_format(chart, xformat,
                                                              yformat, "3.2%f"));
         } else {
             ARG_ASSERT(4, zformat != nullptr);
-            FG_CHECK(forgePlugin().fg_set_chart_label_format(chart, xformat,
+            THEIA_CHECK(theiaPlugin().fg_set_chart_label_format(chart, xformat,
                                                              yformat, zformat));
         }
     }
@@ -265,7 +265,7 @@ fly_err fly_set_axes_label_format(const fly_window window,
 fly_err fly_show(const fly_window wind) {
     try {
         if (wind == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
-        FG_CHECK(forgePlugin().fg_swap_window_buffers(wind));
+        THEIA_CHECK(theiaPlugin().fg_swap_window_buffers(wind));
     }
     CATCHALL;
     return FLY_SUCCESS;
@@ -274,7 +274,7 @@ fly_err fly_show(const fly_window wind) {
 fly_err fly_is_window_closed(bool* out, const fly_window wind) {
     try {
         if (wind == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
-        FG_CHECK(forgePlugin().fg_close_window(out, wind));
+        THEIA_CHECK(theiaPlugin().fg_close_window(out, wind));
     }
     CATCHALL;
     return FLY_SUCCESS;
@@ -284,9 +284,9 @@ fly_err fly_set_visibility(const fly_window wind, const bool is_visible) {
     try {
         if (wind == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
         if (is_visible) {
-            FG_CHECK(forgePlugin().fg_show_window(wind));
+            THEIA_CHECK(theiaPlugin().fg_show_window(wind));
         } else {
-            FG_CHECK(forgePlugin().fg_hide_window(wind));
+            THEIA_CHECK(theiaPlugin().fg_hide_window(wind));
         }
     }
     CATCHALL;
@@ -296,8 +296,8 @@ fly_err fly_set_visibility(const fly_window wind, const bool is_visible) {
 fly_err fly_destroy_window(const fly_window wind) {
     try {
         if (wind == 0) { FLY_ERROR("Not a valid window", FLY_ERR_INTERNAL); }
-        forgeManager().setWindowChartGrid(wind, 0, 0);
-        FG_CHECK(forgePlugin().fg_release_window(wind));
+        theiaManager().setWindowChartGrid(wind, 0, 0);
+        THEIA_CHECK(theiaPlugin().fg_release_window(wind));
     }
     CATCHALL;
     return FLY_SUCCESS;

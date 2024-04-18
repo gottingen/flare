@@ -8,7 +8,7 @@
  ********************************************************/
 
 #include <gtest/gtest.h>
-#include <half.hpp>
+#include <fly/half.hpp>
 #include <testHelpers.hpp>
 #include <fly/algorithm.h>
 #include <fly/data.h>

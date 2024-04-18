@@ -12,7 +12,7 @@
 #include <iostream>
 #include <vector>
 
-#include <../extern/half/include/half.hpp>
+#include <fly/half.hpp>
 #include <testHelpers.hpp>
 
 using fly::array;

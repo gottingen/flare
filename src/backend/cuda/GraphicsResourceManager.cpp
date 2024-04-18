@@ -26,7 +26,7 @@ GraphicsResourceManager::registerResources(
     auto deleter = [](cudaGraphicsResource_t* handle) {
         // FIXME Having a CUDA_CHECK around unregister
         // call is causing invalid GL context.
-        // Moving ForgeManager class singleton as data
+        // Moving TheiaManager class singleton as data
         // member of DeviceManager with proper ordering
         // of member destruction doesn't help either.
         // Calling makeContextCurrent also doesn't help.

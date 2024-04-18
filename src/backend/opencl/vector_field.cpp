@@ -14,8 +14,8 @@
 #include <vector_field.hpp>
 
 using fly::dim4;
-using flare::common::ForgeModule;
-using flare::common::forgePlugin;
+using flare::common::TheiaModule;
+using flare::common::theiaPlugin;
 
 namespace flare {
 namespace opencl {
@@ -23,15 +23,15 @@ namespace opencl {
 template<typename T>
 void copy_vector_field(const Array<T> &points, const Array<T> &directions,
                        fg_vector_field vfield) {
-    ForgeModule &_ = common::forgePlugin();
+    TheiaModule &_ = common::theiaPlugin();
     if (isGLSharingSupported()) {
         CheckGL("Begin OpenCL resource copy");
         const cl::Buffer *d_points     = points.get();
         const cl::Buffer *d_directions = directions.get();
         unsigned pBytes                = 0;
         unsigned dBytes                = 0;
-        FG_CHECK(_.fg_get_vector_field_vertex_buffer_size(&pBytes, vfield));
-        FG_CHECK(_.fg_get_vector_field_direction_buffer_size(&dBytes, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_vertex_buffer_size(&pBytes, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_direction_buffer_size(&dBytes, vfield));
 
         auto res = interopManager().getVectorFieldResources(vfield);
 
@@ -59,10 +59,10 @@ void copy_vector_field(const Array<T> &points, const Array<T> &directions,
     } else {
         unsigned size1 = 0, size2 = 0;
         unsigned buff1 = 0, buff2 = 0;
-        FG_CHECK(_.fg_get_vector_field_vertex_buffer_size(&size1, vfield));
-        FG_CHECK(_.fg_get_vector_field_direction_buffer_size(&size2, vfield));
-        FG_CHECK(_.fg_get_vector_field_vertex_buffer(&buff1, vfield));
-        FG_CHECK(_.fg_get_vector_field_direction_buffer(&buff2, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_vertex_buffer_size(&size1, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_direction_buffer_size(&size2, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_vertex_buffer(&buff1, vfield));
+        THEIA_CHECK(_.fg_get_vector_field_direction_buffer(&buff2, vfield));
 
         CheckGL("Begin OpenCL fallback-resource copy");
 

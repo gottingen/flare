@@ -21,7 +21,7 @@
 #include <sstream>
 #include <string>
 
-using flare::common::ForgeManager;
+using flare::common::TheiaManager;
 using flare::common::getEnvVar;
 using flare::common::ltrim;
 using flare::common::MemoryManagerBase;
@@ -178,7 +178,7 @@ void resetMemoryManagerPinned() {
     return DeviceManager::getInstance().resetMemoryManagerPinned();
 }
 
-ForgeManager& forgeManager() { return *(DeviceManager::getInstance().fgMngr); }
+TheiaManager& theiaManager() { return *(DeviceManager::getInstance().fgMngr); }
 
 }  // namespace cpu
 }  // namespace flare

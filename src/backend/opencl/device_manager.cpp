@@ -203,7 +203,7 @@ DeviceManager::DeviceManager()
         }
 #endif
     }
-    fgMngr = std::make_unique<flare::common::ForgeManager>();
+    fgMngr = std::make_unique<flare::common::TheiaManager>();
 
     // This is all we need because the sort takes care of the order of devices
 #ifdef OS_MAC
@@ -342,7 +342,7 @@ DeviceManager::DeviceManager()
     // Define FLY_DISABLE_GRAPHICS with any value to disable initialization
     string noGraphicsENV = getEnvVar("FLY_DISABLE_GRAPHICS");
     if (fgMngr->plugin().isLoaded() && noGraphicsENV.empty()) {
-        // If forge library was successfully loaded and
+        // If theia library was successfully loaded and
         // FLY_DISABLE_GRAPHICS is not defined
         try {
             /* loop over devices and replace contexts with
@@ -486,7 +486,7 @@ void DeviceManager::markDeviceForInterop(const int device,
                 return;
             }
 
-            // call forge to get OpenGL sharing context and details
+            // call theia to get OpenGL sharing context and details
             Platform plat(mDevices[device]->getInfo<CL_DEVICE_PLATFORM>());
 
             long long wnd_ctx, wnd_dsp;

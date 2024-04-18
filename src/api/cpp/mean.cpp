@@ -13,7 +13,7 @@
 #include <fly/statistics.h>
 #include "common.hpp"
 #include "error.hpp"
-#include "half.hpp"
+#include <fly/half.hpp>
 #ifdef FLY_CUDA
 #include <cuda_fp16.h>
 #include <traits.hpp>
