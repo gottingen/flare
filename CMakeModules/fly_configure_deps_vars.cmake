@@ -62,7 +62,6 @@ endmacro()
 
 set_and_mark_depnames_advncd(assets_prefix "af_assets")
 set_and_mark_depnames_advncd(testdata_prefix "af_test_data")
-set_and_mark_depnames_advncd(gtest_prefix "googletest")
 set_and_mark_depnames_advncd(glad_prefix "fly_glad")
 set_and_mark_depnames_advncd(forge_prefix "af_forge")
 set_and_mark_depnames_advncd(threads_prefix "af_threads")
