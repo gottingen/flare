@@ -135,10 +135,11 @@ LibHandle openDynLibrary(const fly_backend bknd_idx) {
 
     // Common install paths
 #if !defined(OS_WIN)
-        "/opt/arrayfire-3/lib/",
-        "/opt/arrayfire/lib/",
+        "/opt/EA/inf/lib/",
+        "/opt/EA/lib/",
         "/usr/local/lib/",
-        "/usr/local/arrayfire/lib/"
+        "/usr/local/EA/lib/",
+        "/usr/local/EA/inf/lib/"
 #else
         join_path(getEnvVar("ProgramFiles"), "Flare", "lib"),
         join_path(getEnvVar("ProgramFiles"), "Flare", "v3", "lib")

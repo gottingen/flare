@@ -4,7 +4,7 @@ WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: true
 FormatStyle:     file
-User:            arrayfire
+User:            flare
 CheckOptions:
   - key:             abseil-string-find-startswith.AbseilStringsMatchHeader
     value:           'absl/strings/match.h'

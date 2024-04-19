@@ -80,7 +80,7 @@ static inline bool compare_default(const unique_ptr<sycl::device>& ldev,
     return false;
 }
 
-auto arrayfire_exception_handler(sycl::exception_list exceptions) {
+auto flare_exception_handler(sycl::exception_list exceptions) {
     for (std::exception_ptr const& e : exceptions) {
         try {
             std::rethrow_exception(e);
@@ -140,7 +140,7 @@ DeviceManager::DeviceManager()
                 mContexts.push_back(make_unique<sycl::context>(*devices[i]));
                 mQueues.push_back(
                     make_unique<sycl::queue>(*mContexts.back(), *devices[i],
-                                             arrayfire_exception_handler));
+                                             flare_exception_handler));
                 mIsGLSharingOn.push_back(false);
                 // TODO:
                 // mDeviceTypes.push_back(getDeviceTypeEnum(*devices[i]));

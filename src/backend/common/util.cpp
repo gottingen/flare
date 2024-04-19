@@ -214,8 +214,8 @@ string& getCacheDirectory() {
 #if defined(OS_WIN)
             getTemporaryDirectory() + "\\Flare"
 #else
-            getHomeDirectory() + "/.arrayfire",
-            "/tmp/arrayfire"
+            getHomeDirectory() + "/.flare",
+            "/tmp/flare"
 #endif
         };
 
