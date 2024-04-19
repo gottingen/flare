@@ -46,7 +46,6 @@ public:
     /// \param[in] other The dim4 that will be copied
     dim4(const dim4& other);
 
-#if FLY_API_VERSION >= 38
 #if FLY_COMPILER_CXX_RVALUE_REFERENCES
     /// Default move constructor
     ///
@@ -57,7 +56,6 @@ public:
     ///
     /// \param[in] other The dim4 that will be moved
     dim4 &operator=(dim4 other) FLY_NOEXCEPT;
-#endif
 #endif
 
     /// Constructs a dim4 object from a C array of dim_t objects

@@ -291,8 +291,8 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/kernel/sort_by_key/CMakeLists.txt")
 
 target_include_directories(flycpu
         PUBLIC
-        $<BUILD_INTERFACE:${Flare_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${Flare_BINARY_DIR}/include>
+        $<BUILD_INTERFACE:${flare_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${flare_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:${FLY_INSTALL_INC_DIR}>
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR})
@@ -346,7 +346,7 @@ endif ()
 fly_split_debug_info(flycpu ${FLY_INSTALL_LIB_DIR})
 
 install(TARGETS flycpu
-        EXPORT FlareCPUTargets
+        EXPORT flareCPUTargets
         COMPONENT cpu
         PUBLIC_HEADER DESTINATION fly
         RUNTIME DESTINATION ${FLY_INSTALL_BIN_DIR}
@@ -356,10 +356,9 @@ install(TARGETS flycpu
         INCLUDES DESTINATION ${FLY_INSTALL_INC_DIR}
 )
 
-source_group(include REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/include/*)
-source_group(api\\cpp REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/src/api/cpp/*)
-source_group(api\\c REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/src/api/c/*)
-source_group(backend REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/src/backend/common/*|${CMAKE_CURRENT_SOURCE_DIR}/*)
+source_group(include REGULAR_EXPRESSION ${flare_SOURCE_DIR}/include/*)
+source_group(api\\cpp REGULAR_EXPRESSION ${flare_SOURCE_DIR}/src/api/cpp/*)
+source_group(api\\c REGULAR_EXPRESSION ${flare_SOURCE_DIR}/src/api/c/*)
+source_group(backend REGULAR_EXPRESSION ${flare_SOURCE_DIR}/src/backend/common/*|${CMAKE_CURRENT_SOURCE_DIR}/*)
 source_group(backend\\kernel REGULAR_EXPRESSION ${CMAKE_CURRENT_SOURCE_DIR}/kernel/*)
-source_group("generated files" FILES ${Flare_BINARY_DIR}/src/backend/build_version.hpp ${Flare_BINARY_DIR}/include/fly/version.h)
 source_group("" FILES CMakeLists.txt)

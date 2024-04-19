@@ -132,7 +132,6 @@ class FLY_API Window {
          */
         void setTitle(const char* const title);
 
-#if FLY_API_VERSION >= 31
         /**
            Set the window size
 
@@ -142,7 +141,6 @@ class FLY_API Window {
            \ingroup gfx_func_window
          */
         void setSize(const unsigned w, const unsigned h);
-#endif
 
         /**
            Set the colormap to be used for subsequent rendering calls
@@ -165,7 +163,6 @@ class FLY_API Window {
          */
         void image(const array& in, const char* title=NULL);
 
-#if FLY_API_VERSION >= 32
         /**
            Renders the input array as an 3d line plot to the window
 
@@ -178,9 +175,6 @@ class FLY_API Window {
          */
         FLY_DEPRECATED("Use plot instead")
         void plot3(const array& in, const char* title=NULL);
-#endif
-
-#if FLY_API_VERSION >= 34
         /**
            Renders the input arrays as a 2D or 3D plot to the window
 
@@ -193,9 +187,7 @@ class FLY_API Window {
            \ingroup gfx_func_draw
          */
         void plot(const array& in, const char* const title=NULL);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Renders the input arrays as a 3D plot to the window
 
@@ -209,7 +201,6 @@ class FLY_API Window {
            \ingroup gfx_func_draw
          */
         void plot(const array& X, const array& Y, const array& Z, const char* const title=NULL);
-#endif
 
         /**
            Renders the input arrays as a 2D plot to the window
@@ -224,7 +215,6 @@ class FLY_API Window {
          */
         void plot(const array& X, const array& Y, const char* const title=NULL);
 
-#if FLY_API_VERSION >= 34
         /**
            Renders the input arrays as a 2D or 3D scatter-plot to the window
 
@@ -239,9 +229,7 @@ class FLY_API Window {
          */
         void scatter(const array& in, const fly::markerType marker = FLY_MARKER_POINT,
                      const char* const title = NULL);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Renders the input arrays as a 3D scatter-plot to the window
 
@@ -257,9 +245,7 @@ class FLY_API Window {
          */
         void scatter(const array& X, const array& Y, const array& Z,
                      const fly::markerType marker = FLY_MARKER_POINT, const char* const title = NULL);
-#endif
 
-#if FLY_API_VERSION >= 33
         /**
            Renders the input arrays as a 2D scatter-plot to the window
 
@@ -274,9 +260,7 @@ class FLY_API Window {
          */
         void scatter(const array& X, const array& Y,
                      const fly::markerType marker = FLY_MARKER_POINT, const char* const title = NULL);
-#endif
 
-#if FLY_API_VERSION >= 33
         /**
            Renders the input arrays as a 3D scatter-plot to the window
 
@@ -289,7 +273,6 @@ class FLY_API Window {
         FLY_DEPRECATED("Use scatter instead")
         void scatter3(const array& P, const fly::markerType marker = FLY_MARKER_POINT,
                       const char* const title = NULL);
-#endif
 
         /**
            Renders the input array as a histogram to the window
@@ -305,7 +288,6 @@ class FLY_API Window {
          */
         void hist(const array& X, const double minval, const double maxval, const char* const title=NULL);
 
-#if FLY_API_VERSION >= 32
         /**
            Renders the input arrays as a 3D surface plot to the window
 
@@ -317,9 +299,7 @@ class FLY_API Window {
            \ingroup gfx_func_draw
          */
         void surface(const array& S, const char* const title = NULL);
-#endif
 
-#if FLY_API_VERSION >= 32
         /**
            Renders the input arrays as a 3D surface plot to the window
 
@@ -333,9 +313,7 @@ class FLY_API Window {
            \ingroup gfx_func_draw
          */
         void surface(const array& xVals, const array& yVals, const array& S, const char* const title = NULL);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Renders the input arrays as a 2D or 3D vector field plot to the window
 
@@ -353,9 +331,7 @@ class FLY_API Window {
            \ingroup gfx_func_draw
          */
         void vectorField(const array& points, const array& directions, const char* const title = NULL);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Renders the input arrays as a 3D vector field plot to the window
 
@@ -374,9 +350,7 @@ class FLY_API Window {
         void vectorField(const array& xPoints, const array& yPoints, const array& zPoints,
                          const array& xDirs  , const array& yDirs  , const array& zDirs  ,
                          const char* const title = NULL);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Renders the input arrays as a 2D vector field plot to the window
 
@@ -393,9 +367,7 @@ class FLY_API Window {
         void vectorField(const array& xPoints, const array& yPoints,
                          const array& xDirs  , const array& yDirs  ,
                          const char* const title = NULL);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Setup the axes limits for a 2D histogram/plot/vector field
 
@@ -410,9 +382,7 @@ class FLY_API Window {
            \ingroup gfx_func_window
         */
         void setAxesLimits(const array &x, const array &y, const bool exact = false);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Setup the axes limits for a histogram/plot/surface/vector field
 
@@ -429,9 +399,7 @@ class FLY_API Window {
         */
         void setAxesLimits(const array &x, const array &y, const array &z,
                            const bool exact = false);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Setup the axes limits for a histogram/plot/surface/vector field
 
@@ -450,9 +418,7 @@ class FLY_API Window {
         void setAxesLimits(const float xmin, const float xmax,
                            const float ymin, const float ymax,
                            const bool exact = false);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Setup the axes limits for a histogram/plot/surface/vector field
 
@@ -474,9 +440,7 @@ class FLY_API Window {
                            const float ymin, const float ymax,
                            const float zmin, const float zmax,
                            const bool exact = false);
-#endif
 
-#if FLY_API_VERSION >= 34
         /**
            Setup the axes titles for a plot/surface/vector field
 
@@ -491,9 +455,7 @@ class FLY_API Window {
         void setAxesTitles(const char * const xtitle = "X-Axis",
                            const char * const ytitle = "Y-Axis",
                            const char * const ztitle = NULL);
-#endif
 
-#if FLY_API_VERSION >= 37
         /**
            Setup the axes label formats for charts
 
@@ -506,7 +468,6 @@ class FLY_API Window {
         void setAxesLabelFormat(const char *const xformat = "4.1%f",
                                 const char *const yformat = "4.1%f",
                                 const char *const zformat = NULL);
-#endif
 
         /**
            Setup grid layout for multiview mode in a window
@@ -537,7 +498,6 @@ class FLY_API Window {
         */
         bool close();
 
-#if FLY_API_VERSION >= 33
         /**
            Hide/Show the window
 
@@ -546,7 +506,6 @@ class FLY_API Window {
            \ingroup gfx_func_window
          */
         void setVisibility(const bool isVisible);
-#endif
 
         /**
            This function is used to keep track of which cell in the grid mode is
@@ -618,7 +577,6 @@ FLY_API fly_err fly_set_position(const fly_window wind, const unsigned x, const 
 */
 FLY_API fly_err fly_set_title(const fly_window wind, const char* const title);
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface wrapper for setting window position
 
@@ -632,7 +590,6 @@ FLY_API fly_err fly_set_title(const fly_window wind, const char* const title);
    \ingroup gfx_func_window
 */
 FLY_API fly_err fly_set_size(const fly_window wind, const unsigned w, const unsigned h);
-#endif
 
 /**
    C Interface wrapper for drawing an array as an image
@@ -670,7 +627,6 @@ FLY_API fly_err fly_draw_image(const fly_window wind, const fly_array in, const 
 FLY_DEPRECATED("Use fly_draw_plot_nd or fly_draw_plot_2d instead")
 FLY_API fly_err fly_draw_plot(const fly_window wind, const fly_array X, const fly_array Y, const fly_cell* const props);
 
-#if FLY_API_VERSION >= 32
 /**
    C Interface wrapper for drawing an array as a plot
 
@@ -688,9 +644,7 @@ FLY_API fly_err fly_draw_plot(const fly_window wind, const fly_array X, const fl
 */
 FLY_DEPRECATED("Use fly_draw_plot_nd or fly_draw_plot_3d instead")
 FLY_API fly_err fly_draw_plot3(const fly_window wind, const fly_array P, const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for drawing an array as a 2D or 3D plot
 
@@ -708,9 +662,7 @@ FLY_API fly_err fly_draw_plot3(const fly_window wind, const fly_array P, const f
    \ingroup gfx_func_draw
 */
 FLY_API fly_err fly_draw_plot_nd(const fly_window wind, const fly_array P, const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for drawing an array as a 2D plot
 
@@ -729,9 +681,6 @@ FLY_API fly_err fly_draw_plot_nd(const fly_window wind, const fly_array P, const
 */
 FLY_API fly_err fly_draw_plot_2d(const fly_window wind, const fly_array X, const fly_array Y,
                              const fly_cell* const props);
-#endif
-
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for drawing an array as a 3D plot
 
@@ -752,9 +701,6 @@ FLY_API fly_err fly_draw_plot_2d(const fly_window wind, const fly_array X, const
 FLY_API fly_err fly_draw_plot_3d(const fly_window wind,
                              const fly_array X, const fly_array Y, const fly_array Z,
                              const fly_cell* const props);
-#endif
-
-#if FLY_API_VERSION >= 33
 /**
    C Interface wrapper for drawing an array as a plot
 
@@ -775,9 +721,6 @@ FLY_API fly_err fly_draw_plot_3d(const fly_window wind,
 FLY_DEPRECATED("Use fly_draw_scatter_nd or fly_draw_scatter_2d instead")
 FLY_API fly_err fly_draw_scatter(const fly_window wind, const fly_array X, const fly_array Y,
                              const fly_marker_type marker, const fly_cell* const props);
-#endif
-
-#if FLY_API_VERSION >= 33
 /**
    C Interface wrapper for drawing an array as a plot
 
@@ -795,9 +738,7 @@ FLY_API fly_err fly_draw_scatter(const fly_window wind, const fly_array X, const
 FLY_DEPRECATED("Use fly_draw_scatter_nd or fly_draw_scatter_3d instead")
 FLY_API fly_err fly_draw_scatter3(const fly_window wind, const fly_array P,
                               const fly_marker_type marker, const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for drawing an array as a plot
 
@@ -817,9 +758,7 @@ FLY_API fly_err fly_draw_scatter3(const fly_window wind, const fly_array P,
 */
 FLY_API fly_err fly_draw_scatter_nd(const fly_window wind, const fly_array P,
                                 const fly_marker_type marker, const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for drawing an array as a 2D plot
 
@@ -839,9 +778,7 @@ FLY_API fly_err fly_draw_scatter_nd(const fly_window wind, const fly_array P,
 */
 FLY_API fly_err fly_draw_scatter_2d(const fly_window wind, const fly_array X, const fly_array Y,
                                 const fly_marker_type marker, const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for drawing an array as a 3D plot
 
@@ -863,7 +800,6 @@ FLY_API fly_err fly_draw_scatter_2d(const fly_window wind, const fly_array X, co
 FLY_API fly_err fly_draw_scatter_3d(const fly_window wind,
                                 const fly_array X, const fly_array Y, const fly_array Z,
                                 const fly_marker_type marker, const fly_cell* const props);
-#endif
 
 /**
    C Interface wrapper for drawing an array as a histogram
@@ -884,7 +820,6 @@ FLY_API fly_err fly_draw_scatter_3d(const fly_window wind,
 */
 FLY_API fly_err fly_draw_hist(const fly_window wind, const fly_array X, const double minval, const double maxval, const fly_cell* const props);
 
-#if FLY_API_VERSION >= 32
 /**
    C Interface wrapper for drawing array's as a surface
 
@@ -903,9 +838,7 @@ FLY_API fly_err fly_draw_hist(const fly_window wind, const fly_array X, const do
    \ingroup gfx_func_draw
 */
 FLY_API fly_err fly_draw_surface(const fly_window wind, const fly_array xVals, const fly_array yVals, const fly_array S, const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for drawing array's as a 2D or 3D vector field
 
@@ -932,9 +865,7 @@ FLY_API fly_err fly_draw_surface(const fly_window wind, const fly_array xVals, c
 FLY_API fly_err fly_draw_vector_field_nd(const fly_window wind,
                 const fly_array points, const fly_array directions,
                 const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for drawing array's as a 3D vector field
 
@@ -960,9 +891,7 @@ FLY_API fly_err fly_draw_vector_field_3d(
                 const fly_array xPoints, const fly_array yPoints, const fly_array zPoints,
                 const fly_array xDirs, const fly_array yDirs, const fly_array zDirs,
                 const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for drawing array's as a 2D vector field
 
@@ -986,7 +915,6 @@ FLY_API fly_err fly_draw_vector_field_2d(
                 const fly_array xPoints, const fly_array yPoints,
                 const fly_array xDirs, const fly_array yDirs,
                 const fly_cell* const props);
-#endif
 
 /**
    C Interface wrapper for grid setup in a window
@@ -1002,7 +930,6 @@ FLY_API fly_err fly_draw_vector_field_2d(
 */
 FLY_API fly_err fly_grid(const fly_window wind, const int rows, const int cols);
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface for setting axes limits for a histogram/plot/surface/vector field
 
@@ -1026,9 +953,6 @@ FLY_API fly_err fly_set_axes_limits_compute(const fly_window wind,
                                         const fly_array x, const fly_array y, const fly_array z,
                                         const bool exact,
                                         const fly_cell* const props);
-#endif
-
-#if FLY_API_VERSION >= 34
 /**
    C Interface for setting axes limits for a 2D histogram/plot/vector field
 
@@ -1052,9 +976,6 @@ FLY_API fly_err fly_set_axes_limits_2d_3d(const fly_window wind,
                                    const float ymin, const float ymax,
                                    const bool exact,
                                    const fly_cell* const props);
-#endif
-
-#if FLY_API_VERSION >= 34
 /**
    C Interface for setting axes limits for a 3D plot/surface/vector field
 
@@ -1081,9 +1002,7 @@ FLY_API fly_err fly_set_axes_limits_3d(const fly_window wind,
                                    const float zmin, const float zmax,
                                    const bool exact,
                                    const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C Interface wrapper for setting axes titles for histogram/plot/surface/vector
    field
@@ -1109,9 +1028,7 @@ FLY_API fly_err fly_set_axes_titles(const fly_window wind,
                                 const char * const ytitle,
                                 const char * const ztitle,
                                 const fly_cell* const props);
-#endif
 
-#if FLY_API_VERSION >= 37
 /**
    C Interface wrapper for setting axes labels formats for charts
 
@@ -1138,7 +1055,6 @@ FLY_API fly_err fly_set_axes_label_format(const fly_window wind,
                                       const char *const yformat,
                                       const char *const zformat,
                                       const fly_cell *const props);
-#endif
 
 /**
    C Interface wrapper for showing a window
@@ -1166,7 +1082,6 @@ FLY_API fly_err fly_show(const fly_window wind);
 */
 FLY_API fly_err fly_is_window_closed(bool *out, const fly_window wind);
 
-#if FLY_API_VERSION >= 33
 /**
    Hide/Show a window
 
@@ -1176,7 +1091,6 @@ FLY_API fly_err fly_is_window_closed(bool *out, const fly_window wind);
    \ingroup gfx_func_window
  */
 FLY_API fly_err fly_set_visibility(const fly_window wind, const bool is_visible);
-#endif
 
 /**
    C Interface wrapper for destroying a window handle

@@ -14,12 +14,12 @@
 # limitations under the License.
 # Make a version file that includes the Flare version and git revision
 #
-set(FLY_VERSION_MAJOR ${Flare_VERSION_MAJOR})
-set(FLY_VERSION_MINOR ${Flare_VERSION_MINOR})
-set(FLY_VERSION_PATCH ${Flare_VERSION_PATCH})
+set(FLY_VERSION_MAJOR ${flare_VERSION_MAJOR})
+set(FLY_VERSION_MINOR ${flare_VERSION_MINOR})
+set(FLY_VERSION_PATCH ${flare_VERSION_PATCH})
 
-set(FLY_VERSION ${Flare_VERSION})
-set(Flare_API_VERSION_CURRENT ${Flare_VERSION_MAJOR}${Flare_VERSION_MINOR})
+set(FLY_VERSION ${flare_VERSION})
+set(flare_API_VERSION_CURRENT ${flare_VERSION_MAJOR}${flare_VERSION_MINOR})
 
 # From CMake 3.0.0 CMAKE_<LANG>_COMPILER_ID is AppleClang for OSX machines
 # that use clang for compilations
@@ -51,11 +51,11 @@ if(NOT GIT_COMMIT_HASH)
 endif()
 
 configure_file(
-    ${Flare_SOURCE_DIR}/CMakeModules/version.h.in
-    ${Flare_BINARY_DIR}/include/fly/version.h
+    ${flare_SOURCE_DIR}/include/fly/version.h.in
+    ${flare_SOURCE_DIR}/include/fly/version.h
 )
 
 configure_file(
-    ${Flare_SOURCE_DIR}/CMakeModules/build_version.hpp.in
-    ${Flare_BINARY_DIR}/src/backend/build_version.hpp
+    ${flare_SOURCE_DIR}/src/backend/build_version.hpp.in
+    ${flare_SOURCE_DIR}/src/backend/build_version.hpp
 )

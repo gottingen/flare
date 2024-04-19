@@ -17,7 +17,7 @@
 set(URL "https://sparse.tamu.edu")
 
 function(mtxDownload name group)
-  set(root_dir ${Flare_BINARY_DIR}/extern/matrixmarket)
+  set(root_dir ${flare_BINARY_DIR}/extern/matrixmarket)
   set(target_dir ${root_dir}/${group}/${name})
   set(mtx_name mtxDownload_${group}_${name})
   string(TOLOWER ${mtx_name} mtx_name)

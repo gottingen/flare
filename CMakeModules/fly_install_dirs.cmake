@@ -40,7 +40,7 @@ if(NOT DEFINED FLY_INSTALL_INC_DIR)
   set(FLY_INSTALL_INC_DIR "include" CACHE PATH "Installation path for headers")
 endif()
 
-set(DATA_DIR "share/Flare")
+set(DATA_DIR "share/flare")
 
 # Documentation
 if(NOT DEFINED FLY_INSTALL_DOC_DIR)
@@ -69,7 +69,7 @@ if(NOT DEFINED FLY_INSTALL_CMAKE_DIR)
   if (WIN32)
     set(FLY_INSTALL_CMAKE_DIR "cmake" CACHE PATH "Installation path for CMake files")
   else ()
-    set(FLY_INSTALL_CMAKE_DIR "${DATA_DIR}/cmake" CACHE PATH "Installation path for CMake files")
+    set(FLY_INSTALL_CMAKE_DIR "${FLY_INSTALL_LIB_DIR}/cmake/flare" CACHE PATH "Installation path for CMake files")
   endif ()
 endif()
 

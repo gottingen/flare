@@ -26,10 +26,8 @@
 #ifdef __cplusplus
 #include <fly/traits.hpp>
 
-#if FLY_API_VERSION >= 38
 #if FLY_COMPILER_CXX_GENERALIZED_INITIALIZERS
 #include <initializer_list>
-#endif
 #endif
 
 namespace fly
@@ -101,7 +99,6 @@ namespace fly
             ASSIGN(/=)
 #undef ASSIGN
 
-#if FLY_API_VERSION >= 32
 #define ASSIGN(OP)                                                  \
             array_proxy& operator OP(const short &a);               \
             array_proxy& operator OP(const unsigned short &a);
@@ -112,7 +109,6 @@ namespace fly
             ASSIGN(*=)
             ASSIGN(/=)
 #undef ASSIGN
-#endif
 
             // fly::array member functions. same behavior as those below
             fly_array get();
@@ -136,16 +132,12 @@ namespace fly
             inline bool isreal() const { return !iscomplex(); }
             bool isdouble() const;
             bool issingle() const;
-#if FLY_API_VERSION >= 37
             bool ishalf() const;
-#endif
             bool isrealfloating() const;
             bool isfloating() const;
             bool isinteger() const;
             bool isbool() const;
-#if FLY_API_VERSION >= 34
             bool issparse() const;
-#endif
             void eval() const;
             array as(dtype type) const;
             array T() const;
@@ -153,13 +145,9 @@ namespace fly
             template<typename T> T scalar() const;
             template<typename T> T* device() const;
             void unlock() const;
-#if FLY_API_VERSION >= 31
             void lock() const;
-#endif
 
-#if FLY_API_VERSION >= 34
             bool isLocked() const;
-#endif
 
                   array::array_proxy row(int index);
             const array::array_proxy row(int index) const;
@@ -188,7 +176,6 @@ namespace fly
         */
         array();
 
-#if FLY_API_VERSION >= 37
 #if FLY_COMPILER_CXX_RVALUE_REFERENCES
         /**
             Move constructor
@@ -211,7 +198,6 @@ namespace fly
             \returns the reference to the current array
         */
         array &operator=(array &&other) FLY_NOEXCEPT;
-#endif
 #endif
         /**
             Creates an array from an \ref fly_array handle. Does not increment
@@ -533,7 +519,6 @@ namespace fly
         array(const dim4& dims,
               const T *pointer, fly::source src=flyHost);
 
-#if FLY_API_VERSION >= 38
 #if FLY_COMPILER_CXX_GENERALIZED_INITIALIZERS
         /// \brief Initializer list constructor
         template <typename T, typename = typename std::enable_if<
@@ -569,7 +554,6 @@ namespace fly
             throw std::move(ex);
           }
         }
-#endif
 #endif
 
         /**
@@ -748,12 +732,10 @@ namespace fly
         */
         bool issingle() const;
 
-#if FLY_API_VERSION >= 37
         /**
            \brief Returns true if the array type is \ref f16
         */
         bool ishalf() const;
-#endif
 
         /**
            \brief Returns true if the array type is \ref f16 \ref f32 or \ref f64
@@ -777,12 +759,10 @@ namespace fly
         */
         bool isbool() const;
 
-#if FLY_API_VERSION >= 34
         /**
            \brief Returns true if the array is a sparse array
         */
         bool issparse() const;
-#endif
 
         /**
            \brief Evaluate any JIT expressions to generate data for the array
@@ -1010,15 +990,11 @@ namespace fly
         array& OP2(const unsigned long long &val);
 
 
-#if FLY_API_VERSION >= 32
 #define ASSIGN(OP)                                                                        \
         ASSIGN_(OP)                                                                       \
           array& OP(const short  &val);              /**< \copydoc OP##(const array &) */ \
           array& OP(const unsigned short &val);
 
-#else
-#define ASSIGN(OP) ASSIGN_(OP)
-#endif
 
 
         /// \ingroup array_mem_operator_eq
@@ -1100,14 +1076,12 @@ namespace fly
         /// \returns an \ref array with negated values
         array operator !() const;
 
-#if FLY_API_VERSION >= 38
         ///
         /// \brief Performs a bitwise not operation on the values of the array
         /// \ingroup arith_func_bitnot
         ///
         /// \returns an \ref array with inverted values
         array operator ~() const;
-#endif
 
         ///
         /// \brief Get the count of non-zero elements in the array
@@ -1124,14 +1098,12 @@ namespace fly
         void lock() const;
 
 
-#if FLY_API_VERSION >= 34
         ///
         /// \brief Query if the array has been locked by the user.
         ///
         /// An array can be locked by the user by calling `arry.lock` or `arr.device`
         /// or `getRawPtr` function.
         bool isLocked() const;
-#endif
 
 
         ///
@@ -1172,7 +1144,6 @@ namespace fly
     FLY_API array OP (const array& lhs, const cfloat& rhs);             /**< \copydoc OP##(const array&, const array&) */ \
     FLY_API array OP (const array& lhs, const cdouble& rhs);
 
-#if FLY_API_VERSION >= 32
 #define BIN_OP(OP)                                                                                                        \
         BIN_OP_(OP)                                                                                                       \
         FLY_API array OP (const short& lhs, const array& rhs);           /**< \copydoc OP##(const array&, const array&) */ \
@@ -1180,9 +1151,6 @@ namespace fly
         FLY_API array OP (const array& lhs, const short& rhs);           /**< \copydoc OP##(const array&, const array&) */ \
         FLY_API array OP (const array& lhs, const unsigned short& rhs);
 
-#else
-#define BIN_OP(OP) BIN_OP_(OP)
-#endif
 
     /// \ingroup arith_func_add
     /// @{
@@ -1472,65 +1440,41 @@ namespace fly
     */
     inline array &eval(array &a) { a.eval(); return a; }
 
-#if FLY_API_VERSION >= 34
     ///
     /// Evaluate multiple arrays simultaneously
     ///
     FLY_API void eval(int num, array **arrays);
-#endif
 
     inline void eval(array &a, array &b)
     {
-#if FLY_API_VERSION >= 34
         array *arrays[] = {&a, &b};
         return eval(2, arrays);
-#else
-        eval(a); b.eval();
-#endif
     }
 
     inline void eval(array &a, array &b, array &c)
     {
-#if FLY_API_VERSION >= 34
         array *arrays[] = {&a, &b, &c};
         return eval(3, arrays);
-#else
-        eval(a, b); c.eval();
-#endif
     }
 
     inline void eval(array &a, array &b, array &c, array &d)
     {
-#if FLY_API_VERSION >= 34
         array *arrays[] = {&a, &b, &c, &d};
         return eval(4, arrays);
-#else
-        eval(a, b, c); d.eval();
-#endif
-
     }
 
     inline void eval(array &a, array &b, array &c, array &d, array &e)
     {
-#if FLY_API_VERSION >= 34
         array *arrays[] = {&a, &b, &c, &d, &e};
         return eval(5, arrays);
-#else
-        eval(a, b, c, d); e.eval();
-#endif
     }
 
     inline void eval(array &a, array &b, array &c, array &d, array &e, array &f)
     {
-#if FLY_API_VERSION >= 34
         array *arrays[] = {&a, &b, &c, &d, &e, &f};
         return eval(6, arrays);
-#else
-        eval(a, b, c, d, e); f.eval();
-#endif
     }
 
-#if FLY_API_VERSION >= 37
 
     /// Evaluate an expression (nonblocking).
     inline const array &eval(const array &a) { a.eval(); return a; }
@@ -1577,19 +1521,14 @@ namespace fly
         return eval(6, const_cast<array **>(arrays));
     }
 #endif // FLY_COMPILER_CXX_VARIADIC_TEMPLATES
-#endif
 
-#if FLY_API_VERSION >= 34
     ///
     /// Turn the manual eval flag on or off
     ///
     FLY_API void setManualEvalFlag(bool flag);
-#endif
 
-#if FLY_API_VERSION >= 34
     /// Get the manual eval flag
     FLY_API bool getManualEvalFlag();
-#endif
 
     /**
        @}
@@ -1666,38 +1605,30 @@ extern "C" {
     */
     FLY_API fly_err fly_retain_array(fly_array *out, const fly_array in);
 
-#if FLY_API_VERSION >= 31
     /**
        Get the reference count of \ref fly_array
     */
     FLY_API fly_err fly_get_data_ref_count(int *use_count, const fly_array in);
-#endif
 
     /**
        Evaluate any expressions in the Array
     */
     FLY_API fly_err fly_eval(fly_array in);
 
-#if FLY_API_VERSION >= 34
     /**
        Evaluate multiple arrays together
     */
     FLY_API fly_err fly_eval_multiple(const int num, fly_array *arrays);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        Turn the manual eval flag on or off
     */
     FLY_API fly_err fly_set_manual_eval_flag(bool flag);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        Get the manual eval flag
     */
     FLY_API fly_err fly_get_manual_eval_flag(bool *flag);
-#endif
 
     /**
         \brief Get the total number of elements across all dimensions of the array
@@ -1837,7 +1768,6 @@ extern "C" {
     */
     FLY_API fly_err fly_is_single       (bool *result, const fly_array arr);
 
-#if FLY_API_VERSION >= 37
     /**
         \brief Check if an array is 16 bit floating point type
 
@@ -1847,7 +1777,6 @@ extern "C" {
         \returns error codes
     */
     FLY_API fly_err fly_is_half(bool *result, const fly_array arr);
-#endif
 
     /**
         \brief Check if an array is real floating point type
@@ -1892,7 +1821,6 @@ extern "C" {
     */
     FLY_API fly_err fly_is_bool         (bool *result, const fly_array arr);
 
-#if FLY_API_VERSION >= 34
     /**
         \brief Check if an array is sparse
 
@@ -1902,9 +1830,7 @@ extern "C" {
         \returns error codes
     */
     FLY_API fly_err fly_is_sparse       (bool *result, const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 35
     /**
         \brief Get first element from an array
 
@@ -1913,7 +1839,6 @@ extern "C" {
         \return \ref FLY_SUCCESS if the execution completes properly
     */
     FLY_API fly_err fly_get_scalar(void* output_value, const fly_array arr);
-#endif
 
     /**
         @}

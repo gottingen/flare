@@ -130,12 +130,10 @@ typedef enum {
     , FLY_ERR_BATCH          = 207
 
 
-#if FLY_API_VERSION >= 33
     ///
     /// Input does not belong to the current device.
     ///
     , FLY_ERR_DEVICE         = 208
-#endif
 
     // 300-399 Errors for missing software features
 
@@ -149,12 +147,10 @@ typedef enum {
     ///
     , FLY_ERR_NOT_CONFIGURED = 302
 
-#if FLY_API_VERSION >= 32
     ///
     /// This build of Flare is not compiled with "nonfree" algorithms
     ///
     , FLY_ERR_NONFREE        = 303
-#endif
 
     // 400-499 Errors for missing hardware features
 
@@ -169,35 +165,27 @@ typedef enum {
     ///
     , FLY_ERR_NO_GFX         = 402
 
-#if FLY_API_VERSION >= 37
     ///
     /// This device does not support half
     ///
     , FLY_ERR_NO_HALF        = 403
-#endif
 
     // 500-599 Errors specific to heterogenous API
 
-#if FLY_API_VERSION >= 32
     ///
     /// There was an error when loading the libraries
     ///
     , FLY_ERR_LOAD_LIB       = 501
-#endif
 
-#if FLY_API_VERSION >= 32
     ///
     /// There was an error when loading the symbols
     ///
     , FLY_ERR_LOAD_SYM       = 502
-#endif
 
-#if FLY_API_VERSION >= 32
     ///
     /// There was a mismatch between the input array and the active backend
     ///
     , FLY_ERR_ARR_BKND_MISMATCH    = 503
-#endif
 
     // 900-999 Errors from upstream libraries and runtimes
 
@@ -224,15 +212,9 @@ typedef enum {
     u8 ,    ///< 8-bit unsigned integral values
     s64,    ///< 64-bit signed integral values
     u64    ///< 64-bit unsigned integral values
-#if FLY_API_VERSION >= 32
     , s16    ///< 16-bit signed integral values
-#endif
-#if FLY_API_VERSION >= 32
     , u16    ///< 16-bit unsigned integral values
-#endif
-#if FLY_API_VERSION >= 37
     , f16    ///< 16-bit floating point value
-#endif
 } fly_dtype;
 
 typedef enum {
@@ -251,21 +233,11 @@ typedef enum {
     FLY_INTERP_BILINEAR,        ///< Bilinear Interpolation
     FLY_INTERP_CUBIC,           ///< Cubic Interpolation
     FLY_INTERP_LOWER           ///< Floor Indexed
-#if FLY_API_VERSION >= 34
     , FLY_INTERP_LINEAR_COSINE   ///< Linear Interpolation with cosine smoothing
-#endif
-#if FLY_API_VERSION >= 34
     , FLY_INTERP_BILINEAR_COSINE ///< Bilinear Interpolation with cosine smoothing
-#endif
-#if FLY_API_VERSION >= 34
     , FLY_INTERP_BICUBIC         ///< Bicubic Interpolation
-#endif
-#if FLY_API_VERSION >= 34
     , FLY_INTERP_CUBIC_SPLINE    ///< Cubic Interpolation with Catmull-Rom splines
-#endif
-#if FLY_API_VERSION >= 34
     , FLY_INTERP_BICUBIC_SPLINE  ///< Bicubic Interpolation with Catmull-Rom splines
-#endif
 
 } fly_interp_type;
 
@@ -334,21 +306,17 @@ typedef enum {
     FLY_SHD        ///< Match based on Sum of Hamming Distances (SHD)
 } fly_match_type;
 
-#if FLY_API_VERSION >= 31
 typedef enum {
     FLY_YCC_601 = 601,  ///< ITU-R BT.601 (formerly CCIR 601) standard
     FLY_YCC_709 = 709,  ///< ITU-R BT.709 standard
     FLY_YCC_2020 = 2020 ///< ITU-R BT.2020 standard
 } fly_ycc_std;
-#endif
 
 typedef enum {
     FLY_GRAY = 0, ///< Grayscale
     FLY_RGB,      ///< 3-channel RGB
     FLY_HSV       ///< 3-channel HSV
-#if FLY_API_VERSION >= 31
     , FLY_YCbCr     ///< 3-channel YCbCr
-#endif
 } fly_cspace_t;
 
 typedef enum {
@@ -379,7 +347,6 @@ typedef enum {
     FLY_NORM_EUCLID = FLY_NORM_VECTOR_2 ///< The default. Same as FLY_NORM_VECTOR_2
 } fly_norm_type;
 
-#if FLY_API_VERSION >= 31
 typedef enum {
     FLY_FIF_BMP          = 0,    ///< FreeImage Enum for Bitmap File
     FLY_FIF_ICO          = 1,    ///< FreeImage Enum for Windows Icon File
@@ -395,9 +362,7 @@ typedef enum {
     FLY_FIF_JP2          = 31,   ///< FreeImage Enum for JPEG-2000 File
     FLY_FIF_RAW          = 34    ///< FreeImage Enum for RAW Camera Image File
 } fly_image_format;
-#endif
 
-#if FLY_API_VERSION >=34
 typedef enum {
     FLY_MOMENT_M00 = 1,
     FLY_MOMENT_M01 = 2,
@@ -405,16 +370,12 @@ typedef enum {
     FLY_MOMENT_M11 = 8,
     FLY_MOMENT_FIRST_ORDER = FLY_MOMENT_M00 | FLY_MOMENT_M01 | FLY_MOMENT_M10 | FLY_MOMENT_M11
 } fly_moment_type;
-#endif
 
-#if FLY_API_VERSION >= 32
 typedef enum {
     FLY_HOMOGRAPHY_RANSAC = 0,   ///< Computes homography using RANSAC
     FLY_HOMOGRAPHY_LMEDS  = 1    ///< Computes homography using Least Median of Squares
 } fly_homography_type;
-#endif
 
-#if FLY_API_VERSION >= 32
 // These enums should be 2^x
 typedef enum {
     FLY_BACKEND_DEFAULT = 0,  ///< Default backend order: OpenCL -> CUDA -> CPU
@@ -423,7 +384,6 @@ typedef enum {
     FLY_BACKEND_OPENCL  = 4,  ///< OpenCL Compute Backend
     FLY_BACKEND_ONEAPI  = 8   ///< OneAPI Compute Backend
 } fly_backend;
-#endif
 
 // Below enum is purely added for example purposes
 // it doesn't and shoudn't be used anywhere in the
@@ -432,16 +392,13 @@ typedef enum {
     FLY_ID = 0
 } fly_someenum_t;
 
-#if FLY_API_VERSION >=34
 typedef enum {
     FLY_BINARY_ADD  = 0,
     FLY_BINARY_MUL  = 1,
     FLY_BINARY_MIN  = 2,
     FLY_BINARY_MAX  = 3
 } fly_binary_op;
-#endif
 
-#if FLY_API_VERSION >=34
 typedef enum {
     FLY_RANDOM_ENGINE_PHILOX_4X32_10     = 100,                                  //Philox variant with N = 4, W = 32 and Rounds = 10
     FLY_RANDOM_ENGINE_THREEFRY_2X32_16   = 200,                                  //Threefry variant with N = 2, W = 32 and Rounds = 16
@@ -451,7 +408,6 @@ typedef enum {
     FLY_RANDOM_ENGINE_MERSENNE           = FLY_RANDOM_ENGINE_MERSENNE_GP11213,    //Resolves to Mersenne GP 11213
     FLY_RANDOM_ENGINE_DEFAULT            = FLY_RANDOM_ENGINE_PHILOX               //Resolves to Philox
 } fly_random_engine_type;
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // theia / Graphics Related Enums
@@ -471,7 +427,6 @@ typedef enum {
     FLY_COLORMAP_VIRIDIS = 10    ///< Perceptually uniform shades of blue-green-yellow
 } fly_colormap;
 
-#if FLY_API_VERSION >= 32
 typedef enum {
     FLY_MARKER_NONE         = 0,
     FLY_MARKER_POINT        = 1,
@@ -482,26 +437,22 @@ typedef enum {
     FLY_MARKER_PLUS         = 6,
     FLY_MARKER_STAR         = 7
 } fly_marker_type;
-#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 
-#if FLY_API_VERSION >= 35
+
 typedef enum {
     FLY_CANNY_THRESHOLD_MANUAL    = 0, ///< User has to define canny thresholds manually
     FLY_CANNY_THRESHOLD_AUTO_OTSU = 1  ///< Determine canny algorithm thresholds using Otsu algorithm
 } fly_canny_threshold;
-#endif
 
-#if FLY_API_VERSION >= 34
 typedef enum {
     FLY_STORAGE_DENSE     = 0,   ///< Storage type is dense
     FLY_STORAGE_CSR       = 1,   ///< Storage type is CSR
     FLY_STORAGE_CSC       = 2,   ///< Storage type is CSC
     FLY_STORAGE_COO       = 3    ///< Storage type is COO
 } fly_storage;
-#endif
 
-#if FLY_API_VERSION >= 36
 typedef enum {
     FLY_FLUX_QUADRATIC   = 1,    ///< Quadratic flux function
     FLY_FLUX_EXPONENTIAL = 2,    ///< Exponential flux function
@@ -522,9 +473,7 @@ typedef enum {
     FLY_TOPK_STABLE_MAX  = FLY_TOPK_STABLE | FLY_TOPK_MAX, ///< Top k max with stable indices
     FLY_TOPK_DEFAULT = 0   ///< Default option (max)
 } fly_topk_function;
-#endif
 
-#if FLY_API_VERSION >= 37
 typedef enum {
     FLY_VARIANCE_DEFAULT    = 0, ///< Default (Population) variance
     FLY_VARIANCE_SAMPLE     = 1, ///< Sample variance
@@ -542,16 +491,13 @@ typedef enum {
     FLY_INVERSE_DECONV_DEFAULT        = 0         ///< Default is Tikhonov deconvolution
 } fly_inverse_deconv_algo;
 
-#endif
 
-#if FLY_API_VERSION >= 37
 typedef enum {
     FLY_CONV_GRADIENT_DEFAULT = 0,
     FLY_CONV_GRADIENT_FILTER  = 1,
     FLY_CONV_GRADIENT_DATA    = 2,
     FLY_CONV_GRADIENT_BIAS    = 3
 } fly_conv_gradient_type;
-#endif
 
 #ifdef __cplusplus
 namespace fly
@@ -570,44 +516,22 @@ namespace fly
     typedef fly_mat_prop matProp;
     typedef fly_colormap ColorMap;
     typedef fly_norm_type normType;
-#if FLY_API_VERSION >= 31
     typedef fly_ycc_std YCCStd;
-#endif
-#if FLY_API_VERSION >= 31
     typedef fly_image_format imageFormat;
-#endif
-#if FLY_API_VERSION >= 32
     typedef fly_backend Backend;
-#endif
-#if FLY_API_VERSION >= 32
     typedef fly_marker_type markerType;
-#endif
-#if FLY_API_VERSION >= 34
     typedef fly_moment_type momentType;
-#endif
-#if FLY_API_VERSION >= 34
     typedef fly_storage storage;
-#endif
-#if FLY_API_VERSION >= 34
     typedef fly_binary_op binaryOp;
-#endif
-#if FLY_API_VERSION >= 34
     typedef fly_random_engine_type randomEngineType;
-#endif
-#if FLY_API_VERSION >= 35
     typedef fly_canny_threshold cannyThreshold;
-#endif
-#if FLY_API_VERSION >= 36
     typedef fly_flux_function fluxFunction;
     typedef fly_diffusion_eq diffusionEq;
     typedef fly_topk_function topkFunction;
-#endif
-#if FLY_API_VERSION >= 37
     typedef fly_var_bias varBias;
     typedef fly_iterative_deconv_algo iterativeDeconvAlgo;
     typedef fly_inverse_deconv_algo inverseDeconvAlgo;
     typedef fly_conv_gradient_type convGradientType;
-#endif
 }
 
 #endif

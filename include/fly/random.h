@@ -29,7 +29,6 @@ namespace fly
 {
     class array;
     class dim4;
-#if FLY_API_VERSION >= 34
     /// C++ Interface - Random Number Generation Engine Class
     ///
     /// The \ref fly::randomEngine class is used to set the type and seed of
@@ -121,9 +120,7 @@ namespace fly
       */
       fly_random_engine get(void) const;
     };
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
         C++ Interface to create an array of random numbers uniformly
         distributed.
@@ -136,9 +133,7 @@ namespace fly
         \ingroup random_func_randu
     */
     FLY_API array randu(const dim4 &dims, const dtype ty, randomEngine &r);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
         C++ Interface to create an array of random numbers normally
         distributed.
@@ -151,7 +146,6 @@ namespace fly
         \ingroup random_func_randn
     */
     FLY_API array randn(const dim4 &dims, const dtype ty, randomEngine &r);
-#endif
 
     /**
         C++ Interface to create an array of random numbers uniformly
@@ -290,7 +284,6 @@ namespace fly
                       const dim_t d1, const dim_t d2,
                       const dim_t d3, const dtype ty=f32);
 
-#if FLY_API_VERSION >= 34
     /**
         C++ Interface to set the default random engine type.
 
@@ -299,9 +292,7 @@ namespace fly
         \ingroup random_func_set_default_engine
     */
     FLY_API void setDefaultRandomEngineType(randomEngineType rtype);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
         C++ Interface to get the default random engine type.
 
@@ -310,7 +301,6 @@ namespace fly
         \ingroup random_func_get_default_engine
     */
     FLY_API randomEngine getDefaultRandomEngine(void);
-#endif
 
     /**
         C++ Interface to set the seed of the default random number generator.
@@ -337,7 +327,6 @@ namespace fly
 extern "C" {
 #endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to create a random engine.
 
@@ -352,9 +341,7 @@ extern "C" {
     FLY_API fly_err fly_create_random_engine(fly_random_engine *engine,
                                          fly_random_engine_type rtype,
                                          unsigned long long seed);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to retain a random engine.
 
@@ -367,9 +354,7 @@ extern "C" {
     */
     FLY_API fly_err fly_retain_random_engine(fly_random_engine *out,
                                          const fly_random_engine engine);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to change random engine type.
 
@@ -382,9 +367,7 @@ extern "C" {
     */
     FLY_API fly_err fly_random_engine_set_type(fly_random_engine *engine,
                                            const fly_random_engine_type rtype);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to get random engine type.
 
@@ -397,9 +380,7 @@ extern "C" {
     */
     FLY_API fly_err fly_random_engine_get_type(fly_random_engine_type *rtype,
                                            const fly_random_engine engine);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to create an array of uniform numbers using a random engine.
 
@@ -417,9 +398,7 @@ extern "C" {
     FLY_API fly_err fly_random_uniform(fly_array *out, const unsigned ndims,
                                    const dim_t * const dims, const fly_dtype type,
                                    fly_random_engine engine);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to create an array of normal numbers using a random engine.
 
@@ -437,9 +416,7 @@ extern "C" {
     FLY_API fly_err fly_random_normal(fly_array *out, const unsigned ndims,
                                   const dim_t * const dims, const fly_dtype type,
                                   fly_random_engine engine);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to set the seed of a random engine.
 
@@ -452,9 +429,7 @@ extern "C" {
     */
     FLY_API fly_err fly_random_engine_set_seed(fly_random_engine *engine,
                                            const unsigned long long seed);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to get the default random engine.
 
@@ -465,9 +440,7 @@ extern "C" {
        \ingroup random_func_get_default_engine
     */
     FLY_API fly_err fly_get_default_random_engine(fly_random_engine *engine);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to set the type of the default random engine.
 
@@ -478,9 +451,7 @@ extern "C" {
        \ingroup random_func_set_default_engine
     */
     FLY_API fly_err fly_set_default_random_engine_type(const fly_random_engine_type rtype);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to get the seed of a random engine.
 
@@ -493,9 +464,7 @@ extern "C" {
     */
     FLY_API fly_err fly_random_engine_get_seed(unsigned long long * const seed,
                                            fly_random_engine engine);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to release a random engine.
 
@@ -506,7 +475,6 @@ extern "C" {
        \ingroup random_func_random_engine
     */
     FLY_API fly_err fly_release_random_engine(fly_random_engine engine);
-#endif
 
     /**
        \param[out] out   generated array

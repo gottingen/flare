@@ -33,7 +33,6 @@ namespace fly
     */
     FLY_API array sum(const array &in, const int dim = -1);
 
-#if FLY_API_VERSION >= 31
     /**
        C++ Interface to sum array elements over a given dimension, replacing
        any NaNs with a specified value.
@@ -46,9 +45,7 @@ namespace fly
        \ingroup reduce_func_sum
     */
     FLY_API array sum(const array &in, const int dim, const double nanval);
-#endif
 
-#if FLY_API_VERSION >= 37
     /**
        C++ Interface to sum array elements over a given dimension, according to
        an array of keys.
@@ -82,7 +79,6 @@ namespace fly
     FLY_API void sumByKey(array &keys_out, array &vals_out,
                         const array &keys, const array &vals,
                         const int dim, const double nanval);
-#endif
 
     /**
        C++ Interface to multiply array elements over a given dimension.
@@ -96,7 +92,6 @@ namespace fly
     */
     FLY_API array product(const array &in, const int dim = -1);
 
-#if FLY_API_VERSION >= 31
     /**
        C++ Interface to multiply array elements over a given dimension,
        replacing any NaNs with a specified value.
@@ -109,9 +104,7 @@ namespace fly
        \ingroup reduce_func_product
     */
     FLY_API array product(const array &in, const int dim, const double nanval);
-#endif
 
-#if FLY_API_VERSION >= 37
     /**
        C++ Interface to multiply array elements over a given dimension,
        according to an array of keys.
@@ -147,7 +140,6 @@ namespace fly
     FLY_API void productByKey(array &keys_out, array &vals_out,
                             const array &keys, const array &vals,
                             const int dim, const double nanval);
-#endif
 
     /**
        C++ Interface to return the minimum along a given dimension.
@@ -163,7 +155,6 @@ namespace fly
     */
     FLY_API array min(const array &in, const int dim = -1);
 
-#if FLY_API_VERSION >= 37
     /**
        C++ Interface to return the minimum along a given dimension, according
        to an array of keys.
@@ -182,7 +173,6 @@ namespace fly
     FLY_API void minByKey(array &keys_out, array &vals_out,
                         const array &keys, const array &vals,
                         const int dim = -1);
-#endif
 
     /**
        C++ Interface to return the maximum along a given dimension.
@@ -198,7 +188,6 @@ namespace fly
     */
     FLY_API array max(const array &in, const int dim = -1);
 
-#if FLY_API_VERSION >= 37
     /**
        C++ Interface to return the maximum along a given dimension, according
        to an array of keys.
@@ -217,9 +206,7 @@ namespace fly
     FLY_API void maxByKey(array &keys_out, array &vals_out,
                         const array &keys, const array &vals,
                         const int dim = -1);
-#endif
 
-#if FLY_API_VERSION >= 38
     /**
        C++ Interface to return the ragged maximum along a given dimension.
 
@@ -236,7 +223,6 @@ namespace fly
        \ingroup reduce_func_max
     */
     FLY_API void max(array &val, array &idx, const array &in, const array &ragged_len, const int dim);
-#endif
 
     /**
        C++ Interface to check if all values along a given dimension are true.
@@ -252,7 +238,6 @@ namespace fly
     */
     FLY_API array allTrue(const array &in, const int dim = -1);
 
-#if FLY_API_VERSION >= 37
     /**
        C++ Interface to check if all values along a given dimension are true,
        according to an array of keys.
@@ -270,7 +255,6 @@ namespace fly
     FLY_API void allTrueByKey(array &keys_out, array &vals_out,
                             const array &keys, const array &vals,
                             const int dim = -1);
-#endif
 
     /**
        C++ Interface to check if any values along a given dimension are true.
@@ -286,7 +270,6 @@ namespace fly
     */
     FLY_API array anyTrue(const array &in, const int dim = -1);
 
-#if FLY_API_VERSION >= 37
     /**
        C++ Interface to check if any values along a given dimension are true,
        according to an array of keys.
@@ -304,7 +287,6 @@ namespace fly
     FLY_API void anyTrueByKey(array &keys_out, array &vals_out,
                             const array &keys, const array &vals,
                             const int dim = -1);
-#endif
 
     /**
        C++ Interface to count non-zero values in an array along a given
@@ -321,7 +303,6 @@ namespace fly
     */
     FLY_API array count(const array &in, const int dim = -1);
 
-#if FLY_API_VERSION >= 37
     /**
        C++ Interface to count non-zero values in an array, according to an
        array of keys.
@@ -340,7 +321,6 @@ namespace fly
     FLY_API void countByKey(array &keys_out, array &vals_out,
                           const array &keys, const array &vals,
                           const int dim = -1);
-#endif
 
     /**
        C++ Interface to sum array elements over all dimensions.
@@ -355,7 +335,6 @@ namespace fly
     */
     template<typename T> T sum(const array &in);
 
-#if FLY_API_VERSION >= 31
     /**
        C++ Interface to sum array elements over all dimensions, replacing any
        NaNs with a specified value.
@@ -370,7 +349,6 @@ namespace fly
        \ingroup reduce_func_sum
     */
     template<typename T> T sum(const array &in, double nanval);
-#endif
 
     /**
        C++ Interface to multiply array elements over the first non-singleton
@@ -383,7 +361,6 @@ namespace fly
     */
     template<typename T> T product(const array &in);
 
-#if FLY_API_VERSION >= 31
     /**
        C++ Interface to multiply array elements over the first non-singleton
        dimension, replacing any NaNs with a specified value.
@@ -395,7 +372,6 @@ namespace fly
        \ingroup reduce_func_product
     */
     template<typename T> T product(const array &in, double nanval);
-#endif
 
     /**
        C++ Interface to return the minimum along the first non-singleton
@@ -539,7 +515,6 @@ namespace fly
     */
     FLY_API array accum(const array &in, const int dim = 0);
 
-#if FLY_API_VERSION >=34
     /**
        C++ Interface to scan an array (generalized) over a given dimension.
 
@@ -571,7 +546,6 @@ namespace fly
     */
     FLY_API array scanByKey(const array &key, const array& in, const int dim = 0,
                           binaryOp op = FLY_BINARY_ADD, bool inclusive_scan = true);
-#endif
 
     /**
        C++ Interface to locate the indices of the non-zero values in an array.
@@ -713,7 +687,6 @@ extern "C" {
     */
     FLY_API fly_err fly_sum(fly_array *out, const fly_array in, const int dim);
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to sum array elements over all dimensions.
 
@@ -727,9 +700,7 @@ extern "C" {
        \ingroup reduce_func_sum
     */
     FLY_API fly_err fly_sum_all_array(fly_array *out, const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to sum array elements over a given dimension, replacing any
        NaNs with a specified value.
@@ -745,9 +716,7 @@ extern "C" {
     */
     FLY_API fly_err fly_sum_nan(fly_array *out, const fly_array in,
                             const int dim, const double nanval);
-#endif
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to sum array elements over all dimensions, replacing any
        NaNs with a specified value.
@@ -763,9 +732,7 @@ extern "C" {
        \ingroup reduce_func_sum
     */
     FLY_API fly_err fly_sum_nan_all_array(fly_array *out, const fly_array in, const double nanval);
-#endif
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface to sum array elements over a given dimension, according to
        an array of keys.
@@ -801,7 +768,6 @@ extern "C" {
     FLY_API fly_err fly_sum_by_key_nan(fly_array *keys_out, fly_array *vals_out,
                                    const fly_array keys, const fly_array vals,
                                    const int dim, const double nanval);
-#endif
 
     /**
        C Interface to multiply array elements over a given dimension.
@@ -816,7 +782,6 @@ extern "C" {
     */
     FLY_API fly_err fly_product(fly_array *out, const fly_array in, const int dim);
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to multiply array elements over all dimensions.
 
@@ -830,9 +795,7 @@ extern "C" {
        \ingroup reduce_func_product
     */
     FLY_API fly_err fly_product_all_array(fly_array *out, const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to multiply array elements over a given dimension, replacing
        any NaNs with a specified value.
@@ -847,9 +810,7 @@ extern "C" {
        \ingroup reduce_func_product
     */
     FLY_API fly_err fly_product_nan(fly_array *out, const fly_array in, const int dim, const double nanval);
-#endif
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to multiply array elements over all dimensions, replacing
        any NaNs with a specified value.
@@ -863,9 +824,7 @@ extern "C" {
        \ingroup reduce_func_product
     */
     FLY_API fly_err fly_product_nan_all_array(fly_array *out, const fly_array in, const double nanval);
-#endif
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface to multiply array elements over a given dimension, according
        to an array of keys.
@@ -901,7 +860,6 @@ extern "C" {
     FLY_API fly_err fly_product_by_key_nan(fly_array *keys_out, fly_array *vals_out,
                                        const fly_array keys, const fly_array vals,
                                        const int dim, const double nanval);
-#endif
 
     /**
        C Interface to return the minimum along a given dimension.
@@ -916,7 +874,6 @@ extern "C" {
     */
     FLY_API fly_err fly_min(fly_array *out, const fly_array in, const int dim);
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface to return the minimum along a given dimension, according to
        an array of keys.
@@ -934,7 +891,6 @@ extern "C" {
     FLY_API fly_err fly_min_by_key(fly_array *keys_out, fly_array *vals_out,
                                const fly_array keys, const fly_array vals,
                                const int dim);
-#endif
 
     /**
        C Interface to return the maximum along a given dimension.
@@ -949,7 +905,6 @@ extern "C" {
     */
     FLY_API fly_err fly_max(fly_array *out, const fly_array in, const int dim);
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface to return the maximum along a given dimension, according to
        an array of keys.
@@ -967,9 +922,7 @@ extern "C" {
     FLY_API fly_err fly_max_by_key(fly_array *keys_out, fly_array *vals_out,
                                const fly_array keys, const fly_array vals,
                                const int dim);
-#endif
 
-#if FLY_API_VERSION >= 38
     /**
        C Interface to return the ragged maximum over a given dimension.
 
@@ -988,7 +941,6 @@ extern "C" {
        \ingroup reduce_func_max
     */
     FLY_API fly_err fly_max_ragged(fly_array *val, fly_array *idx, const fly_array in, const fly_array ragged_len, const int dim);
-#endif
 
     /**
        C Interface  to check if all values along a given dimension are true.
@@ -1005,7 +957,6 @@ extern "C" {
     */
     FLY_API fly_err fly_all_true(fly_array *out, const fly_array in, const int dim);
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface to check if all values along a given dimension are true,
        according to an array of keys.
@@ -1025,7 +976,6 @@ extern "C" {
     FLY_API fly_err fly_all_true_by_key(fly_array *keys_out, fly_array *vals_out,
                                     const fly_array keys, const fly_array vals,
                                     const int dim);
-#endif
 
     /**
        C Interface to check if any values along a given dimension are true.
@@ -1042,7 +992,6 @@ extern "C" {
     */
     FLY_API fly_err fly_any_true(fly_array *out, const fly_array in, const int dim);
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface to check if any values along a given dimension are true.
 
@@ -1061,7 +1010,6 @@ extern "C" {
     FLY_API fly_err fly_any_true_by_key(fly_array *keys_out, fly_array *vals_out,
                                     const fly_array keys, const fly_array vals,
                                     const int dim);
-#endif
 
     /**
        C Interface to count non-zero values in an array along a given
@@ -1079,7 +1027,6 @@ extern "C" {
     */
     FLY_API fly_err fly_count(fly_array *out, const fly_array in, const int dim);
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface to count non-zero values in an array, according to an array
        of keys.
@@ -1099,7 +1046,6 @@ extern "C" {
     FLY_API fly_err fly_count_by_key(fly_array *keys_out, fly_array *vals_out,
                                  const fly_array keys, const fly_array vals,
                                  const int dim);
-#endif
 
     /**
        C Interface to sum array elements over all dimensions.
@@ -1116,7 +1062,6 @@ extern "C" {
     */
     FLY_API fly_err fly_sum_all(double *real, double *imag, const fly_array in);
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to sum array elements over all dimensions, replacing any
        NaNs with a specified value.
@@ -1134,7 +1079,6 @@ extern "C" {
     */
     FLY_API fly_err fly_sum_nan_all(double *real, double *imag,
                                 const fly_array in, const double nanval);
-#endif
 
     /**
        C Interface to multiply array elements over all dimensions.
@@ -1151,7 +1095,6 @@ extern "C" {
     */
     FLY_API fly_err fly_product_all(double *real, double *imag, const fly_array in);
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to multiply array elements over all dimensions, replacing
        any NaNs with a specified value.
@@ -1169,7 +1112,6 @@ extern "C" {
     */
     FLY_API fly_err fly_product_nan_all(double *real, double *imag,
                                     const fly_array in, const double nanval);
-#endif
 
     /**
        C Interface to return the minimum over all dimensions.
@@ -1186,7 +1128,6 @@ extern "C" {
     */
     FLY_API fly_err fly_min_all(double *real, double *imag, const fly_array in);
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to return the minimum over all dimensions.
 
@@ -1198,7 +1139,6 @@ extern "C" {
        \ingroup reduce_func_min
     */
     FLY_API fly_err fly_min_all_array(fly_array *out, const fly_array in);
-#endif
 
     /**
        C Interface to return the maximum over all dimensions.
@@ -1215,7 +1155,6 @@ extern "C" {
     */
     FLY_API fly_err fly_max_all(double *real, double *imag, const fly_array in);
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to return the maximum over all dimensions.
 
@@ -1227,7 +1166,6 @@ extern "C" {
        \ingroup reduce_func_max
     */
     FLY_API fly_err fly_max_all_array(fly_array *out, const fly_array in);
-#endif
 
     /**
        C Interface to check if all values over all dimensions are true.
@@ -1242,7 +1180,6 @@ extern "C" {
     */
     FLY_API fly_err fly_all_true_all(double *real, double *imag, const fly_array in);
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to check if all values over all dimensions are true.
  
@@ -1254,7 +1191,6 @@ extern "C" {
        \ingroup reduce_func_all_true
     */
     FLY_API fly_err fly_all_true_all_array(fly_array *out, const fly_array in);
-#endif
 
     /**
        C Interface to check if any values over all dimensions are true.
@@ -1269,7 +1205,6 @@ extern "C" {
     */
     FLY_API fly_err fly_any_true_all(double *real, double *imag, const fly_array in);
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to check if any values over all dimensions are true.
 
@@ -1281,7 +1216,6 @@ extern "C" {
        \ingroup reduce_func_any_true
     */
     FLY_API fly_err fly_any_true_all_array(fly_array *out, const fly_array in);
-#endif
 
     /**
        C Interface to count non-zero values over all dimensions.
@@ -1296,7 +1230,6 @@ extern "C" {
     */
     FLY_API fly_err fly_count_all(double *real, double *imag, const fly_array in);
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to count non-zero values over all dimensions.
 
@@ -1308,7 +1241,6 @@ extern "C" {
        \ingroup reduce_func_count
     */
     FLY_API fly_err fly_count_all_array(fly_array *out, const fly_array in);
-#endif
 
     /**
        C Interface to return the minimum and its location along a given
@@ -1389,7 +1321,6 @@ extern "C" {
     */
     FLY_API fly_err fly_accum(fly_array *out, const fly_array in, const int dim);
 
-#if FLY_API_VERSION >=34
     /**
        C Interface to scan an array (generalized) over a given dimension.
 
@@ -1425,7 +1356,6 @@ extern "C" {
                                 const fly_array in, const int dim,
                                 fly_binary_op op, bool inclusive_scan);
 
-#endif
 
     /**
        C Interface to locate the indices of the non-zero values in an array.

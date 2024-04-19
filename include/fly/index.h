@@ -109,7 +109,6 @@ class FLY_API index {
     ///
     index(const fly::array& idx0);
 
-#if FLY_API_VERSION >= 31
     ///
     /// \brief Copy constructor
     ///
@@ -118,7 +117,6 @@ class FLY_API index {
     /// \sa indexing
     ///
     index(const index& idx0);
-#endif
 
     ///
     /// \brief Returns true if the \ref fly::index represents a fly::span object
@@ -134,7 +132,6 @@ class FLY_API index {
     ///
     const fly_index_t& get() const;
 
-#if FLY_API_VERSION >= 31
     ///
     /// \brief Assigns idx0 to this index
     ///
@@ -159,7 +156,6 @@ class FLY_API index {
     ///
     index& operator=(index &&idx0);
 #endif
-#endif // FLY_API_VERSION
 };
 
 ///
@@ -174,7 +170,6 @@ class FLY_API index {
 ///
 FLY_API array lookup(const array &in, const array &idx, const int dim = -1);
 
-#if FLY_API_VERSION >= 31
 ///
 /// Copy the values of an input array based on index
 ///
@@ -191,7 +186,6 @@ FLY_API void copy(array &dst, const array &src,
                 const index &idx1 = span,
                 const index &idx2 = span,
                 const index &idx3 = span);
-#endif
 
 }
 #endif
@@ -290,7 +284,6 @@ extern "C" {
                                 const dim_t ndims, const fly_index_t* indices,
                                 const fly_array rhs);
 
-#if FLY_API_VERSION >= 32
     ///
     /// \brief Create an quadruple of fly_index_t array
     ///
@@ -302,9 +295,7 @@ extern "C" {
     /// \ingroup index_func_index
     ///
     FLY_API fly_err fly_create_indexers(fly_index_t** indexers);
-#endif
 
-#if FLY_API_VERSION >= 32
     ///
     /// \brief set \p dim to given indexer fly_array \p idx
     ///
@@ -318,9 +309,7 @@ extern "C" {
     /// \ingroup index_func_index
     ///
     FLY_API fly_err fly_set_array_indexer(fly_index_t* indexer, const fly_array idx, const dim_t dim);
-#endif
 
-#if FLY_API_VERSION >= 32
     ///
     /// \brief set \p dim to given indexer fly_array \p idx
     ///
@@ -338,9 +327,7 @@ extern "C" {
     ///
     FLY_API fly_err fly_set_seq_indexer(fly_index_t* indexer, const fly_seq* idx,
                                   const dim_t dim, const bool is_batch);
-#endif
 
-#if FLY_API_VERSION >= 32
     ///
     /// \brief set \p dim to given indexer fly_array \p idx
     ///
@@ -361,9 +348,7 @@ extern "C" {
     FLY_API fly_err fly_set_seq_param_indexer(fly_index_t* indexer,
                                         const double begin, const double end, const double step,
                                         const dim_t dim, const bool is_batch);
-#endif
 
-#if FLY_API_VERSION >= 32
     ///
     /// \brief Release's the memory resource used by the quadruple fly_index_t array
     ///
@@ -375,7 +360,6 @@ extern "C" {
     /// \ingroup index_func_index
     ///
     FLY_API fly_err fly_release_indexers(fly_index_t* indexers);
-#endif
 
 #ifdef __cplusplus
 }

@@ -39,9 +39,9 @@ if(NOT OPENGL_FOUND)
   # create a dummy gl.h header to satisfy cuda_gl_interop.h requirement
   # all opengl functionality is made available via glad third party code
   # that is built along with flare code base.
-  set(dummy_gl_root "${Flare_BINARY_DIR}/include/GL")
+  set(dummy_gl_root "${flare_BINARY_DIR}/include/GL")
   if(APPLE)
-    set(dummy_gl_root "${Flare_BINARY_DIR}/include/OpenGL")
+    set(dummy_gl_root "${flare_BINARY_DIR}/include/OpenGL")
   endif()
   file(WRITE "${dummy_gl_root}/gl.h" "// Dummy file to satisy cuda_gl_interop")
 endif()
@@ -149,7 +149,7 @@ set(nvrtc_src
   ${PROJECT_SOURCE_DIR}/src/api/c/optypes.hpp
   ${PROJECT_SOURCE_DIR}/include/fly/defines.h
   ${PROJECT_SOURCE_DIR}/include/fly/traits.hpp
-  ${PROJECT_BINARY_DIR}/include/fly/version.h
+  ${PROJECT_SOURCE_DIR}/include/fly/version.h
 
   ${CMAKE_CURRENT_SOURCE_DIR}/Param.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/assign_kernel_param.hpp
@@ -692,11 +692,11 @@ endif()
 
 target_include_directories (flycuda
   PUBLIC
-    $<BUILD_INTERFACE:${Flare_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${Flare_BINARY_DIR}/include>
+    $<BUILD_INTERFACE:${flare_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${flare_BINARY_DIR}/include>
     $<INSTALL_INTERFACE:${FLY_INSTALL_INC_DIR}>
   PRIVATE
-    ${Flare_SOURCE_DIR}/src/api/c
+    ${flare_SOURCE_DIR}/src/api/c
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/kernel
     ${CMAKE_CURRENT_SOURCE_DIR}/jit
@@ -746,7 +746,7 @@ endif()
 fly_split_debug_info(flycuda ${FLY_INSTALL_LIB_DIR})
 
 install(TARGETS flycuda
-  EXPORT FlareCUDATargets
+  EXPORT flareCUDATargets
   COMPONENT cuda
   PUBLIC_HEADER DESTINATION fly
   RUNTIME DESTINATION ${FLY_INSTALL_BIN_DIR}
@@ -885,18 +885,3 @@ if(FLY_INSTALL_STANDALONE)
     endif()
   endif()
 endif()
-
-
-source_group(include REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/include/*)
-source_group(api\\cpp REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/src/api/cpp/*)
-source_group(api\\c   REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/src/api/c/*)
-source_group(backend  REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/src/backend/common/*|${CMAKE_CURRENT_SOURCE_DIR}/*)
-source_group(backend\\kernel  REGULAR_EXPRESSION ${CMAKE_CURRENT_SOURCE_DIR}/kernel/*|${CMAKE_CURRENT_SOURCE_DIR}/kernel/thrust_sort_by_key/*|${CMAKE_CURRENT_SOURCE_DIR}/kernel/scan_by_key/*)
-source_group("generated files"  FILES ${Flare_BINARY_DIR}/src/backend/build_version.hpp ${Flare_BINARY_DIR}/include/fly/version.h
-                                REGULAR_EXPRESSION ${CMAKE_CURRENT_BINARY_DIR}/${kernel_headers_dir}/*)
-source_group("" FILES CMakeLists.txt)
-
-mark_as_advanced(
-  FETCHCONTENT_SOURCE_DIR_NV_CUB
-  FETCHCONTENT_UPDATES_DISCONNECTED_NV_CUB
-)

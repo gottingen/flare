@@ -42,11 +42,9 @@ public:
     /// Creates a new fly::exception with a formatted error message for a given
     /// an error code, file and line number in the source code.
     exception(const char *msg, const char *file, unsigned line, fly_err err);
-#if FLY_API_VERSION >= 33
     /// Creates a new exception given a message, function name, file name, line number and
     /// error code.
     exception(const char *msg, const char *func, const char *file, unsigned line, fly_err err);
-#endif
     virtual ~exception() throw() {}
     /// Returns an error message for the exception in a string format
     virtual const char *what() const throw() { return m_msg; }

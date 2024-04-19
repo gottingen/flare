@@ -55,38 +55,38 @@ target_sources(fly
     $<$<BOOL:${OpenCL_FOUND}>: ${CMAKE_CURRENT_SOURCE_DIR}/opencl.cpp>
     $<$<BOOL:${CUDA_FOUND}>: ${CMAKE_CURRENT_SOURCE_DIR}/cuda.cpp>
 
-    ${Flare_SOURCE_DIR}/src/api/c/type_util.cpp
-    ${Flare_SOURCE_DIR}/src/api/c/version.cpp
-    ${Flare_SOURCE_DIR}/src/backend/common/Logger.cpp
-    ${Flare_SOURCE_DIR}/src/backend/common/Logger.hpp
-    ${Flare_SOURCE_DIR}/src/backend/common/constants.cpp
-    ${Flare_SOURCE_DIR}/src/backend/common/dim4.cpp
-    ${Flare_SOURCE_DIR}/src/backend/common/err_common.cpp
-    ${Flare_SOURCE_DIR}/src/backend/common/util.cpp
-    ${Flare_SOURCE_DIR}/src/backend/common/util.hpp
-    ${Flare_SOURCE_DIR}/src/backend/common/deprecated.hpp
+    ${flare_SOURCE_DIR}/src/api/c/type_util.cpp
+    ${flare_SOURCE_DIR}/src/api/c/version.cpp
+    ${flare_SOURCE_DIR}/src/backend/common/Logger.cpp
+    ${flare_SOURCE_DIR}/src/backend/common/Logger.hpp
+    ${flare_SOURCE_DIR}/src/backend/common/constants.cpp
+    ${flare_SOURCE_DIR}/src/backend/common/dim4.cpp
+    ${flare_SOURCE_DIR}/src/backend/common/err_common.cpp
+    ${flare_SOURCE_DIR}/src/backend/common/util.cpp
+    ${flare_SOURCE_DIR}/src/backend/common/util.hpp
+    ${flare_SOURCE_DIR}/src/backend/common/deprecated.hpp
   )
 
 if(WIN32)
   target_sources(fly
     PRIVATE
-      ${Flare_SOURCE_DIR}/src/backend/common/module_loading_windows.cpp)
+      ${flare_SOURCE_DIR}/src/backend/common/module_loading_windows.cpp)
 else()
   target_sources(fly
     PRIVATE
-      ${Flare_SOURCE_DIR}/src/backend/common/module_loading_unix.cpp)
+      ${flare_SOURCE_DIR}/src/backend/common/module_loading_unix.cpp)
 endif()
 
 target_compile_definitions(fly PRIVATE FLY_UNIFIED)
 
 target_include_directories(fly
   PUBLIC
-    $<BUILD_INTERFACE:${Flare_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${Flare_BINARY_DIR}/include>
+    $<BUILD_INTERFACE:${flare_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${flare_BINARY_DIR}/include>
     $<INSTALL_INTERFACE:${FLY_INSTALL_INC_DIR}>
   PRIVATE
-    ${Flare_SOURCE_DIR}/src/api/c
-    ${Flare_SOURCE_DIR}/src/api/unified)
+    ${flare_SOURCE_DIR}/src/api/c
+    ${flare_SOURCE_DIR}/src/api/unified)
 
 target_include_directories(fly
   SYSTEM PRIVATE
@@ -111,7 +111,7 @@ if(TARGET fmt::fmt)
 endif()
 
 install(TARGETS fly
-  EXPORT FlareUnifiedTargets
+  EXPORT flareUnifiedTargets
   COMPONENT unified
   PUBLIC_HEADER DESTINATION fly
   RUNTIME DESTINATION ${FLY_INSTALL_BIN_DIR}
@@ -122,21 +122,3 @@ install(TARGETS fly
   )
 
 fly_split_debug_info(fly ${FLY_INSTALL_LIB_DIR})
-
-# install(TARGETS fly EXPORT FLY DESTINATION "${FLY_INSTALL_LIB_DIR}"
-#   COMPONENT libraries)
-#
-# if(APPLE)
-#   INSTALL(SCRIPT "${PROJECT_SOURCE_DIR}/CMakeModules/osx_install/InstallTool.cmake")
-# endif(APPLE)
-#
-# export(TARGETS fly FILE FlareUnified.cmake)
-# install(EXPORT FLY DESTINATION "${FLY_INSTALL_CMAKE_DIR}"
-#   COMPONENT cmake
-#   FILE FlareUnified.cmake)
-
-source_group(include REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/include/*)
-source_group(source REGULAR_EXPRESSION ${CMAKE_CURRENT_SOURCE_DIR}/*|${Flare_SOURCE_DIR}/src/backend/common/*)
-source_group(api\\cpp REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/src/api/cpp/*)
-source_group(api\\c REGULAR_EXPRESSION ${Flare_SOURCE_DIR}/src/api/c/*)
-source_group("" FILES CMakeLists.txt)

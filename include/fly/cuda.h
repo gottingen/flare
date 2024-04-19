@@ -43,7 +43,6 @@ extern "C" {
 #endif
 
 
-#if FLY_API_VERSION >= 31
 /**
    Get the stream for the CUDA device with \p id in Flare context
 
@@ -54,9 +53,7 @@ extern "C" {
    \ingroup cuda_mat
  */
 FLY_API fly_err flycu_get_stream(cudaStream_t* stream, int id);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    Get the native device id of the CUDA device with \p id in Flare context
 
@@ -67,9 +64,7 @@ FLY_API fly_err flycu_get_stream(cudaStream_t* stream, int id);
    \ingroup cuda_mat
  */
 FLY_API fly_err flycu_get_native_id(int* nativeid, int id);
-#endif
 
-#if FLY_API_VERSION >= 32
 /**
    Set the CUDA device with given native id as the active device for Flare
 
@@ -79,9 +74,7 @@ FLY_API fly_err flycu_get_native_id(int* nativeid, int id);
    \ingroup cuda_mat
  */
 FLY_API fly_err flycu_set_native_id(int nativeid);
-#endif
 
-#if FLY_API_VERSION >= 37
 /**
     Sets the cuBLAS math mode for the internal handle
 
@@ -93,7 +86,6 @@ FLY_API fly_err flycu_set_native_id(int nativeid);
     \ingroup cuda_mat
 */
 FLY_API fly_err flycu_cublasSetMathMode(cublasMath_t mode);
-#endif
 
 #ifdef __cplusplus
 }
@@ -104,7 +96,6 @@ FLY_API fly_err flycu_cublasSetMathMode(cublasMath_t mode);
 namespace flycu
 {
 
-#if FLY_API_VERSION >= 31
 /**
    Get the stream for the CUDA device with \p id in Flare context
 
@@ -121,9 +112,7 @@ static inline cudaStream_t getStream(int id)
         throw fly::exception("Failed to get CUDA stream from Flare");
     return retVal;
 }
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    Get the native device id of the CUDA device with \p id in Flare context
 
@@ -140,9 +129,7 @@ static inline int getNativeId(int id)
         throw fly::exception("Failed to get CUDA device native id from Flare");
     return retVal;
 }
-#endif
 
-#if FLY_API_VERSION >= 32
 /**
    Set the CUDA device with given native id as the active device for Flare
 
@@ -156,7 +143,6 @@ static inline void setNativeId(int nativeId)
     if (err!=FLY_SUCCESS)
         throw fly::exception("Failed to change active CUDA device to the device with given native id");
 }
-#endif
 
 }
 #endif

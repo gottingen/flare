@@ -78,7 +78,6 @@ namespace fly
     /// \ingroup arith_func_max
     FLY_API array max    (const double lhs, const array &rhs);
 
-#if FLY_API_VERSION >= 34
     /// @{
     /// C++ Interface to clamp an array between an upper and a lower limit.
     ///
@@ -89,22 +88,15 @@ namespace fly
     /// 
     /// \ingroup arith_func_clamp
     FLY_API array clamp(const array &in, const array &lo, const array &hi);
-#endif
 
-#if FLY_API_VERSION >= 34
     /// \copydoc clamp(const array&, const array&, const array&)
     FLY_API array clamp(const array &in, const array &lo, const double hi);
-#endif
 
-#if FLY_API_VERSION >= 34
     /// \copydoc clamp(const array&, const array&, const array&)
     FLY_API array clamp(const array &in, const double lo, const array &hi);
-#endif
 
-#if FLY_API_VERSION >= 34
     /// \copydoc clamp(const array&, const array&, const array&)
     FLY_API array clamp(const array &in, const double lo, const double hi);
-#endif
     /// @}
 
     /// @{
@@ -445,7 +437,6 @@ namespace fly
     FLY_API array pow2    (const array &in);
     /// @}
 
-#if FLY_API_VERSION >= 31
     /// C++ Interface to evaluate the logistical sigmoid function.
     ///
     /// Computes \f$\frac{1}{1+e^{-x}}\f$.
@@ -455,7 +446,6 @@ namespace fly
     ///
     /// \ingroup arith_func_sigmoid
     FLY_API array sigmoid (const array &in);
-#endif
 
     /// C++ Interface to evaluate the exponential.
     ///
@@ -535,7 +525,6 @@ namespace fly
     /// \ingroup arith_func_sqrt
     FLY_API array sqrt   (const array &in);
 
-#if FLY_API_VERSION >= 37
     /// C++ Interface to evaluate the reciprocal square root.
     ///
     /// \param[in] in input
@@ -543,7 +532,6 @@ namespace fly
     ///
     /// \ingroup arith_func_rsqrt
     FLY_API array rsqrt   (const array &in);
-#endif
 
     /// C++ Interface to evaluate the cube root.
     ///
@@ -812,7 +800,6 @@ extern "C" {
     */
     FLY_API fly_err fly_not   (fly_array *out, const fly_array in);
 
-#if FLY_API_VERSION >= 38
     /**
        C Interface to evaluate the bitwise NOT of an array.
 
@@ -824,7 +811,6 @@ extern "C" {
        \ingroup arith_func_bitnot
     */
     FLY_API fly_err fly_bitnot   (fly_array *out, const fly_array in);
-#endif
 
     /**
        C Interface to evaluate the bitwise AND of two arrays.
@@ -969,7 +955,6 @@ extern "C" {
     */
     FLY_API fly_err fly_maxof (fly_array *out, const fly_array lhs, const fly_array rhs, const bool batch);
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface to clamp an array between an upper and a lower limit.
 
@@ -985,7 +970,6 @@ extern "C" {
     */
     FLY_API fly_err fly_clamp(fly_array *out, const fly_array in,
                           const fly_array lo, const fly_array hi, const bool batch);
-#endif
 
     /**
        C Interface to calculate the remainder.
@@ -1377,7 +1361,6 @@ extern "C" {
     */
     FLY_API fly_err fly_pow2     (fly_array *out, const fly_array in);
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to evaluate the logistical sigmoid function.
 
@@ -1391,7 +1374,6 @@ extern "C" {
        \ingroup arith_func_sigmoid
     */
     FLY_API fly_err fly_sigmoid(fly_array* out, const fly_array in);
-#endif
 
     /**
        C Interface to evaluate the exponential.
@@ -1502,7 +1484,6 @@ extern "C" {
     */
     FLY_API fly_err fly_sqrt    (fly_array *out, const fly_array in);
 
-#if FLY_API_VERSION >= 37
     /**
       C Interface to evaluate the reciprocal square root.
 
@@ -1514,7 +1495,6 @@ extern "C" {
       \ingroup arith_func_rsqrt
     */
     FLY_API fly_err fly_rsqrt    (fly_array *out, const fly_array in);
-#endif
     /**
        C Interface to evaluate the cube root.
 

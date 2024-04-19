@@ -120,8 +120,8 @@ target_include_directories(flycommon_interface
         ${collie_INCLUDE_DIR})
 target_include_directories(flycommon_interface
         INTERFACE
-        ${Flare_SOURCE_DIR}/src/backend
-        ${Flare_BINARY_DIR}/src/backend)
+        ${flare_SOURCE_DIR}/src/backend
+        ${flare_BINARY_DIR}/src/backend)
 
 target_include_directories(flycommon_interface
         SYSTEM INTERFACE

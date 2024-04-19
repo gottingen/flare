@@ -17,11 +17,10 @@
 cmake_minimum_required(VERSION 3.24)
 include(CheckLanguage)
 
-include(CMakeModules/fly_vcpkg_options.cmake)
+project(flare VERSION 1.0.7 LANGUAGES C CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/find")
-project(Flare VERSION 3.9.0 LANGUAGES C CXX)
 
 include(fly_configure_deps_vars)
 include(fly_build_configurations)
@@ -282,9 +281,9 @@ else ()
         target_compile_definitions(bin2cpp PRIVATE OS_LNX)
     endif ()
     target_include_directories(bin2cpp PRIVATE
-            ${Flare_SOURCE_DIR}/include
-            ${Flare_BINARY_DIR}/include
-            ${Flare_SOURCE_DIR}/src/backend)
+            ${flare_SOURCE_DIR}/include
+            ${flare_BINARY_DIR}/include
+            ${flare_SOURCE_DIR}/src/backend)
     export(TARGETS bin2cpp FILE ${CMAKE_BINARY_DIR}/ImportExecutables.cmake)
 endif ()
 
@@ -329,12 +328,13 @@ if (TARGET flyopencl)
     list(APPEND built_backends flyopencl)
 endif ()
 
+
 set_target_properties(${built_backends} PROPERTIES
         CXX_STANDARD 17
         CXX_EXTENSIONS OFF
         CXX_VISIBILITY_PRESET hidden
-        VERSION "${Flare_VERSION}"
-        SOVERSION "${Flare_VERSION_MAJOR}")
+        VERSION "${flare_VERSION}"
+        SOVERSION "${flare_VERSION_MAJOR}")
 
 if (FLY_INSTALL_STANDALONE)
 
@@ -393,12 +393,20 @@ install(DIRECTORY include/ DESTINATION ${FLY_INSTALL_INC_DIR}
         PATTERN ".gitignore" EXCLUDE
 )
 
+get_target_property(theia_file_path theia::theia LOCATION)
+get_filename_component(theia_file_name ${theia_file_path} NAME)
+file(COPY_FILE ${theia_file_path} ${flare_BINARY_DIR}/${theia_file_name})
+message(STATUS ${theia_file_name})
+install(FILES ${flare_BINARY_DIR}/${theia_file_name} DESTINATION ${FLY_INSTALL_LIB_DIR})
+
 ## The Flare version file is generated and won't be included above, install
 ## it separately.
-install(FILES ${Flare_BINARY_DIR}/include/fly/version.h
-        ${Flare_BINARY_DIR}/include/fly/compilers.h
+#[[
+install(FILES ${flare_SOURCE_DIR}/include/fly/version.h
+        ${flare_SOURCE_DIR}/include/fly/compilers.h
         DESTINATION "${FLY_INSTALL_INC_DIR}/fly/"
         COMPONENT headers)
+        ]]
 
 # install the examples irrespective of the FLY_BUILD_EXAMPLES value
 # only the examples source files are installed, so the installation of these
@@ -413,7 +421,7 @@ install(DIRECTORY ${ASSETS_DIR}/examples/ #NOTE The slash at the end is importan
         DESTINATION ${FLY_INSTALL_EXAMPLE_DIR}
         COMPONENT examples)
 
-install(DIRECTORY "${Flare_SOURCE_DIR}/LICENSES/"
+install(DIRECTORY "${flare_SOURCE_DIR}/LICENSES/"
         DESTINATION LICENSES
         COMPONENT licenses)
 
@@ -421,20 +429,20 @@ foreach (backend CPU CUDA OpenCL oneAPI Unified)
     string(TOUPPER ${backend} upper_backend)
     string(TOLOWER ${backend} lower_backend)
     if (FLY_BUILD_${upper_backend})
-        install(EXPORT Flare${backend}Targets
-                NAMESPACE Flare::
+        install(EXPORT flare${backend}Targets
+                NAMESPACE flare::
                 DESTINATION ${FLY_INSTALL_CMAKE_DIR}
                 COMPONENT ${lower_backend}_dev)
 
-        export(EXPORT Flare${backend}Targets
-                NAMESPACE Flare::
-                FILE cmake/Flare${backend}Targets.cmake)
+        export(EXPORT flare${backend}Targets
+                NAMESPACE flare::
+                FILE cmake/flare${backend}Targets.cmake)
     endif ()
 endforeach ()
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-        "${Flare_BINARY_DIR}/FlareConfigVersion.cmake"
+        "${flare_BINARY_DIR}/flareConfigVersion.cmake"
         COMPATIBILITY SameMajorVersion
 )
 
@@ -443,14 +451,14 @@ write_basic_package_version_file(
 set(INCLUDE_DIRS include)
 set(CMAKE_DIR ${FLY_INSTALL_CMAKE_DIR})
 configure_package_config_file(
-        ${Flare_SOURCE_DIR}/CMakeModules/FlareConfig.cmake.in
-        cmake/install/FlareConfig.cmake
+        ${flare_SOURCE_DIR}/CMakeModules/flareConfig.cmake.in
+        cmake/install/flareConfig.cmake
         INSTALL_DESTINATION "${FLY_INSTALL_CMAKE_DIR}"
         PATH_VARS INCLUDE_DIRS CMAKE_DIR
 )
 
-install(FILES ${Flare_BINARY_DIR}/cmake/install/FlareConfig.cmake
-        ${Flare_BINARY_DIR}/FlareConfigVersion.cmake
+install(FILES ${flare_BINARY_DIR}/cmake/install/flareConfig.cmake
+        ${flare_BINARY_DIR}/flareConfigVersion.cmake
         DESTINATION ${FLY_INSTALL_CMAKE_DIR}
         COMPONENT cmake)
 
@@ -498,14 +506,14 @@ endif ()
 # This file will be used to create the config file for the build directory.
 # These config files will be used by the examples to find the Flare
 # libraries
-set(INCLUDE_DIRS "${Flare_SOURCE_DIR}/include" "${Flare_BINARY_DIR}/include")
-set(CMAKE_DIR "${Flare_BINARY_DIR}/cmake")
+set(INCLUDE_DIRS "${flare_SOURCE_DIR}/include" "${flare_BINARY_DIR}/include")
+set(CMAKE_DIR "${flare_BINARY_DIR}/cmake")
 configure_package_config_file(
-        ${Flare_SOURCE_DIR}/CMakeModules/FlareConfig.cmake.in
-        FlareConfig.cmake
-        INSTALL_DESTINATION "${Flare_BINARY_DIR}"
+        ${flare_SOURCE_DIR}/CMakeModules/flareConfig.cmake.in
+        flareConfig.cmake
+        INSTALL_DESTINATION "${flare_BINARY_DIR}"
         PATH_VARS INCLUDE_DIRS CMAKE_DIR
-        INSTALL_PREFIX "${Flare_BINARY_DIR}"
+        INSTALL_PREFIX "${flare_BINARY_DIR}"
 )
 
 # Registers the current build directory with the user's cmake config. This will
@@ -519,8 +527,8 @@ configure_package_config_file(
 unset(CMAKE_CXX_VISIBILITY_PRESET)
 
 configure_file(
-        ${Flare_SOURCE_DIR}/CMakeModules/CTestCustom.cmake
-        ${Flare_BINARY_DIR}/CTestCustom.cmake)
+        ${flare_SOURCE_DIR}/CMakeModules/CTestCustom.cmake
+        ${flare_BINARY_DIR}/CTestCustom.cmake)
 
 include(CTest)
 

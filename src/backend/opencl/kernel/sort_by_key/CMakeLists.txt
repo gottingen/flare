@@ -45,7 +45,7 @@ foreach(SBK_TYPE ${SBK_TYPES})
         ../common
         ../../../include
         magma
-        ${Flare_BINARY_DIR}/include
+        ${flare_BINARY_DIR}/include
         ${CMAKE_CURRENT_BINARY_DIR})
 
       target_include_directories(opencl_sort_by_key_${SBK_TYPE}

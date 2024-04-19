@@ -38,7 +38,7 @@ unset(CMAKE_SYCL_COMPILER_WORKS CACHE)
 
 # Try to identify the ABI and configure it into CMakeSYCLCompiler.cmake
 include(CMakeDetermineCompilerABI)
-CMAKE_DETERMINE_COMPILER_ABI(SYCL ${Flare_SOURCE_DIR}/CMakeModules/CMakeSYCLCompilerABI.cpp)
+CMAKE_DETERMINE_COMPILER_ABI(SYCL ${flare_SOURCE_DIR}/CMakeModules/CMakeSYCLCompilerABI.cpp)
 if(CMAKE_SYCL_ABI_COMPILED)
   # The compiler worked so skip dedicated test below.
   set(CMAKE_SYCL_COMPILER_WORKS TRUE)
@@ -87,7 +87,7 @@ CMAKE_DETERMINE_COMPILE_FEATURES(SYCL)
 set(CMAKE_TRY_COMPILE_CONFIGURATION "")
 # Re-configure to save learned information.
 configure_file(
-  ${Flare_SOURCE_DIR}/CMakeModules/CMakeSYCLCompiler.cmake.in
+  ${flare_SOURCE_DIR}/CMakeModules/CMakeSYCLCompiler.cmake.in
   ${CMAKE_PLATFORM_INFO_DIR}/CMakeSYCLCompiler.cmake
   @ONLY
 )

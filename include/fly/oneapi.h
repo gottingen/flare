@@ -21,7 +21,6 @@
 extern "C" {
 #endif
 
-#if FLY_API_VERSION >= 39
 typedef enum
 {
     //TODO: update? are these relevant in sycl
@@ -33,7 +32,6 @@ typedef enum
     FLY_ONEAPI_PLATFORM_POCL    = 5,
     FLY_ONEAPI_PLATFORM_UNKNOWN = -1
 } fly_oneapi_platform;
-#endif
 
 #if 0
 /**
@@ -70,7 +68,6 @@ FLY_API fly_err flycl_get_queue(cl_command_queue *queue, const bool retain);
 */
 FLY_API fly_err flycl_get_device_id(cl_device_id *id);
 
-#if FLY_API_VERSION >= 39
 /**
    Set Flare's active device based on \p id of type cl_device_id
 
@@ -78,9 +75,7 @@ FLY_API fly_err flycl_get_device_id(cl_device_id *id);
    \returns \ref fly_err error code
 */
 FLY_API fly_err flycl_set_device_id(cl_device_id id);
-#endif
 
-#if FLY_API_VERSION >= 39
 /**
    Push user provided device control constructs into the Flare device manager pool
 
@@ -96,9 +91,7 @@ FLY_API fly_err flycl_set_device_id(cl_device_id id);
    \note Flare does not take control of releasing the objects passed to it. The user needs to release them appropriately.
 */
 FLY_API fly_err flycl_add_device_context(cl_device_id dev, cl_context ctx, cl_command_queue que);
-#endif
 
-#if FLY_API_VERSION >= 39
 /**
    Set active device using cl_context and cl_device_id
 
@@ -106,9 +99,7 @@ FLY_API fly_err flycl_add_device_context(cl_device_id dev, cl_context ctx, cl_co
    \param[in] ctx is the OpenCL cl_context being used by Flare
 */
 FLY_API fly_err flycl_set_device_context(cl_device_id dev, cl_context ctx);
-#endif
 
-#if FLY_API_VERSION >= 39
 /**
    Remove the user provided device control constructs from the Flare device manager pool
 
@@ -121,21 +112,16 @@ FLY_API fly_err flycl_set_device_context(cl_device_id dev, cl_context ctx);
    \note Flare does not take control of releasing the objects passed to it. The user needs to release them appropriately.
 */
 FLY_API fly_err flycl_delete_device_context(cl_device_id dev, cl_context ctx);
-#endif
 
-#if FLY_API_VERSION >= 39
- Ge
-  t the type of the current device
+/*
+ Get the type of the current device
 */
 FLY_API fly_err flycl_get_device_type(flycl_device_type *res);
-#endif
 
-#if FLY_API_VERSION >= 39
 /**
    Get the platform of the current device
 */
 FLY_API fly_err flycl_get_platform(flycl_platform *res);
-#endif
 
 /**
   @}
@@ -208,7 +194,6 @@ namespace flyoneapi
      return id;
  }
 
-#if FLY_API_VERSION >= 39
  /**
    Set Flare's active device based on \p id of type cl_device_id
 
@@ -219,9 +204,7 @@ namespace flyoneapi
      fly_err err = flycl_set_device_id(id);
      if (err != FLY_SUCCESS) throw fly::exception("Failed to set OpenCL device as active device");
  }
-#endif
 
-#if FLY_API_VERSION >= 39
 /**
    Push user provided device control constructs into the Flare device manager pool
 
@@ -241,9 +224,7 @@ static inline void addDevice(cl_device_id dev, cl_context ctx, cl_command_queue 
     fly_err err = flycl_add_device_context(dev, ctx, que);
     if (err!=FLY_SUCCESS) throw fly::exception("Failed to push user provided device/context to Flare pool");
 }
-#endif
 
-#if FLY_API_VERSION >= 39
 /**
    Set active device using cl_context and cl_device_id
 
@@ -255,9 +236,7 @@ static inline void setDevice(cl_device_id dev, cl_context ctx)
     fly_err err = flycl_set_device_context(dev, ctx);
     if (err!=FLY_SUCCESS) throw fly::exception("Failed to set device based on cl_device_id & cl_context");
 }
-#endif
 
-#if FLY_API_VERSION >= 39
 /**
    Remove the user provided device control constructs from the Flare device manager pool
 
@@ -277,12 +256,9 @@ static inline void deleteDevice(cl_device_id dev, cl_context ctx)
 #endif
 
 
-#if FLY_API_VERSION >= 39
  typedef flycl_device_type deviceType;
  typedef flycl_platform platform;
-#endif
 
-#if FLY_API_VERSION >= 39
 /**
    Get the type of the current device
 */
@@ -293,9 +269,7 @@ static inline deviceType getDeviceType()
     if (err!=FLY_SUCCESS) throw fly::exception("Failed to get OpenCL device type");
     return res;
 }
-#endif
 
-#if FLY_API_VERSION >= 39
 /**
    Get a vendor enumeration for the current platform
 */
@@ -306,7 +280,6 @@ static inline platform getPlatform()
     if (err!=FLY_SUCCESS) throw fly::exception("Failed to get OpenCL platform");
     return res;
 }
-#endif
 
  /**
  Create an fly::array object from an OpenCL cl_mem buffer

@@ -21,7 +21,7 @@ project(Flare-Examples
   LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 14)
-if(NOT EXISTS "${Flare_SOURCE_DIR}/CMakeLists.txt")
+if(NOT EXISTS "${flare_SOURCE_DIR}/CMakeLists.txt")
   set(ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
 endif()
 

@@ -128,7 +128,6 @@ namespace fly
     FLY_DEPRECATED("Use fly::allocV2 instead")
     FLY_API void *alloc(const size_t elements, const dtype type);
 
-#if FLY_API_VERSION >= 38
     /// \brief Allocates memory using Flare's memory manager
     ///
     /// \param[in] bytes the number of bytes to allocate
@@ -139,7 +138,6 @@ namespace fly
     /// \note The device memory returned by this function is only freed if
     ///       fly::freeV2() is called explicitly
     FLY_API void *allocV2(const size_t bytes);
-#endif
 
     /// \brief Allocates memory using Flare's memory manager
     //
@@ -176,7 +174,6 @@ namespace fly
     FLY_DEPRECATED("Use fly::freeV2 instead")
     FLY_API void free(const void *ptr);
 
-#if FLY_API_VERSION >= 38
     /// \ingroup device_func_free
     /// \copydoc device_func_free
     /// \param[in] ptr The pointer returned by fly::allocV2
@@ -184,7 +181,6 @@ namespace fly
     /// This function will free a device pointer even if it has been previously
     /// locked.
     FLY_API void freeV2(const void *ptr);
-#endif
 
     /// \ingroup device_func_pinned
     /// @{
@@ -209,7 +205,6 @@ namespace fly
     /// \param[in] ptr the memory to free
     FLY_API void freePinned(const void *ptr);
 
-#if FLY_API_VERSION >= 33
     /// \brief Allocate memory on host
     ///
     /// \copydoc device_func_alloc_host
@@ -220,9 +215,7 @@ namespace fly
     ///
     /// \ingroup device_func_alloc_host
     FLY_API void *allocHost(const size_t elements, const dtype type);
-#endif
 
-#if FLY_API_VERSION >= 33
     /// \brief Allocate memory on host
     ///
     /// \copydoc device_func_alloc_host
@@ -236,9 +229,7 @@ namespace fly
     /// \ingroup device_func_alloc_host
     template<typename T>
     FLY_API T* allocHost(const size_t elements);
-#endif
 
-#if FLY_API_VERSION >= 33
     /// \brief Free memory allocated internally by Flare
     //
     /// \copydoc device_func_free_host
@@ -247,7 +238,6 @@ namespace fly
     ///
     /// \ingroup device_func_free_host
     FLY_API void freeHost(const void *ptr);
-#endif
 
     /// \ingroup device_func_mem
     /// @{
@@ -264,7 +254,6 @@ namespace fly
     FLY_API void deviceMemInfo(size_t *alloc_bytes, size_t *alloc_buffers,
                              size_t *lock_bytes, size_t *lock_buffers);
 
-#if FLY_API_VERSION >= 33
     ///
     /// Prints buffer details from the Flare Device Manager
     //
@@ -276,7 +265,6 @@ namespace fly
     ///
     /// \note This function performs a synchronization operation
     FLY_API void printMemInfo(const char *msg = NULL, const int device_id = -1);
-#endif
 
     /// \brief Call the garbage collection function in the memory manager
     ///
@@ -396,7 +384,6 @@ extern "C" {
     FLY_DEPRECATED("Use fly_free_device_v2 instead")
     FLY_API fly_err fly_free_device(void *ptr);
 
-#if FLY_API_VERSION >= 38
     /**
        \brief Allocates memory using Flare's memory manager
 
@@ -427,7 +414,6 @@ extern "C" {
        \ingroup device_func_free
     */
     FLY_API fly_err fly_free_device_v2(void *ptr);
-#endif
     /**
        \ingroup device_func_pinned
     */
@@ -438,19 +424,15 @@ extern "C" {
     */
     FLY_API fly_err fly_free_pinned(void *ptr);
 
-#if FLY_API_VERSION >= 33
     /**
        \ingroup device_func_alloc_host
     */
     FLY_API fly_err fly_alloc_host(void **ptr, const dim_t bytes);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \ingroup device_func_free_host
     */
     FLY_API fly_err fly_free_host(void *ptr);
-#endif
 
     /**
        Create array from device memory
@@ -465,7 +447,6 @@ extern "C" {
     FLY_API fly_err fly_device_mem_info(size_t *alloc_bytes, size_t *alloc_buffers,
                                     size_t *lock_bytes, size_t *lock_buffers);
 
-#if FLY_API_VERSION >= 33
     /**
        Prints buffer details from the Flare Device Manager.
 
@@ -489,7 +470,6 @@ extern "C" {
        \ingroup device_func_mem
     */
     FLY_API fly_err fly_print_mem_info(const char *msg, const int device_id);
-#endif
 
     /**
        Call the garbage collection routine
@@ -513,33 +493,24 @@ extern "C" {
     */
     FLY_API fly_err fly_get_mem_step_size(size_t *step_bytes);
 
-#if FLY_API_VERSION >= 31
     /**
        Lock the device buffer in the memory manager.
 
        Locked buffers are not freed by memory manager until \ref fly_unlock_array is called.
        \ingroup device_func_mem
     */
-#if FLY_API_VERSION >= 33
     FLY_DEPRECATED("Use fly_lock_array instead")
-#endif
     FLY_API fly_err fly_lock_device_ptr(const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        Unlock device buffer in the memory manager.
 
        This function will give back the control over the device pointer to the memory manager.
        \ingroup device_func_mem
     */
-#if FLY_API_VERSION >= 33
     FLY_DEPRECATED("Use fly_unlock_array instead")
-#endif
     FLY_API fly_err fly_unlock_device_ptr(const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        Lock the device buffer in the memory manager.
 
@@ -547,9 +518,7 @@ extern "C" {
        \ingroup device_func_mem
     */
     FLY_API fly_err fly_lock_array(const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        Unlock device buffer in the memory manager.
 
@@ -557,9 +526,7 @@ extern "C" {
        \ingroup device_func_mem
     */
     FLY_API fly_err fly_unlock_array(const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        Query if the array has been locked by the user.
 
@@ -569,7 +536,6 @@ extern "C" {
        \ingroup device_func_mem
     */
     FLY_API fly_err fly_is_locked_array(bool *res, const fly_array arr);
-#endif
 
     /**
        Get the device pointer and lock the buffer in memory manager.
@@ -581,7 +547,6 @@ extern "C" {
     */
     FLY_API fly_err fly_get_device_ptr(void **ptr, const fly_array arr);
 
-#if FLY_API_VERSION >= 38
     /**
        Sets the path where the kernels generated at runtime will be cached
 
@@ -623,7 +588,6 @@ extern "C" {
     */
     FLY_API fly_err fly_get_kernel_cache_directory(size_t *length, char *path);
 
-#endif
 
 #ifdef __cplusplus
 }

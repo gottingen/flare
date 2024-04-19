@@ -66,7 +66,6 @@ FLY_API array mean(const array& in, const array& weights, const dim_t dim=-1);
 FLY_DEPRECATED("Use \ref fly::var(const array&, const fly_var_bias, const dim_t)")
 FLY_API array var(const array& in, const bool isbiased=false, const dim_t dim=-1);
 
-#if FLY_API_VERSION >= 38
 /**
    C++ Interface for variance
 
@@ -81,7 +80,6 @@ FLY_API array var(const array& in, const bool isbiased=false, const dim_t dim=-1
    \note \p dim is -1 by default. -1 denotes the first non-singleton dimension.
 */
 FLY_API array var(const array &in, const fly_var_bias bias, const dim_t dim = -1);
-#endif
 
 /**
    C++ Interface for variance of weighted inputs
@@ -97,7 +95,6 @@ FLY_API array var(const array &in, const fly_var_bias bias, const dim_t dim = -1
 */
 FLY_API array var(const array& in, const array &weights, const dim_t dim=-1);
 
-#if FLY_API_VERSION >= 37
 /**
    C++ Interface for mean and variance
 
@@ -112,7 +109,6 @@ FLY_API array var(const array& in, const array &weights, const dim_t dim=-1);
   */
 FLY_API void meanvar(array& mean, array& var, const array& in, const array& weights,
                    const fly_var_bias bias = FLY_VARIANCE_POPULATION, const dim_t dim=-1);
-#endif
 
 /**
    C++ Interface for standard deviation
@@ -130,7 +126,6 @@ FLY_API void meanvar(array& mean, array& var, const array& in, const array& weig
 FLY_DEPRECATED("Use fly::stdev(const array&, const fly_var_bias, const dim_t)")
 FLY_API array stdev(const array& in, const dim_t dim=-1);
 
-#if FLY_API_VERSION >= 38
 /**
    C++ Interface for standard deviation
 
@@ -146,7 +141,6 @@ FLY_API array stdev(const array& in, const dim_t dim=-1);
 */
 FLY_API array stdev(const array &in, const fly_var_bias bias,
                   const dim_t dim = -1);
-#endif
 
 /**
    C++ Interface for covariance
@@ -164,7 +158,6 @@ FLY_API array stdev(const array &in, const fly_var_bias bias,
 FLY_DEPRECATED("Use fly::cov(const fly::array&, const array&, conv fly_var_bias)")
 FLY_API array cov(const array& X, const array& Y, const bool isbiased=false);
 
-#if FLY_API_VERSION >= 38
 /**
    C++ Interface for covariance
 
@@ -177,7 +170,6 @@ FLY_API array cov(const array& X, const array& Y, const bool isbiased=false);
    \ingroup stat_func_cov
 */
 FLY_API array cov(const array &X, const array &Y, const fly_var_bias bias);
-#endif
 
 /**
    C++ Interface for median
@@ -231,7 +223,6 @@ template <typename T>
 FLY_DEPRECATED("Use fly::var(const fly::array&, const fly_var_bias)")
 FLY_API T var(const array &in, const bool isbiased = false);
 
-#if FLY_API_VERSION >= 38
 /**
    C++ Interface for variance of all elements
 
@@ -243,7 +234,6 @@ FLY_API T var(const array &in, const bool isbiased = false);
    \ingroup stat_func_var
 */
 template <typename T> FLY_API T var(const array &in, const fly_var_bias bias);
-#endif
 
 /**
    C++ Interface for variance of all elements in weighted input
@@ -271,7 +261,6 @@ template <typename T>
 FLY_DEPRECATED("Use fly::stdev(const array&, const fly_var_bias)")
 FLY_API T stdev(const array &in);
 
-#if FLY_API_VERSION >= 38
 /**
    C++ Interface for standard deviation of all elements
 
@@ -283,7 +272,6 @@ FLY_API T stdev(const array &in);
    \ingroup stat_func_stdev
 */
 template <typename T> FLY_API T stdev(const array &in, const fly_var_bias bias);
-#endif
 
 /**
    C++ Interface for median of all elements
@@ -310,7 +298,6 @@ FLY_API T median(const array& in);
 template<typename T>
 FLY_API T corrcoef(const array& X, const array& Y);
 
-#if FLY_API_VERSION >= 36
 /**
    C++ Interface for finding top k elements along a given dimension
 
@@ -332,7 +319,6 @@ FLY_API T corrcoef(const array& X, const array& Y);
 */
 FLY_API void topk(array &values, array &indices, const array& in, const int k,
                 const int dim = -1, const topkFunction order = FLY_TOPK_MAX);
-#endif
 }
 #endif
 
@@ -384,7 +370,6 @@ FLY_API fly_err fly_mean_weighted(fly_array *out, const fly_array in, const fly_
 FLY_DEPRECATED("Use fly_var_v2")
 FLY_API fly_err fly_var(fly_array *out, const fly_array in, const bool isbiased, const dim_t dim);
 
-#if FLY_API_VERSION >= 38
 /**
    C Interface for variance
 
@@ -402,7 +387,6 @@ FLY_API fly_err fly_var(fly_array *out, const fly_array in, const bool isbiased,
 */
 FLY_API fly_err fly_var_v2(fly_array *out, const fly_array in, const fly_var_bias bias,
                        const dim_t dim);
-#endif
 
 /**
    C Interface for variance of weighted input array
@@ -419,7 +403,6 @@ FLY_API fly_err fly_var_v2(fly_array *out, const fly_array in, const fly_var_bia
 */
 FLY_API fly_err fly_var_weighted(fly_array *out, const fly_array in, const fly_array weights, const dim_t dim);
 
-#if FLY_API_VERSION >= 37
 /**
    C Interface for mean and variance
 
@@ -434,7 +417,6 @@ FLY_API fly_err fly_var_weighted(fly_array *out, const fly_array in, const fly_a
   */
 FLY_API fly_err fly_meanvar(fly_array *mean, fly_array *var, const fly_array in,
                         const fly_array weights, const fly_var_bias bias, const dim_t dim);
-#endif
 
 /**
    C Interface for standard deviation
@@ -452,7 +434,6 @@ FLY_API fly_err fly_meanvar(fly_array *mean, fly_array *var, const fly_array in,
 FLY_DEPRECATED("Use fly_stdev_v2")
 FLY_API fly_err fly_stdev(fly_array *out, const fly_array in, const dim_t dim);
 
-#if FLY_API_VERSION >= 38
 /**
    C Interface for standard deviation
 
@@ -470,7 +451,6 @@ FLY_API fly_err fly_stdev(fly_array *out, const fly_array in, const dim_t dim);
 */
 FLY_API fly_err fly_stdev_v2(fly_array *out, const fly_array in,
                          const fly_var_bias bias, const dim_t dim);
-#endif
 
 /**
    C Interface for covariance
@@ -489,7 +469,6 @@ FLY_API fly_err fly_stdev_v2(fly_array *out, const fly_array in,
 FLY_DEPRECATED("Use fly_cov_v2")
 FLY_API fly_err fly_cov(fly_array* out, const fly_array X, const fly_array Y, const bool isbiased);
 
-#if FLY_API_VERSION >= 38
 /**
    C Interface for covariance
 
@@ -505,7 +484,6 @@ FLY_API fly_err fly_cov(fly_array* out, const fly_array X, const fly_array Y, co
 */
 FLY_API fly_err fly_cov_v2(fly_array *out, const fly_array X, const fly_array Y,
                        const fly_var_bias bias);
-#endif
 
 /**
    C Interface for median
@@ -565,7 +543,6 @@ FLY_API fly_err fly_mean_all_weighted(double *real, double *imag, const fly_arra
 FLY_DEPRECATED("Use fly_var_all_v2")
 FLY_API fly_err fly_var_all(double *realVal, double *imagVal, const fly_array in, const bool isbiased);
 
-#if FLY_API_VERSION >= 38
 /**
    C Interface for variance of all elements
 
@@ -583,7 +560,6 @@ FLY_API fly_err fly_var_all(double *realVal, double *imagVal, const fly_array in
 */
 FLY_API fly_err fly_var_all_v2(double *realVal, double *imagVal, const fly_array in,
                            const fly_var_bias bias);
-#endif
 
 /**
    C Interface for variance of all elements in weighted input
@@ -615,7 +591,6 @@ FLY_API fly_err fly_var_all_weighted(double *realVal, double *imagVal, const fly
 FLY_DEPRECATED("Use fly_stdev_all_v2")
 FLY_API fly_err fly_stdev_all(double *real, double *imag, const fly_array in);
 
-#if FLY_API_VERSION >= 38
 /**
    C Interface for standard deviation of all elements
 
@@ -633,7 +608,6 @@ FLY_API fly_err fly_stdev_all(double *real, double *imag, const fly_array in);
 */
 FLY_API fly_err fly_stdev_all_v2(double *real, double *imag, const fly_array in,
                              const fly_var_bias bias);
-#endif
 
 /**
    C Interface for median
@@ -664,7 +638,6 @@ FLY_API fly_err fly_median_all(double *realVal, double *imagVal, const fly_array
 */
 FLY_API fly_err fly_corrcoef(double *realVal, double *imagVal, const fly_array X, const fly_array Y);
 
-#if FLY_API_VERSION >= 36
 /**
    C Interface for finding top k elements along a given dimension
 
@@ -686,7 +659,6 @@ FLY_API fly_err fly_corrcoef(double *realVal, double *imagVal, const fly_array X
 */
 FLY_API fly_err fly_topk(fly_array *values, fly_array *indices, const fly_array in,
                      const int k, const int dim, const fly_topk_function order);
-#endif
 
 #ifdef __cplusplus
 }

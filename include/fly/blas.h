@@ -133,7 +133,6 @@ namespace fly
     */
     FLY_API array matmul(const array &a, const array &b, const array &c, const array &d);
 
-#if FLY_API_VERSION >= 35
     /**
         C++ Interface to compute the dot product.
 
@@ -170,7 +169,6 @@ namespace fly
     T dot(const array &lhs, const array &rhs,
           const matProp optLhs = FLY_MAT_NONE,
           const matProp optRhs = FLY_MAT_NONE);
-#endif
 
     /// \ingroup blas_func_dot
     FLY_API array dot(const array &lhs, const array &rhs,
@@ -204,7 +202,6 @@ namespace fly
 extern "C" {
 #endif
 
-#if FLY_API_VERSION >= 37
     /**
         C Interface to multiply two matrices.
 
@@ -263,7 +260,6 @@ extern "C" {
     FLY_API fly_err fly_gemm(fly_array *C, const fly_mat_prop opA, const fly_mat_prop opB,
                          const void *alpha, const fly_array A, const fly_array B,
                          const void *beta);
-#endif
 
     /**
         C Interface to multiply two matrices.
@@ -321,7 +317,6 @@ extern "C" {
                         const fly_array lhs, const fly_array rhs,
                         const fly_mat_prop optLhs, const fly_mat_prop optRhs);
 
-#if FLY_API_VERSION >= 35
     /**
         C Interface to compute the dot product, scalar result returned on host.
 
@@ -344,7 +339,6 @@ extern "C" {
     FLY_API fly_err fly_dot_all(double *real, double *imag,
                             const fly_array lhs, const fly_array rhs,
                             const fly_mat_prop optLhs, const fly_mat_prop optRhs);
-#endif
 
     /**
         C Interface to transpose a matrix.

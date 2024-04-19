@@ -95,12 +95,12 @@ add_library(flare_test STATIC
 target_include_directories(flare_test
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
-        ${Flare_SOURCE_DIR}/include
-        ${Flare_BINARY_DIR}/include)
+        ${flare_SOURCE_DIR}/include
+        ${flare_BINARY_DIR}/include)
 
 target_include_directories(flare_test
         SYSTEM PRIVATE
-        ${Flare_SOURCE_DIR}/extern/half/include
+        ${flare_SOURCE_DIR}/extern/half/include
 )
 
 # The tautological-constant-compare warning is always thrown for std::nan
@@ -173,7 +173,7 @@ function(make_test)
                 ${CMAKE_CURRENT_SOURCE_DIR})
         target_include_directories(${target}
                 SYSTEM PRIVATE
-                ${Flare_SOURCE_DIR}/extern/half/include
+                ${flare_SOURCE_DIR}/extern/half/include
         )
         target_link_libraries(${target}
                 PRIVATE
@@ -219,7 +219,7 @@ function(make_test)
         if (FLY_TEST_WITH_MTX_FILES AND ${mt_args_USE_MMIO})
             target_compile_definitions(${target}
                     PRIVATE
-                    MTX_TEST_DIR="${Flare_BINARY_DIR}/extern/matrixmarket/"
+                    MTX_TEST_DIR="${flare_BINARY_DIR}/extern/matrixmarket/"
             )
         endif ()
         if (WIN32)
@@ -348,7 +348,7 @@ if (CUDA_FOUND)
                     ${CMAKE_CURRENT_SOURCE_DIR})
             target_include_directories(${target}
                     SYSTEM PRIVATE
-                    ${Flare_SOURCE_DIR}/extern/half/include)
+                    ${flare_SOURCE_DIR}/extern/half/include)
             if (${backend} STREQUAL "unified")
                 target_link_libraries(${target}
                         Flare::fly)

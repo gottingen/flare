@@ -48,7 +48,7 @@ foreach(SBK_BINARY_OP ${SBK_BINARY_OPS})
         $<TARGET_PROPERTY:collie::collie,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:OpenCL::OpenCL,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:Boost::boost,INTERFACE_INCLUDE_DIRECTORIES>
-        ${Flare_BINARY_DIR}/include
+        ${flare_BINARY_DIR}/include
       )
       target_include_directories(opencl_scan_by_key_${SBK_BINARY_OP}
         SYSTEM INTERFACE

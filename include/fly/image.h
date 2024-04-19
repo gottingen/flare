@@ -54,7 +54,6 @@ FLY_API array loadImage(const char* filename, const bool is_color=false);
 */
 FLY_API void saveImage(const char* filename, const array& in);
 
-#if FLY_API_VERSION >= 31
 /**
     C++ Interface for loading an image from memory
 
@@ -69,9 +68,7 @@ FLY_API void saveImage(const char* filename, const array& in);
     \ingroup imagemem_func_load
 */
 FLY_API array loadImageMem(const void *ptr);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
     C++ Interface for saving an image to memory
 
@@ -88,9 +85,7 @@ FLY_API array loadImageMem(const void *ptr);
     \ingroup imagemem_func_save
 */
 FLY_API void* saveImageMem(const array& in, const imageFormat format = FLY_FIF_PNG);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
     C++ Interface for deleting memory created by \ref saveImageMem or
     \ref fly_save_image_memory
@@ -100,9 +95,8 @@ FLY_API void* saveImageMem(const array& in, const imageFormat format = FLY_FIF_P
     \ingroup imagemem_func_delete
 */
 FLY_API void deleteImageMem(void *ptr);
-#endif
 
-#if FLY_API_VERSION >= 32
+
 /**
     C++ Interface for loading an image as its original type
 
@@ -121,9 +115,8 @@ FLY_API void deleteImageMem(void *ptr);
     \ingroup imageio_func_load
 */
 FLY_API array loadImageNative(const char* filename);
-#endif
 
-#if FLY_API_VERSION >= 32
+
 /**
     C++ Interface for saving an image without modifications
 
@@ -151,9 +144,8 @@ FLY_API array loadImageNative(const char* filename);
     \ingroup imageio_func_save
 */
 FLY_API void saveImageNative(const char* filename, const array& in);
-#endif
 
-#if FLY_API_VERSION >= 33
+
 /**
     Function to check if Image IO is available
 
@@ -161,7 +153,6 @@ FLY_API void saveImageNative(const char* filename, const array& in);
     \ingroup imageio_func_available
 */
 FLY_API bool isImageIOAvailable();
-#endif
 
 /**
     C++ Interface for resizing an image to specified dimensions
@@ -230,7 +221,6 @@ FLY_API array rotate(const array& in, const float theta, const bool crop=true, c
 FLY_API array transform(const array& in, const array& transform, const dim_t odim0 = 0, const dim_t odim1 = 0,
                       const interpType method=FLY_INTERP_NEAREST, const bool inverse=true);
 
-#if FLY_API_VERSION >= 33
 /**
     C++ Interface for transforming coordinates
 
@@ -242,7 +232,6 @@ FLY_API array transform(const array& in, const array& transform, const dim_t odi
     \ingroup transform_func_coordinates
 */
 FLY_API array transformCoordinates(const array& tf, const float d0, const float d1);
-#endif
 
 /**
     C++ Interface for translating an image
@@ -576,7 +565,6 @@ FLY_API array rgb2hsv(const array& in);
  */
 FLY_API array colorSpace(const array& image, const CSpace to, const CSpace from);
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for rearranging windowed sections of an input into columns
    (or rows)
@@ -604,9 +592,7 @@ FLY_API array colorSpace(const array& image, const CSpace to, const CSpace from)
 FLY_API array unwrap(const array& in, const dim_t wx, const dim_t wy,
                    const dim_t sx, const dim_t sy, const dim_t px=0, const dim_t py=0,
                    const bool is_column = true);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for performing the opposite of \ref unwrap
 
@@ -645,9 +631,7 @@ FLY_API array wrap(const array& in,
                  const dim_t sx, const dim_t sy,
                  const dim_t px = 0, const dim_t py = 0,
                  const bool is_column = true);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface wrapper for summed area tables
 
@@ -657,9 +641,7 @@ FLY_API array wrap(const array& in,
    \ingroup image_func_sat
 */
 FLY_API array sat(const array& in);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for converting YCbCr to RGB
 
@@ -673,9 +655,7 @@ FLY_API array sat(const array& in);
    \ingroup image_func_ycbcr2rgb
  */
 FLY_API array ycbcr2rgb(const array& in, const YCCStd standard=FLY_YCC_601);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for converting RGB to YCbCr
 
@@ -689,9 +669,7 @@ FLY_API array ycbcr2rgb(const array& in, const YCCStd standard=FLY_YCC_601);
    \ingroup image_func_rgb2ycbcr
  */
 FLY_API array rgb2ycbcr(const array& in, const YCCStd standard=FLY_YCC_601);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C++ Interface for calculating an image moment
 
@@ -703,9 +681,7 @@ FLY_API array rgb2ycbcr(const array& in, const YCCStd standard=FLY_YCC_601);
    \ingroup image_func_moments
  */
 FLY_API void moments(double* out, const array& in, const momentType moment=FLY_MOMENT_FIRST_ORDER);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
    C++ Interface for calculating image moments
 
@@ -716,9 +692,7 @@ FLY_API void moments(double* out, const array& in, const momentType moment=FLY_M
    \ingroup image_func_moments
  */
 FLY_API array moments(const array& in, const momentType moment=FLY_MOMENT_FIRST_ORDER);
-#endif
 
-#if FLY_API_VERSION >= 35
 /**
    C++ Interface for canny edge detector
 
@@ -741,9 +715,7 @@ FLY_API array moments(const array& in, const momentType moment=FLY_MOMENT_FIRST_
 FLY_API array canny(const array& in, const cannyThreshold thresholdType,
                   const float lowThresholdRatio, const float highThresholdRatio,
                   const unsigned sobelWindow = 3, const bool isFast = false);
-#endif
 
-#if FLY_API_VERSION >= 36
 /**
    C++ Interface for gradient anisotropic(non-linear diffusion) smoothing
 
@@ -762,9 +734,7 @@ FLY_API array anisotropicDiffusion(const fly::array& in, const float timestep,
                                  const float conductance, const unsigned iterations,
                                  const fluxFunction fftype=FLY_FLUX_EXPONENTIAL,
                                  const diffusionEq diffusionKind=FLY_DIFFUSION_GRAD);
-#endif
 
-#if FLY_API_VERSION >= 37
 /**
   C++ Interface for Iterative deconvolution algorithm
 
@@ -875,7 +845,6 @@ FLY_API array confidenceCC(const array &in, const size_t num_seeds,
                          const unsigned radius, const unsigned multiplier,
                          const int iter, const double segmentedValue);
 
-#endif
 }
 #endif
 
@@ -921,7 +890,6 @@ extern "C" {
     */
     FLY_API fly_err fly_save_image(const char* filename, const fly_array in);
 
-#if FLY_API_VERSION >= 31
     /**
         C Interface for loading an image from memory
 
@@ -933,9 +901,7 @@ extern "C" {
         \ingroup imagemem_func_load
     */
     FLY_API fly_err fly_load_image_memory(fly_array *out, const void* ptr);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
         C Interface for saving an image to memory using FreeImage
 
@@ -949,9 +915,7 @@ extern "C" {
         \ingroup imagemem_func_save
     */
     FLY_API fly_err fly_save_image_memory(void** ptr, const fly_array in, const fly_image_format format);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
         C Interface for deleting an image from memory
 
@@ -962,9 +926,7 @@ extern "C" {
         \ingroup imagemem_func_delete
     */
     FLY_API fly_err fly_delete_image_memory(void* ptr);
-#endif
 
-#if FLY_API_VERSION >= 32
     /**
         C Interface for loading an image as is original type
 
@@ -984,9 +946,7 @@ extern "C" {
         \ingroup imageio_func_load
     */
     FLY_API fly_err fly_load_image_native(fly_array *out, const char* filename);
-#endif
 
-#if FLY_API_VERSION >= 32
     /**
         C Interface for saving an image without modifications
 
@@ -1016,9 +976,7 @@ extern "C" {
         \ingroup imageio_func_save
     */
     FLY_API fly_err fly_save_image_native(const char* filename, const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
         Function to check if Image IO is available
 
@@ -1030,7 +988,6 @@ extern "C" {
         \ingroup imageio_func_available
     */
     FLY_API fly_err fly_is_image_io_available(bool *out);
-#endif
 
     /**
        C Interface for resizing an image to specified dimensions
@@ -1068,7 +1025,6 @@ extern "C" {
                               const dim_t odim0, const dim_t odim1,
                               const fly_interp_type method, const bool inverse);
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface for the version of \ref fly_transform that accepts a
        preallocated output array
@@ -1095,9 +1051,7 @@ extern "C" {
     FLY_API fly_err fly_transform_v2(fly_array *out, const fly_array in, const fly_array transform,
                                  const dim_t odim0, const dim_t odim1,
                                  const fly_interp_type method, const bool inverse);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        C Interface for transforming an image
        C++ Interface for transforming coordinates
@@ -1110,7 +1064,6 @@ extern "C" {
        \ingroup transform_func_coordinates
     */
     FLY_API fly_err fly_transform_coordinates(fly_array *out, const fly_array tf, const float d0, const float d1);
-#endif
 
     /**
        C Interface for rotating an image
@@ -1458,7 +1411,6 @@ extern "C" {
     */
     FLY_API fly_err fly_color_space(fly_array *out, const fly_array image, const fly_cspace_t to, const fly_cspace_t from);
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface for rearranging windowed sections of an input into columns
        (or rows)
@@ -1489,9 +1441,7 @@ extern "C" {
     FLY_API fly_err fly_unwrap(fly_array *out, const fly_array in, const dim_t wx, const dim_t wy,
                            const dim_t sx, const dim_t sy, const dim_t px, const dim_t py,
                            const bool is_column);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface for performing the opposite of \ref fly::unwrap()
 
@@ -1534,9 +1484,7 @@ extern "C" {
                          const dim_t sx, const dim_t sy,
                          const dim_t px, const dim_t py,
                          const bool is_column);
-#endif
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface for the version of \ref fly_wrap that accepts a
        preallocated output array
@@ -1580,9 +1528,7 @@ extern "C" {
                             const dim_t sx, const dim_t sy,
                             const dim_t px, const dim_t py,
                             const bool is_column);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface wrapper for summed area tables
 
@@ -1594,9 +1540,7 @@ extern "C" {
        \ingroup image_func_sat
     */
     FLY_API fly_err fly_sat(fly_array *out, const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface for converting YCbCr to RGB
 
@@ -1612,9 +1556,7 @@ extern "C" {
        \ingroup image_func_ycbcr2rgb
     */
     FLY_API fly_err fly_ycbcr2rgb(fly_array* out, const fly_array in, const fly_ycc_std standard);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface for converting RGB to YCbCr
 
@@ -1630,9 +1572,7 @@ extern "C" {
        \ingroup image_func_rgb2ycbcr
     */
     FLY_API fly_err fly_rgb2ycbcr(fly_array* out, const fly_array in, const fly_ycc_std standard);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface for finding image moments
 
@@ -1645,9 +1585,7 @@ extern "C" {
        \ingroup image_func_moments
     */
     FLY_API fly_err fly_moments(fly_array *out, const fly_array in, const fly_moment_type moment);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        C Interface for calculating image moment(s) of a single image
 
@@ -1661,9 +1599,7 @@ extern "C" {
        \ingroup image_func_moments
     */
     FLY_API fly_err fly_moments_all(double* out, const fly_array in, const fly_moment_type moment);
-#endif
 
-#if FLY_API_VERSION >= 35
     /**
        C Interface for canny edge detector
 
@@ -1691,9 +1627,7 @@ extern "C" {
                           const float low_threshold_ratio,
                           const float high_threshold_ratio,
                           const unsigned sobel_window, const bool is_fast);
-#endif
 
-#if FLY_API_VERSION >= 36
     /**
        C Interface for anisotropic diffusion
 
@@ -1718,9 +1652,7 @@ extern "C" {
                                           const unsigned iterations,
                                           const fly_flux_function fftype,
                                           const fly_diffusion_eq diffusion_kind);
-#endif
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface for Iterative deconvolution algorithm
 
@@ -1794,7 +1726,6 @@ extern "C" {
                                   const unsigned multiplier, const int iter,
                                   const double segmented_value);
 
-#endif
 
 #ifdef __cplusplus
 }

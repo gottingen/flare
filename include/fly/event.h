@@ -17,7 +17,6 @@
 
 #include <fly/defines.h>
 
-#if FLY_API_VERSION >= 37
 
 /**
     Handle to an event object
@@ -133,4 +132,3 @@ FLY_API fly_err fly_block_event(const fly_event eventHandle);
 }
 #endif  // __cplusplus
 
-#endif  // FLY_API_VERSION >= 37

@@ -30,21 +30,21 @@ if(${FLY_USE_CCACHE})
   set(C_LAUNCHER   "${CCACHE_PROGRAM}")
   set(CXX_LAUNCHER "${CCACHE_PROGRAM}")
   set(NVCC_LAUNCHER "${CCACHE_PROGRAM}")
-  configure_file(${Flare_SOURCE_DIR}/CMakeModules/launch-c.in   launch-c)
-  configure_file(${Flare_SOURCE_DIR}/CMakeModules/launch-cxx.in launch-cxx)
-  configure_file(${Flare_SOURCE_DIR}/CMakeModules/launch-nvcc.in launch-nvcc)
+  configure_file(${flare_SOURCE_DIR}/CMakeModules/launch-c.in   launch-c)
+  configure_file(${flare_SOURCE_DIR}/CMakeModules/launch-cxx.in launch-cxx)
+  configure_file(${flare_SOURCE_DIR}/CMakeModules/launch-nvcc.in launch-nvcc)
   execute_process(COMMAND chmod a+rx
-      "${Flare_BINARY_DIR}/launch-c"
-      "${Flare_BINARY_DIR}/launch-cxx"
-      "${Flare_BINARY_DIR}/launch-nvcc"
+      "${flare_BINARY_DIR}/launch-c"
+      "${flare_BINARY_DIR}/launch-cxx"
+      "${flare_BINARY_DIR}/launch-nvcc"
     )
   if(CMAKE_GENERATOR STREQUAL "Xcode")
     # Set Xcode project attributes to route compilation and linking
     # through our scripts
-    set(CMAKE_XCODE_ATTRIBUTE_CC         "${Flare_BINARY_DIR}/launch-c")
-    set(CMAKE_XCODE_ATTRIBUTE_CXX        "${Flare_BINARY_DIR}/launch-cxx")
-    set(CMAKE_XCODE_ATTRIBUTE_LD         "${Flare_BINARY_DIR}/launch-c")
-    set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS "${Flare_BINARY_DIR}/launch-cxx")
+    set(CMAKE_XCODE_ATTRIBUTE_CC         "${flare_BINARY_DIR}/launch-c")
+    set(CMAKE_XCODE_ATTRIBUTE_CXX        "${flare_BINARY_DIR}/launch-cxx")
+    set(CMAKE_XCODE_ATTRIBUTE_LD         "${flare_BINARY_DIR}/launch-c")
+    set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS "${flare_BINARY_DIR}/launch-cxx")
   else()
     # Support Unix Makefiles and Ninja
     set(CMAKE_C_COMPILER_LAUNCHER   "${CCACHE_PROGRAM}")

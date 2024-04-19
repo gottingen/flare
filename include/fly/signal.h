@@ -18,8 +18,7 @@
 
 #ifdef __cplusplus
 
-namespace fly
-{
+namespace fly {
 class array;
 class dim4;
 
@@ -61,7 +60,6 @@ FLY_API array approx2(const array &in, const array &pos0, const array &pos1,
                     const interpType method = FLY_INTERP_LINEAR, const float off_grid = 0.0f);
 
 
-#if FLY_API_VERSION >= 37
 /**
    C++ Interface for data interpolation on one-dimensional signals.
 
@@ -129,7 +127,6 @@ FLY_API array approx2(const array &in,
                     const array &pos0, const int interp_dim0, const double idx_start_dim0, const double idx_step_dim0,
                     const array &pos1, const int interp_dim1, const double idx_start_dim1, const double idx_step_dim1,
                     const interpType method = FLY_INTERP_LINEAR, const float off_grid = 0.0f);
-#endif
 
 /**
    C++ Interface for fast fourier transform on one dimensional signals
@@ -170,7 +167,6 @@ FLY_API array fft2Norm(const array& in, const double norm_factor, const dim_t od
  */
 FLY_API array fft3Norm(const array& in, const double norm_factor, const dim_t odim0=0, const dim_t odim1=0, const dim_t odim2=0);
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for fast fourier transform on one dimensional signals
 
@@ -182,9 +178,7 @@ FLY_API array fft3Norm(const array& in, const double norm_factor, const dim_t od
    \ingroup signal_func_fft
  */
 FLY_API void fftInPlace(array& in, const double norm_factor = 1.0);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for fast fourier transform on two dimensional signals
 
@@ -196,9 +190,7 @@ FLY_API void fftInPlace(array& in, const double norm_factor = 1.0);
    \ingroup signal_func_fft2
  */
 FLY_API void fft2InPlace(array& in, const double norm_factor = 1.0);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for fast fourier transform on three dimensional signals
 
@@ -210,7 +202,6 @@ FLY_API void fft2InPlace(array& in, const double norm_factor = 1.0);
    \ingroup signal_func_fft3
  */
 FLY_API void fft3InPlace(array& in, const double norm_factor = 1.0);
-#endif
 
 /**
    C++ Interface for fast fourier transform on one dimensional signals
@@ -335,7 +326,6 @@ FLY_API array ifft2Norm(const array& in, const double norm_factor, const dim_t o
  */
 FLY_API array ifft3Norm(const array& in, const double norm_factor, const dim_t odim0=0, const dim_t odim1=0, const dim_t odim2=0);
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for fast fourier transform on one dimensional signals
 
@@ -347,9 +337,7 @@ FLY_API array ifft3Norm(const array& in, const double norm_factor, const dim_t o
    \ingroup signal_func_ifft
  */
 FLY_API void ifftInPlace(array& in, const double norm_factor = 1.0);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for fast fourier transform on two dimensional signals
 
@@ -361,9 +349,7 @@ FLY_API void ifftInPlace(array& in, const double norm_factor = 1.0);
    \ingroup signal_func_ifft2
  */
 FLY_API void ifft2InPlace(array& in, const double norm_factor = 1.0);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for fast fourier transform on three dimensional signals
 
@@ -375,7 +361,6 @@ FLY_API void ifft2InPlace(array& in, const double norm_factor = 1.0);
    \ingroup signal_func_ifft3
  */
 FLY_API void ifft3InPlace(array& in, const double norm_factor = 1.0);
-#endif
 
 /**
    C++ Interface for inverse fast fourier transform on one dimensional signals
@@ -461,7 +446,6 @@ FLY_API array idft(const array& in, const dim4 outDims);
  */
 FLY_API array idft(const array& in);
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for real to complex fast fourier transform for one dimensional signals
 
@@ -478,9 +462,7 @@ template<int rank>
 array fftR2C(const array &in,
              const dim4& dims,
              const double norm_factor = 1.0);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for real to complex fast fourier transform for one dimensional signals
 
@@ -495,9 +477,7 @@ array fftR2C(const array &in,
 template<int rank>
 array fftR2C(const array &in,
              const double norm_factor = 1.0);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for complex to real fast fourier transform
 
@@ -513,7 +493,6 @@ array fftR2C(const array &in,
 template<int rank>
 array fftC2R(const array &in, bool is_odd = false,
                  const double norm_factor = 1.0);
-#endif
 
 /**
    C++ Interface for convolution any(one through three) dimensional signals
@@ -728,7 +707,6 @@ FLY_API array iir(const array &b, const array &a, const array &x);
 */
 FLY_API array medfilt(const array& in, const dim_t wind_length = 3, const dim_t wind_width = 3, const borderType edge_pad = FLY_PAD_ZERO);
 
-#if FLY_API_VERSION >= 34
 /**
     C++ Interface for median filter
 
@@ -743,9 +721,7 @@ FLY_API array medfilt(const array& in, const dim_t wind_length = 3, const dim_t 
     \ingroup image_func_medfilt
 */
 FLY_API array medfilt1(const array& in, const dim_t wind_width = 3, const borderType edge_pad = FLY_PAD_ZERO);
-#endif
 
-#if FLY_API_VERSION >= 34
 /**
     C++ Interface for median filter
 
@@ -761,9 +737,7 @@ FLY_API array medfilt1(const array& in, const dim_t wind_width = 3, const border
     \ingroup image_func_medfilt
 */
 FLY_API array medfilt2(const array& in, const dim_t wind_length = 3, const dim_t wind_width = 3, const borderType edge_pad = FLY_PAD_ZERO);
-#endif
 
-#if FLY_API_VERSION >= 35
 /**
    C++ Interface for setting plan cache size
 
@@ -773,7 +747,6 @@ FLY_API array medfilt2(const array& in, const dim_t wind_length = 3, const dim_t
    \param[in] cacheSize is the number of plans that shall be cached
 */
 FLY_API void setFFTPlanCacheSize(size_t cacheSize);
-#endif
 
 }
 #endif
@@ -806,7 +779,6 @@ extern "C" {
 FLY_API fly_err fly_approx1(fly_array *out, const fly_array in, const fly_array pos,
                         const fly_interp_type method, const float off_grid);
 
-#if FLY_API_VERSION >= 37
 /**
    C Interface for the version of \ref fly_approx1 that accepts a preallocated
    output array
@@ -837,7 +809,6 @@ FLY_API fly_err fly_approx1(fly_array *out, const fly_array in, const fly_array 
  */
 FLY_API fly_err fly_approx1_v2(fly_array *out, const fly_array in, const fly_array pos,
                            const fly_interp_type method, const float off_grid);
-#endif
 
 /**
    C Interface for signals interpolation on two dimensional signals.
@@ -866,7 +837,6 @@ FLY_API fly_err fly_approx2(fly_array *out, const fly_array in,
                         const fly_array pos0, const fly_array pos1,
                         const fly_interp_type method, const float off_grid);
 
-#if FLY_API_VERSION >= 37
 /**
    C Interface for the version of \ref fly_approx2 that accepts a preallocated
    output array
@@ -900,10 +870,7 @@ FLY_API fly_err fly_approx2(fly_array *out, const fly_array in,
 FLY_API fly_err fly_approx2_v2(fly_array *out, const fly_array in,
                            const fly_array pos0, const fly_array pos1,
                            const fly_interp_type method, const float off_grid);
-#endif
 
-
-#if FLY_API_VERSION >= 37
 /**
    C Interface for signals interpolation on one dimensional signals along
    specified dimension.
@@ -1079,7 +1046,6 @@ FLY_API fly_err fly_approx2_uniform_v2(fly_array *out, const fly_array in,
                                    const double idx_step_dim1,
                                    const fly_interp_type method,
                                    const float off_grid);
-#endif
 
 /**
    C Interface for fast fourier transform on one dimensional signals
@@ -1095,7 +1061,6 @@ FLY_API fly_err fly_approx2_uniform_v2(fly_array *out, const fly_array in,
  */
 FLY_API fly_err fly_fft(fly_array *out, const fly_array in, const double norm_factor, const dim_t odim0);
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for fast fourier transform on one dimensional signals
 
@@ -1109,7 +1074,6 @@ FLY_API fly_err fly_fft(fly_array *out, const fly_array in, const double norm_fa
    \ingroup signal_func_fft
 */
 FLY_API fly_err fly_fft_inplace(fly_array in, const double norm_factor);
-#endif
 
 /**
    C Interface for fast fourier transform on two dimensional signals
@@ -1126,7 +1090,6 @@ FLY_API fly_err fly_fft_inplace(fly_array in, const double norm_factor);
  */
 FLY_API fly_err fly_fft2(fly_array *out, const fly_array in, const double norm_factor, const dim_t odim0, const dim_t odim1);
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for fast fourier transform on two dimensional signals
 
@@ -1140,7 +1103,6 @@ FLY_API fly_err fly_fft2(fly_array *out, const fly_array in, const double norm_f
    \ingroup signal_func_fft2
  */
 FLY_API fly_err fly_fft2_inplace(fly_array in, const double norm_factor);
-#endif
 
 /**
    C Interface for fast fourier transform on three dimensional signals
@@ -1158,7 +1120,6 @@ FLY_API fly_err fly_fft2_inplace(fly_array in, const double norm_factor);
  */
 FLY_API fly_err fly_fft3(fly_array *out, const fly_array in, const double norm_factor, const dim_t odim0, const dim_t odim1, const dim_t odim2);
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for fast fourier transform on three dimensional signals
 
@@ -1172,7 +1133,6 @@ FLY_API fly_err fly_fft3(fly_array *out, const fly_array in, const double norm_f
    \ingroup signal_func_fft3
  */
 FLY_API fly_err fly_fft3_inplace(fly_array in, const double norm_factor);
-#endif
 
 /**
    C Interface for inverse fast fourier transform on one dimensional signals
@@ -1188,7 +1148,6 @@ FLY_API fly_err fly_fft3_inplace(fly_array in, const double norm_factor);
  */
 FLY_API fly_err fly_ifft(fly_array *out, const fly_array in, const double norm_factor, const dim_t odim0);
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for fast fourier transform on one dimensional signals
 
@@ -1202,7 +1161,6 @@ FLY_API fly_err fly_ifft(fly_array *out, const fly_array in, const double norm_f
    \ingroup signal_func_ifft
 */
 FLY_API fly_err fly_ifft_inplace(fly_array in, const double norm_factor);
-#endif
 
 /**
    C Interface for inverse fast fourier transform on two dimensional signals
@@ -1219,7 +1177,6 @@ FLY_API fly_err fly_ifft_inplace(fly_array in, const double norm_factor);
  */
 FLY_API fly_err fly_ifft2(fly_array *out, const fly_array in, const double norm_factor, const dim_t odim0, const dim_t odim1);
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for fast fourier transform on two dimensional signals
 
@@ -1233,7 +1190,6 @@ FLY_API fly_err fly_ifft2(fly_array *out, const fly_array in, const double norm_
    \ingroup signal_func_ifft2
 */
 FLY_API fly_err fly_ifft2_inplace(fly_array in, const double norm_factor);
-#endif
 
 /**
    C Interface for inverse fast fourier transform on three dimensional signals
@@ -1251,7 +1207,6 @@ FLY_API fly_err fly_ifft2_inplace(fly_array in, const double norm_factor);
  */
 FLY_API fly_err fly_ifft3(fly_array *out, const fly_array in, const double norm_factor, const dim_t odim0, const dim_t odim1, const dim_t odim2);
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for fast fourier transform on three dimensional signals
 
@@ -1265,9 +1220,7 @@ FLY_API fly_err fly_ifft3(fly_array *out, const fly_array in, const double norm_
    \ingroup signal_func_ifft3
 */
 FLY_API fly_err fly_ifft3_inplace(fly_array in, const double norm_factor);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for real to complex fast fourier transform for one dimensional signals
 
@@ -1283,9 +1236,7 @@ FLY_API fly_err fly_ifft3_inplace(fly_array in, const double norm_factor);
    \ingroup signal_func_fft_r2c
 */
 FLY_API fly_err fly_fft_r2c (fly_array *out, const fly_array in, const double norm_factor, const dim_t pad0);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for real to complex fast fourier transform for two dimensional signals
 
@@ -1302,9 +1253,7 @@ FLY_API fly_err fly_fft_r2c (fly_array *out, const fly_array in, const double no
    \ingroup signal_func_fft_r2c
 */
 FLY_API fly_err fly_fft2_r2c(fly_array *out, const fly_array in, const double norm_factor, const dim_t pad0, const dim_t pad1);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for real to complex fast fourier transform for three dimensional signals
 
@@ -1322,9 +1271,7 @@ FLY_API fly_err fly_fft2_r2c(fly_array *out, const fly_array in, const double no
    \ingroup signal_func_fft_r2c
 */
 FLY_API fly_err fly_fft3_r2c(fly_array *out, const fly_array in, const double norm_factor, const dim_t pad0, const dim_t pad1, const dim_t pad2);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for complex to real fast fourier transform for one dimensional signals
 
@@ -1341,9 +1288,7 @@ FLY_API fly_err fly_fft3_r2c(fly_array *out, const fly_array in, const double no
 */
 
 FLY_API fly_err fly_fft_c2r (fly_array *out, const fly_array in, const double norm_factor, const bool is_odd);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for complex to real fast fourier transform for two dimensional signals
 
@@ -1359,9 +1304,7 @@ FLY_API fly_err fly_fft_c2r (fly_array *out, const fly_array in, const double no
    \ingroup signal_func_fft_c2r
 */
 FLY_API fly_err fly_fft2_c2r(fly_array *out, const fly_array in, const double norm_factor, const bool is_odd);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C Interface for complex to real fast fourier transform for three dimensional signals
 
@@ -1377,7 +1320,6 @@ FLY_API fly_err fly_fft2_c2r(fly_array *out, const fly_array in, const double no
    \ingroup signal_func_fft_c2r
 */
 FLY_API fly_err fly_fft3_c2r(fly_array *out, const fly_array in, const double norm_factor, const bool is_odd);
-#endif
 
 /**
    C Interface for convolution on one dimensional signals
@@ -1566,7 +1508,6 @@ FLY_API fly_err fly_iir(fly_array *y, const fly_array b, const fly_array a, cons
     */
     FLY_API fly_err fly_medfilt(fly_array *out, const fly_array in, const dim_t wind_length, const dim_t wind_width, const fly_border_type edge_pad);
 
-#if FLY_API_VERSION >= 34
     /**
         C Interface for 1D median filter
 
@@ -1581,9 +1522,7 @@ FLY_API fly_err fly_iir(fly_array *y, const fly_array b, const fly_array a, cons
         \ingroup image_func_medfilt
     */
     FLY_API fly_err fly_medfilt1(fly_array *out, const fly_array in, const dim_t wind_width, const fly_border_type edge_pad);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
         C Interface for median filter
 
@@ -1599,10 +1538,7 @@ FLY_API fly_err fly_iir(fly_array *y, const fly_array b, const fly_array a, cons
         \ingroup image_func_medfilt
     */
     FLY_API fly_err fly_medfilt2(fly_array *out, const fly_array in, const dim_t wind_length, const dim_t wind_width, const fly_border_type edge_pad);
-#endif
 
-
-#if FLY_API_VERSION >= 34
 /**
    C Interface for setting plan cache size
 
@@ -1614,7 +1550,6 @@ FLY_API fly_err fly_iir(fly_array *y, const fly_array b, const fly_array a, cons
    \ingroup signal_func_fft
 */
 FLY_API fly_err fly_set_fft_plan_cache_size(size_t cache_size);
-#endif
 
 #ifdef __cplusplus
 }

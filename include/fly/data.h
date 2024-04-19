@@ -353,7 +353,6 @@ namespace fly
     /// \ingroup data_func_upper
     FLY_API array upper(const array &in, bool is_unit_diag=false);
 
-#if FLY_API_VERSION >= 31
     /// C++ Interface to select elements based on a conditional array.
     ///
     /// \param[in] cond conditional array
@@ -363,9 +362,7 @@ namespace fly
     ///
     /// \ingroup data_func_select
     FLY_API array select(const array &cond, const array  &a, const array  &b);
-#endif
 
-#if FLY_API_VERSION >= 31
     /// C++ Interface to select elements based on a conditional array.
     ///
     /// \param[in] cond conditional array
@@ -375,9 +372,7 @@ namespace fly
     ///
     /// \ingroup data_func_select
     FLY_API array select(const array &cond, const array  &a, const double &b);
-#endif
 
-#if FLY_API_VERSION >= 31
     /// C++ Interface to select elements based on a conditional array.
     ///
     /// \param[in] cond conditional array
@@ -387,9 +382,7 @@ namespace fly
     ///
     /// \ingroup data_func_select
     FLY_API array select(const array &cond, const double &a, const array  &b);
-#endif
 
-#if FLY_API_VERSION >= 31
     /// C++ Interface to replace elements of an array with elements of another
     /// array.
     ///
@@ -402,9 +395,7 @@ namespace fly
     ///
     /// \ingroup data_func_replace
     FLY_API void replace(array &a, const array  &cond, const array  &b);
-#endif
 
-#if FLY_API_VERSION >= 31
     /// C++ Interface to replace elements of an array with a scalar value.
     ///
     /// Elements of `a` are replaced with a scalar value when `cond` is false.
@@ -415,9 +406,7 @@ namespace fly
     ///
     /// \ingroup data_func_replace
     FLY_API void replace(array &a, const array  &cond, const double &b);
-#endif
 
-#if FLY_API_VERSION >= 37
     /// C++ Interface to pad an array.
     ///
     /// \param[in] in           input array
@@ -431,9 +420,7 @@ namespace fly
     /// \ingroup data_func_pad
     FLY_API array pad(const array &in, const dim4 &beginPadding,
                     const dim4 &endPadding, const borderType padFillType);
-#endif
 
-#if FLY_API_VERSION >= 39
     /// C++ Interface to replace elements of an array with a scalar value.
     ///
     /// Elements of `a` are replaced with a scalar value when `cond` is false.
@@ -498,7 +485,6 @@ namespace fly
     /// \ingroup data_func_select
     FLY_API array select(const array &cond, const unsigned long long a,
                        const array &b);
-#endif
 }
 #endif
 
@@ -802,7 +788,6 @@ extern "C" {
     */
     FLY_API fly_err fly_upper(fly_array *out, const fly_array in, bool is_unit_diag);
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to select elements based on a conditional array.
 
@@ -816,9 +801,7 @@ extern "C" {
        \ingroup data_func_select
     */
     FLY_API fly_err fly_select(fly_array *out, const fly_array cond, const fly_array a, const fly_array b);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to select elements based on a conditional array.
 
@@ -832,9 +815,7 @@ extern "C" {
        \ingroup data_func_select
     */
     FLY_API fly_err fly_select_scalar_r(fly_array *out, const fly_array cond, const fly_array a, const double b);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to select elements based on a conditional array.
 
@@ -848,9 +829,7 @@ extern "C" {
        \ingroup data_func_select
     */
     FLY_API fly_err fly_select_scalar_l(fly_array *out, const fly_array cond, const double a, const fly_array b);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to replace elements of an array with elements of another
        array.
@@ -867,9 +846,7 @@ extern "C" {
        \ingroup data_func_replace
     */
     FLY_API fly_err fly_replace(fly_array a, const fly_array cond, const fly_array b);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to replace elements of an array with a scalar value.
 
@@ -884,9 +861,7 @@ extern "C" {
        \ingroup data_func_replace
     */
     FLY_API fly_err fly_replace_scalar(fly_array a, const fly_array cond, const double b);
-#endif
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface to pad an array.
 
@@ -909,9 +884,7 @@ extern "C" {
                         const dim_t *const begin_dims, const unsigned end_ndims,
                         const dim_t *const end_dims,
                         const fly_border_type pad_fill_type);
-#endif
 
-#if FLY_API_VERSION >= 39
     /**
        C Interface to replace elements of an array with a scalar value.
 
@@ -1005,7 +978,6 @@ extern "C" {
     FLY_API fly_err fly_select_scalar_l_ulong(fly_array *out, const fly_array cond,
                                           const unsigned long long a,
                                           const fly_array b);
-#endif
 
 #ifdef __cplusplus
 }

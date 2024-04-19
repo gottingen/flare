@@ -166,7 +166,7 @@ function(get_native_path out_path path)
 endfunction()
 
 macro(flare_set_cmake_default_variables)
-  set(CMAKE_PREFIX_PATH "${Flare_BINARY_DIR};${CMAKE_PREFIX_PATH}")
+  set(CMAKE_PREFIX_PATH "${flare_BINARY_DIR};${CMAKE_PREFIX_PATH}")
   set(BUILD_SHARED_LIBS ON)
 
   set(CMAKE_CXX_FLAGS_COVERAGE
@@ -217,7 +217,7 @@ macro(flare_set_cmake_default_variables)
 
   # Store all binaries in the bin/<Config> directory
   if(WIN32)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${Flare_BINARY_DIR}/bin)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${flare_BINARY_DIR}/bin)
   endif()
 
   if(APPLE AND (NOT DEFINED CMAKE_INSTALL_RPATH))
@@ -241,7 +241,7 @@ macro(flare_set_cmake_default_variables)
   #  ]=])
   #  include(WriteCompilerDetectionHeader)
   #  write_compiler_detection_header(
-  #          FILE ${Flare_BINARY_DIR}/include/fly/compilers.h
+  #          FILE ${flare_BINARY_DIR}/include/fly/compilers.h
   #          PREFIX FLY
   #          COMPILERS AppleClang Clang GNU Intel MSVC
   #          # NOTE: cxx_attribute_deprecated does not work well with C
@@ -252,9 +252,9 @@ macro(flare_set_cmake_default_variables)
   #          #[PROLOG <prolog>]
   #          EPILOG ${compiler_header_epilogue}
   #          )
-  configure_file(
-    ${Flare_SOURCE_DIR}/CMakeModules/compilers.h
-    ${Flare_BINARY_DIR}/include/fly/compilers.h)
+  #configure_file(
+  #  ${flare_SOURCE_DIR}/CMakeModules/compilers.h
+  #  ${flare_BINARY_DIR}/include/fly/compilers.h)
 endmacro()
 
 macro(set_policies)

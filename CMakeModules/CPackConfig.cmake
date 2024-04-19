@@ -58,9 +58,9 @@ file(TO_NATIVE_PATH "${CMAKE_SOURCE_DIR}/assets/" NATIVE_ASSETS_PATH)
 string(REPLACE "\\" "\\\\" NATIVE_ASSETS_PATH  ${NATIVE_ASSETS_PATH})
 set(CPACK_FLY_ASSETS_DIR "${NATIVE_ASSETS_PATH}")
 
-set(CPACK_PACKAGE_VERSION_MAJOR "${Flare_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${Flare_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${Flare_VERSION_PATCH}")
+set(CPACK_PACKAGE_VERSION_MAJOR "${flare_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${flare_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${flare_VERSION_PATCH}")
 
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${LIBRARY_NAME}")
 
@@ -83,8 +83,8 @@ macro(to_cpack_variable variable)
 endmacro()
 
 to_cpack_variable(FLY_COMPUTE_LIBRARY)
-to_cpack_variable(Flare_SOURCE_DIR)
-to_cpack_variable(Flare_BINARY_DIR)
+to_cpack_variable(flare_SOURCE_DIR)
+to_cpack_variable(flare_BINARY_DIR)
 to_cpack_variable(CUDA_VERSION_MAJOR)
 to_cpack_variable(CUDA_VERSION_MINOR)
 
@@ -92,8 +92,8 @@ to_cpack_variable(CUDA_VERSION_MINOR)
 # package that installs all the backends. This package needs to have
 # some files associated with it so that it doesn't get deleted by
 # APT after its installed.
-file(WRITE ${Flare_BINARY_DIR}/flare_version.txt ${Flare_VERSION})
-install(FILES ${Flare_BINARY_DIR}/flare_version.txt
+file(WRITE ${flare_BINARY_DIR}/flare_version.txt ${flare_VERSION})
+install(FILES ${flare_BINARY_DIR}/flare_version.txt
 	DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}
   COMPONENT flare)
 
@@ -114,7 +114,7 @@ if(APPLE)
   set(README_FILE       "${OSX_INSTALL_SOURCE}/readme.html.in")
   set(README_FILE_OUT   "${CMAKE_CURRENT_BINARY_DIR}/readme.html")
 
-  set(LICENSE_FILE       "${Flare_SOURCE_DIR}/LICENSE")
+  set(LICENSE_FILE       "${flare_SOURCE_DIR}/LICENSE")
   set(LICENSE_FILE_OUT   "${CMAKE_CURRENT_BINARY_DIR}/license.txt")
 
   set(FLY_TITLE    "Flare ${FLY_VERSION}")
@@ -127,7 +127,7 @@ if(APPLE)
 elseif(WIN32)
   set(WIN_INSTALL_SOURCE ${PROJECT_SOURCE_DIR}/CMakeModules/nsis)
 
-  set(LICENSE_FILE       "${Flare_SOURCE_DIR}/LICENSE")
+  set(LICENSE_FILE       "${flare_SOURCE_DIR}/LICENSE")
   set(LICENSE_FILE_OUT   "${CMAKE_CURRENT_BINARY_DIR}/license.txt")
   configure_file(${LICENSE_FILE} ${LICENSE_FILE_OUT})
   set(CPACK_RESOURCE_FILE_LICENSE ${LICENSE_FILE_OUT})
@@ -147,8 +147,8 @@ elseif(WIN32)
     set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
   endif (CMAKE_CL_64)
 else()
-  set(CPACK_RESOURCE_FILE_LICENSE "${Flare_SOURCE_DIR}/LICENSE")
-  set(CPACK_RESOURCE_FILE_README "${Flare_SOURCE_DIR}/README.md")
+  set(CPACK_RESOURCE_FILE_LICENSE "${flare_SOURCE_DIR}/LICENSE")
+  set(CPACK_RESOURCE_FILE_README "${flare_SOURCE_DIR}/README.md")
 endif()
 
 set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/CMakeModules/CPackProjectConfig.cmake")

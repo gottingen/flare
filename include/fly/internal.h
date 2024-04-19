@@ -22,7 +22,6 @@ namespace fly
 {
     class array;
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] data is the raw data pointer.
        \param[in] offset specifies the number of elements to skip.
@@ -41,9 +40,7 @@ namespace fly
                                    const dim4 dims, const dim4 strides,
                                    const fly::dtype ty,
                                    const fly::source location);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] in An multi dimensional array.
        \returns fly::dim4() containing distance between consecutive elements in each dimension.
@@ -51,9 +48,7 @@ namespace fly
        \ingroup internal_func_strides
     */
     FLY_API dim4 getStrides(const array &in);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] in An multi dimensional array.
        \returns offset from the starting location of data pointer specified in number of elements.
@@ -61,9 +56,8 @@ namespace fly
        \ingroup internal_func_offset
     */
     FLY_API dim_t getOffset(const array &in);
-#endif
 
-#if FLY_API_VERSION >= 33
+
     /**
        \param[in] in An multi dimensional array.
        \returns Returns the raw pointer location to the array.
@@ -73,9 +67,7 @@ namespace fly
        \ingroup internal_func_rawptr
     */
     FLY_API void *getRawPtr(const array &in);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] in An multi dimensional array.
        \returns a boolean specifying if all elements in the array are contiguous.
@@ -83,9 +75,7 @@ namespace fly
        \ingroup internal_func_linear
     */
     FLY_API bool isLinear(const array &in);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] in An multi dimensional array.
        \returns a boolean specifying if the array owns the raw pointer. It is false if it is a sub array.
@@ -93,7 +83,6 @@ namespace fly
        \ingroup internal_func_owner
     */
     FLY_API bool isOwner(const array &in);
-#endif
 }
 #endif
 
@@ -102,7 +91,6 @@ extern "C"
 {
 #endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[out] arr an fly_array with specified offset, dimensions and strides.
        \param[in] data is the raw data pointer.
@@ -125,9 +113,7 @@ extern "C"
                                          const dim_t *const strides,
                                          const fly_dtype ty,
                                          const fly_source location);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] arr An multi dimensional array.
        \param[out] s0 distance between each consecutive element along first  dimension.
@@ -138,9 +124,7 @@ extern "C"
        \ingroup internal_func_strides
     */
     FLY_API fly_err fly_get_strides(dim_t *s0, dim_t *s1, dim_t *s2, dim_t *s3, const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] arr An multi dimensional array.
        \param[out] offset: Offset from the starting location of data pointer specified in number of elements. distance between each consecutive element along first  dimension.
@@ -148,9 +132,7 @@ extern "C"
        \ingroup internal_func_offset
     */
     FLY_API fly_err fly_get_offset(dim_t *offset, const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] arr An multi dimensional array.
        \param[out] ptr the raw pointer location to the array.
@@ -160,9 +142,7 @@ extern "C"
        \ingroup internal_func_rawptr
     */
     FLY_API fly_err fly_get_raw_ptr(void **ptr, const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] arr An multi dimensional array.
        \param[out] result: a boolean specifying if all elements in the array are contiguous.
@@ -170,9 +150,7 @@ extern "C"
        \ingroup internal_func_linear
     */
     FLY_API fly_err fly_is_linear(bool *result, const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 33
     /**
        \param[in] arr An multi dimensional array.
        \param[out] result: a boolean specifying if the array owns the raw pointer. It is false if it is a sub array.
@@ -180,9 +158,7 @@ extern "C"
        \ingroup internal_func_owner
     */
     FLY_API fly_err fly_is_owner(bool *result, const fly_array arr);
-#endif
 
-#if FLY_API_VERSION >= 35
     /**
        \param[out] bytes the size of the physical allocated bytes. This will return the size
        of the parent/owner if the \p arr is an indexed array.
@@ -191,7 +167,6 @@ extern "C"
        \ingroup internal_func_allocatedbytes
     */
     FLY_API fly_err fly_get_allocated_bytes(size_t *bytes, const fly_array arr);
-#endif
 
 #ifdef __cplusplus
 }

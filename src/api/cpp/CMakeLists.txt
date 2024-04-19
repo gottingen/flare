@@ -91,7 +91,7 @@ target_sources(cpp_api_interface
 
 target_include_directories(cpp_api_interface
   SYSTEM INTERFACE
-    ${Flare_SOURCE_DIR}/extern/half/include)
+    ${flare_SOURCE_DIR}/extern/half/include)
 
 target_include_directories(cpp_api_interface
   INTERFACE

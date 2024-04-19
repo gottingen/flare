@@ -21,7 +21,6 @@ namespace fly
 {
     class array;
 
-#if FLY_API_VERSION >= 34
     /**
        This function converts \ref fly::array of values, row indices and column
        indices into a sparse array.
@@ -45,9 +44,6 @@ namespace fly
     FLY_API array sparse(const dim_t nRows, const dim_t nCols,
                        const array values, const array rowIdx, const array colIdx,
                        const fly::storage stype = FLY_STORAGE_CSR);
-#endif
-
-#if FLY_API_VERSION >= 34
     /**
        This function converts host or device arrays of values, row indices and
        column indices into a sparse array on the device.
@@ -77,9 +73,7 @@ namespace fly
                        const int * const rowIdx, const int * const colIdx,
                        const dtype type = f32, const fly::storage stype = FLY_STORAGE_CSR,
                        const fly::source src = flyHost);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        This function converts a dense \ref fly::array into a sparse array.
 
@@ -92,9 +86,7 @@ namespace fly
        \ingroup sparse_func_create
      */
     FLY_API array sparse(const array dense, const fly::storage stype = FLY_STORAGE_CSR);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[in] in is the source sparse matrix to be converted
        \param[in] destStrorage is the storage format of the output sparse array
@@ -103,9 +95,7 @@ namespace fly
        \ingroup sparse_func_convert_to
      */
     FLY_API array sparseConvertTo(const array in, const fly::storage destStrorage);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[in] sparse is the source sparse matrix
        \return dense \ref fly::array from sparse
@@ -115,9 +105,8 @@ namespace fly
        \ingroup sparse_func_dense
      */
     FLY_API array dense(const array sparse);
-#endif
 
-#if FLY_API_VERSION >= 34
+
     /**
        \param[out] values stores the non-zero elements component of the sparse array
        \param[out] rowIdx stores the row indices component of the sparse array
@@ -129,9 +118,7 @@ namespace fly
      */
     FLY_API void sparseGetInfo(array &values, array &rowIdx, array &colIdx, fly::storage &stype,
                              const array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[in] in is the input sparse matrix
        \return \ref fly::array for the non-zero elements component of the sparse array
@@ -139,9 +126,7 @@ namespace fly
        \ingroup sparse_func_values
      */
     FLY_API array sparseGetValues(const array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[in] in is the input sparse matrix
        \return \ref fly::array for the row indices component of the sparse array
@@ -149,9 +134,7 @@ namespace fly
        \ingroup sparse_func_row_idx
      */
     FLY_API array sparseGetRowIdx(const array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[in] in is the input sparse matrix
        \return \ref fly::array for the column indices component of the sparse array
@@ -159,9 +142,7 @@ namespace fly
        \ingroup sparse_func_col_idx
      */
     FLY_API array sparseGetColIdx(const array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[in] in is the input sparse matrix
        \return the number of non-zero elements of the sparse array
@@ -169,9 +150,7 @@ namespace fly
        \ingroup sparse_func_nnz
      */
     FLY_API dim_t sparseGetNNZ(const array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[in] in is the input sparse matrix
        \return \ref fly::storage for the storage type of the sparse array
@@ -179,7 +158,6 @@ namespace fly
        \ingroup sparse_func_storage
      */
     FLY_API fly::storage sparseGetStorage(const array in);
-#endif
 }
 #endif
 
@@ -187,7 +165,6 @@ namespace fly
 extern "C" {
 #endif
 
-#if FLY_API_VERSION >= 34
     /**
        This function converts \ref fly::array of values, row indices and column
        indices into a sparse array.
@@ -213,9 +190,7 @@ extern "C" {
                  const dim_t nRows, const dim_t nCols,
                  const fly_array values, const fly_array rowIdx, const fly_array colIdx,
                  const fly_storage stype);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        This function converts host or device arrays of values, row indices and
        column indices into a sparse array on the device.
@@ -247,9 +222,7 @@ extern "C" {
                  const int * const rowIdx, const int * const colIdx,
                  const fly_dtype type, const fly_storage stype,
                  const fly_source src);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        This function converts a dense \ref fly_array into a sparse array.
 
@@ -264,9 +237,7 @@ extern "C" {
     FLY_API fly_err fly_create_sparse_array_from_dense(
                  fly_array *out, const fly_array dense,
                  const fly_storage stype);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[out] out \ref fly_array for the sparse array with the given storage type
        \param[in] in is the source sparse matrix to be converted
@@ -278,9 +249,7 @@ extern "C" {
      */
     FLY_API fly_err fly_sparse_convert_to(fly_array *out, const fly_array in,
                                       const fly_storage destStorage);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[out] out dense \ref fly_array from sparse
        \param[in] sparse is the source sparse matrix
@@ -290,9 +259,7 @@ extern "C" {
        \ingroup sparse_func_dense
      */
     FLY_API fly_err fly_sparse_to_dense(fly_array *out, const fly_array sparse);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[out] values stores the non-zero elements component of the sparse array
        \param[out] rowIdx stores the row indices component of the sparse array
@@ -306,9 +273,7 @@ extern "C" {
      */
     FLY_API fly_err fly_sparse_get_info(fly_array *values, fly_array *rowIdx, fly_array *colIdx, fly_storage *stype,
                                     const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[out] out \ref fly_array for the non-zero elements component of the sparse array
        \param[in] in is the input sparse matrix
@@ -318,9 +283,7 @@ extern "C" {
        \ingroup sparse_func_values
      */
     FLY_API fly_err fly_sparse_get_values(fly_array *out, const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[out] out \ref fly_array for the row indices component of the sparse array
        \param[in] in is the input sparse matrix
@@ -330,9 +293,7 @@ extern "C" {
        \ingroup sparse_func_row_idx
      */
     FLY_API fly_err fly_sparse_get_row_idx(fly_array *out, const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[out] out \ref fly_array for the column indices component of the sparse array
        \param[in] in is the input sparse matrix
@@ -342,9 +303,7 @@ extern "C" {
        \ingroup sparse_func_col_idx
      */
     FLY_API fly_err fly_sparse_get_col_idx(fly_array *out, const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[out] out the number of non-zero elements of the sparse array
        \param[in] in is the input sparse matrix
@@ -354,9 +313,7 @@ extern "C" {
        \ingroup sparse_func_nnz
      */
     FLY_API fly_err fly_sparse_get_nnz(dim_t *out, const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 34
     /**
        \param[out] out contains \ref fly_storage for the storage type of the sparse array
        \param[in] in is the input sparse matrix
@@ -366,7 +323,6 @@ extern "C" {
        \ingroup sparse_func_storage
      */
     FLY_API fly_err fly_sparse_get_storage(fly_storage *out, const fly_array in);
-#endif
 
 #ifdef __cplusplus
 }

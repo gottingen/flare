@@ -47,8 +47,8 @@ foreach(SBK_TYPE ${SBK_TYPES})
     PUBLIC
       .
       ../../api/c
-      ${Flare_SOURCE_DIR}/include
-      ${Flare_BINARY_DIR}/include
+      ${flare_SOURCE_DIR}/include
+      ${flare_BINARY_DIR}/include
     PRIVATE
       ../common
       ..

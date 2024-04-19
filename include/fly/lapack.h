@@ -20,7 +20,6 @@
 #ifdef __cplusplus
 namespace fly
 {
-#if FLY_API_VERSION >= 31
     /**
        C++ Interface to perform singular value decomposition.
 
@@ -33,9 +32,7 @@ namespace fly
        \ingroup lapack_factor_func_svd
     */
     FLY_API void svd(array &u, array &s, array &vt, const array &in);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C++ Interface to perform in-place singular value decomposition.
 
@@ -51,7 +48,6 @@ namespace fly
        \ingroup lapack_factor_func_svd
     */
     FLY_API void svdInPlace(array &u, array &s, array &vt, array &in);
-#endif
 
     /**
        C++ Interface to perform LU decomposition in packed format.
@@ -229,7 +225,6 @@ namespace fly
     */
     FLY_API array inverse(const array &in, const matProp options = FLY_MAT_NONE);
 
-#if FLY_API_VERSION >= 37
     /**
        C++ Interface to pseudo-invert (Moore-Penrose) a matrix.
 
@@ -252,7 +247,6 @@ namespace fly
     */
     FLY_API array pinverse(const array &in, const double tol=1E-6,
                          const matProp options = FLY_MAT_NONE);
-#endif
 
     /**
        C++ Interface to find the rank of a matrix.
@@ -291,7 +285,6 @@ namespace fly
     FLY_API double norm(const array &in, const normType type=FLY_NORM_EUCLID,
                       const double p=1, const double q=1);
 
-#if FLY_API_VERSION >= 33
     /**
        Returns true if Flare is compiled with LAPACK support.
 
@@ -300,7 +293,6 @@ namespace fly
        \ingroup lapack_helper_func_available
     */
     FLY_API bool isLAPACKAvailable();
-#endif
 
 }
 #endif
@@ -309,7 +301,6 @@ namespace fly
 extern "C" {
 #endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to perform singular value decomposition.
 
@@ -324,9 +315,7 @@ extern "C" {
        \ingroup lapack_factor_func_svd
     */
     FLY_API fly_err fly_svd(fly_array *u, fly_array *s, fly_array *vt, const fly_array in);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface to perform in-place singular value decomposition.
 
@@ -344,7 +333,6 @@ extern "C" {
        \ingroup lapack_factor_func_svd
     */
     FLY_API fly_err fly_svd_inplace(fly_array *u, fly_array *s, fly_array *vt, fly_array in);
-#endif
 
     /**
        C Interface to perform LU decomposition.
@@ -502,7 +490,6 @@ extern "C" {
     */
     FLY_API fly_err fly_inverse(fly_array *out, const fly_array in, const fly_mat_prop options);
 
-#if FLY_API_VERSION >= 37
     /**
        C Interface to pseudo-invert (Moore-Penrose) a matrix.
 
@@ -528,7 +515,6 @@ extern "C" {
     */
     FLY_API fly_err fly_pinverse(fly_array *out, const fly_array in, const double tol,
                              const fly_mat_prop options);
-#endif
 
     /**
        C Interface to find the rank of a matrix.
@@ -573,7 +559,6 @@ extern "C" {
     */
     FLY_API fly_err fly_norm(double *out, const fly_array in, const fly_norm_type type, const double p, const double q);
 
-#if FLY_API_VERSION >= 33
     /**
        Returns true if Flare is compiled with LAPACK support.
 
@@ -585,7 +570,6 @@ extern "C" {
        \ingroup lapack_helper_func_available
     */
     FLY_API fly_err fly_is_lapack_available(bool *out);
-#endif
 
 
 #ifdef __cplusplus

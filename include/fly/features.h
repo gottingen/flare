@@ -46,7 +46,6 @@ namespace fly
         /// Copy assignment operator
         features& operator= (const features& other);
 
-#if FLY_API_VERSION >= 38
         /// Copy constructor
         features(const features &other);
 
@@ -56,7 +55,6 @@ namespace fly
 
         /// Move assignment operator
         features &operator=(features &&other);
-#endif
 #endif
 
         /// Returns  the number of features represented by this object

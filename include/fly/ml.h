@@ -22,7 +22,6 @@ namespace fly
 class array;
 class dim4;
 
-#if FLY_API_VERSION >= 37
     /**
         C++ interface for calculating backward pass gradient of 2D convolution
         This function calculates the gradient with respect to the output
@@ -53,7 +52,6 @@ class dim4;
                                     const dim4 stride, const dim4 padding, const dim4 dilation,
                                     convGradientType grad_type);
 
-#endif
 
 }
 #endif
@@ -62,7 +60,6 @@ class dim4;
 extern "C" {
 #endif
 
-#if FLY_API_VERSION >= 37
     /**
         C interface for calculating backward pass gradient of 2D convolution
         This function calculates the gradient with respect to the output
@@ -96,7 +93,6 @@ extern "C" {
                                           const unsigned padding_dims,  const dim_t *paddings,
                                           const unsigned dilation_dims, const dim_t *dilations,
                                           fly_conv_gradient_type grad_type);
-#endif
 
 
 #ifdef __cplusplus

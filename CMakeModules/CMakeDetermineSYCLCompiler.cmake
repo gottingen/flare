@@ -246,7 +246,7 @@ if(CMAKE_SYCL_XCODE_ARCHS)
 endif()
 
 # configure all variables set in this file
-configure_file(${Flare_SOURCE_DIR}/CMakeModules/CMakeSYCLCompiler.cmake.in
+configure_file(${flare_SOURCE_DIR}/CMakeModules/CMakeSYCLCompiler.cmake.in
   ${CMAKE_PLATFORM_INFO_DIR}/CMakeSYCLCompiler.cmake
   @ONLY
   )

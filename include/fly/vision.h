@@ -49,7 +49,6 @@ FLY_API features fast(const array& in, const float thr=20.0f, const unsigned arc
                     const bool non_max=true, const float feature_ratio=0.05f,
                     const unsigned edge=3);
 
-#if FLY_API_VERSION >= 31
 /**
     C++ Interface for Harris corner detector
 
@@ -79,7 +78,6 @@ FLY_API features fast(const array& in, const float thr=20.0f, const unsigned arc
 FLY_API features harris(const array& in, const unsigned max_corners=500,
                       const float min_response=1e5f, const float sigma=1.f,
                       const unsigned block_size=0, const float k_thr=0.04f);
-#endif
 
 /**
     C++ Interface for ORB feature descriptor
@@ -108,7 +106,6 @@ FLY_API void orb(features& feat, array& desc, const array& image,
                const float scl_fctr=1.5f, const unsigned levels=4,
                const bool blur_img=false);
 
-#if FLY_API_VERSION >= 31
 /**
     C++ Interface for SIFT feature detector and descriptor
 
@@ -144,9 +141,7 @@ FLY_API void sift(features& feat, array& desc, const array& in, const unsigned n
                 const float contrast_thr=0.04f, const float edge_thr=10.f,
                 const float init_sigma=1.6f, const bool double_input=true,
                 const float intensity_scale=0.00390625f, const float feature_ratio=0.05f);
-#endif
 
-#if FLY_API_VERSION >= 32
 /**
     C++ Interface for SIFT feature detector and GLOH descriptor
 
@@ -182,7 +177,6 @@ FLY_API void gloh(features& feat, array& desc, const array& in, const unsigned n
                 const float contrast_thr=0.04f, const float edge_thr=10.f,
                 const float init_sigma=1.6f, const bool double_input=true,
                 const float intensity_scale=0.00390625f, const float feature_ratio=0.05f);
-#endif
 
 /**
    C++ Interface wrapper for Hamming matcher
@@ -212,7 +206,6 @@ FLY_API void hammingMatcher(array& idx, array& dist,
                           const array& query, const array& train,
                           const dim_t dist_dim=0, const unsigned n_dist=1);
 
-#if FLY_API_VERSION >= 31
 /**
    C++ interface wrapper for determining the nearest neighbouring points to a
    given set of points
@@ -254,7 +247,6 @@ FLY_API void nearestNeighbour(array& idx, array& dist,
                             const array& query, const array& train,
                             const dim_t dist_dim=0, const unsigned n_dist=1,
                             const fly_match_type dist_type = FLY_SSD);
-#endif
 
 /**
    C++ Interface for image template matching
@@ -273,7 +265,6 @@ FLY_API void nearestNeighbour(array& idx, array& dist,
  */
 FLY_API array matchTemplate(const array &searchImg, const array &templateImg, const matchType mType=FLY_SAD);
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface for SUSAN corner detector
 
@@ -296,9 +287,7 @@ FLY_API features susan(const array& in,
                      const float geom_thr=10.0f,
                      const float feature_ratio=0.05f,
                      const unsigned edge=3);
-#endif
 
-#if FLY_API_VERSION >= 31
 /**
    C++ Interface wrapper for Difference of Gaussians
 
@@ -310,9 +299,7 @@ FLY_API features susan(const array& in,
    \ingroup cv_func_dog
  */
 FLY_API array dog(const array& in, const int radius1, const int radius2);
-#endif
 
-#if FLY_API_VERSION >= 32
 /**
    C++ Interface for Homography estimation
 
@@ -341,7 +328,6 @@ FLY_API array dog(const array& in, const int radius1, const int radius2);
 FLY_API void homography(array& H, int& inliers, const array& x_src, const array& y_src,
                       const array& x_dst, const array& y_dst, const fly_homography_type htype=FLY_HOMOGRAPHY_RANSAC,
                       const float inlier_thr=3.f, const unsigned iterations=1000, const dtype otype=f32);
-#endif
 
 }
 #endif
@@ -378,7 +364,6 @@ extern "C" {
     FLY_API fly_err fly_fast(fly_features *out, const fly_array in, const float thr, const unsigned arc_length,
                          const bool non_max, const float feature_ratio, const unsigned edge);
 
-#if FLY_API_VERSION >= 31
     /**
         C Interface for Harris corner detector
 
@@ -408,7 +393,6 @@ extern "C" {
     FLY_API fly_err fly_harris(fly_features *out, const fly_array in, const unsigned max_corners,
                            const float min_response, const float sigma,
                            const unsigned block_size, const float k_thr);
-#endif
 
     /**
         C Interface for ORB feature descriptor
@@ -436,7 +420,6 @@ extern "C" {
                         const float fast_thr, const unsigned max_feat, const float scl_fctr,
                         const unsigned levels, const bool blur_img);
 
-#if FLY_API_VERSION >= 31
     /**
         C++ Interface for SIFT feature detector and descriptor
 
@@ -472,9 +455,7 @@ extern "C" {
                          const unsigned n_layers, const float contrast_thr, const float edge_thr,
                          const float init_sigma, const bool double_input,
                          const float intensity_scale, const float feature_ratio);
-#endif
 
-#if FLY_API_VERSION >= 32
     /**
         C++ Interface for SIFT feature detector and GLOH descriptor
 
@@ -510,7 +491,6 @@ extern "C" {
                          const unsigned n_layers, const float contrast_thr,
                          const float edge_thr, const float init_sigma, const bool double_input,
                          const float intensity_scale, const float feature_ratio);
-#endif
 
     /**
        C Interface wrapper for Hamming matcher
@@ -537,7 +517,6 @@ extern "C" {
                                     const fly_array query, const fly_array train,
                                     const dim_t dist_dim, const unsigned n_dist);
 
-#if FLY_API_VERSION >= 31
 /**
    C++ interface wrapper for determining the nearest neighbouring points to a
    given set of points
@@ -579,7 +558,6 @@ FLY_API fly_err fly_nearest_neighbour(fly_array* idx, fly_array* dist,
                                   const fly_array query, const fly_array train,
                                   const dim_t dist_dim, const unsigned n_dist,
                                   const fly_match_type dist_type);
-#endif
 
     /**
        C Interface for image template matching
@@ -601,7 +579,6 @@ FLY_API fly_err fly_nearest_neighbour(fly_array* idx, fly_array* dist,
     FLY_API fly_err fly_match_template(fly_array *out, const fly_array search_img,
                                    const fly_array template_img, const fly_match_type m_type);
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface for SUSAN corner detector
 
@@ -623,9 +600,7 @@ FLY_API fly_err fly_nearest_neighbour(fly_array* idx, fly_array* dist,
     FLY_API fly_err fly_susan(fly_features* out, const fly_array in, const unsigned radius,
                           const float diff_thr, const float geom_thr,
                           const float feature_ratio, const unsigned edge);
-#endif
 
-#if FLY_API_VERSION >= 31
     /**
        C Interface wrapper for Difference of Gaussians
 
@@ -639,9 +614,7 @@ FLY_API fly_err fly_nearest_neighbour(fly_array* idx, fly_array* dist,
        \ingroup cv_func_dog
      */
     FLY_API fly_err fly_dog(fly_array *out, const fly_array in, const int radius1, const int radius2);
-#endif
 
-#if FLY_API_VERSION >= 32
     /**
        C Interface wrapper for Homography estimation
 
@@ -673,7 +646,6 @@ FLY_API fly_err fly_nearest_neighbour(fly_array* idx, fly_array* dist,
                                const fly_array x_dst, const fly_array y_dst,
                                const fly_homography_type htype, const float inlier_thr,
                                const unsigned iterations, const fly_dtype otype);
-#endif
 
 #ifdef __cplusplus
 }

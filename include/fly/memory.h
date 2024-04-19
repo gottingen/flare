@@ -17,10 +17,7 @@
 
 #include <fly/defines.h>
 #include <fly/event.h>
-
 #include <stddef.h>
-
-#if FLY_API_VERSION >= 37
 
 /**
    \ingroup memory_manager_api
@@ -602,4 +599,3 @@ FLY_API fly_err fly_memory_manager_set_memory_pressure_threshold(
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
-#endif  // FLY_API_VERSION >= 37

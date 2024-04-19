@@ -78,7 +78,6 @@ DEFINE_OP(/)
 
 #undef DEFINE_OP
 
-#if FLY_API_VERSION >= 31
 // -,* for (cfloat, double) and (cdouble, double)
 #define DEFINE_OP(OP)                                                               \
     FLY_API fly::cfloat  operator OP(const fly::cfloat  &lhs, const     double  &rhs);  \
@@ -88,9 +87,7 @@ DEFINE_OP(-)
 DEFINE_OP(*)
 
 #undef DEFINE_OP
-#endif  // FLY_API_VERSION
 
-#if FLY_API_VERSION >= 31
 // +, -, *, / for (double, cfloat/cdouble) and (cfloat/cdouble, cdouble/cfloat)
 #define DEFINE_OP(OP)                                                               \
     FLY_API fly::cfloat  operator OP(const double      &rhs, const fly::cfloat  &lhs);  \
@@ -104,7 +101,6 @@ DEFINE_OP(*)
 DEFINE_OP(/)
 
 #undef DEFINE_OP
-#endif  // FLY_API_VERSION
 
 FLY_API bool operator==(const cfloat &lhs, const cfloat &rhs);
 FLY_API bool operator==(const cdouble &lhs, const cdouble &rhs);

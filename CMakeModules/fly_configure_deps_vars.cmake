@@ -15,7 +15,7 @@
 #
 file(DOWNLOAD
   "https://github.com/arrayfire/arrayfire/blob/v3.0.0/CMakeLists.txt"
-  "${Flare_BINARY_DIR}/download_copy_cmakelists.stamp"
+  "${flare_BINARY_DIR}/download_copy_cmakelists.stamp"
   STATUS fly_check_result
   TIMEOUT 4
 )
@@ -46,7 +46,7 @@ endif()
 set(FLY_INTERNAL_DOWNLOAD_FLAG OFF CACHE BOOL "Deps Download Flag")
 
 # Override fetch content base dir before including fly_fetch_content
-set(FETCHCONTENT_BASE_DIR "${Flare_BINARY_DIR}/extern" CACHE PATH
+set(FETCHCONTENT_BASE_DIR "${flare_BINARY_DIR}/extern" CACHE PATH
     "Base directory where Flare dependencies are downloaded and/or built" FORCE)
 
 include(fly_fetch_content)
@@ -100,9 +100,9 @@ macro(fly_dep_check_and_populate dep_prefix)
         URL_HASH       ${adcp_args_REF}
         DOWNLOAD_COMMAND \"\"
         UPDATE_DISCONNECTED ON
-        SOURCE_DIR     "${Flare_SOURCE_DIR}/extern/${dep_prefix}-src"
-        BINARY_DIR     "${Flare_BINARY_DIR}/extern/${dep_prefix}-build"
-        SUBBUILD_DIR   "${Flare_BINARY_DIR}/extern/${dep_prefix}-subbuild"
+        SOURCE_DIR     "${flare_SOURCE_DIR}/extern/${dep_prefix}-src"
+        BINARY_DIR     "${flare_BINARY_DIR}/extern/${dep_prefix}-build"
+        SUBBUILD_DIR   "${flare_BINARY_DIR}/extern/${dep_prefix}-subbuild"
       )
     elseif("${adcp_args_REF}" STREQUAL "")
       FetchContent_Populate(${dep_prefix}
@@ -110,9 +110,9 @@ macro(fly_dep_check_and_populate dep_prefix)
         URL            ${adcp_args_URI}
         DOWNLOAD_COMMAND \"\"
         UPDATE_DISCONNECTED ON
-        SOURCE_DIR     "${Flare_SOURCE_DIR}/extern/${dep_prefix}-src"
-        BINARY_DIR     "${Flare_BINARY_DIR}/extern/${dep_prefix}-build"
-        SUBBUILD_DIR   "${Flare_BINARY_DIR}/extern/${dep_prefix}-subbuild"
+        SOURCE_DIR     "${flare_SOURCE_DIR}/extern/${dep_prefix}-src"
+        BINARY_DIR     "${flare_BINARY_DIR}/extern/${dep_prefix}-build"
+        SUBBUILD_DIR   "${flare_BINARY_DIR}/extern/${dep_prefix}-subbuild"
       )
     else()
       # The left over alternative is assumed to be a cloud hosted git repository
@@ -122,9 +122,9 @@ macro(fly_dep_check_and_populate dep_prefix)
         GIT_TAG        ${adcp_args_REF}
         DOWNLOAD_COMMAND \"\"
         UPDATE_DISCONNECTED ON
-        SOURCE_DIR     "${Flare_SOURCE_DIR}/extern/${dep_prefix}-src"
-        BINARY_DIR     "${Flare_BINARY_DIR}/extern/${dep_prefix}-build"
-        SUBBUILD_DIR   "${Flare_BINARY_DIR}/extern/${dep_prefix}-subbuild"
+        SOURCE_DIR     "${flare_SOURCE_DIR}/extern/${dep_prefix}-src"
+        BINARY_DIR     "${flare_BINARY_DIR}/extern/${dep_prefix}-build"
+        SUBBUILD_DIR   "${flare_BINARY_DIR}/extern/${dep_prefix}-subbuild"
       )
     endif()
   else()
