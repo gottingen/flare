@@ -425,6 +425,11 @@ install(DIRECTORY "${flare_SOURCE_DIR}/LICENSES/"
         DESTINATION LICENSES
         COMPONENT licenses)
 
+install(DIRECTORY "${flare_SOURCE_DIR}/python"
+        DESTINATION share/flare
+        COMPONENT python)
+
+
 foreach (backend CPU CUDA OpenCL oneAPI Unified)
     string(TOUPPER ${backend} upper_backend)
     string(TOLOWER ${backend} lower_backend)
