@@ -25,7 +25,7 @@ PRECISION = 1.0 / float(POINTS)
 val = -math.pi
 X = math.pi * (2 * (fly.range(POINTS) / POINTS) - 1)
 
-win = fly.Window(512, 512, "2D Plot example using ArrayFire")
+win = fly.Window(512, 512, "2D Plot example using flare")
 sign = 1.0
 
 while not win.close():

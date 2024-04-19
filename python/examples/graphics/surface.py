@@ -26,7 +26,7 @@ N = 2 * POINTS
 x = (fly.iota(d0 = N, d1 = 1, tile_dims = (1, N)) - POINTS) / POINTS
 y = (fly.iota(d0 = 1, d1 = N, tile_dims = (N, 1)) - POINTS) / POINTS
 
-win = fly.Window(800, 800, "3D Surface example using ArrayFire")
+win = fly.Window(800, 800, "3D Surface example using flare")
 
 t = 0
 while not win.close():

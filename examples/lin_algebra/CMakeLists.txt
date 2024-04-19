@@ -19,64 +19,64 @@ project(Flare-Example-Linear-Algebra
   VERSION 3.5.0
   LANGUAGES CXX)
 
-find_package(Flare)
+find_package(flare)
 
-if(Flare_CPU_FOUND)
+if(flare_CPU_FOUND)
   # Cholesky example
   add_executable(cholesky_cpu cholesky.cpp)
-  target_link_libraries(cholesky_cpu Flare::flycpu)
+  target_link_libraries(cholesky_cpu flare::flycpu)
 
   # LU example
   add_executable(lu_cpu lu.cpp)
-  target_link_libraries(lu_cpu Flare::flycpu)
+  target_link_libraries(lu_cpu flare::flycpu)
 
   # QR example
   add_executable(qr_cpu qr.cpp)
-  target_link_libraries(qr_cpu Flare::flycpu)
+  target_link_libraries(qr_cpu flare::flycpu)
 
   # SVD example
   add_executable(svd_cpu svd.cpp)
-  target_link_libraries(svd_cpu Flare::flycpu)
+  target_link_libraries(svd_cpu flare::flycpu)
 endif()
 
-if(Flare_CUDA_FOUND)
+if(flare_CUDA_FOUND)
   add_executable(cholesky_cuda cholesky.cpp)
-  target_link_libraries(cholesky_cuda Flare::flycuda)
+  target_link_libraries(cholesky_cuda flare::flycuda)
 
   add_executable(lu_cuda lu.cpp)
-  target_link_libraries(lu_cuda Flare::flycuda)
+  target_link_libraries(lu_cuda flare::flycuda)
 
   add_executable(qr_cuda qr.cpp)
-  target_link_libraries(qr_cuda Flare::flycuda)
+  target_link_libraries(qr_cuda flare::flycuda)
 
   add_executable(svd_cuda svd.cpp)
-  target_link_libraries(svd_cuda Flare::flycuda)
+  target_link_libraries(svd_cuda flare::flycuda)
 endif()
 
-if(Flare_OpenCL_FOUND)
+if(flare_OpenCL_FOUND)
   add_executable(cholesky_opencl cholesky.cpp)
-  target_link_libraries(cholesky_opencl Flare::flyopencl)
+  target_link_libraries(cholesky_opencl flare::flyopencl)
 
   add_executable(lu_opencl lu.cpp)
-  target_link_libraries(lu_opencl Flare::flyopencl)
+  target_link_libraries(lu_opencl flare::flyopencl)
 
   add_executable(qr_opencl qr.cpp)
-  target_link_libraries(qr_opencl Flare::flyopencl)
+  target_link_libraries(qr_opencl flare::flyopencl)
 
   add_executable(svd_opencl svd.cpp)
-  target_link_libraries(svd_opencl Flare::flyopencl)
+  target_link_libraries(svd_opencl flare::flyopencl)
 endif()
 
-if(Flare_oneAPI_FOUND)
+if(flare_oneAPI_FOUND)
   add_executable(cholesky_oneapi cholesky.cpp)
-  target_link_libraries(cholesky_oneapi Flare::flyoneapi)
+  target_link_libraries(cholesky_oneapi flare::flyoneapi)
 
   add_executable(lu_oneapi lu.cpp)
-  target_link_libraries(lu_oneapi Flare::flyoneapi)
+  target_link_libraries(lu_oneapi flare::flyoneapi)
 
   add_executable(qr_oneapi qr.cpp)
-  target_link_libraries(qr_oneapi Flare::flyoneapi)
+  target_link_libraries(qr_oneapi flare::flyoneapi)
 
   add_executable(svd_oneapi svd.cpp)
-  target_link_libraries(svd_oneapi Flare::flyoneapi)
+  target_link_libraries(svd_oneapi flare::flyoneapi)
 endif()

@@ -22,7 +22,7 @@ This module provides interoperability with other CUDA libraries.
 
 def get_stream(idx):
     """
-    Get the CUDA stream used for the device `idx` by ArrayFire.
+    Get the CUDA stream used for the device `idx` by flare.
 
     Parameters
     ----------

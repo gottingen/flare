@@ -19,64 +19,64 @@ project(Flare-Example-Getting-Started
   VERSION 3.5.0
   LANGUAGES CXX)
 
-find_package(Flare)
+find_package(flare)
 
-if(Flare_CPU_FOUND)
+if(flare_CPU_FOUND)
   # Convolve examples
   add_executable(convolve_cpu convolve.cpp)
-  target_link_libraries(convolve_cpu Flare::flycpu)
+  target_link_libraries(convolve_cpu flare::flycpu)
 
   # Integer examples
   add_executable(integer_cpu integer.cpp)
-  target_link_libraries(integer_cpu Flare::flycpu)
+  target_link_libraries(integer_cpu flare::flycpu)
 
   # Rainfall examples
   add_executable(rainfall_cpu rainfall.cpp)
-  target_link_libraries(rainfall_cpu Flare::flycpu)
+  target_link_libraries(rainfall_cpu flare::flycpu)
 
   # Vectorization examples
   add_executable(vectorize_cpu vectorize.cpp)
-  target_link_libraries(vectorize_cpu Flare::flycpu)
+  target_link_libraries(vectorize_cpu flare::flycpu)
 endif()
 
-if(Flare_CUDA_FOUND)
+if(flare_CUDA_FOUND)
   add_executable(convolve_cuda convolve.cpp)
-  target_link_libraries(convolve_cuda Flare::flycuda)
+  target_link_libraries(convolve_cuda flare::flycuda)
 
   add_executable(integer_cuda integer.cpp)
-  target_link_libraries(integer_cuda Flare::flycuda)
+  target_link_libraries(integer_cuda flare::flycuda)
 
   add_executable(rainfall_cuda rainfall.cpp)
-  target_link_libraries(rainfall_cuda Flare::flycuda)
+  target_link_libraries(rainfall_cuda flare::flycuda)
 
   add_executable(vectorize_cuda vectorize.cpp)
-  target_link_libraries(vectorize_cuda Flare::flycuda)
+  target_link_libraries(vectorize_cuda flare::flycuda)
 endif()
 
-if(Flare_OpenCL_FOUND)
+if(flare_OpenCL_FOUND)
   add_executable(convolve_opencl convolve.cpp)
-  target_link_libraries(convolve_opencl Flare::flyopencl)
+  target_link_libraries(convolve_opencl flare::flyopencl)
 
   add_executable(integer_opencl integer.cpp)
-  target_link_libraries(integer_opencl Flare::flyopencl)
+  target_link_libraries(integer_opencl flare::flyopencl)
 
   add_executable(rainfall_opencl rainfall.cpp)
-  target_link_libraries(rainfall_opencl Flare::flyopencl)
+  target_link_libraries(rainfall_opencl flare::flyopencl)
 
   add_executable(vectorize_opencl vectorize.cpp)
-  target_link_libraries(vectorize_opencl Flare::flyopencl)
+  target_link_libraries(vectorize_opencl flare::flyopencl)
 endif()
 
-if(Flare_oneAPI_FOUND)
+if(flare_oneAPI_FOUND)
   add_executable(convolve_oneapi convolve.cpp)
-  target_link_libraries(convolve_oneapi Flare::flyoneapi)
+  target_link_libraries(convolve_oneapi flare::flyoneapi)
 
   add_executable(integer_oneapi integer.cpp)
-  target_link_libraries(integer_oneapi Flare::flyoneapi)
+  target_link_libraries(integer_oneapi flare::flyoneapi)
 
   add_executable(rainfall_oneapi rainfall.cpp)
-  target_link_libraries(rainfall_oneapi Flare::flyoneapi)
+  target_link_libraries(rainfall_oneapi flare::flyoneapi)
 
   add_executable(vectorize_oneapi vectorize.cpp)
-  target_link_libraries(vectorize_oneapi Flare::flyoneapi)
+  target_link_libraries(vectorize_oneapi flare::flyoneapi)
 endif()

@@ -47,12 +47,12 @@ class Window(object):
     height: optional: int. default: 720.
            - Specifies the height of the window in pixels.
 
-    title: optional: str. default: "ArrayFire".
+    title: optional: str. default: "flare".
           - Specifies the title used for the window.
 
     """
 
-    def __init__(self, width=1280, height=720, title="ArrayFire"):
+    def __init__(self, width=1280, height=720, title="flare"):
         self._r = -1
         self._c = -1
         self._wnd = c_void_ptr_t(0)
@@ -60,7 +60,7 @@ class Window(object):
 
         _width  = 1280 if  width is None else  width
         _height =  720 if height is None else height
-        _title  = "ArrayFire" if title is None else title
+        _title  = "flare" if title is None else title
 
         _title = _title.encode("ascii")
 

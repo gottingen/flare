@@ -19,25 +19,25 @@ project(Flare-Example-PDE
   VERSION 3.5.0
   LANGUAGES CXX)
 
-find_package(Flare)
+find_package(flare)
 
-if(Flare_CPU_FOUND)
+if(flare_CPU_FOUND)
   # Shallow Water simulation example
   add_executable(swe_cpu swe.cpp)
-  target_link_libraries(swe_cpu Flare::flycpu)
+  target_link_libraries(swe_cpu flare::flycpu)
 endif()
 
-if(Flare_CUDA_FOUND)
+if(flare_CUDA_FOUND)
   add_executable(swe_cuda swe.cpp)
-  target_link_libraries(swe_cuda Flare::flycuda)
+  target_link_libraries(swe_cuda flare::flycuda)
 endif()
 
-if(Flare_OpenCL_FOUND)
+if(flare_OpenCL_FOUND)
   add_executable(swe_opencl swe.cpp)
-  target_link_libraries(swe_opencl Flare::flyopencl)
+  target_link_libraries(swe_opencl flare::flyopencl)
 endif()
 
-if(Flare_oneAPI_FOUND)
+if(flare_oneAPI_FOUND)
   add_executable(swe_oneapi swe.cpp)
-  target_link_libraries(swe_oneapi Flare::flyoneapi)
+  target_link_libraries(swe_oneapi flare::flyoneapi)
 endif()

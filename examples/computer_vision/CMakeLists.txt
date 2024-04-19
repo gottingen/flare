@@ -19,66 +19,66 @@ project(Flare-Example-Computer-Vision
   VERSION 3.5.0
   LANGUAGES CXX)
 
-find_package(Flare)
+find_package(flare)
 
 add_definitions("-DASSETS_DIR=\"${ASSETS_DIR}\"")
 
-if (Flare_CPU_FOUND)
+if (flare_CPU_FOUND)
   # FAST examples
   add_executable(fast_cpu fast.cpp)
-  target_link_libraries(fast_cpu Flare::flycpu)
+  target_link_libraries(fast_cpu flare::flycpu)
 
   # Harris corner detector examples
   add_executable(harris_cpu harris.cpp)
-  target_link_libraries(harris_cpu Flare::flycpu)
+  target_link_libraries(harris_cpu flare::flycpu)
 
   # Template Matching examples
   add_executable(matching_cpu matching.cpp)
-  target_link_libraries(matching_cpu Flare::flycpu)
+  target_link_libraries(matching_cpu flare::flycpu)
 
   # Template Matching examples
   add_executable(susan_cpu susan.cpp)
-  target_link_libraries(susan_cpu Flare::flycpu)
+  target_link_libraries(susan_cpu flare::flycpu)
 endif()
 
-if (Flare_CUDA_FOUND)
+if (flare_CUDA_FOUND)
   add_executable(fast_cuda fast.cpp)
-  target_link_libraries(fast_cuda Flare::flycuda)
+  target_link_libraries(fast_cuda flare::flycuda)
 
   add_executable(harris_cuda harris.cpp)
-  target_link_libraries(harris_cuda Flare::flycuda)
+  target_link_libraries(harris_cuda flare::flycuda)
 
   add_executable(matching_cuda matching.cpp)
-  target_link_libraries(matching_cuda Flare::flycuda)
+  target_link_libraries(matching_cuda flare::flycuda)
 
   add_executable(susan_cuda susan.cpp)
-  target_link_libraries(susan_cuda Flare::flycuda)
+  target_link_libraries(susan_cuda flare::flycuda)
 endif()
 
-if (Flare_OpenCL_FOUND)
+if (flare_OpenCL_FOUND)
   add_executable(fast_opencl fast.cpp)
-  target_link_libraries(fast_opencl Flare::flyopencl)
+  target_link_libraries(fast_opencl flare::flyopencl)
 
   add_executable(harris_opencl harris.cpp)
-  target_link_libraries(harris_opencl Flare::flyopencl)
+  target_link_libraries(harris_opencl flare::flyopencl)
 
   add_executable(matching_opencl matching.cpp)
-  target_link_libraries(matching_opencl Flare::flyopencl)
+  target_link_libraries(matching_opencl flare::flyopencl)
 
   add_executable(susan_opencl susan.cpp)
-  target_link_libraries(susan_opencl Flare::flyopencl)
+  target_link_libraries(susan_opencl flare::flyopencl)
 endif()
 
-if (Flare_oneAPI_FOUND)
+if (flare_oneAPI_FOUND)
   add_executable(fast_oneapi fast.cpp)
-  target_link_libraries(fast_oneapi Flare::flyoneapi)
+  target_link_libraries(fast_oneapi flare::flyoneapi)
 
   add_executable(harris_oneapi harris.cpp)
-  target_link_libraries(harris_oneapi Flare::flyoneapi)
+  target_link_libraries(harris_oneapi flare::flyoneapi)
 
   add_executable(matching_oneapi matching.cpp)
-  target_link_libraries(matching_oneapi Flare::flyoneapi)
+  target_link_libraries(matching_oneapi flare::flyoneapi)
 
   add_executable(susan_oneapi susan.cpp)
-  target_link_libraries(susan_oneapi Flare::flyoneapi)
+  target_link_libraries(susan_oneapi flare::flyoneapi)
 endif()

@@ -104,6 +104,6 @@ if __name__ == "__main__":
     console = (sys.argv[2] == '-') if len(sys.argv) > 2 else False
 
     fly.info()
-    print("** ArrayFire SUSAN Feature Detector Demo **\n")
+    print("** flare SUSAN Feature Detector Demo **\n")
     susan_demo(console)
 

@@ -135,6 +135,6 @@ if __name__ == "__main__":
     console = (sys.argv[2] == '-') if len(sys.argv) > 2 else False
 
     fly.info()
-    print("** ArrayFire template matching Demo **\n")
+    print("** flare template matching Demo **\n")
     templateMatchingDemo(console)
 

@@ -19,25 +19,25 @@ project(Flare-Example-HelloWorld
   VERSION 3.5.0
   LANGUAGES CXX)
 
-find_package(Flare)
+find_package(flare)
 
-if(Flare_CPU_FOUND)
+if(flare_CPU_FOUND)
   # Hello World example
   add_executable(helloworld_cpu helloworld.cpp)
-  target_link_libraries(helloworld_cpu Flare::flycpu)
+  target_link_libraries(helloworld_cpu flare::flycpu)
 endif()
 
-if(Flare_CUDA_FOUND)
+if(flare_CUDA_FOUND)
   add_executable(helloworld_cuda helloworld.cpp)
-  target_link_libraries(helloworld_cuda Flare::flycuda)
+  target_link_libraries(helloworld_cuda flare::flycuda)
 endif()
 
-if(Flare_OpenCL_FOUND)
+if(flare_OpenCL_FOUND)
   add_executable(helloworld_opencl helloworld.cpp)
-  target_link_libraries(helloworld_opencl Flare::flyopencl)
+  target_link_libraries(helloworld_opencl flare::flyopencl)
 endif()
 
-if(Flare_oneAPI_FOUND)
+if(flare_oneAPI_FOUND)
   add_executable(helloworld_oneapi helloworld.cpp)
-  target_link_libraries(helloworld_oneapi Flare::flyoneapi)
+  target_link_libraries(helloworld_oneapi flare::flyoneapi)
 endif()

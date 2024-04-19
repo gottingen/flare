@@ -73,7 +73,7 @@ def input_info(A, Asp):
     print("    sparse matrix memory usage: ")
 
 
-def calc_arrayfire(A, b, x0, maxiter=10):
+def calc_flare(A, b, x0, maxiter=10):
     x = fly.constant(0, b.dims()[0], dtype=fly.Dtype.f32)
     r = b - fly.matmul(A, x)
     p = r
@@ -147,8 +147,8 @@ def test():
     print("\nTesting benchmark functions...")
     A, b, x0 = setup_input(n=50, sparsity=7)  # dense A
     Asp = to_sparse(A)
-    x1, _ = calc_arrayfire(A, b, x0)
-    x2, _ = calc_arrayfire(Asp, b, x0)
+    x1, _ = calc_flare(A, b, x0)
+    x2, _ = calc_flare(Asp, b, x0)
     if fly.sum(fly.abs(x1 - x2)/x2 > 1e-5):
         raise ValueError("flare test failed")
     if np:
@@ -179,9 +179,9 @@ def bench(n=4*1024, sparsity=7, maxiter=10, iters=10):
 
     # make benchmarks
     print("Benchmarking CG solver for n = %i ..." %n)
-    t1 = timeit(calc_arrayfire, iters, args=(A, b, x0, maxiter))
+    t1 = timeit(calc_flare, iters, args=(A, b, x0, maxiter))
     print("    flare - dense:            %f ms" %t1)
-    t2 = timeit(calc_arrayfire, iters, args=(Asp, b, x0, maxiter))
+    t2 = timeit(calc_flare, iters, args=(Asp, b, x0, maxiter))
     print("    flare - sparse:           %f ms" %t2)
     if np:
         An = to_numpy(A)

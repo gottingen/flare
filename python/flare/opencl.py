@@ -25,7 +25,7 @@ from .library import (_Enum, _Enum_Type)
 
 class DEVICE_TYPE(_Enum):
     """
-    ArrayFire wrapper for CL_DEVICE_TYPE
+    flare wrapper for CL_DEVICE_TYPE
     """
     CPU = _Enum_Type(1<<1)
     GPU = _Enum_Type(1<<2)
@@ -34,7 +34,7 @@ class DEVICE_TYPE(_Enum):
 
 class PLATFORM(_Enum):
     """
-    ArrayFire enum for common platforms
+    flare enum for common platforms
     """
     AMD     = _Enum_Type(0)
     APPLE   = _Enum_Type(1)
@@ -46,7 +46,7 @@ class PLATFORM(_Enum):
 
 def get_context(retain=False):
     """
-    Get the current OpenCL context being used by ArrayFire.
+    Get the current OpenCL context being used by flare.
 
     Parameters
     ----------
@@ -72,7 +72,7 @@ def get_context(retain=False):
 
 def get_queue(retain):
     """
-    Get the current OpenCL command queue being used by ArrayFire.
+    Get the current OpenCL command queue being used by flare.
 
     Parameters
     ----------

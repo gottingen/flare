@@ -15,7 +15,7 @@
 ##########################################################################
 
 """
-ArrayFire is a high performance scientific computing library with an easy to use API.
+flare is a high performance scientific computing library with an easy to use API.
 
 
     >>> # Monte Carlo estimation of pi
@@ -30,7 +30,7 @@ ArrayFire is a high performance scientific computing library with an easy to use
             # Intuitive function names
             return 4 * af.count(within_unit_circle) / samples
 
-Programs written using ArrayFire are portable across CUDA, OpenCL and CPU devices.
+Programs written using flare are portable across CUDA, OpenCL and CPU devices.
 
 The default backend is chosen in the following order of preference based on the available libraries:
 
@@ -44,7 +44,7 @@ The backend can be chosen at the beginning of the program by using the following
 
 where name is one of 'cuda', 'opencl' or 'cpu'.
 
-The functionality provided by ArrayFire spans the following domains:
+The functionality provided by flare spans the following domains:
 
     1. Vector Algorithms
     2. Image Processing

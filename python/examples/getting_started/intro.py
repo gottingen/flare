@@ -25,7 +25,7 @@ if __name__ == "__main__":
         fly.set_device(int(sys.argv[1]))
     fly.info()
 
-    print("\n---- Intro to ArrayFire using signed(s32) arrays ----\n")
+    print("\n---- Intro to flare using signed(s32) arrays ----\n")
 
     h_A = array('i', ( 1,  2,  4, -1,  2,  0,  4,  2,  3))
     h_B = array('i', ( 2,  3,  5,  6,  0, 10,-12,  0,  1))

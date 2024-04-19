@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     fly.info()
 
-    hist_win = fly.Window(512, 512, "3D Plot example using ArrayFire")
+    hist_win = fly.Window(512, 512, "3D Plot example using flare")
     img_win  = fly.Window(480, 640, "Input Image")
 
     img = fly.load_image(sys.argv[1]).as_type(fly.Dtype.u8)

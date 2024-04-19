@@ -139,7 +139,7 @@ if __name__ == "__main__":
     console = (sys.argv[2] == '-') if len(sys.argv) > 2 else False
 
     fly.info()
-    print("** ArrayFire Harris Corner Detector Demo **\n")
+    print("** flare Harris Corner Detector Demo **\n")
 
     harris_demo(console)
 

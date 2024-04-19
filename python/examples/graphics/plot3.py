@@ -25,7 +25,7 @@ POINTS = int(10.0 * ITERATIONS)
 
 Z = 1 + fly.range(POINTS) / ITERATIONS
 
-win = fly.Window(800, 800, "3D Plot example using ArrayFire")
+win = fly.Window(800, 800, "3D Plot example using flare")
 
 t = 0.1
 while not win.close():

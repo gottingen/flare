@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     fly.info()
 
-    print("ArrayFire Fractal Demo\n")
+    print("flare Fractal Demo\n")
 
     win = fly.Window(width, height, "Fractal Demo")
     win.set_colormap(fly.COLORMAP.SPECTRUM)

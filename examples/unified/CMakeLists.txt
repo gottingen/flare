@@ -19,7 +19,7 @@ project(Flare-Example-Unified
   VERSION 3.5.0
   LANGUAGES CXX)
 
-find_package(Flare)
+find_package(flare)
 
 if(Flare_Unified_FOUND)
   # Simple unified backend example

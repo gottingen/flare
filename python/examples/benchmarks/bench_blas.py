@@ -27,7 +27,7 @@ except ImportError:
     np = None
 
 
-def calc_arrayfire(n):
+def calc_flare(n):
     A = fly.randu(n, n)
     fly.sync()
 
@@ -70,6 +70,6 @@ if __name__ == "__main__":
 
     fly.info()
 
-    bench(calc_arrayfire)
+    bench(calc_flare)
     if np:
         bench(calc_numpy, upto=512)

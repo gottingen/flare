@@ -31,7 +31,7 @@ def init():
 def info():
     """
     Displays the information about the following:
-        - ArrayFire build and version number.
+        - flare build and version number.
         - The number of devices available.
         - The names of the devices.
         - The current device being used.
@@ -92,13 +92,13 @@ def set_device(num):
 def info_str(verbose = False):
     """
     Returns information about the following as a string:
-        - ArrayFire version number.
+        - flare version number.
         - The number of devices available.
         - The names of the devices.
         - The current device being used.
     """
     import platform
-    res_str = 'ArrayFire'
+    res_str = 'flare'
 
     major, minor, patch = get_version()
     dev_info = device_info()
@@ -283,7 +283,7 @@ def device_mem_info():
 
     Note
     -----
-    ArrayFire does not free memory when array goes out of scope. The memory is marked for reuse.
+    flare does not free memory when array goes out of scope. The memory is marked for reuse.
     - The difference between alloc buffers and lock buffers equals the number of free buffers.
     - The difference between alloc bytes and lock bytes equals the number of free bytes.
 
