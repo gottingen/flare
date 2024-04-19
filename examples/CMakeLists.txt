@@ -22,7 +22,7 @@ project(Flare-Examples
 
 set(CMAKE_CXX_STANDARD 14)
 if(NOT EXISTS "${flare_SOURCE_DIR}/CMakeLists.txt")
-  set(ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
+  set(ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../asserts")
 endif()
 
 file(TO_NATIVE_PATH ${ASSETS_DIR} ASSETS_DIR)

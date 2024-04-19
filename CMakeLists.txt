@@ -252,7 +252,7 @@ find_package(collie REQUIRED PATHS ${PROJECT_SOURCE_DIR}/carbin)
 find_package(theia REQUIRED PATHS ${PROJECT_SOURCE_DIR}/carbin)
 
 
-set(ASSETS_DIR ${PROJECT_SOURCE_DIR}/3rd/assets)
+set(ASSETS_DIR ${PROJECT_SOURCE_DIR}/share/flare/asserts)
 
 # when crosscompiling use the bin2cpp file from the native bin directory
 if (CMAKE_CROSSCOMPILING)
@@ -418,7 +418,7 @@ install(DIRECTORY examples/ #NOTE The slash at the end is important
         COMPONENT examples)
 
 install(DIRECTORY ${ASSETS_DIR}/examples/ #NOTE The slash at the end is important
-        DESTINATION ${FLY_INSTALL_EXAMPLE_DIR}
+        DESTINATION ${FLY_INSTALL_ASSERTS_DIR}/examples
         COMPONENT examples)
 
 install(DIRECTORY "${flare_SOURCE_DIR}/LICENSES/"

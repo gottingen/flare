@@ -59,6 +59,14 @@ if(NOT DEFINED FLY_INSTALL_EXAMPLE_DIR)
   endif ()
 endif()
 
+if(NOT DEFINED FLY_INSTALL_ASSERTS_DIR)
+  if (WIN32)
+    set(FLY_INSTALL_ASSERTS_DIR "assert" CACHE PATH "Installation path for examples")
+  else ()
+    set(FLY_INSTALL_ASSERTS_DIR "${DATA_DIR}/asserts" CACHE PATH "Installation path for examples")
+  endif ()
+endif()
+
 # Man pages
 if(NOT DEFINED FLY_INSTALL_MAN_DIR)
     set(FLY_INSTALL_MAN_DIR "${DATA_DIR}/man" CACHE PATH "Installation path for man pages")

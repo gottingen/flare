@@ -16,12 +16,13 @@
 #include <flare.h>
 #include <cstdio>
 #include <cstdlib>
-
+#include <iostream>
 using namespace fly;
 
 static void fast_demo(bool console) {
     // Load image
     array img_color;
+    std::cout<<ASSETS_DIR<<std::endl;
     if (console)
         img_color = loadImage(ASSETS_DIR "/examples/images/square.png", true);
     else
