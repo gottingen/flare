@@ -143,7 +143,7 @@ class TheiaManager {
     /// \note The width and height of image needs to fall in the range of
     /// [0, 2^16] for the TheiaManager to correctly retrieve the necessary
     /// Theia Image object. This is an implementation limitation on how big
-    /// of an image can be rendered using arrayfire graphics funtionality
+    /// of an image can be rendered using flare graphics funtionality
     fg_image getImage(int w, int h, fg_channel_format mode, fg_dtype type);
 
     /// \brief Find/Create an Image to render in a Chart
@@ -162,7 +162,7 @@ class TheiaManager {
     /// \note The width and height of image needs to fall in the range of
     /// [0, 2^16] for the TheiaManager to correctly retrieve the necessary
     /// Theia Image object. This is an implementation limitation on how big
-    /// of an image can be rendered using arrayfire graphics funtionality
+    /// of an image can be rendered using flare graphics funtionality
     fg_image getImage(fg_chart chart, int w, int h, fg_channel_format mode,
                       fg_dtype type);
 
@@ -183,7 +183,7 @@ class TheiaManager {
     /// \note \p nPoints needs to fall in the range of [0, 2^48]
     /// for the TheiaManager to correctly retrieve the necessary Theia
     /// plot object. This is an implementation limitation on how big of a
-    /// plot can be rendered using arrayfire graphics funtionality
+    /// plot can be rendered using flare graphics funtionality
     fg_plot getPlot(fg_chart chart, int nPoints, fg_dtype dtype,
                     fg_plot_type ptype, fg_marker_type mtype);
 
@@ -201,7 +201,7 @@ class TheiaManager {
     /// \note \p nBins needs to fall in the range of [0, 2^48]
     /// for the TheiaManager to correctly retrieve the necessary Theia
     /// histogram object. This is an implementation limitation on how big
-    /// of a histogram can be rendered using arrayfire graphics funtionality
+    /// of a histogram can be rendered using flare graphics funtionality
     fg_histogram getHistogram(fg_chart chart, int nBins, fg_dtype type);
 
     /// \brief Find/Create a Surface to render in a Chart
@@ -219,7 +219,7 @@ class TheiaManager {
     /// \note \p nX * \p nY needs to fall in the range of [0, 2^48]
     /// for the TheiaManager to correctly retrieve the necessary Theia Surface
     /// object. This is an implementation limitation on how big of a surface
-    /// can be rendered using arrayfire graphics funtionality
+    /// can be rendered using flare graphics funtionality
     fg_surface getSurface(fg_chart chart, int nX, int nY, fg_dtype type);
 
     /// \brief Find/Create a Vector Field to render in a Chart
@@ -236,7 +236,7 @@ class TheiaManager {
     /// \note \p nPoints needs to fall in the range of [0, 2^48]
     /// for the TheiaManager to correctly retrieve the necessary Theia vector
     /// field object. This is an implementation limitation on how big of a
-    /// vector field can be rendered using arrayfire graphics funtionality
+    /// vector field can be rendered using flare graphics funtionality
     fg_vector_field getVectorField(fg_chart chart, int nPoints, fg_dtype type);
 
     /// \brief Get chart axes limits override flag

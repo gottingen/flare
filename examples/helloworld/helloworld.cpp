@@ -21,7 +21,7 @@ using namespace fly;
 
 int main(int argc, char* argv[]) {
     try {
-        // Select a device and display arrayfire info
+        // Select a device and display flare info
         int device = argc > 1 ? atoi(argv[1]) : 0;
         fly::setDevice(device);
         fly::info();

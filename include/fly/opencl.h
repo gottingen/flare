@@ -189,7 +189,7 @@ namespace flycl
  {
      cl_context ctx;
      fly_err err = flycl_get_context(&ctx, retain);
-     if (err != FLY_SUCCESS) throw fly::exception("Failed to get OpenCL context from arrayfire");
+     if (err != FLY_SUCCESS) throw fly::exception("Failed to get OpenCL context from flare");
      return ctx;
  }
 
@@ -205,7 +205,7 @@ namespace flycl
  {
      cl_command_queue queue;
      fly_err err = flycl_get_queue(&queue, retain);
-     if (err != FLY_SUCCESS) throw fly::exception("Failed to get OpenCL command queue from arrayfire");
+     if (err != FLY_SUCCESS) throw fly::exception("Failed to get OpenCL command queue from flare");
      return queue;
  }
 
@@ -345,7 +345,7 @@ static inline platform getPlatform()
      }
 
      if (context != getContext()) {
-         throw(fly::exception("Context mismatch between input \"buf\" and arrayfire"));
+         throw(fly::exception("Context mismatch between input \"buf\" and flare"));
      }
 
 

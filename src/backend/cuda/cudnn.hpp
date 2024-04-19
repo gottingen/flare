@@ -72,7 +72,7 @@ void cudnnSet(cudnnFilterDescriptor_t desc, cudnnDataType_t cudnn_dtype,
 // cuDNN Wrappers
 //
 // cuDNN deprecates and releases function names often between releases. in order
-// to prevent locking arrayfire versions to specific cuDNN versions, we wrap all
+// to prevent locking flare versions to specific cuDNN versions, we wrap all
 // cuDNN calls so that the main codebase is not full of ifdefs. The Following
 // functions are wrappers around cuDNN functions that abstract out the version
 // differences between older versions of cuDNN.

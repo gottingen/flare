@@ -35,7 +35,7 @@ namespace fly
     /// The \ref fly::randomEngine class is used to set the type and seed of
     /// random number generation engine based on \ref fly::randomEngineType.
     ///
-    /// \ingroup arrayfire_class
+    /// \ingroup flare_class
     /// \ingroup random_mat
     class FLY_API randomEngine {
     private:

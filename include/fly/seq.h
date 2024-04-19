@@ -46,7 +46,7 @@ class array;
 
     \brief seq is used to create sequences for indexing fly::array
 
-    \ingroup arrayfire_class
+    \ingroup flare_class
 */
 class FLY_API seq
 {

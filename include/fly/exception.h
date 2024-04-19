@@ -23,7 +23,7 @@
 namespace fly {
 
 /// An Flare exception class
-/// \ingroup arrayfire_class
+/// \ingroup flare_class
 class FLY_API exception : public std::exception
 {
 private:

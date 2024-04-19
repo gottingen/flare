@@ -27,7 +27,7 @@
 namespace fly
 {
 /// \brief Generic object that represents size and shape
-/// \ingroup arrayfire_class
+/// \ingroup flare_class
 class FLY_API dim4
 {
 public:

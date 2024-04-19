@@ -221,7 +221,7 @@ macro(flare_set_cmake_default_variables)
   endif()
 
   if(APPLE AND (NOT DEFINED CMAKE_INSTALL_RPATH))
-      message(WARNING "CMAKE_INSTALL_RPATH is required when installing Flare to the local system. Set it to /opt/arrayfire/lib if making the installer or your own custom install path.")
+      message(WARNING "CMAKE_INSTALL_RPATH is required when installing Flare to the local system. Set it to /opt/EA/inf/lib if making the installer or your own custom install path.")
   endif()
 
   # This code is used to generate the compilers.h file in CMakeModules. Not all

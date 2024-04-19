@@ -409,7 +409,6 @@ bool OpenCLCPUOffload(bool forceOffloadOSX) {
     // From GEMM, OpenCLCPUOffload(false) is called which will render the
     // variable inconsequential to the returned result.
     //
-    // Issue https://github.com/arrayfire/arrayfire/issues/662
     // Force condition
     bool osx_offload = getDeviceType() == CL_DEVICE_TYPE_CPU;
     offload          = osx_offload && (offload || forceOffloadOSX);

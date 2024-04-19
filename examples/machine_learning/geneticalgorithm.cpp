@@ -142,7 +142,7 @@ void geneticSearch(bool console, const int nSamples, const int n) {
     float maximum = -trueMax;
 
     if (!console) {
-        fly::Window win(1600, 800, "Arrayfire Genetic Algorithm Search Demo");
+        fly::Window win(1600, 800, "flare Genetic Algorithm Search Demo");
         win.grid(1, 2);
         do {
             reproducePrint(maximum, searchSpace, sampleX, sampleY, sampleZ,

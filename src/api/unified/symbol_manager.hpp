@@ -35,7 +35,7 @@ const int NUM_BACKENDS = 4;
 #define UNIFIED_ERROR_LOAD_LIB()                                       \
     FLY_RETURN_ERROR(                                                   \
         "Failed to load dynamic library. "                             \
-        "See http://www.arrayfire.com/docs/unifiedbackend.htm "        \
+        "See http://github.com/gottingen/flare "        \
         "for instructions to set up environment for Unified backend.", \
         FLY_ERR_LOAD_LIB)
 

@@ -13,10 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#
-# This file is distributed under 3-clause BSD license.
-# The complete license agreement can be obtained at:
-# https://arrayfire.com/licenses/BSD-3-Clause
 
 cmake_minimum_required(VERSION 3.10.2)
 
@@ -32,7 +28,7 @@ mark_as_advanced(CPACK_GENERATOR)
 set(VENDOR_NAME "Flare")
 set(LIBRARY_NAME ${PROJECT_NAME})
 string(TOLOWER "${LIBRARY_NAME}" APP_LOW_NAME)
-set(SITE_URL "https://arrayfire.com")
+set(SITE_URL "https://github.com/gottingen/flare")
 
 # Long description of the package
 set(CPACK_PACKAGE_DESCRIPTION
@@ -55,7 +51,7 @@ set(CPACK_PREFIX_DIR ${CMAKE_INSTALL_PREFIX})
 set(CPACK_PACKAGE_NAME "${LIBRARY_NAME}")
 set(CPACK_PACKAGE_VENDOR "${VENDOR_NAME}")
 set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${LIBRARY_NAME})
-set(CPACK_PACKAGE_CONTACT "Flare <technical@arrayfire.com>")
+set(CPACK_PACKAGE_CONTACT "Flare <lijippy@163.com>")
 set(MY_CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/assets/${APP_LOW_NAME}.ico")
 
 file(TO_NATIVE_PATH "${CMAKE_SOURCE_DIR}/assets/" NATIVE_ASSETS_PATH)
@@ -74,7 +70,7 @@ set(CPACK_DEBIAN_DEBUGINFO_PACKAGE OFF)
 set(CPACK_DEBIAN_PACKAGE_DEBUG ON)
 set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
 set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS_POLICY ">=")
-set(CPACK_DEBIAN_PACKAGE_HOMEPAGE http://www.arrayfire.com)
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE http://github.com/gottengen/flare)
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
 set(CPACK_DEBIAN_COMPRESSION_TYPE xz)
 set(CPACK_DEBIAN_DEBUGINFO_PACKAGE ON)
@@ -92,7 +88,7 @@ to_cpack_variable(Flare_BINARY_DIR)
 to_cpack_variable(CUDA_VERSION_MAJOR)
 to_cpack_variable(CUDA_VERSION_MINOR)
 
-# Create a arrayfire component so that Debian package has a top level
+# Create a flare component so that Debian package has a top level
 # package that installs all the backends. This package needs to have
 # some files associated with it so that it doesn't get deleted by
 # APT after its installed.
@@ -110,7 +106,7 @@ install(FILES ${Flare_BINARY_DIR}/flare_version.txt
 # - Windows
 #   - NSIS64 Generator
 if(APPLE)
-  set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/arrayfire")
+  set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/flare/inf")
   set(OSX_INSTALL_SOURCE ${PROJECT_SOURCE_DIR}/CMakeModules/osx_install)
   set(WELCOME_FILE       "${OSX_INSTALL_SOURCE}/welcome.html.in")
   set(WELCOME_FILE_OUT   "${CMAKE_CURRENT_BINARY_DIR}/welcome.html")

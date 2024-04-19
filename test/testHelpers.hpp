@@ -275,7 +275,7 @@ fly::array cpu_randu(const fly::dim4 dims);
 
 void cleanSlate();
 
-//********** arrayfire custom test asserts ***********
+//********** flare custom test asserts ***********
 
 // Overloading unary + op is needed to make unsigned char values printable
 //  as numbers
@@ -394,9 +394,9 @@ template<typename T>
                                        std::string expected_name,
                                        const fly::array &a, int expected);
 
-/// Checks if the C-API arrayfire function returns successfully
+/// Checks if the C-API flare function returns successfully
 ///
-/// \param[in] CALL This is the arrayfire C function
+/// \param[in] CALL This is the flare C function
 #define ASSERT_SUCCESS(CALL) ASSERT_EQ(FLY_SUCCESS, CALL)
 
 /// Compares two fly::array or fly_arrays for their types, dims, and values

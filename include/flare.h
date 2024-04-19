@@ -17,11 +17,11 @@
 
 /**
 
-\defgroup arrayfire_func Flare Functions
+\defgroup flare_func Flare Functions
 @{
 @}
 
-\defgroup arrayfire_class Flare Classes
+\defgroup flare_class Flare Classes
 @{
 @}
 
@@ -330,7 +330,7 @@
    @defgroup internal_func Functions to work with internal array layout
    @{
 
-     Functions to work with arrayfire's internal data structure.
+     Functions to work with flare's internal data structure.
 
      Note: The behavior of these functions is not promised to be consistent across versions.
 

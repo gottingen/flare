@@ -54,7 +54,7 @@ class seq;
 /// \note This is a helper class and does not necessarily need to be created
 /// explicitly. It is used in the operator() overloads to simplify the API.
 ///
-/// \ingroup arrayfire_class
+/// \ingroup flare_class
 class FLY_API index {
 
     fly_index_t impl;

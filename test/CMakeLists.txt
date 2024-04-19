@@ -88,24 +88,24 @@ if (FLY_BUILD_UNIFIED)
     list(APPEND enabled_backends "unified")
 endif (FLY_BUILD_UNIFIED)
 
-add_library(arrayfire_test STATIC
+add_library(flare_test STATIC
         testHelpers.hpp
-        arrayfire_test.cpp)
+        flare_test.cpp)
 
-target_include_directories(arrayfire_test
+target_include_directories(flare_test
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
         ${Flare_SOURCE_DIR}/include
         ${Flare_BINARY_DIR}/include)
 
-target_include_directories(arrayfire_test
+target_include_directories(flare_test
         SYSTEM PRIVATE
         ${Flare_SOURCE_DIR}/extern/half/include
 )
 
 # The tautological-constant-compare warning is always thrown for std::nan
 # and std::info calls. Its unnecessarily verbose.
-target_compile_options(arrayfire_test
+target_compile_options(flare_test
         PUBLIC
         # Intel compilers use fast math by default and ignore special floating point
         # values like NaN and Infs.
@@ -117,20 +117,20 @@ target_compile_options(arrayfire_test
         /EHsc>
 )
 if (WIN32)
-    target_compile_definitions(arrayfire_test
+    target_compile_definitions(flare_test
             PRIVATE
             WIN32_LEAN_AND_MEAN
             NOMINMAX)
 endif ()
 
-target_compile_definitions(arrayfire_test
+target_compile_definitions(flare_test
         PUBLIC
         $<$<BOOL:${FLY_WITH_FAST_MATH}>:FLY_WITH_FAST_MATH>
         PRIVATE
         TEST_RESULT_IMAGE_DIR="${CMAKE_BINARY_DIR}/test/"
         USE_MTX)
 
-target_link_libraries(arrayfire_test
+target_link_libraries(flare_test
         PRIVATE
         mmio
         PUBLIC
@@ -153,7 +153,7 @@ target_link_libraries(arrayfire_test
 # 'BACKENDS'    Backends to target for this test. If not set then the test will
 #               compiled againat all backends
 function(make_test)
-    set(options CXX11 SERIAL USE_MMIO NO_ARRAYFIRE_TEST)
+    set(options CXX11 SERIAL USE_MMIO NO_FLARE_TEST)
     set(single_args SRC)
     set(multi_args LIBRARIES DEFINITIONS BACKENDS)
     cmake_parse_arguments(mt_args "${options}" "${single_args}" "${multi_args}" ${ARGN})
@@ -178,7 +178,7 @@ function(make_test)
         target_link_libraries(${target}
                 PRIVATE
                 ${mt_args_LIBRARIES}
-                arrayfire_test
+                flare_test
         )
 
         target_compile_options(${target}
@@ -326,12 +326,12 @@ if (OpenCL_FOUND)
     make_test(SRC interop_opencl_custom_kernel_snippet.cpp
             LIBRARIES OpenCL::OpenCL
             BACKENDS "opencl"
-            NO_ARRAYFIRE_TEST
+            NO_FLARE_TEST
             CXX11)
     make_test(SRC interop_opencl_external_context_snippet.cpp
             LIBRARIES OpenCL::OpenCL
             BACKENDS "opencl"
-            NO_ARRAYFIRE_TEST
+            NO_FLARE_TEST
             CXX11)
 endif ()
 
@@ -358,7 +358,7 @@ if (CUDA_FOUND)
             endif ()
             target_link_libraries(${target}
                     mmio
-                    arrayfire_test)
+                    flare_test)
 
             # Couldn't get Threads::Threads to work with this cuda binary. The import
             # target would not add the -pthread flag which is required for this

@@ -25,7 +25,7 @@ namespace fly
 
     /// Represents a feature returned by a feature detector
     ///
-    /// \ingroup arrayfire_class
+    /// \ingroup flare_class
     /// \ingroup features_group_features
     class FLY_API features {
     private:

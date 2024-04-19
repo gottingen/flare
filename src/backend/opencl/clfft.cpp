@@ -174,7 +174,6 @@ SharedPlan findPlan(clfftLayout iLayout, clfftLayout oLayout, clfftDim rank,
         // that Windows releases all resources when exiting main without calling
         // their destructors. When the destructors are called this error is
         // thrown. This is related to
-        // https://github.com/arrayfire/arrayfire/pull/1899
         CLFFT_CHECK(clfftDestroyPlan(p));
         delete p;
 #endif

@@ -39,7 +39,7 @@ namespace fly
 
     ///
     /// \brief A multi dimensional data container
-    /// \ingroup arrayfire_class
+    /// \ingroup flare_class
     class FLY_API array {
         fly_array   arr;
 

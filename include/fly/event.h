@@ -31,7 +31,7 @@ namespace fly {
 
 /**
     C++ RAII interface for manipulating events
-    \ingroup arrayfire_class
+    \ingroup flare_class
     \ingroup event_api
 */
 class FLY_API event {

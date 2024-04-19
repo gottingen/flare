@@ -15,7 +15,6 @@
 
 // NOTE: Tests are known to fail on OSX when utilizing the CPU and OpenCL
 // backends for sizes larger than 128x128 or more. You can read more about it on
-// issue https://github.com/arrayfire/arrayfire/issues/1617
 
 #include <flare.h>
 #include <gtest/gtest.h>

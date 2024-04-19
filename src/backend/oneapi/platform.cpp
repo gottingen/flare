@@ -357,8 +357,6 @@ bool OneAPICPUOffload(bool forceOffloadOSX) {
     // From GEMM, OpenCLCPUOffload(false) is called which will render the
     // variable inconsequential to the returned result.
     //
-    // Issue https://github.com/arrayfire/arrayfire/issues/662
-    //
     // Make sure device has unified memory
     bool osx_offload = isHostUnifiedMemory(getDevice());
     // Force condition

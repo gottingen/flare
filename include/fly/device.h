@@ -26,7 +26,7 @@ namespace fly
 
        @{
 
-       \ingroup arrayfire_func
+       \ingroup flare_func
        \ingroup device_mat
     */
     FLY_API void info();
@@ -47,7 +47,7 @@ namespace fly
 
        \returns string containing output of fly::info()
 
-       \ingroup arrayfire_func
+       \ingroup flare_func
        \ingroup device_mat
     */
     FLY_API const char* infoString(const bool verbose = false);
@@ -587,7 +587,7 @@ extern "C" {
 
        Sets the path where the kernels generated at runtime will be stored to
        cache for later use. The files in this directory can be safely deleted.
-       The default location for these kernels is in $HOME/.arrayfire on Unix
+       The default location for these kernels is in $HOME/.flare on Unix
        systems and in the Flare temp directory on Windows.
 
        \param[in] path The location where the kernels will be stored
@@ -607,7 +607,7 @@ extern "C" {
 
        Gets the path where the kernels generated at runtime will be stored to
        cache for later use. The files in this directory can be safely deleted.
-       The default location for these kernels is in $HOME/.arrayfire on Unix
+       The default location for these kernels is in $HOME/.flare on Unix
        systems and in the Flare temp directory on Windows.
 
        \param[out] length The length of the path array. If \p path is NULL, the
