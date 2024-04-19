@@ -1,4 +1,4 @@
-PROJECT_NAME      = "turbo-docs"
+PROJECT_NAME      = "flare-docs"
 XML_OUTPUT        = xml
 INPUT             =
 

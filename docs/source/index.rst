@@ -6,7 +6,7 @@
     :width: 240 px
     :scale: 80 %
     :align: center
-    :alt: turbo
+    :alt: flare
 
 flare is a high performance software library for parallel computing with
 an easy-to-use API. Its array based function set makes parallel programming

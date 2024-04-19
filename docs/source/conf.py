@@ -18,13 +18,13 @@ def setup(app):
     app.add_css_file("main_stylesheet.css")
 
 extensions = ['breathe']
-breathe_projects = { 'turbo-docs': '../xml' }
+breathe_projects = { 'flare-docs': '../xml' }
 templates_path = ['_templates']
 html_static_path = ['_static']
 source_suffix = '.rst'
 master_doc = 'index'
-project = 'turbo-docs'
-copyright = 'Copyright 2023 The Elastic-AI Authors.'
+project = 'flare-docs'
+copyright = 'Copyright 2023 The EA Authors.'
 author = 'jeff.li'
 
 html_logo = 'image/ticon.png'
@@ -33,5 +33,5 @@ exclude_patterns = []
 highlight_language = 'c++'
 pygments_style = 'sphinx'
 todo_include_todos = False
-htmlhelp_basename = 'turbo-docs'
+htmlhelp_basename = 'flare-docs'
 
