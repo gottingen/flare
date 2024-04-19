@@ -26,3 +26,4 @@ cmake-build-debug
 build
 .idea
 carbin
+__pycache__
