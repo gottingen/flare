@@ -1,0 +1,12 @@
+# This is a known leak.
+leak:libnvidia-ptxjitcompile
+leak:tbb::internal::task_stream
+
+# Allocated by Intel's OpenMP implementation during inverse_dense_cpu
+# This is not something we can control in Flare
+leak:kmp_alloc_cpp*::bget
+leak:kmp_b_alloc
+
+# Flare leaks the default random engine on each thread. This is to avoid
+# errors on exit on Windows.
+leak:fly_get_default_random_engine

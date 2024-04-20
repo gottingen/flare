@@ -1,0 +1,145 @@
+#
+# Copyright 2023 The EA Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# flare
+# ---------
+#
+# IMPORTED Targets
+# ^^^^^^^^^^^^^^^^
+#
+# This is the configuration file for the flare Library. It provides the
+# following :prop_tgt:`IMPORTED` targets:
+#
+# ``flare::fly``
+#   Target for the flare Unified backend.
+# ``flare::flycpu``
+#   Target for the flare CPU backend.
+# ``flare::flycuda``
+#   Target for the flare CUDA backend.
+#
+# These targets can be used to link with your application using the
+# ``target_link_library`` command. Here is an example of how to use these
+# targets in your application:
+#
+#   add_executable(mybinary source.cpp)
+#   target_link_library(mybinary PRIVATE flare::flycuda)
+#
+# This example creates a mybinary executable from the source.cpp file and links
+# against the cuda backend of flare library. Note you do *not* need to set
+# the include directories as they are automatically included with the target.
+#
+# This is the recommended way of linking against flare
+#
+# Legacy Variables
+# ^^^^^^^^^^^^^^^^
+#
+# Additionally, this config file creates the following variables for backward
+# compatibility with legacy cmake files:
+#
+# ``flare_INCLUDE_DIRS``
+#  Path to flare's include directory.
+# ``flare_LIBRARIES``
+#  flare's libraries. This will default to a GPU backend if one
+#  is found.
+# ``flare_FOUND``
+#  True if flare has been located
+#
+# ``flare_CPU_FOUND``
+#   True of the flare CPU library has been found.
+# ``flare_CPU_LIBRARIES``
+#   Location of flare's CPU library, if found
+#
+# ``flare_CUDA_FOUND``
+#   True of the flare CUDA library has been found.
+# ``flare_CUDA_LIBRARIES``
+#   Location of flare's CUDA library, if found
+#
+# ``flare_Unified_FOUND``
+#   True of the flare Unified library has been found.
+# ``flare_Unified_LIBRARIES``
+#   Location of flare's Unified library, if found
+#
+# It is recommended you use imported targets instead of these variables.
+#
+# You may provide a hint to where flare's root directory may be located
+# by setting flare_DIR. You should not need to set this if you installed
+# flare using the official installers or the package manager(please submit
+# a bug report). If CMake is unable to locate flare then set the
+# flare_DIR to the directory of this file.
+#
+# If you are trying to link against a source build then this should be set to
+# the build directory.
+
+@PACKAGE_INIT@
+
+set_and_check(flare_INCLUDE_DIRS @PACKAGE_INCLUDE_DIRS@)
+
+foreach(backend Unified CPU CUDA)
+  if(backend STREQUAL "Unified")
+    set(lowerbackend "")
+  else()
+    string(TOLOWER "${backend}" lowerbackend)
+  endif()
+
+  string(TOUPPER "${backend}" upperbackend)
+  if(NOT TARGET flare::fly${lowerbackend} AND NOT TARGET fly${lowerbackend})
+    # Either we are not in the flare project or the target was not built
+    if(EXISTS @PACKAGE_CMAKE_DIR@/flare${backend}Targets.cmake)
+      include(@PACKAGE_CMAKE_DIR@/flare${backend}Targets.cmake)
+    endif()
+  endif()
+  if(TARGET flare::fly${lowerbackend})
+    get_property(all_config TARGET flare::fly${lowerbackend} PROPERTY IMPORTED_CONFIGURATIONS)
+    foreach(config IN LISTS all_config)
+      if(NOT all_config)
+        set(all_config "NOCONFIG")
+      endif()
+      get_property(loc TARGET flare::fly${lowerbackend} PROPERTY IMPORTED_LOCATION_${config})
+
+      # break if any of the imported configurations exist. All configs write to the same
+      # location so they are not working as CMake intended. Its fine for single config
+      # installers like ours.
+      if(EXISTS ${loc})
+        set(flare_${backend}_BINARY_EXISTS TRUE)
+        break()
+      endif()
+    endforeach()
+  endif()
+
+  if((TARGET flare::fly${lowerbackend} AND flare_${backend}_BINARY_EXISTS) OR TARGET fly${lowerbackend})
+      set(flare_${backend}_FOUND ON)
+      set(flare_${backend}_LIBRARIES flare::fly${lowerbackend})
+      set(flare_LIBRARIES flare::fly${lowerbackend})
+  else()
+      set(flare_${backend}_FOUND OFF)
+  endif()
+
+  # If this project is built as part of the flare project, make sure the
+  # backends are only enabled if the backend is selected to be built even if
+  # the Binary exists.
+  if(DEFINED FLY_BUILD_${upperbackend} AND NOT FLY_BUILD_${upperbackend})
+    set(flare_${backend}_FOUND OFF)
+  endif()
+endforeach()
+
+foreach(_comp ${flare_FIND_COMPONENTS})
+  if (NOT flare_${_comp}_FOUND)
+    set(flare_FOUND False)
+    set(flare_NOT_FOUND_MESSAGE "Required flare component ${_comp} not found")
+  endif()
+endforeach()
+
+check_required_components(CPU CUDA Unified)

@@ -1,0 +1,65 @@
+// Copyright 2023 The EA Authors.
+// part of Elastic AI Search
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+#include <Array.hpp>
+#include <err_cuda.hpp>
+#include <kernel/harris.hpp>
+#include <fly/dim4.hpp>
+#include <fly/features.h>
+
+using fly::dim4;
+using fly::features;
+
+namespace flare {
+namespace cuda {
+
+template<typename T, typename convAccT>
+unsigned harris(Array<float> &x_out, Array<float> &y_out,
+                Array<float> &score_out, const Array<T> &in,
+                const unsigned max_corners, const float min_response,
+                const float sigma, const unsigned filter_len,
+                const float k_thr) {
+    unsigned nfeat;
+    float *d_x_out;
+    float *d_y_out;
+    float *d_score_out;
+
+    kernel::harris<T, convAccT>(&nfeat, &d_x_out, &d_y_out, &d_score_out, in,
+                                max_corners, min_response, sigma, filter_len,
+                                k_thr);
+
+    if (nfeat > 0) {
+        const dim4 out_dims(nfeat);
+
+        x_out     = createDeviceDataArray<float>(out_dims, d_x_out);
+        y_out     = createDeviceDataArray<float>(out_dims, d_y_out);
+        score_out = createDeviceDataArray<float>(out_dims, d_score_out);
+    }
+
+    return nfeat;
+}
+
+#define INSTANTIATE(T, convAccT)                                              \
+    template unsigned harris<T, convAccT>(                                    \
+        Array<float> & x_out, Array<float> & y_out, Array<float> & score_out, \
+        const Array<T> &in, const unsigned max_corners,                       \
+        const float min_response, const float sigma,                          \
+        const unsigned filter_len, const float k_thr);
+
+INSTANTIATE(double, double)
+INSTANTIATE(float, float)
+
+}  // namespace cuda
+}  // namespace flare
