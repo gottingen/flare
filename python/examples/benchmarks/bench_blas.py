@@ -64,7 +64,7 @@ def bench(calc, iters=100, upto=2048):
 
 
 if __name__ == "__main__":
-
+    fly.set_backend('cpu')
     if (len(sys.argv) > 1):
         fly.set_device(int(sys.argv[1]))
 

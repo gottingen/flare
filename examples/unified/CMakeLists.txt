@@ -24,5 +24,5 @@ find_package(flare)
 if(Flare_Unified_FOUND)
   # Simple unified backend example
   add_executable(basic_unified basic.cpp)
-  target_link_libraries(basic_unified Flare::fly)
+  target_link_libraries(basic_unified flare::fly)
 endif()

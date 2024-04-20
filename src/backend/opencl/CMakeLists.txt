@@ -162,7 +162,7 @@ include(kernel/scan_by_key/CMakeLists.txt)
 include(kernel/sort_by_key/CMakeLists.txt)
 
 add_library(flyopencl "")
-add_library(Flare::flyopencl ALIAS flyopencl)
+add_library(flare::flyopencl ALIAS flyopencl)
 
 target_sources(flyopencl
   PRIVATE

@@ -351,10 +351,10 @@ if (CUDA_FOUND)
                     ${flare_SOURCE_DIR}/extern/half/include)
             if (${backend} STREQUAL "unified")
                 target_link_libraries(${target}
-                        Flare::fly)
+                        flare::fly)
             else ()
                 target_link_libraries(${target}
-                        Flare::fly${backend})
+                        flare::fly${backend})
             endif ()
             target_link_libraries(${target}
                     mmio
@@ -440,11 +440,11 @@ foreach (backend ${enabled_backends})
     if (${backend} STREQUAL "unified")
         target_link_libraries(${target}
                 PRIVATE
-                Flare::fly)
+                flare::fly)
     else ()
         target_link_libraries(${target}
                 PRIVATE
-                Flare::fly${backend})
+                flare::fly${backend})
     endif ()
     add_test(NAME ${target} COMMAND ${target})
 endforeach ()
@@ -455,15 +455,15 @@ endif ()
 
 add_executable(print_info print_info.cpp)
 if (FLY_BUILD_UNIFIED)
-    target_link_libraries(print_info Flare::fly)
+    target_link_libraries(print_info flare::fly)
 elseif (FLY_BUILD_OPENCL)
-    target_link_libraries(print_info Flare::flyopencl)
+    target_link_libraries(print_info flare::flyopencl)
 elseif (FLY_BUILD_CUDA)
-    target_link_libraries(print_info Flare::flycuda)
+    target_link_libraries(print_info flare::flycuda)
 elseif (FLY_BUILD_CPU)
-    target_link_libraries(print_info Flare::flycpu)
+    target_link_libraries(print_info flare::flycpu)
 elseif (FLY_BUILD_ONEAPI)
-    target_link_libraries(print_info Flare::flyoneapi)
+    target_link_libraries(print_info flare::flyoneapi)
 endif ()
 
 make_test(SRC jit_test_api.cpp)

@@ -20,7 +20,7 @@ generate_product_version(fly_unified_ver_res_file
 )
 
 add_library(fly "")
-add_library(Flare::fly ALIAS fly)
+add_library(flare::fly ALIAS fly)
 
 target_sources(fly
   PRIVATE

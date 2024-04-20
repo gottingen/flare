@@ -682,7 +682,7 @@ if(UNIX AND FLY_WITH_STATIC_CUDA_NUMERIC_LIBS AND FLY_cusparse_LINK_LOADING STRE
       FLY_cusparse_STATIC_LINKING)
 endif()
 
-add_library(Flare::flycuda ALIAS flycuda)
+add_library(flare::flycuda ALIAS flycuda)
 
 add_dependencies(flycuda ${jit_kernel_targets} ${nvrtc_kernel_targets})
 

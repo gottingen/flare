@@ -22,7 +22,7 @@ generate_product_version(fly_cpu_ver_res_file
 )
 
 add_library(flycpu "")
-add_library(Flare::flycpu ALIAS flycpu)
+add_library(flare::flycpu ALIAS flycpu)
 
 # CPU backend source files
 target_sources(flycpu

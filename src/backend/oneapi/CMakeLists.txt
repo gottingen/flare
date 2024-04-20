@@ -311,7 +311,7 @@ FILE_TO_STRING(
 
 add_dependencies(flyoneapi ${cl_kernel_targets})
 
-add_library(Flare::flyoneapi ALIAS flyoneapi)
+add_library(flare::flyoneapi ALIAS flyoneapi)
 
 flare_set_default_cxx_flags(flyoneapi)
 
