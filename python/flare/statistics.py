@@ -27,10 +27,10 @@ def mean(a, weights=None, dim=None):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
         The input array.
 
-    weights: optional: af.Array. default: None.
+    weights: optional: fly.Array. default: None.
         Array to calculate the weighted mean. Must match size of the
         input array.
 
@@ -39,7 +39,7 @@ def mean(a, weights=None, dim=None):
 
     Returns
     -------
-    output: af.Array
+    output: fly.Array
         Array containing the mean of the input array along a given
         dimension.
     """
@@ -72,14 +72,14 @@ def var(a, bias=VARIANCE.DEFAULT, weights=None, dim=None):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
         The input array.
 
-    bias: optional: af.VARIANCE. default: DEFAULT.
+    bias: optional: fly.VARIANCE. default: DEFAULT.
         population variance(VARIANCE.POPULATION) or sample variance(VARIANCE.SAMPLE).
         This is ignored if weights are provided.
 
-    weights: optional: af.Array. default: None.
+    weights: optional: fly.Array. default: None.
         Array to calculate for the weighted mean. Must match size of
         the input array.
 
@@ -88,7 +88,7 @@ def var(a, bias=VARIANCE.DEFAULT, weights=None, dim=None):
 
     Returns
     -------
-    output: af.Array
+    output: fly.Array
         Array containing the variance of the input array along a given
         dimension.
     """
@@ -121,14 +121,14 @@ def meanvar(a, weights=None, bias=VARIANCE.DEFAULT, dim=-1):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
         The input array.
 
-    weights: optional: af.Array. default: None.
+    weights: optional: fly.Array. default: None.
         Array to calculate for the weighted mean. Must match size of
         the input array.
 
-    bias: optional: af.VARIANCE. default: DEFAULT.
+    bias: optional: fly.VARIANCE. default: DEFAULT.
         population variance(VARIANCE.POPULATION) or
         sample variance(VARIANCE.SAMPLE).
 
@@ -137,10 +137,10 @@ def meanvar(a, weights=None, bias=VARIANCE.DEFAULT, dim=-1):
 
     Returns
     -------
-    mean: af.Array
+    mean: fly.Array
         Array containing the mean of the input array along a given
         dimension.
-    variance: af.Array
+    variance: fly.Array
         Array containing the variance of the input array along a given
         dimension.
     """
@@ -163,10 +163,10 @@ def stdev(a, bias=VARIANCE.DEFAULT, dim=None):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
         The input array.
 
-    bias: optional: af.VARIANCE. default: DEFAULT.
+    bias: optional: fly.VARIANCE. default: DEFAULT.
         population variance(VARIANCE.POPULATION) or sample variance(VARIANCE.SAMPLE).
         This is ignored if weights are provided.
 
@@ -176,7 +176,7 @@ def stdev(a, bias=VARIANCE.DEFAULT, dim=None):
 
     Returns
     -------
-    output: af.Array
+    output: fly.Array
         Array containing the standard deviation of the input array
         along a given dimension.
     """
@@ -200,18 +200,18 @@ def cov(a, b, bias=VARIANCE.DEFAULT):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
         Input array.
 
-    b: af.Array
+    b: fly.Array
         Input array.
 
-    bias: optional: af.VARIANCE. default: DEFAULT.
+    bias: optional: fly.VARIANCE. default: DEFAULT.
         population variance(VARIANCE.POPULATION) or sample variance(VARIANCE.SAMPLE).
 
     Returns
     -------
-    output: af.Array
+    output: fly.Array
         Array containing the covariance of the input array along a given dimension.
     """
     out = Array()
@@ -224,7 +224,7 @@ def median(a, dim=None):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
         The input array.
 
     dim: optional: int. default: None.
@@ -232,7 +232,7 @@ def median(a, dim=None):
 
     Returns
     -------
-    output: af.Array
+    output: fly.Array
         Array containing the median of the input array along a
         given dimension.
     """
@@ -254,15 +254,15 @@ def corrcoef(x, y):
 
     Parameters
     ----------
-    x: af.Array
+    x: fly.Array
         The first input array.
 
-    y: af.Array
+    y: fly.Array
         The second input array.
 
     Returns
     -------
-    output: af.Array
+    output: fly.Array
         Array containing the correlation coefficient of the input arrays.
     """
     real = c_double_t(0)
@@ -279,7 +279,7 @@ def topk(data, k, dim=0, order=TOPK.DEFAULT):
     Parameters
     ----------
 
-    data: af.Array
+    data: fly.Array
           Input array to return k elements from.
 
     k: scalar. default: 0
@@ -290,15 +290,15 @@ def topk(data, k, dim=0, order=TOPK.DEFAULT):
          extracted. Note: at the moment, topk() only supports the
          extraction of values along the first dimension.
 
-    order: optional: af.TOPK. default: af.TOPK.DEFAULT
+    order: optional: fly.TOPK. default: fly.TOPK.DEFAULT
            The ordering of k extracted elements. Defaults to top k max values.
 
     Returns
     -------
 
-    values: af.Array
+    values: fly.Array
             Top k elements from input array.
-    indices: af.Array
+    indices: fly.Array
              Corresponding index array to top k elements.
     """
 

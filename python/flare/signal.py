@@ -42,30 +42,30 @@ def approx1(signal, x, method=INTERP.LINEAR, off_grid=0.0, xp = None, output = N
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
             Input signal array (signal = f(x))
 
-    x: af.Array
+    x: fly.Array
        The x-coordinates of the interpolation points. The interpolation 
        function is queried at these set of points.
 
-    method: optional: af.INTERP. default: af.INTERP.LINEAR.
+    method: optional: fly.INTERP. default: fly.INTERP.LINEAR.
             Interpolation method.
 
     off_grid: optional: scalar. default: 0.0.
             The value used for positions outside the range.
 
-    xp : af.Array
+    xp : fly.Array
          The x-coordinates of the input data points
 
-    output: None or af.Array
+    output: None or fly.Array
         Optional preallocated output array. If it is a sub-array of an existing fly_array,
         only the corresponding portion of the fly_array will be overwritten
 
     Returns
     -------
 
-    output: af.Array
+    output: fly.Array
             Values calculated at interpolation points.
 
 
@@ -107,10 +107,10 @@ def approx1_uniform(signal, x, interp_dim, idx_start, idx_step, method=INTERP.LI
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
             Input signal array (signal = f(x))
 
-    x: af.Array
+    x: fly.Array
        The x-coordinates of the interpolation points. The interpolation 
        function is queried at these set of points.
 
@@ -123,20 +123,20 @@ def approx1_uniform(signal, x, interp_dim, idx_start, idx_step, method=INTERP.LI
     idx_step: scalar
         is the uniform spacing value between subsequent indices along interp_dim.
 
-    method: optional: af.INTERP. default: af.INTERP.LINEAR.
+    method: optional: fly.INTERP. default: fly.INTERP.LINEAR.
             Interpolation method.
 
     off_grid: optional: scalar. default: 0.0.
             The value used for positions outside the range.
 
-    output: None or af.Array
+    output: None or fly.Array
         Optional preallocated output array. If it is a sub-array of an existing fly_array,
         only the corresponding portion of the fly_array will be overwritten
 
     Returns
     -------
 
-    output: af.Array
+    output: fly.Array
             Values calculated at interpolation points.
 
     """
@@ -163,40 +163,40 @@ def approx2(signal, x, y,
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
             Input signal array (signal = f(x, y))
 
-    x : af.Array
+    x : fly.Array
         The x-coordinates of the interpolation points. The interpolation 
         function is queried at these set of points.
 
 
-    y : af.Array
+    y : fly.Array
         The y-coordinates of the interpolation points. The interpolation 
         function is queried at these set of points.
 
-    method: optional: af.INTERP. default: af.INTERP.LINEAR.
+    method: optional: fly.INTERP. default: fly.INTERP.LINEAR.
             Interpolation method.
 
     off_grid: optional: scalar. default: 0.0.
             The value used for positions outside the range.
 
-    xp : af.Array
+    xp : fly.Array
          The x-coordinates of the input data points. The convention followed is that
          the x-coordinates vary along axis 0
 
-    yp : af.Array
+    yp : fly.Array
          The y-coordinates of the input data points. The convention followed is that
          the y-coordinates vary along axis 1
 
-    output: None or af.Array
+    output: None or fly.Array
         Optional preallocated output array. If it is a sub-array of an existing fly_array,
         only the corresponding portion of the fly_array will be overwritten
 
     Returns
     -------
 
-    output: af.Array
+    output: fly.Array
             Values calculated at interpolation points.
 
     Note
@@ -249,10 +249,10 @@ def approx2_uniform(signal, pos0, interp_dim0, idx_start0, idx_step0, pos1, inte
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
             Input signal array (signal = f(x, y))
 
-    pos0 : af.Array
+    pos0 : fly.Array
         positions of the interpolation points along interp_dim0.
 
     interp_dim0: scalar
@@ -264,7 +264,7 @@ def approx2_uniform(signal, pos0, interp_dim0, idx_start0, idx_step0, pos1, inte
     idx_step0: scalar
         is the uniform spacing value between subsequent indices along interp_dim0.
 
-    pos1 : af.Array
+    pos1 : fly.Array
         positions of the interpolation points along interp_dim1.
 
     interp_dim1: scalar
@@ -276,20 +276,20 @@ def approx2_uniform(signal, pos0, interp_dim0, idx_start0, idx_step0, pos1, inte
     idx_step1: scalar
         is the uniform spacing value between subsequent indices along interp_dim1.
 
-    method: optional: af.INTERP. default: af.INTERP.LINEAR.
+    method: optional: fly.INTERP. default: fly.INTERP.LINEAR.
             Interpolation method.
 
     off_grid: optional: scalar. default: 0.0.
             The value used for positions outside the range.
 
-    output: None or af.Array
+    output: None or fly.Array
         Optional preallocated output array. If it is a sub-array of an existing fly_array,
         only the corresponding portion of the fly_array will be overwritten
 
     Returns
     -------
 
-    output: af.Array
+    output: fly.Array
             Values calculated at interpolation points.
 
     Note
@@ -323,7 +323,7 @@ def fft(signal, dim0 = None , scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 1 dimensional signal or a batch of 1 dimensional signals.
 
     dim0: optional: int. default: None.
@@ -337,8 +337,8 @@ def fft(signal, dim0 = None , scale = None):
     Returns
     -------
 
-    output: af.Array
-            A complex af.Array containing the full output of the fft.
+    output: fly.Array
+            A complex fly.Array containing the full output of the fft.
 
     """
 
@@ -359,7 +359,7 @@ def fft2(signal, dim0 = None, dim1 = None , scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 2 dimensional signal or a batch of 2 dimensional signals.
 
     dim0: optional: int. default: None.
@@ -377,8 +377,8 @@ def fft2(signal, dim0 = None, dim1 = None , scale = None):
     Returns
     -------
 
-    output: af.Array
-            A complex af.Array containing the full output of the fft.
+    output: fly.Array
+            A complex fly.Array containing the full output of the fft.
 
     """
     if dim0 is None:
@@ -402,7 +402,7 @@ def fft3(signal, dim0 = None, dim1 = None , dim2 = None, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 3 dimensional signal or a batch of 3 dimensional signals.
 
     dim0: optional: int. default: None.
@@ -424,8 +424,8 @@ def fft3(signal, dim0 = None, dim1 = None , dim2 = None, scale = None):
     Returns
     -------
 
-    output: af.Array
-            A complex af.Array containing the full output of the fft.
+    output: fly.Array
+            A complex fly.Array containing the full output of the fft.
 
     """
     if dim0 is None:
@@ -452,7 +452,7 @@ def ifft(signal, dim0 = None , scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 1 dimensional signal or a batch of 1 dimensional signals.
 
     dim0: optional: int. default: None.
@@ -466,8 +466,8 @@ def ifft(signal, dim0 = None , scale = None):
     Returns
     -------
 
-    output: af.Array
-            A complex af.Array containing the full output of the inverse fft.
+    output: fly.Array
+            A complex fly.Array containing the full output of the inverse fft.
 
     Note
     ----
@@ -493,7 +493,7 @@ def ifft2(signal, dim0 = None, dim1 = None , scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 2 dimensional signal or a batch of 2 dimensional signals.
 
     dim0: optional: int. default: None.
@@ -511,8 +511,8 @@ def ifft2(signal, dim0 = None, dim1 = None , scale = None):
     Returns
     -------
 
-    output: af.Array
-            A complex af.Array containing the full output of the inverse fft.
+    output: fly.Array
+            A complex fly.Array containing the full output of the inverse fft.
 
     Note
     ----
@@ -544,7 +544,7 @@ def ifft3(signal, dim0 = None, dim1 = None , dim2 = None, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 3 dimensional signal or a batch of 3 dimensional signals.
 
     dim0: optional: int. default: None.
@@ -566,8 +566,8 @@ def ifft3(signal, dim0 = None, dim1 = None , dim2 = None, scale = None):
     Returns
     -------
 
-    output: af.Array
-            A complex af.Array containing the full output of the inverse fft.
+    output: fly.Array
+            A complex fly.Array containing the full output of the inverse fft.
 
     Note
     ----
@@ -602,7 +602,7 @@ def fft_inplace(signal, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 1 dimensional signal or a batch of 1 dimensional signals.
 
     scale: optional: scalar. default: None.
@@ -623,7 +623,7 @@ def fft2_inplace(signal, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 2 dimensional signal or a batch of 2 dimensional signals.
 
     scale: optional: scalar. default: None.
@@ -644,7 +644,7 @@ def fft3_inplace(signal, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 3 dimensional signal or a batch of 3 dimensional signals.
 
     scale: optional: scalar. default: None.
@@ -665,7 +665,7 @@ def ifft_inplace(signal, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 1 dimensional signal or a batch of 1 dimensional signals.
 
     scale: optional: scalar. default: None.
@@ -686,7 +686,7 @@ def ifft2_inplace(signal, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 2 dimensional signal or a batch of 2 dimensional signals.
 
     scale: optional: scalar. default: None.
@@ -710,7 +710,7 @@ def ifft3_inplace(signal, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 3 dimensional signal or a batch of 3 dimensional signals.
 
     scale: optional: scalar. default: None.
@@ -735,7 +735,7 @@ def fft_r2c(signal, dim0 = None , scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 1 dimensional signal or a batch of 1 dimensional signals.
 
     dim0: optional: int. default: None.
@@ -749,8 +749,8 @@ def fft_r2c(signal, dim0 = None , scale = None):
     Returns
     -------
 
-    output: af.Array
-            A complex af.Array containing the non-redundant parts of the full FFT.
+    output: fly.Array
+            A complex fly.Array containing the non-redundant parts of the full FFT.
 
     """
 
@@ -771,7 +771,7 @@ def fft2_r2c(signal, dim0 = None, dim1 = None , scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 2 dimensional signal or a batch of 2 dimensional signals.
 
     dim0: optional: int. default: None.
@@ -789,8 +789,8 @@ def fft2_r2c(signal, dim0 = None, dim1 = None , scale = None):
     Returns
     -------
 
-    output: af.Array
-            A complex af.Array containing the non-redundant parts of the full FFT.
+    output: fly.Array
+            A complex fly.Array containing the non-redundant parts of the full FFT.
 
     """
     if dim0 is None:
@@ -814,7 +814,7 @@ def fft3_r2c(signal, dim0 = None, dim1 = None , dim2 = None, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 3 dimensional signal or a batch of 3 dimensional signals.
 
     dim0: optional: int. default: None.
@@ -836,8 +836,8 @@ def fft3_r2c(signal, dim0 = None, dim1 = None , dim2 = None, scale = None):
     Returns
     -------
 
-    output: af.Array
-            A complex af.Array containing the non-redundant parts of the full FFT.
+    output: fly.Array
+            A complex fly.Array containing the non-redundant parts of the full FFT.
 
     """
     if dim0 is None:
@@ -867,7 +867,7 @@ def fft_c2r(signal, is_odd = False, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 1 dimensional signal or a batch of 1 dimensional signals.
 
     is_odd: optional: Boolean. default: False.
@@ -880,8 +880,8 @@ def fft_c2r(signal, is_odd = False, scale = None):
     Returns
     -------
 
-    output: af.Array
-            A real af.Array containing the full output of the fft.
+    output: fly.Array
+            A real fly.Array containing the full output of the fft.
 
     """
 
@@ -901,7 +901,7 @@ def fft2_c2r(signal, is_odd = False, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 2 dimensional signal or a batch of 2 dimensional signals.
 
     is_odd: optional: Boolean. default: False.
@@ -914,8 +914,8 @@ def fft2_c2r(signal, is_odd = False, scale = None):
     Returns
     -------
 
-    output: af.Array
-            A real af.Array containing the full output of the fft.
+    output: fly.Array
+            A real fly.Array containing the full output of the fft.
 
     """
     dims = signal.dims()
@@ -936,7 +936,7 @@ def fft3_c2r(signal, is_odd = False, scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
            A 3 dimensional signal or a batch of 3 dimensional signals.
 
     is_odd: optional: Boolean. default: False.
@@ -949,8 +949,8 @@ def fft3_c2r(signal, is_odd = False, scale = None):
     Returns
     -------
 
-    output: af.Array
-            A real af.Array containing the full output of the fft.
+    output: fly.Array
+            A real fly.Array containing the full output of the fft.
 
     """
     dims = signal.dims()
@@ -976,7 +976,7 @@ def dft(signal, odims=(None, None, None, None), scale = None):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
           - A multi dimensional flare array.
 
     odims: optional: tuple of ints. default: (None, None, None, None).
@@ -988,7 +988,7 @@ def dft(signal, odims=(None, None, None, None), scale = None):
 
     Returns
     -------
-    output: af.Array
+    output: fly.Array
            - A complex array that is the ouput of n-dimensional fourier transform.
 
     """
@@ -1014,7 +1014,7 @@ def idft(signal, scale = None, odims=(None, None, None, None)):
     Parameters
     ----------
 
-    signal: af.Array
+    signal: fly.Array
           - A multi dimensional flare array.
 
     odims: optional: tuple of ints. default: (None, None, None, None).
@@ -1026,7 +1026,7 @@ def idft(signal, scale = None, odims=(None, None, None, None)):
 
     Returns
     -------
-    output: af.Array
+    output: fly.Array
            - A complex array that is the ouput of n-dimensional inverse fourier transform.
 
     Note
@@ -1055,26 +1055,26 @@ def convolve1(signal, kernel, conv_mode = CONV_MODE.DEFAULT, conv_domain = CONV_
     Parameters
     -----------
 
-    signal: af.Array
+    signal: fly.Array
             - A 1 dimensional signal or batch of 1 dimensional signals.
 
-    kernel: af.Array
+    kernel: fly.Array
             - A 1 dimensional kernel or batch of 1 dimensional kernels.
 
-    conv_mode: optional: af.CONV_MODE. default: af.CONV_MODE.DEFAULT.
-            - Specifies if the output does full convolution (af.CONV_MODE.EXPAND) or
-              maintains the same size as input (af.CONV_MODE.DEFAULT).
+    conv_mode: optional: fly.CONV_MODE. default: fly.CONV_MODE.DEFAULT.
+            - Specifies if the output does full convolution (fly.CONV_MODE.EXPAND) or
+              maintains the same size as input (fly.CONV_MODE.DEFAULT).
 
-    conv_domain: optional: af.CONV_DOMAIN. default: af.CONV_DOMAIN.AUTO.
+    conv_domain: optional: fly.CONV_DOMAIN. default: fly.CONV_DOMAIN.AUTO.
             - Specifies the domain in which convolution is performed.
-            - af.CONV_DOMAIN.SPATIAL: Performs convolution in spatial domain.
-            - af.CONV_DOMAIN.FREQ: Performs convolution in frequency domain.
-            - af.CONV_DOMAIN.AUTO: Switches between spatial and frequency based on input size.
+            - fly.CONV_DOMAIN.SPATIAL: Performs convolution in spatial domain.
+            - fly.CONV_DOMAIN.FREQ: Performs convolution in frequency domain.
+            - fly.CONV_DOMAIN.AUTO: Switches between spatial and frequency based on input size.
 
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Output of 1D convolution.
 
     Note
@@ -1104,26 +1104,26 @@ def convolve2(signal, kernel, conv_mode = CONV_MODE.DEFAULT, conv_domain = CONV_
     Parameters
     -----------
 
-    signal: af.Array
+    signal: fly.Array
             - A 2 dimensional signal or batch of 2 dimensional signals.
 
-    kernel: af.Array
+    kernel: fly.Array
             - A 2 dimensional kernel or batch of 2 dimensional kernels.
 
-    conv_mode: optional: af.CONV_MODE. default: af.CONV_MODE.DEFAULT.
-            - Specifies if the output does full convolution (af.CONV_MODE.EXPAND) or
-              maintains the same size as input (af.CONV_MODE.DEFAULT).
+    conv_mode: optional: fly.CONV_MODE. default: fly.CONV_MODE.DEFAULT.
+            - Specifies if the output does full convolution (fly.CONV_MODE.EXPAND) or
+              maintains the same size as input (fly.CONV_MODE.DEFAULT).
 
-    conv_domain: optional: af.CONV_DOMAIN. default: af.CONV_DOMAIN.AUTO.
+    conv_domain: optional: fly.CONV_DOMAIN. default: fly.CONV_DOMAIN.AUTO.
             - Specifies the domain in which convolution is performed.
-            - af.CONV_DOMAIN.SPATIAL: Performs convolution in spatial domain.
-            - af.CONV_DOMAIN.FREQ: Performs convolution in frequency domain.
-            - af.CONV_DOMAIN.AUTO: Switches between spatial and frequency based on input size.
+            - fly.CONV_DOMAIN.SPATIAL: Performs convolution in spatial domain.
+            - fly.CONV_DOMAIN.FREQ: Performs convolution in frequency domain.
+            - fly.CONV_DOMAIN.AUTO: Switches between spatial and frequency based on input size.
 
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Output of 2D convolution.
 
     Note
@@ -1162,10 +1162,10 @@ def convolve2NN(signal, kernel, stride = (1, 1), padding = (0, 0), dilation = (1
     Parameters
     -----------
 
-    signal: af.Array
+    signal: fly.Array
             - A 2 dimensional signal or batch of 2 dimensional signals.
 
-    kernel: af.Array
+    kernel: fly.Array
             - A 2 dimensional kernel or batch of 2 dimensional kernels.
 
     stride: tuple of ints. default: (1, 1).
@@ -1180,7 +1180,7 @@ def convolve2NN(signal, kernel, stride = (1, 1), padding = (0, 0), dilation = (1
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Convolved 2D array.
 
     """
@@ -1202,22 +1202,22 @@ def convolve2_separable(col_kernel, row_kernel, signal, conv_mode = CONV_MODE.DE
     Parameters
     -----------
 
-    col_kernel: af.Array
+    col_kernel: fly.Array
             - A column vector to be applied along each column of `signal`
 
-    row_kernel: af.Array
+    row_kernel: fly.Array
             - A row vector to be applied along each row of `signal`
 
-    signal: af.Array
+    signal: fly.Array
             - A 2 dimensional signal or batch of 2 dimensional signals.
 
-    conv_mode: optional: af.CONV_MODE. default: af.CONV_MODE.DEFAULT.
-            - Specifies if the output does full convolution (af.CONV_MODE.EXPAND) or
-              maintains the same size as input (af.CONV_MODE.DEFAULT).
+    conv_mode: optional: fly.CONV_MODE. default: fly.CONV_MODE.DEFAULT.
+            - Specifies if the output does full convolution (fly.CONV_MODE.EXPAND) or
+              maintains the same size as input (fly.CONV_MODE.DEFAULT).
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Output of 2D sepearable convolution.
     """
     output = Array()
@@ -1233,26 +1233,26 @@ def convolve3(signal, kernel, conv_mode = CONV_MODE.DEFAULT, conv_domain = CONV_
     Parameters
     -----------
 
-    signal: af.Array
+    signal: fly.Array
             - A 3 dimensional signal or batch of 3 dimensional signals.
 
-    kernel: af.Array
+    kernel: fly.Array
             - A 3 dimensional kernel or batch of 3 dimensional kernels.
 
-    conv_mode: optional: af.CONV_MODE. default: af.CONV_MODE.DEFAULT.
-            - Specifies if the output does full convolution (af.CONV_MODE.EXPAND) or
-              maintains the same size as input (af.CONV_MODE.DEFAULT).
+    conv_mode: optional: fly.CONV_MODE. default: fly.CONV_MODE.DEFAULT.
+            - Specifies if the output does full convolution (fly.CONV_MODE.EXPAND) or
+              maintains the same size as input (fly.CONV_MODE.DEFAULT).
 
-    conv_domain: optional: af.CONV_DOMAIN. default: af.CONV_DOMAIN.AUTO.
+    conv_domain: optional: fly.CONV_DOMAIN. default: fly.CONV_DOMAIN.AUTO.
             - Specifies the domain in which convolution is performed.
-            - af.CONV_DOMAIN.SPATIAL: Performs convolution in spatial domain.
-            - af.CONV_DOMAIN.FREQ: Performs convolution in frequency domain.
-            - af.CONV_DOMAIN.AUTO: Switches between spatial and frequency based on input size.
+            - fly.CONV_DOMAIN.SPATIAL: Performs convolution in spatial domain.
+            - fly.CONV_DOMAIN.FREQ: Performs convolution in frequency domain.
+            - fly.CONV_DOMAIN.AUTO: Switches between spatial and frequency based on input size.
 
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Output of 3D convolution.
 
     Note
@@ -1281,26 +1281,26 @@ def convolve(signal, kernel, conv_mode = CONV_MODE.DEFAULT, conv_domain = CONV_D
     Parameters
     -----------
 
-    signal: af.Array
+    signal: fly.Array
             - An n-dimensional array.
 
-    kernel: af.Array
+    kernel: fly.Array
             - A n-dimensional kernel.
 
-    conv_mode: optional: af.CONV_MODE. default: af.CONV_MODE.DEFAULT.
-            - Specifies if the output does full convolution (af.CONV_MODE.EXPAND) or
-              maintains the same size as input (af.CONV_MODE.DEFAULT).
+    conv_mode: optional: fly.CONV_MODE. default: fly.CONV_MODE.DEFAULT.
+            - Specifies if the output does full convolution (fly.CONV_MODE.EXPAND) or
+              maintains the same size as input (fly.CONV_MODE.DEFAULT).
 
-    conv_domain: optional: af.CONV_DOMAIN. default: af.CONV_DOMAIN.AUTO.
+    conv_domain: optional: fly.CONV_DOMAIN. default: fly.CONV_DOMAIN.AUTO.
             - Specifies the domain in which convolution is performed.
-            - af.CONV_DOMAIN.SPATIAL: Performs convolution in spatial domain.
-            - af.CONV_DOMAIN.FREQ: Performs convolution in frequency domain.
-            - af.CONV_DOMAIN.AUTO: Switches between spatial and frequency based on input size.
+            - fly.CONV_DOMAIN.SPATIAL: Performs convolution in spatial domain.
+            - fly.CONV_DOMAIN.FREQ: Performs convolution in frequency domain.
+            - fly.CONV_DOMAIN.AUTO: Switches between spatial and frequency based on input size.
 
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Output of n-dimensional convolution.
     """
 
@@ -1321,26 +1321,26 @@ def fft_convolve1(signal, kernel, conv_mode = CONV_MODE.DEFAULT):
     Parameters
     -----------
 
-    signal: af.Array
+    signal: fly.Array
             - A 1 dimensional signal or batch of 1 dimensional signals.
 
-    kernel: af.Array
+    kernel: fly.Array
             - A 1 dimensional kernel or batch of 1 dimensional kernels.
 
-    conv_mode: optional: af.CONV_MODE. default: af.CONV_MODE.DEFAULT.
-            - Specifies if the output does full convolution (af.CONV_MODE.EXPAND) or
-              maintains the same size as input (af.CONV_MODE.DEFAULT).
+    conv_mode: optional: fly.CONV_MODE. default: fly.CONV_MODE.DEFAULT.
+            - Specifies if the output does full convolution (fly.CONV_MODE.EXPAND) or
+              maintains the same size as input (fly.CONV_MODE.DEFAULT).
 
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Output of 1D convolution.
 
     Note
     -----
 
-    This is same as convolve1(..., conv_mode=af.CONV_MODE.FREQ)
+    This is same as convolve1(..., conv_mode=fly.CONV_MODE.FREQ)
 
     Supported batch combinations:
 
@@ -1366,26 +1366,26 @@ def fft_convolve2(signal, kernel, conv_mode = CONV_MODE.DEFAULT):
     Parameters
     -----------
 
-    signal: af.Array
+    signal: fly.Array
             - A 2 dimensional signal or batch of 2 dimensional signals.
 
-    kernel: af.Array
+    kernel: fly.Array
             - A 2 dimensional kernel or batch of 2 dimensional kernels.
 
-    conv_mode: optional: af.CONV_MODE. default: af.CONV_MODE.DEFAULT.
-            - Specifies if the output does full convolution (af.CONV_MODE.EXPAND) or
-              maintains the same size as input (af.CONV_MODE.DEFAULT).
+    conv_mode: optional: fly.CONV_MODE. default: fly.CONV_MODE.DEFAULT.
+            - Specifies if the output does full convolution (fly.CONV_MODE.EXPAND) or
+              maintains the same size as input (fly.CONV_MODE.DEFAULT).
 
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Output of 2D convolution.
 
     Note
     -----
 
-    This is same as convolve2(..., conv_mode=af.CONV_MODE.FREQ)
+    This is same as convolve2(..., conv_mode=fly.CONV_MODE.FREQ)
 
     Supported batch combinations:
 
@@ -1410,26 +1410,26 @@ def fft_convolve3(signal, kernel, conv_mode = CONV_MODE.DEFAULT):
     Parameters
     -----------
 
-    signal: af.Array
+    signal: fly.Array
             - A 3 dimensional signal or batch of 3 dimensional signals.
 
-    kernel: af.Array
+    kernel: fly.Array
             - A 3 dimensional kernel or batch of 3 dimensional kernels.
 
-    conv_mode: optional: af.CONV_MODE. default: af.CONV_MODE.DEFAULT.
-            - Specifies if the output does full convolution (af.CONV_MODE.EXPAND) or
-              maintains the same size as input (af.CONV_MODE.DEFAULT).
+    conv_mode: optional: fly.CONV_MODE. default: fly.CONV_MODE.DEFAULT.
+            - Specifies if the output does full convolution (fly.CONV_MODE.EXPAND) or
+              maintains the same size as input (fly.CONV_MODE.DEFAULT).
 
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Output of 3D convolution.
 
     Note
     -----
 
-    This is same as convolve3(..., conv_mode=af.CONV_MODE.FREQ)
+    This is same as convolve3(..., conv_mode=fly.CONV_MODE.FREQ)
 
     Supported batch combinations:
 
@@ -1454,26 +1454,26 @@ def fft_convolve(signal, kernel, conv_mode = CONV_MODE.DEFAULT):
     Parameters
     -----------
 
-    signal: af.Array
+    signal: fly.Array
             - An n-dimensional array.
 
-    kernel: af.Array
+    kernel: fly.Array
             - A n-dimensional kernel.
 
-    conv_mode: optional: af.CONV_MODE. default: af.CONV_MODE.DEFAULT.
-            - Specifies if the output does full convolution (af.CONV_MODE.EXPAND) or
-              maintains the same size as input (af.CONV_MODE.DEFAULT).
+    conv_mode: optional: fly.CONV_MODE. default: fly.CONV_MODE.DEFAULT.
+            - Specifies if the output does full convolution (fly.CONV_MODE.EXPAND) or
+              maintains the same size as input (fly.CONV_MODE.DEFAULT).
 
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Output of n-dimensional convolution.
 
     Note
     -----
 
-    This is same as convolve(..., conv_mode=af.CONV_MODE.FREQ)
+    This is same as convolve(..., conv_mode=fly.CONV_MODE.FREQ)
 
     """
     dims = signal.dims()
@@ -1493,16 +1493,16 @@ def fir(B, X):
     Parameters
     ----------
 
-    B : af.Array
+    B : fly.Array
         A 1 dimensional array containing the coefficients of the filter.
 
-    X : af.Array
+    X : fly.Array
         A 1 dimensional array containing the signal.
 
     Returns
     -------
 
-    Y : af.Array
+    Y : fly.Array
         The output of the filter.
 
     """
@@ -1517,19 +1517,19 @@ def iir(B, A, X):
     Parameters
     ----------
 
-    B : af.Array
+    B : fly.Array
         A 1 dimensional array containing the feed forward coefficients of the filter.
 
-    A : af.Array
+    A : fly.Array
         A 1 dimensional array containing the feed back coefficients of the filter.
 
-    X : af.Array
+    X : fly.Array
         A 1 dimensional array containing the signal.
 
     Returns
     -------
 
-    Y : af.Array
+    Y : fly.Array
         The output of the filter.
 
     """
@@ -1543,7 +1543,7 @@ def medfilt(signal, w0 = 3, w1 = 3, edge_pad = PAD.ZERO):
 
     Parameters
     ----------
-    signal : af.Array
+    signal : fly.Array
           - A 2 D flare array representing a signal, or
           - A multi dimensional array representing batch of signals.
 
@@ -1553,13 +1553,13 @@ def medfilt(signal, w0 = 3, w1 = 3, edge_pad = PAD.ZERO):
     w1 : optional: int. default: 3.
           - The length of the filter along the second dimension.
 
-    edge_pad : optional: af.PAD. default: af.PAD.ZERO
+    edge_pad : optional: fly.PAD. default: fly.PAD.ZERO
           - Flag specifying how the median at the edge should be treated.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The signal after median filter is applied.
 
     """
@@ -1575,20 +1575,20 @@ def medfilt1(signal, length = 3, edge_pad = PAD.ZERO):
 
     Parameters
     ----------
-    signal : af.Array
+    signal : fly.Array
           - A 1 D flare array representing a signal, or
           - A multi dimensional array representing batch of signals.
 
     length : optional: int. default: 3.
           - The length of the filter.
 
-    edge_pad : optional: af.PAD. default: af.PAD.ZERO
+    edge_pad : optional: fly.PAD. default: fly.PAD.ZERO
           - Flag specifying how the median at the edge should be treated.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The signal after median filter is applied.
 
     """
@@ -1602,7 +1602,7 @@ def medfilt2(signal, w0 = 3, w1 = 3, edge_pad = PAD.ZERO):
 
     Parameters
     ----------
-    signal : af.Array
+    signal : fly.Array
           - A 2 D flare array representing a signal, or
           - A multi dimensional array representing batch of signals.
 
@@ -1612,13 +1612,13 @@ def medfilt2(signal, w0 = 3, w1 = 3, edge_pad = PAD.ZERO):
     w1 : optional: int. default: 3.
           - The length of the filter along the second dimension.
 
-    edge_pad : optional: af.PAD. default: af.PAD.ZERO
+    edge_pad : optional: fly.PAD. default: fly.PAD.ZERO
           - Flag specifying how the median at the edge should be treated.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The signal after median filter is applied.
 
     """

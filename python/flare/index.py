@@ -111,25 +111,25 @@ class ParallelRange(Seq):
     --------
 
     >>> import flare as fly
-    >>> a = af.randu(3, 3)
-    >>> b = af.randu(3, 1)
-    >>> c = af.constant(0, 3, 3)
-    >>> for ii in af.ParallelRange(3):
+    >>> a = fly.randu(3, 3)
+    >>> b = fly.randu(3, 1)
+    >>> c = fly.constant(0, 3, 3)
+    >>> for ii in fly.ParallelRange(3):
     ...     c[:, ii] = a[:, ii] + b
     ...
-    >>> af.display(a)
+    >>> fly.display(a)
     [3 3 1 1]
         0.4107     0.1794     0.3775
         0.8224     0.4198     0.3027
         0.9518     0.0081     0.6456
 
-    >>> af.display(b)
+    >>> fly.display(b)
     [3 1 1 1]
         0.7269
         0.7104
         0.5201
 
-    >>> af.display(c)
+    >>> fly.display(c)
     [3 3 1 1]
         1.1377     0.9063     1.1045
         1.5328     1.1302     1.0131
@@ -182,8 +182,8 @@ class Index(ct.Structure):
     idx.arr: ctypes.c_void_p
              - Default 0
 
-    idx.seq: af.Seq
-             - Default af.Seq(0, -1, 1)
+    idx.seq: fly.Seq
+             - Default fly.Seq(0, -1, 1)
 
     isSeq   : bool
             - Default True
@@ -195,9 +195,9 @@ class Index(ct.Structure):
     -----------
 
     idx: key
-         - If of type af.Array, self.idx.arr = idx, self.isSeq = False
-         - If of type af.ParallelRange, self.idx.seq = idx, self.isBatch = True
-         - Default:, self.idx.seq = af.Seq(idx)
+         - If of type fly.Array, self.idx.arr = idx, self.isSeq = False
+         - If of type fly.ParallelRange, self.idx.seq = idx, self.isBatch = True
+         - Default:, self.idx.seq = fly.Seq(idx)
 
     Note
     ----

@@ -36,13 +36,13 @@ def create_sparse(values, row_idx, col_idx, nrows, ncols, storage = STORAGE.CSR)
     Parameters
     ----------
 
-    values : af.Array.
+    values : fly.Array.
           - Contains the non zero elements of the sparse array.
 
-    row_idx : af.Array.
+    row_idx : fly.Array.
           - Contains row indices of the sparse array.
 
-    col_idx : af.Array.
+    col_idx : fly.Array.
           - Contains column indices of the sparse array.
 
     nrows   : int.
@@ -109,7 +109,7 @@ def create_sparse_from_dense(dense, storage = STORAGE.CSR):
     Parameters
     ----------
 
-    dense : af.Array.
+    dense : fly.Array.
           - A dense matrix.
 
     storage : optional: flare.STORAGE. default: flare.STORAGE.CSR.
@@ -132,7 +132,7 @@ def convert_sparse_to_dense(sparse):
     Parameters
     ----------
 
-    sparse : af.Array.
+    sparse : fly.Array.
           - A sparse matrix.
 
     Returns
@@ -151,7 +151,7 @@ def sparse_get_info(sparse):
     Parameters
     ----------
 
-    sparse : af.Array.
+    sparse : fly.Array.
            - A sparse matrix.
 
     Returns
@@ -178,7 +178,7 @@ def sparse_get_values(sparse):
     Parameters
     ----------
 
-    sparse : af.Array.
+    sparse : fly.Array.
            - A sparse matrix.
 
     Returns
@@ -197,7 +197,7 @@ def sparse_get_row_idx(sparse):
     Parameters
     ----------
 
-    sparse : af.Array.
+    sparse : fly.Array.
            - A sparse matrix.
 
     Returns
@@ -216,7 +216,7 @@ def sparse_get_col_idx(sparse):
     Parameters
     ----------
 
-    sparse : af.Array.
+    sparse : fly.Array.
            - A sparse matrix.
 
     Returns
@@ -235,7 +235,7 @@ def sparse_get_nnz(sparse):
     Parameters
     ----------
 
-    sparse : af.Array.
+    sparse : fly.Array.
            - A sparse matrix.
 
     Returns
@@ -254,7 +254,7 @@ def sparse_get_storage(sparse):
     Parameters
     ----------
 
-    sparse : af.Array.
+    sparse : fly.Array.
            - A sparse matrix.
 
     Returns

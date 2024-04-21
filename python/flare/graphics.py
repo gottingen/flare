@@ -21,6 +21,7 @@ Graphics functions (plot, image, etc).
 from .library import *
 from .array import *
 from .util import _is_number
+from .data import join
 
 class _Cell(ct.Structure):
     _fields_ = [("row", c_int_t),
@@ -110,7 +111,7 @@ class Window(object):
         Parameters
         ----------
 
-        cmap : af.COLORMAP.
+        cmap : fly.COLORMAP.
             Set the colormap for the window.
 
         """
@@ -137,7 +138,7 @@ class Window(object):
         Parameters
         ----------
 
-        img: af.Array.
+        img: fly.Array.
              A 2 dimensional array for single channel image.
              A 3 dimensional array for 3 channel image.
 
@@ -154,21 +155,21 @@ class Window(object):
         Parameters
         ----------
 
-        X: af.Array.
+        X: fly.Array.
              A 1 dimensional array containing X co-ordinates.
 
-        Y: af.Array.
+        Y: fly.Array.
              A 1 dimensional array containing Y co-ordinates.
 
-        Z: optional: af.Array. default: None.
+        Z: optional: fly.Array. default: None.
              - A 1 dimensional array containing Z co-ordinates.
              - Not used if line is not None
 
-        points: optional: af.Array. default: None.
+        points: optional: fly.Array. default: None.
              - A 2 dimensional array of size [n 2]. Each column denotes X and Y co-ordinates for 2D scatter plot.
              - A 3 dimensional array of size [n 3]. Each column denotes X, Y, and Z co-ordinates for 3D scatter plot.
 
-        marker: af.MARKER
+        marker: fly.MARKER
              Specifies how the points look
 
         title: str.
@@ -193,10 +194,10 @@ class Window(object):
         Parameters
         ----------
 
-        points: af.Array.
+        points: fly.Array.
              A 2 dimensional array containing (X,Y) co-ordinates.
 
-        marker: af.MARKER
+        marker: fly.MARKER
              Specifies how the points look
 
         title: str.
@@ -214,10 +215,10 @@ class Window(object):
         Parameters
         ----------
 
-        points: af.Array.
+        points: fly.Array.
              A 2 dimensional array containing (X,Y,Z) co-ordinates.
 
-        marker: af.MARKER
+        marker: fly.MARKER
              Specifies how the points look
 
         title: str.
@@ -234,19 +235,19 @@ class Window(object):
         Parameters
         ----------
 
-        X: af.Array.
+        X: fly.Array.
              - A 1 dimensional array containing X co-ordinates.
              - Not used if line is not None
 
-        Y: af.Array.
+        Y: fly.Array.
              - A 1 dimensional array containing Y co-ordinates.
              - Not used if line is not None
 
-        Z: optional: af.Array. default: None.
+        Z: optional: fly.Array. default: None.
              - A 1 dimensional array containing Z co-ordinates.
              - Not used if line is not None
 
-        line: optional: af.Array. default: None.
+        line: optional: fly.Array. default: None.
              - A 2 dimensional array of size [n 2]. Each column denotes X and Y co-ordinates for plotting 2D lines.
              - A 3 dimensional array of size [n 3]. Each column denotes X, Y, and Z co-ordinates for plotting 3D lines.
 
@@ -274,7 +275,7 @@ class Window(object):
         Parameters
         ----------
 
-        line: af.Array.
+        line: fly.Array.
              - A 2 dimensional array of size [n 2]. Each column denotes X, and Y co-ordinates for plotting 2D lines.
 
         title: str.
@@ -286,21 +287,25 @@ class Window(object):
         _cell = _Cell(self._r, self._c, title, self._cmap)
         safe_call(backend.get().fly_draw_plot_nd(self._wnd, line.arr, c_pointer(_cell)))
 
-    def plot3(self, X=None, Y=None, Z=None, line=None, title=None):
+    def plot_xyz(self, X, Y, Z, title=None):
+        Pts = join(1, X, Y, Z)
+        self.plot3(Pts, title)
+
+    def plot3(self, line, title=None):
         """
         Display a 3D Plot.
 
         Parameters
         ----------
 
-        line: af.Array.
+        line: fly.Array.
              - A 3 dimensional array of size [n 3]. Each column denotes X, Y, and Z co-ordinates for plotting 3D lines.
 
         title: str.
              Title used for the plot.
         """
 
-        assert(line.numdims() == 3)
+        assert(line.numdims() == 2)
         _cell = _Cell(self._r, self._c, title, self._cmap)
         safe_call(backend.get().fly_draw_plot_nd(self._wnd, line.arr, c_pointer(_cell)))
 
@@ -312,35 +317,35 @@ class Window(object):
         Parameters
         ----------
 
-        xpoints : af.Array.
+        xpoints : fly.Array.
                  - A 1 dimensional array containing X co-ordinates.
                  - Not used if points is not None
 
-        xdirs   : af.Array.
+        xdirs   : fly.Array.
                  - A 1 dimensional array specifying direction at current location.
                  - Not used if dirs is not None
 
-        ypoints : af.Array.
+        ypoints : fly.Array.
                  - A 1 dimensional array containing Y co-ordinates.
                  - Not used if points is not None
 
-        ydirs   : af.Array.
+        ydirs   : fly.Array.
                  - A 1 dimensional array specifying direction at current location.
                  - Not used if dirs is not None
 
-        zpoints : optional: af.Array. default: None.
+        zpoints : optional: fly.Array. default: None.
                  - A 1 dimensional array containing Z co-ordinates.
                  - Not used if points is not None
 
-        zdirs   : optional: af.Array. default: none.
+        zdirs   : optional: fly.Array. default: none.
                  - A 1 dimensional array specifying direction at current location.
                  - Not used if dirs is not None
 
-        points  : optional: af.Array. default: None.
+        points  : optional: fly.Array. default: None.
              - A 2 dimensional array of size [n 2]. Each column denotes X and Y co-ordinates for plotting 2D lines.
              - A 3 dimensional array of size [n 3]. Each column denotes X, Y, and Z co-ordinates for plotting 3D lines.
 
-        dirs    : optional: af.Array. default: None.
+        dirs    : optional: fly.Array. default: None.
              - A 2 dimensional array of size [n 2]. Each column denotes X and Y directions for plotting 2D lines.
              - A 3 dimensional array of size [n 3]. Each column denotes X, Y, and Z directions for plotting 3D lines.
 
@@ -374,13 +379,13 @@ class Window(object):
         Parameters
         ----------
 
-        x_vals: af.Array.
+        x_vals: fly.Array.
              A 1 dimensional array containing X co-ordinates.
 
-        y_vals: af.Array.
+        y_vals: fly.Array.
              A 1 dimensional array containing Y co-ordinates.
 
-        z_vals: af.Array.
+        z_vals: fly.Array.
              A 1 dimensional array containing Z co-ordinates.
 
         title: str.
@@ -398,7 +403,7 @@ class Window(object):
         Parameters
         ----------
 
-        X: af.Array.
+        X: fly.Array.
              A 1 dimensional array containing the histogram.
 
         min_val: scalar.
@@ -464,22 +469,22 @@ class Window(object):
         Parameters
         ----------
 
-        xmin : af.Array.
+        xmin : fly.Array.
               - lower limit of the x axis.
 
-        xmax : af.Array.
+        xmax : fly.Array.
               - upper limit of the x axis.
 
-        ymin : af.Array.
+        ymin : fly.Array.
               - lower limit of the y axis.
 
-        ymax : af.Array.
+        ymax : fly.Array.
               - upper limit of the y axis.
 
-        zmin : optional: af.Array. default: None.
+        zmin : optional: fly.Array. default: None.
               - lower limit of the z axis.
 
-        zmax : optional: af.Array. default: None.
+        zmax : optional: fly.Array. default: None.
               - upper limit of the z axis.
 
         title   : str.
@@ -538,9 +543,9 @@ class Window(object):
         Examples
         --------
 
-        >>> a = af.randu(5,5)
-        >>> b = af.randu(5,5)
-        >>> w = af.Window()
+        >>> a = fly.randu(5,5)
+        >>> b = fly.randu(5,5)
+        >>> w = fly.Window()
         >>> w.grid(1,2)
         >>> w[0, 0].image(a)
         >>> w[0, 1].image(b)

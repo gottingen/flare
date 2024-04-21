@@ -29,7 +29,7 @@ def fast(image, threshold=20.0, arc_length=9, non_max=True, feature_ratio=0.05, 
     Parameters
     ----------
 
-    image         : af.Array
+    image         : fly.Array
                   A 2D array representing an image.
 
     threshold     : scalar. optional. default: 20.0.
@@ -49,7 +49,7 @@ def fast(image, threshold=20.0, arc_length=9, non_max=True, feature_ratio=0.05, 
 
     Returns
     ---------
-    features     : af.Features()
+    features     : fly.Features()
                  Contains the location and score. Orientation and size are not computed.
 
     """
@@ -65,7 +65,7 @@ def harris(image, max_corners=500, min_response=1E5, sigma=1.0, block_size=0, k_
 
     Parameters
     ----------
-    image         : af.Array
+    image         : fly.Array
                   A 2D array specifying an image.
 
     max_corners   : scalar. optional. default: 500.
@@ -87,7 +87,7 @@ def harris(image, max_corners=500, min_response=1E5, sigma=1.0, block_size=0, k_
     Returns
     ---------
 
-    features     : af.Features()
+    features     : fly.Features()
                  Contains the location and score. Orientation and size are not computed.
 
     Note
@@ -110,7 +110,7 @@ def orb(image, threshold=20.0, max_features=400, scale = 1.5, num_levels = 4, bl
     Parameters
     ----------
 
-    image         : af.Array
+    image         : fly.Array
                   A 2D array representing an image.
 
     threshold     : scalar. optional. default: 20.0.
@@ -132,8 +132,8 @@ def orb(image, threshold=20.0, max_features=400, scale = 1.5, num_levels = 4, bl
 
     Returns
     ---------
-    (features, descriptor)     : tuple of (af.Features(), af.Array)
-                               - descriptor is an af.Array of size N x 8
+    (features, descriptor)     : tuple of (fly.Features(), fly.Array)
+                               - descriptor is an fly.Array of size N x 8
 
     """
     feat = Features()
@@ -150,10 +150,10 @@ def hamming_matcher(query, database, dim = 0, num_nearest = 1):
     Parameters
     -----------
 
-    query    : af.Array
+    query    : fly.Array
              A query feature descriptor
 
-    database : af.Array
+    database : fly.Array
              A multi dimensional array containing the feature descriptor database.
 
     dim      : scalar. optional. default: 0.
@@ -165,7 +165,7 @@ def hamming_matcher(query, database, dim = 0, num_nearest = 1):
     Returns
     ---------
 
-    (location, distance): tuple of af.Array
+    (location, distance): tuple of fly.Array
                           location and distances of closest matches.
 
     """
@@ -183,10 +183,10 @@ def nearest_neighbour(query, database, dim = 0, num_nearest = 1, match_type=MATC
     Parameters
     -----------
 
-    query    : af.Array
+    query    : fly.Array
              A query feature descriptor
 
-    database : af.Array
+    database : fly.Array
              A multi dimensional array containing the feature descriptor database.
 
     dim      : scalar. optional. default: 0.
@@ -195,13 +195,13 @@ def nearest_neighbour(query, database, dim = 0, num_nearest = 1, match_type=MATC
     num_nearest: scalar. optional. default: 1.
              Specifies the number of nearest neighbors to find.
 
-    match_type: optional: af.MATCH. default: af.MATCH.SSD
+    match_type: optional: fly.MATCH. default: fly.MATCH.SSD
              Specifies the match function metric.
 
     Returns
     ---------
 
-    (location, distance): tuple of af.Array
+    (location, distance): tuple of fly.Array
                           location and distances of closest matches.
 
     """
@@ -220,18 +220,18 @@ def match_template(image, template, match_type = MATCH.SAD):
     Parameters
     ----------
 
-    image    : af.Array
+    image    : fly.Array
              A multi dimensional array specifying an image or batch of images.
 
-    template : af.Array
+    template : fly.Array
              A multi dimensional array specifying a template or batch of templates.
 
-    match_type: optional: af.MATCH. default: af.MATCH.SAD
+    match_type: optional: fly.MATCH. default: fly.MATCH.SAD
              Specifies the match function metric.
 
     Returns
     --------
-    out     : af.Array
+    out     : fly.Array
             An array containing the score of the match at each pixel.
 
     """
@@ -247,7 +247,7 @@ def susan(image, radius=3, diff_thr=32, geom_thr=10, feature_ratio=0.05, edge=3)
 
     Parameters
     ----------
-    image         : af.Array
+    image         : fly.Array
                   A 2D array specifying an image.
 
     radius        : scalar. optional. default: 500.
@@ -268,7 +268,7 @@ def susan(image, radius=3, diff_thr=32, geom_thr=10, feature_ratio=0.05, edge=3)
     Returns
     ---------
 
-    features     : af.Features()
+    features     : fly.Features()
                  Contains the location and score. Orientation and size are not computed.
 
     """
@@ -285,7 +285,7 @@ def dog(image, radius1, radius2):
 
     Parameters
     ----------
-    image    : af.Array
+    image    : fly.Array
              A 2D array specifying an image.
 
     radius1  : scalar.
@@ -298,7 +298,7 @@ def dog(image, radius1, radius2):
     Returns
     --------
 
-    out      : af.Array
+    out      : fly.Array
              A multi dimensional array containing the difference of gaussians.
 
     Note
@@ -319,7 +319,7 @@ def sift(image, num_layers=3, contrast_threshold=0.04, edge_threshold=10.0, init
 
     Parameters
     ----------
-    image              : af.Array
+    image              : fly.Array
                        A 2D array representing an image
 
     num_layers         : optional: integer. Default: 3
@@ -345,8 +345,8 @@ def sift(image, num_layers=3, contrast_threshold=0.04, edge_threshold=10.0, init
 
     Returns
     --------
-    (features, descriptor)     : tuple of (af.Features(), af.Array)
-                               - descriptor is an af.Array of size N x 128
+    (features, descriptor)     : tuple of (fly.Features(), fly.Array)
+                               - descriptor is an fly.Array of size N x 128
 
     """
 
@@ -365,7 +365,7 @@ def gloh(image, num_layers=3, contrast_threshold=0.04, edge_threshold=10.0, init
 
     Parameters
     ----------
-    image              : af.Array
+    image              : fly.Array
                        A 2D array representing an image
 
     num_layers         : optional: integer. Default: 3
@@ -391,8 +391,8 @@ def gloh(image, num_layers=3, contrast_threshold=0.04, edge_threshold=10.0, init
 
     Returns
     --------
-    (features, descriptor)     : tuple of (af.Features(), af.Array)
-                               - descriptor is an af.Array of size N x 272
+    (features, descriptor)     : tuple of (fly.Features(), fly.Array)
+                               - descriptor is an fly.Array of size N x 272
 
     """
 
@@ -413,19 +413,19 @@ def homography(x_src, y_src, x_dst, y_dst, htype = HOMOGRAPHY.RANSAC,
 
     Parameters
     ----------
-    x_src            :  af.Array
+    x_src            :  fly.Array
                      A list of x co-ordinates of the source points.
 
-    y_src            :  af.Array
+    y_src            :  fly.Array
                      A list of y co-ordinates of the source points.
 
-    x_dst            :  af.Array
+    x_dst            :  fly.Array
                      A list of x co-ordinates of the destination points.
 
-    y_dst            :  af.Array
+    y_dst            :  fly.Array
                      A list of y co-ordinates of the destination points.
 
-    htype            : optional: af.HOMOGRAPHY. Default: HOMOGRAPHY.RANSAC
+    htype            : optional: fly.HOMOGRAPHY. Default: HOMOGRAPHY.RANSAC
                      htype can be one of
                          - HOMOGRAPHY.RANSAC: RANdom SAmple Consensus will be used to evaluate quality.
                          - HOMOGRAPHY.LMEDS : Least MEDian of Squares is used to evaluate quality.
@@ -433,12 +433,12 @@ def homography(x_src, y_src, x_dst, y_dst, htype = HOMOGRAPHY.RANSAC,
     ransac_threshold : optional: scalar. Default: 3.0
                      If `htype` is HOMOGRAPHY.RANSAC, it specifies the L2-distance threshold for inliers.
 
-    out_type         : optional. af.Dtype. Default: Dtype.f32.
+    out_type         : optional. fly.Dtype. Default: Dtype.f32.
                      Specifies the output data type.
 
     Returns
     -------
-    (H, inliers)     : A tuple of (af.Array, integer)
+    (H, inliers)     : A tuple of (fly.Array, integer)
     """
 
     H = Array()

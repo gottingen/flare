@@ -22,13 +22,13 @@ flare is a high performance scientific computing library with an easy to use API
     >>> def calc_pi_device(samples):
             # Simple, array based API
             # Generate uniformly distributed random numers
-            x = af.randu(samples)
-            y = af.randu(samples)
+            x = fly.randu(samples)
+            y = fly.randu(samples)
             # Supports Just In Time Compilation
             # The following line generates a single kernel
             within_unit_circle = (x * x + y * y) < 1
             # Intuitive function names
-            return 4 * af.count(within_unit_circle) / samples
+            return 4 * fly.count(within_unit_circle) / samples
 
 Programs written using flare are portable across CUDA, CPU devices.
 
@@ -39,7 +39,7 @@ The default backend is chosen in the following order of preference based on the 
 
 The backend can be chosen at the beginning of the program by using the following function
 
-    >>> af.set_backend(name)
+    >>> fly.set_backend(name)
 
 where name is one of 'cuda' or 'cpu'.
 

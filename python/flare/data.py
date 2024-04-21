@@ -46,13 +46,13 @@ def constant(val, d0, d1=None, d2=None, d3=None, dtype=Dtype.f32):
     d3 : optional: int. default: None.
          Length of fourth dimension.
 
-    dtype : optional: af.Dtype. default: af.Dtype.f32.
+    dtype : optional: fly.Dtype. default: fly.Dtype.f32.
            Data type of the array.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Multi dimensional array whose elements are of value `val`.
           - If d1 is None, `out` is 1D of size (d0,).
           - If d1 is not None and d2 is None, `out` is 2D of size (d0, d1).
@@ -91,13 +91,13 @@ def range(d0, d1=None, d2=None, d3=None, dim=0, dtype=Dtype.f32):
     dim : optional: int. default: 0.
          The dimension along which the range is calculated.
 
-    dtype : optional: af.Dtype. default: af.Dtype.f32.
+    dtype : optional: fly.Dtype. default: fly.Dtype.f32.
            Data type of the array.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Multi dimensional array whose elements are along `dim` fall between [0 - self.dims[dim]-1]
           - If d1 is None, `out` is 1D of size (d0,).
           - If d1 is not None and d2 is None, `out` is 2D of size (d0, d1).
@@ -108,15 +108,15 @@ def range(d0, d1=None, d2=None, d3=None, dim=0, dtype=Dtype.f32):
     Examples
     --------
     >>> import flare as fly
-    >>> a = af.range(3, 2) # dim is not specified, range is along first dimension.
-    >>> af.display(a) # The data ranges from [0 - 2] (3 elements along first dimension)
+    >>> a = fly.range(3, 2) # dim is not specified, range is along first dimension.
+    >>> fly.display(a) # The data ranges from [0 - 2] (3 elements along first dimension)
     [3 2 1 1]
         0.0000     0.0000
         1.0000     1.0000
         2.0000     2.0000
 
-    >>> a = af.range(3, 2, dim=1) # dim is 1, range is along second dimension.
-    >>> af.display(a) # The data ranges from [0 - 1] (2 elements along second dimension)
+    >>> a = fly.range(3, 2, dim=1) # dim is 1, range is along second dimension.
+    >>> fly.display(a) # The data ranges from [0 - 1] (2 elements along second dimension)
     [3 2 1 1]
         0.0000     1.0000
         0.0000     1.0000
@@ -153,28 +153,28 @@ def iota(d0, d1=None, d2=None, d3=None, dim=-1, tile_dims=None, dtype=Dtype.f32)
     tile_dims : optional: tuple of ints. default: None.
          The number of times the data is tiled.
 
-    dtype : optional: af.Dtype. default: af.Dtype.f32.
+    dtype : optional: fly.Dtype. default: fly.Dtype.f32.
            Data type of the array.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Multi dimensional array whose elements are along `dim` fall between [0 - self.elements() - 1].
 
     Examples
     --------
     >>> import flare as fly
     >>> import flare as fly
-    >>> a = af.iota(3,3) # tile_dim is not specified, data is not tiled
-    >>> af.display(a) # the elements range from [0 - 8] (9 elements)
+    >>> a = fly.iota(3,3) # tile_dim is not specified, data is not tiled
+    >>> fly.display(a) # the elements range from [0 - 8] (9 elements)
     [3 3 1 1]
         0.0000     3.0000     6.0000
         1.0000     4.0000     7.0000
         2.0000     5.0000     8.0000
 
-    >>> b = af.iota(3,3,tile_dims(1,2)) # Asking to tile along second dimension.
-    >>> af.display(b)
+    >>> b = fly.iota(3,3,tile_dims(1,2)) # Asking to tile along second dimension.
+    >>> fly.display(b)
     [3 6 1 1]
         0.0000     3.0000     6.0000     0.0000     3.0000     6.0000
         1.0000     4.0000     7.0000     1.0000     4.0000     7.0000
@@ -212,13 +212,13 @@ def identity(d0, d1, d2=None, d3=None, dtype=Dtype.f32):
     d3 : optional: int. default: None.
          Length of fourth dimension.
 
-    dtype : optional: af.Dtype. default: af.Dtype.f32.
+    dtype : optional: fly.Dtype. default: fly.Dtype.f32.
            Data type of the array.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Multi dimensional array whose first two dimensions form a identity matrix.
           - If d2 is  None, `out` is 2D of size (d0, d1).
           - If d2 is not None and d3 is None, `out` is 3D of size (d0, d1, d2).
@@ -237,7 +237,7 @@ def diag(a, num=0, extract=True):
 
     Parameters
     ----------
-    a : af.Array.
+    a : fly.Array.
         1 dimensional or 2 dimensional flare array.
 
     num : optional: int. default: 0.
@@ -253,7 +253,7 @@ def diag(a, num=0, extract=True):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
          - if extract is True, `out` contains the num'th diagonal from `a`.
          - if extract is False, `out` contains `a` as the num'th diagonal.
     """
@@ -274,50 +274,50 @@ def join(dim, first, second, third=None, fourth=None):
     dim: int.
         Dimension along which the join occurs.
 
-    first : af.Array.
+    first : fly.Array.
         Multi dimensional flare array.
 
-    second : af.Array.
+    second : fly.Array.
         Multi dimensional flare array.
 
-    third : optional: af.Array. default: None.
+    third : optional: fly.Array. default: None.
         Multi dimensional flare array.
 
-    fourth : optional: af.Array. default: None.
+    fourth : optional: fly.Array. default: None.
         Multi dimensional flare array.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           An array containing the input arrays joined along the specified dimension.
 
     Examples
     ---------
 
     >>> import flare as fly
-    >>> a = af.randu(2, 3)
-    >>> b = af.randu(2, 3)
-    >>> c = af.join(0, a, b)
-    >>> d = af.join(1, a, b)
-    >>> af.display(a)
+    >>> a = fly.randu(2, 3)
+    >>> b = fly.randu(2, 3)
+    >>> c = fly.join(0, a, b)
+    >>> d = fly.join(1, a, b)
+    >>> fly.display(a)
     [2 3 1 1]
         0.9508     0.2591     0.7928
         0.5367     0.8359     0.8719
 
-    >>> af.display(b)
+    >>> fly.display(b)
     [2 3 1 1]
         0.3266     0.6009     0.2442
         0.6275     0.0495     0.6591
 
-    >>> af.display(c)
+    >>> fly.display(c)
     [4 3 1 1]
         0.9508     0.2591     0.7928
         0.5367     0.8359     0.8719
         0.3266     0.6009     0.2442
         0.6275     0.0495     0.6591
 
-    >>> af.display(d)
+    >>> fly.display(d)
     [2 6 1 1]
         0.9508     0.2591     0.7928     0.3266     0.6009     0.2442
         0.5367     0.8359     0.8719     0.6275     0.0495     0.6591
@@ -347,7 +347,7 @@ def tile(a, d0, d1=1, d2=1, d3=1):
     Parameters
     ----------
 
-    a : af.Array.
+    a : fly.Array.
        Multi dimensional array.
 
     d0: int.
@@ -365,35 +365,35 @@ def tile(a, d0, d1=1, d2=1, d3=1):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           An array containing the input after tiling the the specified number of times.
 
     Examples
     ---------
 
     >>> import flare as fly
-    >>> a = af.randu(2, 3)
-    >>> b = af.tile(a, 2)
-    >>> c = af.tile(a, 1, 2)
-    >>> d = af.tile(a, 2, 2)
-    >>> af.display(a)
+    >>> a = fly.randu(2, 3)
+    >>> b = fly.tile(a, 2)
+    >>> c = fly.tile(a, 1, 2)
+    >>> d = fly.tile(a, 2, 2)
+    >>> fly.display(a)
     [2 3 1 1]
         0.9508     0.2591     0.7928
         0.5367     0.8359     0.8719
 
-    >>> af.display(b)
+    >>> fly.display(b)
     [4 3 1 1]
         0.4107     0.9518     0.4198
         0.8224     0.1794     0.0081
         0.4107     0.9518     0.4198
         0.8224     0.1794     0.0081
 
-    >>> af.display(c)
+    >>> fly.display(c)
     [2 6 1 1]
         0.4107     0.9518     0.4198     0.4107     0.9518     0.4198
         0.8224     0.1794     0.0081     0.8224     0.1794     0.0081
 
-    >>> af.display(d)
+    >>> fly.display(d)
     [4 6 1 1]
         0.4107     0.9518     0.4198     0.4107     0.9518     0.4198
         0.8224     0.1794     0.0081     0.8224     0.1794     0.0081
@@ -411,7 +411,7 @@ def reorder(a, d0=1, d1=0, d2=2, d3=3):
     Parameters
     ----------
 
-    a : af.Array.
+    a : fly.Array.
        Multi dimensional array.
 
     d0: optional: int. default: 1.
@@ -429,18 +429,18 @@ def reorder(a, d0=1, d1=0, d2=2, d3=3):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           - An array containing the input aftern reordering its dimensions.
 
     Note
     ------
-    - `af.reorder(a, 1, 0)` is the same as `transpose(a)`
+    - `fly.reorder(a, 1, 0)` is the same as `transpose(a)`
 
     Examples
     --------
     >>> import flare as fly
-    >>> a = af.randu(5, 5, 3)
-    >>> af.display(a)
+    >>> a = fly.randu(5, 5, 3)
+    >>> fly.display(a)
     [5 5 3 1]
         0.4107     0.0081     0.6600     0.1046     0.8395
         0.8224     0.3775     0.0764     0.8827     0.1933
@@ -461,8 +461,8 @@ def reorder(a, d0=1, d1=0, d2=2, d3=3):
         0.5606     0.7924     0.9165     0.6056     0.9747
 
 
-    >>> b = af.reorder(a, 2, 0, 1)
-    >>> af.display(b)
+    >>> b = fly.reorder(a, 2, 0, 1)
+    >>> fly.display(b)
     [3 5 5 1]
         0.4107     0.8224     0.9518     0.1794     0.4198
         0.8703     0.5259     0.1443     0.3253     0.5081
@@ -495,7 +495,7 @@ def shift(a, d0, d1=0, d2=0, d3=0):
     Parameters
     ----------
 
-    a : af.Array.
+    a : fly.Array.
        Multi dimensional array.
 
     d0: int.
@@ -513,28 +513,28 @@ def shift(a, d0, d1=0, d2=0, d3=0):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           - An array the same shape as `a` after shifting it by the specified amounts.
 
     Examples
     --------
     >>> import flare as fly
-    >>> a = af.randu(3, 3)
-    >>> b = af.shift(a, 2)
-    >>> c = af.shift(a, 1, -1)
-    >>> af.display(a)
+    >>> a = fly.randu(3, 3)
+    >>> b = fly.shift(a, 2)
+    >>> c = fly.shift(a, 1, -1)
+    >>> fly.display(a)
     [3 3 1 1]
         0.7269     0.3569     0.3341
         0.7104     0.1437     0.0899
         0.5201     0.4563     0.5363
 
-    >>> af.display(b)
+    >>> fly.display(b)
     [3 3 1 1]
         0.7104     0.1437     0.0899
         0.5201     0.4563     0.5363
         0.7269     0.3569     0.3341
 
-    >>> af.display(c)
+    >>> fly.display(c)
     [3 3 1 1]
         0.4563     0.5363     0.5201
         0.3569     0.3341     0.7269
@@ -551,7 +551,7 @@ def moddims(a, d0, d1=1, d2=1, d3=1):
     Parameters
     ----------
 
-    a : af.Array.
+    a : fly.Array.
        Multi dimensional array.
 
     d0: int.
@@ -569,7 +569,7 @@ def moddims(a, d0, d1=1, d2=1, d3=1):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           - An containing the same data as `a` with the specified shape.
           - The number of elements in `a` must match `d0 x d1 x d2 x d3`.
     """
@@ -585,13 +585,13 @@ def flat(a):
     Parameters
     ----------
 
-    a : af.Array.
+    a : fly.Array.
        Multi dimensional array.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           - 1 dimensional array containing all the elements from `a`.
     """
     out = Array()
@@ -605,7 +605,7 @@ def flip(a, dim=0):
     Parameters
     ----------
 
-    a : af.Array.
+    a : fly.Array.
        Multi dimensional array.
 
     dim : optional: int. default: 0.
@@ -614,27 +614,27 @@ def flip(a, dim=0):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           The output after flipping `a` along `dim`.
 
     Examples
     ---------
 
     >>> import flare as fly
-    >>> a = af.randu(3, 3)
-    >>> af.display(a)
+    >>> a = fly.randu(3, 3)
+    >>> fly.display(a)
     [3 3 1 1]
         0.7269     0.3569     0.3341
         0.7104     0.1437     0.0899
         0.5201     0.4563     0.5363
 
-    >>> af.display(b)
+    >>> fly.display(b)
     [3 3 1 1]
         0.5201     0.4563     0.5363
         0.7104     0.1437     0.0899
         0.7269     0.3569     0.3341
 
-    >>> af.display(c)
+    >>> fly.display(c)
     [3 3 1 1]
         0.3341     0.3569     0.7269
         0.0899     0.1437     0.7104
@@ -652,7 +652,7 @@ def lower(a, is_unit_diag=False):
     Parameters
     ----------
 
-    a : af.Array.
+    a : fly.Array.
        Multi dimensional array.
 
     is_unit_diag: optional: bool. default: False.
@@ -661,7 +661,7 @@ def lower(a, is_unit_diag=False):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           An array containing the lower triangular elements from `a`.
     """
     out = Array()
@@ -675,7 +675,7 @@ def upper(a, is_unit_diag=False):
     Parameters
     ----------
 
-    a : af.Array.
+    a : fly.Array.
        Multi dimensional array.
 
     is_unit_diag: optional: bool. default: False.
@@ -684,7 +684,7 @@ def upper(a, is_unit_diag=False):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           An array containing the upper triangular elements from `a`.
     """
     out = Array()
@@ -698,43 +698,43 @@ def select(cond, lhs, rhs):
     Parameters
     ----------
 
-    cond : af.Array
+    cond : fly.Array
            Conditional array
 
-    lhs  : af.Array or scalar
+    lhs  : fly.Array or scalar
            numerical array whose elements are picked when conditional element is True
 
-    rhs  : af.Array or scalar
+    rhs  : fly.Array or scalar
            numerical array whose elements are picked when conditional element is False
 
     Returns
     --------
 
-    out: af.Array
+    out: fly.Array
          An array containing elements from `lhs` when `cond` is True and `rhs` when False.
 
     Examples
     ---------
 
     >>> import flare as fly
-    >>> a = af.randu(3,3)
-    >>> b = af.randu(3,3)
+    >>> a = fly.randu(3,3)
+    >>> b = fly.randu(3,3)
     >>> cond = a > b
-    >>> res = af.select(cond, a, b)
+    >>> res = fly.select(cond, a, b)
 
-    >>> af.display(a)
+    >>> fly.display(a)
     [3 3 1 1]
         0.4107     0.1794     0.3775
         0.8224     0.4198     0.3027
         0.9518     0.0081     0.6456
 
-    >>> af.display(b)
+    >>> fly.display(b)
     [3 3 1 1]
         0.7269     0.3569     0.3341
         0.7104     0.1437     0.0899
         0.5201     0.4563     0.5363
 
-    >>> af.display(res)
+    >>> fly.display(res)
     [3 3 1 1]
         0.7269     0.3569     0.3775
         0.8224     0.4198     0.3027
@@ -765,34 +765,34 @@ def replace(lhs, cond, rhs):
     Parameters
     ----------
 
-    lhs  : af.Array or scalar
+    lhs  : fly.Array or scalar
            numerical array whose elements are replaced with `rhs` when conditional element is False
 
-    cond : af.Array
+    cond : fly.Array
            Conditional array
 
-    rhs  : af.Array or scalar
+    rhs  : fly.Array or scalar
            numerical array whose elements are picked when conditional element is False
 
     Examples
     ---------
     >>> import flare as fly
-    >>> a = af.randu(3,3)
-    >>> af.display(a)
+    >>> a = fly.randu(3,3)
+    >>> fly.display(a)
     [3 3 1 1]
         0.4107     0.1794     0.3775
         0.8224     0.4198     0.3027
         0.9518     0.0081     0.6456
 
     >>> cond = (a >= 0.25) & (a <= 0.75)
-    >>> af.display(cond)
+    >>> fly.display(cond)
     [3 3 1 1]
              1          0          1
              0          1          1
              0          0          1
 
-    >>> af.replace(a, cond, 0.3333)
-    >>> af.display(a)
+    >>> fly.replace(a, cond, 0.3333)
+    >>> fly.display(a)
     [3 3 1 1]
         0.3333     0.1794     0.3333
         0.8224     0.3333     0.3333
@@ -816,33 +816,33 @@ def pad(a, beginPadding, endPadding, padFillType = PAD.ZERO):
     Parameters
     ----------
 
-    a: af.Array
+    a: fly.Array
           A multi dimensional input flare array.
 
     beginPadding: tuple of ints. default: (0, 0, 0, 0).
 
     endPadding: tuple of ints. default: (0, 0, 0, 0).
 
-    padFillType: optional af.PAD default: af.PAD.ZERO
+    padFillType: optional fly.PAD default: fly.PAD.ZERO
         specifies type of values to fill padded border with
 
     Returns
     -------
-    output: af.Array
+    output: fly.Array
            A padded array
 
     Examples
     ---------
     >>> import flare as fly
-    >>> a = af.randu(3,3)
-    >>> af.display(a)
+    >>> a = fly.randu(3,3)
+    >>> fly.display(a)
     [3 3 1 1]
         0.4107     0.1794     0.3775
         0.8224     0.4198     0.3027
         0.9518     0.0081     0.6456
 
-    >>> padded = af.pad(a, (1, 1), (1, 1), af.ZERO)
-    >>> af.display(padded)
+    >>> padded = fly.pad(a, (1, 1), (1, 1), fly.ZERO)
+    >>> fly.display(padded)
     [5 5 1 1]
         0.0000     0.0000     0.0000     0.0000     0.0000
         0.0000     0.4107     0.1794     0.3775     0.0000
@@ -865,7 +865,7 @@ def lookup(a, idx, dim=0):
     Parameters
     ----------
 
-    a : af.Array.
+    a : fly.Array.
        Multi dimensional array.
 
     idx : is lookup indices
@@ -876,27 +876,27 @@ def lookup(a, idx, dim=0):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           An array containing values at locations specified by 'idx'
 
     Examples
     ---------
 
     >>> import flare as fly
-    >>> arr = af.Array([1,0,3,4,5,6], (2,3))
-    >>> af.display(arr)
+    >>> arr = fly.Array([1,0,3,4,5,6], (2,3))
+    >>> fly.display(arr)
     [2 3 1 1]
         1.0000     3.0000     5.0000
         0.0000     4.0000     6.0000
 
-    >>> idx = af.array([0, 2])
-    >>> af.lookup(arr, idx, 1)
+    >>> idx = fly.array([0, 2])
+    >>> fly.lookup(arr, idx, 1)
     [2 2 1 1]
         1.0000     5.0000
         0.0000     6.0000
 
-    >>> idx = af.array([0])
-    >>> af.lookup(arr, idx, 0)
+    >>> idx = fly.array([0])
+    >>> fly.lookup(arr, idx, 0)
     [2 1 1 1]
         0.0000
         2.0000

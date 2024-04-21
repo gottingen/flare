@@ -32,18 +32,21 @@ fi
 
 mkdir "${DIST_PATH}"
 mkdir -p "${BUILD_PATH}"
-# build cuda
-cmake -S ${ROOT_PATH} -B ${BUILD_PATH} -DBUILD_TESTING=OFF -DFLY_BUILD_EXAMPLES=OFF
-cmake --build ${BUILD_PATH} -j 4
-cmake --build ${BUILD_PATH} --target package
-cp ${BUILD_PATH}/package/flare*.sh ${DIST_PATH}
-
-# build n ocuda
-rm -rf ${BUILD_PATH}/*
+# build n cpu
 cmake -S ${ROOT_PATH} -B ${BUILD_PATH} -DBUILD_TESTING=OFF -DFLY_BUILD_EXAMPLES=OFF -DBUILD_CUDA=OFF
 cmake --build ${BUILD_PATH} -j 4
 cmake --build ${BUILD_PATH} --target package
 cp ${BUILD_PATH}/package/flare*.sh ${DIST_PATH}
+cp ${BUILD_PATH}/package/flare*.deb ${DIST_PATH}
+# build cuda
+rm -rf ${BUILD_PATH}/*
+cmake -S ${ROOT_PATH} -B ${BUILD_PATH} -DBUILD_TESTING=OFF -DFLY_BUILD_EXAMPLES=OFF
+cmake --build ${BUILD_PATH} -j 4
+cmake --build ${BUILD_PATH} --target package
+cp ${BUILD_PATH}/package/flare*.sh ${DIST_PATH}
+cp ${BUILD_PATH}/package/flare*.deb ${DIST_PATH}
+
+
 
 
 

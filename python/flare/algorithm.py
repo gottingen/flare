@@ -82,7 +82,7 @@ def sum(a, dim=None, nan_val=None):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: None
          Dimension along which the sum is required.
@@ -91,7 +91,7 @@ def sum(a, dim=None, nan_val=None):
 
     Returns
     -------
-    out: af.Array or scalar number
+    out: fly.Array or scalar number
          The sum of all elements in `a` along dimension `dim`.
          If `dim` is `None`, sum of the entire Array is returned.
     """
@@ -113,9 +113,9 @@ def sumByKey(keys, vals, dim=-1, nan_val=None):
 
     Parameters
     ----------
-    keys  : af.Array
+    keys  : fly.Array
          One dimensional flare array with reduction keys.
-    vals  : af.Array
+    vals  : fly.Array
          Multi dimensional flare array that will be reduced.
     dim: optional: int. default: -1
          Dimension along which the sum will occur.
@@ -124,9 +124,9 @@ def sumByKey(keys, vals, dim=-1, nan_val=None):
 
     Returns
     -------
-    keys: af.Array or scalar number
+    keys: fly.Array or scalar number
          The reduced keys of all elements in `vals` along dimension `dim`.
-    values: af.Array or scalar number
+    values: fly.Array or scalar number
          The sum of all elements in `vals` along dimension `dim` according to keys
     """
     if (nan_val is not None):
@@ -140,7 +140,7 @@ def product(a, dim=None, nan_val=None):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: None
          Dimension along which the product is required.
@@ -149,7 +149,7 @@ def product(a, dim=None, nan_val=None):
 
     Returns
     -------
-    out: af.Array or scalar number
+    out: fly.Array or scalar number
          The product of all elements in `a` along dimension `dim`.
          If `dim` is `None`, product of the entire Array is returned.
     """
@@ -170,9 +170,9 @@ def productByKey(keys, vals, dim=-1, nan_val=None):
 
     Parameters
     ----------
-    keys  : af.Array
+    keys  : fly.Array
          One dimensional flare array with reduction keys.
-    vals  : af.Array
+    vals  : fly.Array
          Multi dimensional flare array that will be reduced.
     dim: optional: int. default: -1
          Dimension along which the product will occur.
@@ -181,9 +181,9 @@ def productByKey(keys, vals, dim=-1, nan_val=None):
 
     Returns
     -------
-    keys: af.Array or scalar number
+    keys: fly.Array or scalar number
          The reduced keys of all elements in `vals` along dimension `dim`.
-    values: af.Array or scalar number
+    values: fly.Array or scalar number
          The product of all elements in `vals` along dimension `dim` according to keys
     """
     if (nan_val is not None):
@@ -197,14 +197,14 @@ def min(a, dim=None):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: None
          Dimension along which the minimum value is required.
 
     Returns
     -------
-    out: af.Array or scalar number
+    out: fly.Array or scalar number
          The minimum value of all elements in `a` along dimension `dim`.
          If `dim` is `None`, minimum value of the entire Array is returned.
     """
@@ -219,18 +219,18 @@ def minByKey(keys, vals, dim=-1):
 
     Parameters
     ----------
-    keys  : af.Array
+    keys  : fly.Array
          One dimensional flare array with reduction keys.
-    vals  : af.Array
+    vals  : fly.Array
          Multi dimensional flare array that will be reduced.
     dim: optional: int. default: -1
          Dimension along which the min will occur.
 
     Returns
     -------
-    keys: af.Array or scalar number
+    keys: fly.Array or scalar number
          The reduced keys of all elements in `vals` along dimension `dim`.
-    values: af.Array or scalar number
+    values: fly.Array or scalar number
          The min of all elements in `vals` along dimension `dim` according to keys
     """
     return _rbk_dim(keys, vals, dim, backend.get().fly_min_by_key)
@@ -241,14 +241,14 @@ def max(a, dim=None):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: None
          Dimension along which the maximum value is required.
 
     Returns
     -------
-    out: af.Array or scalar number
+    out: fly.Array or scalar number
          The maximum value of all elements in `a` along dimension `dim`.
          If `dim` is `None`, maximum value of the entire Array is returned.
     """
@@ -266,17 +266,17 @@ def maxRagged(vals, lens, dim):
 
     Parameters
     ----------
-    vals  : af.Array
+    vals  : fly.Array
          Multi dimensional flare array.
-    lens  : af.Array
+    lens  : fly.Array
          Multi dimensional flare array containing number of elements to reduce along given `dim`
     dim: optional: int. default: None
          Dimension along which the maximum value is required.
 
     Returns
     -------
-    (values, indices): A tuple of af.Array(s)
-         `values` af.Array will have the maximum values along given dimension for
+    (values, indices): A tuple of fly.Array(s)
+         `values` fly.Array will have the maximum values along given dimension for
          subsets determined by lengths provided in `lens`
          `idx` contains the locations of the maximum values as per the lengths provided in `lens`
     """
@@ -291,18 +291,18 @@ def maxByKey(keys, vals, dim=-1):
 
     Parameters
     ----------
-    keys  : af.Array
+    keys  : fly.Array
          One dimensional flare array with reduction keys.
-    vals  : af.Array
+    vals  : fly.Array
          Multi dimensional flare array that will be reduced.
     dim: optional: int. default: -1
          Dimension along which the max will occur.
 
     Returns
     -------
-    keys: af.Array or scalar number
+    keys: fly.Array or scalar number
          The reduced keys of all elements in `vals` along dimension `dim`.
-    values: af.Array or scalar number
+    values: fly.Array or scalar number
          The max of all elements in `vals` along dimension `dim` according to keys.
     """
     return _rbk_dim(keys, vals, dim, backend.get().fly_max_by_key)
@@ -313,15 +313,15 @@ def all_true(a, dim=None):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: None
          Dimension along which the product is required.
 
     Returns
     -------
-    out: af.Array or scalar number
-         Af.array containing True if all elements in `a` along the dimension are True.
+    out: fly.Array or scalar number
+         fly.array containing True if all elements in `a` along the dimension are True.
          If `dim` is `None`, output is True if `a` does not have any zeros, else False.
     """
     if dim is not None:
@@ -335,18 +335,18 @@ def allTrueByKey(keys, vals, dim=-1):
 
     Parameters
     ----------
-    keys  : af.Array
+    keys  : fly.Array
          One dimensional flare array with reduction keys.
-    vals  : af.Array
+    vals  : fly.Array
          Multi dimensional flare array that will be reduced.
     dim: optional: int. default: -1
          Dimension along which the all true check will occur.
 
     Returns
     -------
-    keys: af.Array or scalar number
+    keys: fly.Array or scalar number
          The reduced keys of all true check in `vals` along dimension `dim`.
-    values: af.Array or scalar number
+    values: fly.Array or scalar number
          Booleans denoting if all elements are true in `vals` along dimension `dim` according to keys
     """
     return _rbk_dim(keys, vals, dim, backend.get().fly_all_true_by_key)
@@ -357,15 +357,15 @@ def any_true(a, dim=None):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: None
          Dimension along which the product is required.
 
     Returns
     -------
-    out: af.Array or scalar number
-         Af.array containing True if any elements in `a` along the dimension are True.
+    out: fly.Array or scalar number
+         fly.array containing True if any elements in `a` along the dimension are True.
          If `dim` is `None`, output is True if `a` does not have any zeros, else False.
     """
     if dim is not None:
@@ -379,18 +379,18 @@ def anyTrueByKey(keys, vals, dim=-1):
 
     Parameters
     ----------
-    keys  : af.Array
+    keys  : fly.Array
          One dimensional flare array with reduction keys.
-    vals  : af.Array
+    vals  : fly.Array
          Multi dimensional flare array that will be reduced.
     dim: optional: int. default: -1
          Dimension along which the any true check will occur.
 
     Returns
     -------
-    keys: af.Array or scalar number
+    keys: fly.Array or scalar number
          The reduced keys of any true check in `vals` along dimension `dim`.
-    values: af.Array or scalar number
+    values: fly.Array or scalar number
          Booleans denoting if any elements are true in `vals` along dimension `dim` according to keys.
     """
     return _rbk_dim(keys, vals, dim, backend.get().fly_any_true_by_key)
@@ -401,14 +401,14 @@ def count(a, dim=None):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: None
          Dimension along which the the non zero elements are to be counted.
 
     Returns
     -------
-    out: af.Array or scalar number
+    out: fly.Array or scalar number
          The count of non zero elements in `a` along `dim`.
          If `dim` is `None`, the total number of non zero elements in `a`.
     """
@@ -423,18 +423,18 @@ def countByKey(keys, vals, dim=-1):
 
     Parameters
     ----------
-    keys  : af.Array
+    keys  : fly.Array
          One dimensional flare array with reduction keys.
-    vals  : af.Array
+    vals  : fly.Array
          Multi dimensional flare array that will be reduced.
     dim: optional: int. default: -1
          Dimension along which to count elements.
 
     Returns
     -------
-    keys: af.Array or scalar number
+    keys: fly.Array or scalar number
          The reduced keys of count in `vals` along dimension `dim`.
-    values: af.Array or scalar number
+    values: fly.Array or scalar number
          Count of non-zero elements in `vals` along dimension `dim` according to keys.
     """
     return _rbk_dim(keys, vals, dim, backend.get().fly_count_by_key)
@@ -445,14 +445,14 @@ def imin(a, dim=None):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: None
          Dimension along which the minimum value is required.
 
     Returns
     -------
-    (val, idx): tuple of af.Array or scalars
+    (val, idx): tuple of fly.Array or scalars
                 `val` contains the minimum value of `a` along `dim`.
                 `idx` contains the location of where `val` occurs in `a` along `dim`.
                 If `dim` is `None`, `val` and `idx` value and location of global minimum.
@@ -478,14 +478,14 @@ def imax(a, dim=None):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: None
          Dimension along which the maximum value is required.
 
     Returns
     -------
-    (val, idx): tuple of af.Array or scalars
+    (val, idx): tuple of fly.Array or scalars
                 `val` contains the maximum value of `a` along `dim`.
                 `idx` contains the location of where `val` occurs in `a` along `dim`.
                 If `dim` is `None`, `val` and `idx` value and location of global maximum.
@@ -512,14 +512,14 @@ def accum(a, dim=0):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: 0
          Dimension along which the cumulative sum is required.
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
          array of same size as `a` containing the cumulative sum along `dim`.
     """
     return _parallel_dim(a, dim, backend.get().fly_accum)
@@ -530,25 +530,25 @@ def scan(a, dim=0, op=BINARYOP.ADD, inclusive_scan=True):
 
     Parameters
     ----------
-    a   : af.Array
+    a   : fly.Array
         Multi dimensional flare array.
 
     dim : optional: int. default: 0
         Dimension along which the scan is performed.
 
-    op  : optional: af.BINARYOP. default: af.BINARYOP.ADD.
+    op  : optional: fly.BINARYOP. default: fly.BINARYOP.ADD.
         Binary option the scan algorithm uses. Can be one of:
-        - af.BINARYOP.ADD
-        - af.BINARYOP.MUL
-        - af.BINARYOP.MIN
-        - af.BINARYOP.MAX
+        - fly.BINARYOP.ADD
+        - fly.BINARYOP.MUL
+        - fly.BINARYOP.MIN
+        - fly.BINARYOP.MAX
 
     inclusive_scan: optional: bool. default: True
         Specifies if the scan is inclusive
 
     Returns
     ---------
-    out : af.Array
+    out : fly.Array
         - will contain scan of input.
     """
     out = Array()
@@ -561,28 +561,28 @@ def scan_by_key(key, a, dim=0, op=BINARYOP.ADD, inclusive_scan=True):
 
     Parameters
     ----------
-    key : af.Array
+    key : fly.Array
         key array.
 
-    a   : af.Array
+    a   : fly.Array
         Multi dimensional flare array.
 
     dim : optional: int. default: 0
         Dimension along which the scan is performed.
 
-    op  : optional: af.BINARYOP. default: af.BINARYOP.ADD.
+    op  : optional: fly.BINARYOP. default: fly.BINARYOP.ADD.
         Binary option the scan algorithm uses. Can be one of:
-        - af.BINARYOP.ADD
-        - af.BINARYOP.MUL
-        - af.BINARYOP.MIN
-        - af.BINARYOP.MAX
+        - fly.BINARYOP.ADD
+        - fly.BINARYOP.MUL
+        - fly.BINARYOP.MIN
+        - fly.BINARYOP.MAX
 
     inclusive_scan: optional: bool. default: True
         Specifies if the scan is inclusive
 
     Returns
     ---------
-    out : af.Array
+    out : fly.Array
         - will contain scan of input.
     """
     out = Array()
@@ -595,12 +595,12 @@ def where(a):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
 
     Returns
     -------
-    idx: af.Array
+    idx: fly.Array
          Linear indices for non zero elements.
     """
     out = Array()
@@ -613,14 +613,14 @@ def diff1(a, dim=0):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: 0
          Dimension along which the differences are required.
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
          Array whose length along `dim` is 1 less than that of `a`.
     """
     return _parallel_dim(a, dim, backend.get().fly_diff1)
@@ -631,14 +631,14 @@ def diff2(a, dim=0):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: 0
          Dimension along which the differences are required.
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
          Array whose length along `dim` is 2 less than that of `a`.
     """
     return _parallel_dim(a, dim, backend.get().fly_diff2)
@@ -649,7 +649,7 @@ def sort(a, dim=0, is_ascending=True):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: 0
          Dimension along which sort is to be performed.
@@ -658,7 +658,7 @@ def sort(a, dim=0, is_ascending=True):
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
          array containing the sorted values
 
     Note
@@ -675,7 +675,7 @@ def sort_index(a, dim=0, is_ascending=True):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          Multi dimensional flare array.
     dim: optional: int. default: 0
          Dimension along which sort is to be performed.
@@ -684,9 +684,9 @@ def sort_index(a, dim=0, is_ascending=True):
 
     Returns
     -------
-    (val, idx): tuple of af.Array
-         `val` is an af.Array containing the sorted values.
-         `idx` is an af.Array containing the original indices of `val` in `a`.
+    (val, idx): tuple of fly.Array
+         `val` is an fly.Array containing the sorted values.
+         `idx` is an fly.Array containing the original indices of `val` in `a`.
 
     Note
     -------
@@ -704,9 +704,9 @@ def sort_by_key(ik, iv, dim=0, is_ascending=True):
 
     Parameters
     ----------
-    ik  : af.Array
+    ik  : fly.Array
          An Array containing the keys
-    iv  : af.Array
+    iv  : fly.Array
          An Array containing the values
     dim: optional: int. default: 0
          Dimension along which sort is to be performed.
@@ -715,7 +715,7 @@ def sort_by_key(ik, iv, dim=0, is_ascending=True):
 
     Returns
     -------
-    (ok, ov): tuple of af.Array
+    (ok, ov): tuple of fly.Array
          `ok` contains the values from `ik` in sorted order
          `ov` contains the values from `iv` after sorting them based on `ik`
 
@@ -735,14 +735,14 @@ def set_unique(a, is_sorted=False):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          A 1D flare array.
     is_sorted: optional: bool. default: False
          Specifies if the input is pre-sorted.
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
          an array containing the unique values from `a`
     """
     out = Array()
@@ -755,16 +755,16 @@ def set_union(a, b, is_unique=False):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          A 1D flare array.
-    b  : af.Array
+    b  : fly.Array
          A 1D flare array.
     is_unique: optional: bool. default: False
          Specifies if the both inputs contain unique elements.
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
          an array values after performing the union of `a` and `b`.
     """
     out = Array()
@@ -777,16 +777,16 @@ def set_intersect(a, b, is_unique=False):
 
     Parameters
     ----------
-    a  : af.Array
+    a  : fly.Array
          A 1D flare array.
-    b  : af.Array
+    b  : fly.Array
          A 1D flare array.
     is_unique: optional: bool. default: False
          Specifies if the both inputs contain unique elements.
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
          an array values after performing the intersect of `a` and `b`.
     """
     out = Array()

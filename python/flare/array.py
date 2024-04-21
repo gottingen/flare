@@ -309,7 +309,7 @@ def transpose(a, conj=False):
 
     Parameters
     -----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     conj : optional: bool. default: False.
@@ -317,7 +317,7 @@ def transpose(a, conj=False):
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
           Containing the tranpose of `a` for all batches.
 
     """
@@ -331,7 +331,7 @@ def transpose_inplace(a, conj=False):
 
     Parameters
     -----------
-    a : af.Array
+    a : fly.Array
         - Multi dimensional flare array.
         - Contains transposed values on exit.
 
@@ -398,31 +398,31 @@ class Array(BaseArray):
     Examples
     --------
 
-    Creating an af.Array() from array.array()
+    Creating an fly.Array() from array.array()
 
     >>> import flare as fly
     >>> import array
     >>> a = array.array('f', (1, 2, 3, 4))
-    >>> b = af.Array(a, (2,2))
-    >>> af.display(b)
+    >>> b = fly.Array(a, (2,2))
+    >>> fly.display(b)
     [2 2 1 1]
         1.0000     3.0000
         2.0000     4.0000
 
-    Creating an af.Array() from a list
+    Creating an fly.Array() from a list
 
     >>> import flare as fly
     >>> import array
     >>> a = [1, 2, 3, 4]
-    >>> b = af.Array(a)
-    >>> af.display(b)
+    >>> b = fly.Array(a)
+    >>> fly.display(b)
     [4 1 1 1]
         1.0000
         2.0000
         3.0000
         4.0000
 
-    Creating an af.Array() from numpy.array()
+    Creating an fly.Array() from numpy.array()
 
     >>> import numpy as np
     >>> import flare as fly
@@ -430,8 +430,8 @@ class Array(BaseArray):
     >>> a
     array([[ 0.33042524,  0.36135449],
            [ 0.86748649,  0.42199135]])
-    >>> b = af.Array(a.ctypes.data, a.shape, a.dtype.char)
-    >>> af.display(b)
+    >>> b = fly.Array(a.ctypes.data, a.shape, a.dtype.char)
+    >>> fly.display(b)
     [2 2 1 1]
         0.3304     0.8675
         0.3614     0.4220
@@ -543,7 +543,7 @@ class Array(BaseArray):
 
         Returns
         -------
-        out: af.Array()
+        out: fly.Array()
              An identical copy of self.
         """
         out = Array()
@@ -570,7 +570,7 @@ class Array(BaseArray):
         Note
         ----
         - This can be used to integrate with custom C code and / or PyCUDA.
-        - Implies `af.device.lock_array()`. The device pointer of `a` is not freed by memory manager until `unlock_device_ptr()` is called.
+        - Implies `fly.device.lock_array()`. The device pointer of `a` is not freed by memory manager until `unlock_device_ptr()` is called.
         - No other arrays will share the same device pointer.
         - A copy of the memory is done if multiple arrays share the same memory or the array is not the owner of the memory.
         - In case of a copy the return value points to the newly allocated memory which is now exclusively owned by the array.
@@ -1330,7 +1330,7 @@ class Array(BaseArray):
 
         Note
         ----
-        You can also use af.display(a, pres) to display the contents of the array with better precision.
+        You can also use fly.display(a, pres) to display the contents of the array with better precision.
         """
 
         if not _in_display_dims_limit(self.dims()):
@@ -1344,7 +1344,7 @@ class Array(BaseArray):
 
         Note
         ----
-        You can use af.display(a, pres) to display the contents of the array.
+        You can use fly.display(a, pres) to display the contents of the array.
         """
 
         return self._get_metadata_str()
@@ -1379,7 +1379,7 @@ class Array(BaseArray):
         Returns
         ----------
         If output is None: Constructs a numpy.array from flare.Array
-        If output is not None: copies content of af.array into numpy array.
+        If output is not None: copies content of fly.array into numpy array.
 
         Note
         ------
@@ -1414,7 +1414,7 @@ def display(a, precision=4):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array
     precision: int. optional.
         Specifies the number of precision bits to display
@@ -1442,7 +1442,7 @@ def save_array(key, a, filename, append=False):
     key     : str
             A name / key associated with the array
 
-    a       : af.Array
+    a       : fly.Array
             The array to be stored to disk
 
     filename : str

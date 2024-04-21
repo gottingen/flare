@@ -213,11 +213,11 @@ def eval(*args):
     Examples
     --------
 
-    >>> a = af.constant(1, 3, 3)
-    >>> b = af.constant(2, 3, 3)
+    >>> a = fly.constant(1, 3, 3)
+    >>> b = fly.constant(2, 3, 3)
     >>> c = a + b
     >>> d = a - b
-    >>> af.eval(c, d) # A single kernel is launched here
+    >>> fly.eval(c, d) # A single kernel is launched here
     >>> c
     flare.Array()
     Type: float
@@ -311,16 +311,16 @@ def print_mem_info(title = "Memory Info", device_id = None):
     Examples
     --------
 
-    >>> a = af.randu(5,5)
-    >>> af.print_mem_info()
+    >>> a = fly.randu(5,5)
+    >>> fly.print_mem_info()
     Memory Info
     ---------------------------------------------------------
     |     POINTER      |    SIZE    |  AF LOCK  | USER LOCK |
     ---------------------------------------------------------
     |     0x706400000  |       1 KB |       Yes |        No |
     ---------------------------------------------------------
-    >>> b = af.randu(5,5)
-    >>> af.print_mem_info()
+    >>> b = fly.randu(5,5)
+    >>> fly.print_mem_info()
     Memory Info
     ---------------------------------------------------------
     |     POINTER      |    SIZE    |  AF LOCK  | USER LOCK |
@@ -328,8 +328,8 @@ def print_mem_info(title = "Memory Info", device_id = None):
     |     0x706400400  |       1 KB |       Yes |        No |
     |     0x706400000  |       1 KB |       Yes |        No |
     ---------------------------------------------------------
-    >>> a = af.randu(1000,1000)
-    >>> af.print_mem_info()
+    >>> a = fly.randu(1000,1000)
+    >>> fly.print_mem_info()
     Memory Info
     ---------------------------------------------------------
     |     POINTER      |    SIZE    |  AF LOCK  | USER LOCK |
@@ -354,7 +354,7 @@ def get_device_ptr(a):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
        - A multi dimensional flare array.
 
     Returns
@@ -385,7 +385,7 @@ def lock_array(a):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
        - A multi dimensional flare array.
 
     Note
@@ -400,7 +400,7 @@ def is_locked_array(a):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
        - A multi dimensional flare array.
 
     Returns
@@ -425,7 +425,7 @@ def unlock_array(a):
 
     Parameters
     ----------
-    a: af.Array
+    a: fly.Array
        - A multi dimensional flare array.
 
     """
