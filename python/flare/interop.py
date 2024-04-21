@@ -135,7 +135,7 @@ else:
 
         Note
         ----------
-        The input array is copied to af.Array
+        The input array is copied to fly.Array
         """
 
         in_ptr = pycu_arr.ptr
@@ -179,7 +179,7 @@ else:
 
         Note
         ----------
-        The input array is copied to af.Array
+        The input array is copied to fly.Array
         """
 
         in_ptr = nb_arr.device_ctypes_pointer.value
@@ -198,7 +198,7 @@ else:
 
 def to_array(in_array, copy = True):
     """
-    Helper function to convert input from a different module to af.Array
+    Helper function to convert input from a different module to fly.Array
 
     Parameters
     -------------
@@ -216,7 +216,7 @@ def to_array(in_array, copy = True):
 
     Returns
     --------------
-    af.Array of same dimensions as input after copying the data from the input
+    fly.Array of same dimensions as input after copying the data from the input
 
     """
     if FLY_NUMPY_FOUND and isinstance(in_array, NumpyArray):

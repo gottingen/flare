@@ -106,7 +106,7 @@ def randu(d0, d1=None, d2=None, d3=None, dtype=Dtype.f32, engine=None):
     d3 : optional: int. default: None.
          Length of fourth dimension.
 
-    dtype : optional: af.Dtype. default: af.Dtype.f32.
+    dtype : optional: fly.Dtype. default: fly.Dtype.f32.
            Data type of the array.
 
     engine : optional: Random_Engine. default: None.
@@ -115,7 +115,7 @@ def randu(d0, d1=None, d2=None, d3=None, dtype=Dtype.f32, engine=None):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Multi dimensional array whose elements are sampled uniformly between [0, 1].
           - If d1 is None, `out` is 1D of size (d0,).
           - If d1 is not None and d2 is None, `out` is 2D of size (d0, d1).
@@ -150,7 +150,7 @@ def randn(d0, d1=None, d2=None, d3=None, dtype=Dtype.f32, engine=None):
     d3 : optional: int. default: None.
          Length of fourth dimension.
 
-    dtype : optional: af.Dtype. default: af.Dtype.f32.
+    dtype : optional: fly.Dtype. default: fly.Dtype.f32.
            Data type of the array.
 
     engine : optional: Random_Engine. default: None.
@@ -159,7 +159,7 @@ def randn(d0, d1=None, d2=None, d3=None, dtype=Dtype.f32, engine=None):
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Multi dimensional array whose elements are sampled from a normal distribution with mean 0 and sigma of 1.
           - If d1 is None, `out` is 1D of size (d0,).
           - If d1 is not None and d2 is None, `out` is 2D of size (d0, d1).

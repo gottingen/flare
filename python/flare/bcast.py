@@ -43,25 +43,25 @@ def broadcast(func, *args):
     Using broadcast as an annotation
 
     >>> import flare as fly
-    >>> @af.broadcast
+    >>> @fly.broadcast
     ... def add(a, b):
     ...     return a + b
     ...
-    >>> a = af.randu(2,3)
-    >>> b = af.randu(2,1) # b is a different size
+    >>> a = fly.randu(2,3)
+    >>> b = fly.randu(2,1) # b is a different size
     >>> # Trying to add arrays of different sizes raises an exceptions
     >>> c = add(a, b) # This call does not raise an exception because of the annotation
-    >>> af.display(a)
+    >>> fly.display(a)
     [2 3 1 1]
         0.4107     0.9518     0.4198
         0.8224     0.1794     0.0081
 
-    >>> af.display(b)
+    >>> fly.display(b)
     [2 1 1 1]
         0.7269
         0.7104
 
-    >>> af.display(c)
+    >>> fly.display(c)
     [2 3 1 1]
         1.1377     1.6787     1.1467
         1.5328     0.8898     0.7185
@@ -70,21 +70,21 @@ def broadcast(func, *args):
 
     >>> import flare as fly
     >>> add = lambda a,b: a + b
-    >>> a = af.randu(2,3)
-    >>> b = af.randu(2,1) # b is a different size
+    >>> a = fly.randu(2,3)
+    >>> b = fly.randu(2,1) # b is a different size
     >>> # Trying to add arrays of different sizes raises an exceptions
-    >>> c = af.broadcast(add, a, b) # This call does not raise an exception
-    >>> af.display(a)
+    >>> c = fly.broadcast(add, a, b) # This call does not raise an exception
+    >>> fly.display(a)
     [2 3 1 1]
         0.4107     0.9518     0.4198
         0.8224     0.1794     0.0081
 
-    >>> af.display(b)
+    >>> fly.display(b)
     [2 1 1 1]
         0.7269
         0.7104
 
-    >>> af.display(c)
+    >>> fly.display(c)
     [2 3 1 1]
         1.1377     1.6787     1.1467
         1.5328     0.8898     0.7185

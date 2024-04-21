@@ -21,6 +21,13 @@ project(flare VERSION 1.0.3 LANGUAGES C CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/find")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/carbin_cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/carbin_cmake/arch")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/carbin_cmake/copts")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/carbin_cmake/modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/carbin_cmake/package")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/carbin_cmake/recipes")
 
 include(fly_configure_deps_vars)
 include(fly_build_configurations)
@@ -409,6 +416,12 @@ install(DIRECTORY "${flare_SOURCE_DIR}/python"
         DESTINATION share/flare
         COMPONENT python)
 
+install(FILES "${flare_SOURCE_DIR}/tools/flare_install_py"
+        DESTINATION bin
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+        GROUP_EXECUTE GROUP_READ GROUP_EXECUTE
+        WORLD_EXECUTE WORLD_READ WORLD_EXECUTE
+        COMPONENT python)
 
 foreach (backend CPU CUDA Unified)
     string(TOUPPER ${backend} upper_backend)
@@ -525,5 +538,5 @@ endif ()
 conditional_directory(BUILD_TESTING test)
 
 conditional_directory(FLY_BUILD_EXAMPLES examples)
-
-include(CPackConfig)
+include(flare_package_config)
+include(carbin_cpack)

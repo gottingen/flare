@@ -27,12 +27,12 @@ def lu(A):
 
     Parameters
     ----------
-    A: af.Array
+    A: fly.Array
        A 2 dimensional flare array.
 
     Returns
     -------
-    (L,U,P): tuple of af.Arrays
+    (L,U,P): tuple of fly.Arrays
            - L - Lower triangular matrix.
            - U - Upper triangular matrix.
            - P - Permutation array.
@@ -42,7 +42,7 @@ def lu(A):
 
     The original matrix `A` can be reconstructed using the outputs in the following manner.
 
-    >>> A[P, :] = af.matmul(L, U)
+    >>> A[P, :] = fly.matmul(L, U)
 
     """
     L = Array()
@@ -57,20 +57,20 @@ def lu_inplace(A, pivot="lapack"):
 
     Parameters
     ----------
-    A: af.Array
+    A: fly.Array
        - a 2 dimensional flare array on entry.
        - Contains L in the lower triangle on exit.
        - Contains U in the upper triangle on exit.
 
     Returns
     -------
-    P: af.Array
+    P: fly.Array
        - Permutation array.
 
     Note
     ----
 
-    This function is primarily used with `af.solve_lu` to reduce computations.
+    This function is primarily used with `fly.solve_lu` to reduce computations.
 
     """
     P = Array()
@@ -84,12 +84,12 @@ def qr(A):
 
     Parameters
     ----------
-    A: af.Array
+    A: fly.Array
        A 2 dimensional flare array.
 
     Returns
     -------
-    (Q,R,T): tuple of af.Arrays
+    (Q,R,T): tuple of fly.Arrays
            - Q - Orthogonal matrix.
            - R - Upper triangular matrix.
            - T - Vector containing additional information to solve a least squares problem.
@@ -99,8 +99,8 @@ def qr(A):
 
     The outputs of this funciton have the following properties.
 
-    >>> A = af.matmul(Q, R)
-    >>> I = af.matmulNT(Q, Q) # Identity matrix
+    >>> A = fly.matmul(Q, R)
+    >>> I = fly.matmulNT(Q, Q) # Identity matrix
     """
     Q = Array()
     R = Array()
@@ -114,13 +114,13 @@ def qr_inplace(A):
 
     Parameters
     ----------
-    A: af.Array
+    A: fly.Array
        - a 2 dimensional flare array on entry.
        - Packed Q and R matrices on exit.
 
     Returns
     -------
-    T: af.Array
+    T: fly.Array
        - Vector containing additional information to solve a least squares problem.
 
     Note
@@ -138,7 +138,7 @@ def cholesky(A, is_upper=True):
 
     Parameters
     ----------
-    A: af.Array
+    A: fly.Array
        A 2 dimensional, symmetric, positive definite matrix.
 
     is_upper: optional: bool. default: True
@@ -146,7 +146,7 @@ def cholesky(A, is_upper=True):
 
     Returns
     -------
-    (R,info): tuple of af.Array, int.
+    (R,info): tuple of fly.Array, int.
            - R - triangular matrix.
            - info - 0 if decomposition sucessful.
 
@@ -155,7 +155,7 @@ def cholesky(A, is_upper=True):
 
     The original matrix `A` can be reconstructed using the outputs in the following manner.
 
-    >>> A = af.matmulNT(R, R) #if R is upper triangular
+    >>> A = fly.matmulNT(R, R) #if R is upper triangular
 
     """
     R = Array()
@@ -169,7 +169,7 @@ def cholesky_inplace(A, is_upper=True):
 
     Parameters
     ----------
-    A: af.Array
+    A: fly.Array
        - a 2 dimensional, symmetric, positive definite matrix.
        - Trinangular matrix on exit.
 
@@ -193,19 +193,19 @@ def solve(A, B, options=MATPROP.NONE):
     Parameters
     ----------
 
-    A: af.Array
+    A: fly.Array
        A 2 dimensional flare array representing the coefficients of the system.
 
-    B: af.Array
+    B: fly.Array
        A 1 or 2 dimensional flare array representing the constants of the system.
 
-    options: optional: af.MATPROP. default: af.MATPROP.NONE.
+    options: optional: fly.MATPROP. default: fly.MATPROP.NONE.
        - Additional options to speed up computations.
-       - Currently needs to be one of `af.MATPROP.NONE`, `af.MATPROP.LOWER`, `af.MATPROP.UPPER`.
+       - Currently needs to be one of `fly.MATPROP.NONE`, `fly.MATPROP.LOWER`, `fly.MATPROP.UPPER`.
 
     Returns
     -------
-    X: af.Array
+    X: fly.Array
        A 1 or 2 dimensional flare array representing the unknowns in the system.
 
     """
@@ -220,20 +220,20 @@ def solve_lu(A, P, B, options=MATPROP.NONE):
     Parameters
     ----------
 
-    A: af.Array
+    A: fly.Array
        - A 2 dimensional flare array representing the coefficients of the system.
        - This matrix should be decomposed previously using `lu_inplace(A)`.
 
-    P: af.Array
+    P: fly.Array
        - Permutation array.
        - This array is the output of an earlier call to `lu_inplace(A)`
 
-    B: af.Array
+    B: fly.Array
        A 1 or 2 dimensional flare array representing the constants of the system.
 
     Returns
     -------
-    X: af.Array
+    X: fly.Array
        A 1 or 2 dimensional flare array representing the unknowns in the system.
 
     """
@@ -248,17 +248,17 @@ def inverse(A, options=MATPROP.NONE):
     Parameters
     ----------
 
-    A: af.Array
+    A: fly.Array
        - A 2 dimensional flare array
 
-    options: optional: af.MATPROP. default: af.MATPROP.NONE.
+    options: optional: fly.MATPROP. default: fly.MATPROP.NONE.
        - Additional options to speed up computations.
-       - Currently needs to be one of `af.MATPROP.NONE`.
+       - Currently needs to be one of `fly.MATPROP.NONE`.
 
     Returns
     -------
 
-    AI: af.Array
+    AI: fly.Array
        - A 2 dimensional array that is the inverse of `A`
 
     Note
@@ -278,20 +278,20 @@ def pinverse(A, tol=1E-6, options=MATPROP.NONE):
     Parameters
     ----------
 
-    A: af.Array
+    A: fly.Array
        - A 2 dimensional flare input matrix array
 
     tol: optional: scalar. default: 1E-6.
        - Tolerance for calculating rank
 
-    options: optional: af.MATPROP. default: af.MATPROP.NONE.
-       - Currently needs to be `af.MATPROP.NONE`.
+    options: optional: fly.MATPROP. default: fly.MATPROP.NONE.
+       - Currently needs to be `fly.MATPROP.NONE`.
        - Additional options may speed up computation in the future
 
     Returns
     -------
 
-    AI: af.Array
+    AI: fly.Array
        - A 2 dimensional array that is the pseudo-inverse of `A`
 
     Note
@@ -311,7 +311,7 @@ def rank(A, tol=1E-5):
     Parameters
     ----------
 
-    A: af.Array
+    A: fly.Array
        - A 2 dimensional flare array
 
     tol: optional: scalar. default: 1E-5.
@@ -334,7 +334,7 @@ def det(A):
     Parameters
     ----------
 
-    A: af.Array
+    A: fly.Array
        - A 2 dimensional flare array
 
     Returns
@@ -357,17 +357,17 @@ def norm(A, norm_type=NORM.EUCLID, p=1.0, q=1.0):
     Parameters
     ----------
 
-    A: af.Array
+    A: fly.Array
        - A 1 or 2 dimensional flare array
 
-    norm_type: optional: af.NORM. default: af.NORM.EUCLID.
+    norm_type: optional: fly.NORM. default: fly.NORM.EUCLID.
        - Type of norm to be calculated.
 
     p: scalar. default 1.0.
-       - Used only if `norm_type` is one of `af.NORM.VECTOR_P`, `af.NORM_MATRIX_L_PQ`
+       - Used only if `norm_type` is one of `fly.NORM.VECTOR_P`, `fly.NORM_MATRIX_L_PQ`
 
     q: scalar. default 1.0.
-       - Used only if `norm_type` is `af.NORM_MATRIX_L_PQ`
+       - Used only if `norm_type` is `fly.NORM_MATRIX_L_PQ`
 
     Returns
     -------
@@ -387,12 +387,12 @@ def svd(A):
 
     Parameters
     ----------
-    A: af.Array
+    A: fly.Array
        A 2 dimensional flare array.
 
     Returns
     -------
-    (U,S,Vt): tuple of af.Arrays
+    (U,S,Vt): tuple of fly.Arrays
            - U - A unitary matrix
            - S - An array containing the elements of diagonal matrix
            - Vt - A unitary matrix
@@ -405,8 +405,8 @@ def svd(A):
     - If the original matrix `A` need not be preserved, use `svd_inplace` instead.
 
     - The original matrix `A` can be reconstructed using the outputs in the following manner.
-    >>> Smat = af.diag(S, 0, False)
-    >>> A_recon = af.matmul(af.matmul(U, Smat), Vt)
+    >>> Smat = fly.diag(S, 0, False)
+    >>> A_recon = fly.matmul(fly.matmul(U, Smat), Vt)
 
     """
     U = Array()
@@ -421,12 +421,12 @@ def svd_inplace(A):
 
     Parameters
     ----------
-    A: af.Array
+    A: fly.Array
        A 2 dimensional flare array.
 
     Returns
     -------
-    (U,S,Vt): tuple of af.Arrays
+    (U,S,Vt): tuple of fly.Arrays
            - U - A unitary matrix
            - S - An array containing the elements of diagonal matrix
            - Vt - A unitary matrix
@@ -439,8 +439,8 @@ def svd_inplace(A):
     - If the original matrix `A` needs to be preserved, use `svd` instead.
 
     - The original matrix `A` can be reconstructed using the outputs in the following manner.
-    >>> Smat = af.diag(S, 0, False)
-    >>> A_recon = af.matmul(af.matmul(U, Smat), Vt)
+    >>> Smat = fly.diag(S, 0, False)
+    >>> A_recon = fly.matmul(fly.matmul(U, Smat), Vt)
 
     """
     U = Array()

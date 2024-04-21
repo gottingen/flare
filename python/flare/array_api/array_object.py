@@ -323,7 +323,7 @@ class Array:
     # Array Operators
 
     def __matmul__(self, other: Array, /) -> Array:
-        # TODO get from blas - make vanilla version and not copy af.matmul as is
+        # TODO get from blas - make vanilla version and not copy fly.matmul as is
         return NotImplemented
 
     # Bitwise Operators
@@ -771,7 +771,7 @@ class Array:
         """
         # TODO
         # API Specification - key: Union[int, slice, ellipsis, Tuple[Union[int, slice, ellipsis], ...], array].
-        # consider using af.span to replace ellipsis during refactoring
+        # consider using fly.span to replace ellipsis during refactoring
         out = Array()
         ndims = self.ndim
 
@@ -1080,7 +1080,7 @@ def _implicit_dtype(value: Union[int, float], array_dtype: Dtype) -> Dtype:
     elif isinstance(value, complex):
         value_dtype = fly_complex128
     else:
-        raise TypeError(f"{type(value)} is not supported and can not be converted to af.Dtype.")
+        raise TypeError(f"{type(value)} is not supported and can not be converted to fly.Dtype.")
 
     if not (array_dtype == fly_float32 or array_dtype == fly_complex64):
         return value_dtype

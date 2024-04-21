@@ -62,9 +62,9 @@ def cast(a, dtype):
 
     Parameters
     ----------
-    a    : af.Array
+    a    : fly.Array
            Multi dimensional flare array.
-    dtype: af.Dtype
+    dtype: fly.Dtype
            Must be one of the following:
                - Dtype.f32 for float
                - Dtype.f64 for double
@@ -78,7 +78,7 @@ def cast(a, dtype):
                - Dtype.c64 for 64 bit complex number
     Returns
     --------
-    out  : af.Array
+    out  : fly.Array
            array containing the values from `a` after converting to `dtype`.
     """
     out=Array()
@@ -91,21 +91,21 @@ def minof(lhs, rhs):
 
     Parameters
     ----------
-    lhs : af.Array or scalar
+    lhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
-    rhs : af.Array or scalar
+    rhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the minimum value at each location of the inputs.
 
     Note
     -------
-    - Atleast one of `lhs` and `rhs` needs to be af.Array.
-    - If `lhs` and `rhs` are both af.Array, they must be of same size.
+    - Atleast one of `lhs` and `rhs` needs to be fly.Array.
+    - If `lhs` and `rhs` are both fly.Array, they must be of same size.
     """
     return _arith_binary_func(lhs, rhs, backend.get().fly_minof)
 
@@ -115,21 +115,21 @@ def maxof(lhs, rhs):
 
     Parameters
     ----------
-    lhs : af.Array or scalar
+    lhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
-    rhs : af.Array or scalar
+    rhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the maximum value at each location of the inputs.
 
     Note
     -------
-    - Atleast one of `lhs` and `rhs` needs to be af.Array.
-    - If `lhs` and `rhs` are both af.Array, they must be of same size.
+    - Atleast one of `lhs` and `rhs` needs to be fly.Array.
+    - If `lhs` and `rhs` are both fly.Array, they must be of same size.
     """
     return _arith_binary_func(lhs, rhs, backend.get().fly_maxof)
 
@@ -140,13 +140,13 @@ def clamp(val, low, high):
 
     Parameters
     ----------
-    val  : af.Array
+    val  : fly.Array
           Multi dimensional flare array to be clamped.
 
-    low  : af.Array or scalar
+    low  : fly.Array or scalar
           Multi dimensional flare array or a scalar number denoting the lower value(s).
 
-    high : af.Array or scalar
+    high : fly.Array or scalar
           Multi dimensional flare array or a scalar number denoting the higher value(s).
     """
     out = Array()
@@ -176,18 +176,18 @@ def mod(lhs, rhs):
     Find the modulus.
     Parameters
     ----------
-    lhs : af.Array or scalar
+    lhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
-    rhs : af.Array or scalar
+    rhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          Contains the moduli after dividing each value of lhs` with those in `rhs`.
     Note
     -------
-    - Atleast one of `lhs` and `rhs` needs to be af.Array.
-    - If `lhs` and `rhs` are both af.Array, they must be of same size.
+    - Atleast one of `lhs` and `rhs` needs to be fly.Array.
+    - If `lhs` and `rhs` are both fly.Array, they must be of same size.
     """
     return _arith_binary_func(lhs, rhs, backend.get().fly_mod)
 
@@ -197,21 +197,21 @@ def rem(lhs, rhs):
 
     Parameters
     ----------
-    lhs : af.Array or scalar
+    lhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
-    rhs : af.Array or scalar
+    rhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          Contains the remainders after dividing each value of lhs` with those in `rhs`.
 
     Note
     -------
-    - Atleast one of `lhs` and `rhs` needs to be af.Array.
-    - If `lhs` and `rhs` are both af.Array, they must be of same size.
+    - Atleast one of `lhs` and `rhs` needs to be fly.Array.
+    - If `lhs` and `rhs` are both fly.Array, they must be of same size.
     """
     return _arith_binary_func(lhs, rhs, backend.get().fly_rem)
 
@@ -221,12 +221,12 @@ def abs(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          Contains the absolute values of the inputs.
     """
     return _arith_unary_func(a, backend.get().fly_abs)
@@ -237,12 +237,12 @@ def arg(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          Contains the theta values.
     """
     return _arith_unary_func(a, backend.get().fly_arg)
@@ -253,12 +253,12 @@ def sign(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing 1 for negative values, 0 otherwise.
     """
     return _arith_unary_func(a, backend.get().fly_sign)
@@ -269,12 +269,12 @@ def round(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the values rounded to nearest integer.
     """
     return _arith_unary_func(a, backend.get().fly_round)
@@ -285,12 +285,12 @@ def trunc(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the truncated values.
     """
     return _arith_unary_func(a, backend.get().fly_trunc)
@@ -301,12 +301,12 @@ def floor(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the floored values.
     """
     return _arith_unary_func(a, backend.get().fly_floor)
@@ -317,12 +317,12 @@ def ceil(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the ceiled values.
     """
     return _arith_unary_func(a, backend.get().fly_ceil)
@@ -333,21 +333,21 @@ def hypot(lhs, rhs):
 
     Parameters
     ----------
-    lhs : af.Array or scalar
+    lhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
-    rhs : af.Array or scalar
+    rhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          Contains the value of `sqrt(lhs**2, rhs**2)`.
 
     Note
     -------
-    - Atleast one of `lhs` and `rhs` needs to be af.Array.
-    - If `lhs` and `rhs` are both af.Array, they must be of same size.
+    - Atleast one of `lhs` and `rhs` needs to be fly.Array.
+    - If `lhs` and `rhs` are both fly.Array, they must be of same size.
     """
     return _arith_binary_func(lhs, rhs, backend.get().fly_hypot)
 
@@ -357,12 +357,12 @@ def sin(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the sine of each value from `a`.
 
     Note
@@ -377,12 +377,12 @@ def cos(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the cosine of each value from `a`.
 
     Note
@@ -397,12 +397,12 @@ def tan(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the tangent of each value from `a`.
 
     Note
@@ -417,12 +417,12 @@ def asin(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the arc sine of each value from `a`.
 
     Note
@@ -437,12 +437,12 @@ def acos(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the arc cosine of each value from `a`.
 
     Note
@@ -457,12 +457,12 @@ def atan(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the arc tangent of each value from `a`.
 
     Note
@@ -477,23 +477,23 @@ def atan2(lhs, rhs):
 
     Parameters
     ----------
-    lhs : af.Array or scalar
+    lhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
-    rhs : af.Array or scalar
+    rhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          Contains the value arc tan values where:
          - `lhs` contains the sine values.
          - `rhs` contains the cosine values.
 
     Note
     -------
-    - Atleast one of `lhs` and `rhs` needs to be af.Array.
-    - If `lhs` and `rhs` are both af.Array, they must be of same size.
+    - Atleast one of `lhs` and `rhs` needs to be fly.Array.
+    - If `lhs` and `rhs` are both fly.Array, they must be of same size.
     """
     return _arith_binary_func(lhs, rhs, backend.get().fly_atan2)
 
@@ -503,23 +503,23 @@ def cplx(lhs, rhs=None):
 
     Parameters
     ----------
-    lhs : af.Array or scalar
+    lhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
-    rhs : optional: af.Array or scalar. default: None.
+    rhs : optional: fly.Array or scalar. default: None.
           Multi dimensional flare array or a scalar number.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          Contains complex values whose
          - real values contain values from `lhs`
          - imaginary values contain values from `rhs` (0 if `rhs` is None)
 
     Note
     -------
-    - Atleast one of `lhs` and `rhs` needs to be af.Array.
-    - If `lhs` and `rhs` are both af.Array, they must be of same size.
+    - Atleast one of `lhs` and `rhs` needs to be fly.Array.
+    - If `lhs` and `rhs` are both fly.Array, they must be of same size.
     """
     if rhs is None:
         return _arith_unary_func(lhs, backend.get().fly_cplx)
@@ -532,12 +532,12 @@ def real(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the real values from `a`.
 
     """
@@ -549,12 +549,12 @@ def imag(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the imaginary values from `a`.
     """
     return _arith_unary_func(a, backend.get().fly_imag)
@@ -565,12 +565,12 @@ def conjg(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing copmplex conjugate values from `a`.
     """
     return _arith_unary_func(a, backend.get().fly_conjg)
@@ -581,12 +581,12 @@ def sinh(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the hyperbolic sine of each value from `a`.
 
     Note
@@ -601,12 +601,12 @@ def cosh(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the hyperbolic cosine of each value from `a`.
 
     Note
@@ -621,12 +621,12 @@ def tanh(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the hyperbolic tangent of each value from `a`.
 
     Note
@@ -641,12 +641,12 @@ def asinh(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the arc hyperbolic sine of each value from `a`.
 
     Note
@@ -661,12 +661,12 @@ def acosh(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the arc hyperbolic cosine of each value from `a`.
 
     Note
@@ -681,12 +681,12 @@ def atanh(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the arc hyperbolic tangent of each value from `a`.
 
     Note
@@ -701,21 +701,21 @@ def root(lhs, rhs):
 
     Parameters
     ----------
-    lhs : af.Array or scalar
+    lhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
-    rhs : af.Array or scalar
+    rhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the value of `lhs ** (1/rhs)`
 
     Note
     -------
-    - Atleast one of `lhs` and `rhs` needs to be af.Array.
-    - If `lhs` and `rhs` are both af.Array, they must be of same size.
+    - Atleast one of `lhs` and `rhs` needs to be fly.Array.
+    - If `lhs` and `rhs` are both fly.Array, they must be of same size.
     """
     return _arith_binary_func(lhs, rhs, backend.get().fly_root)
 
@@ -725,21 +725,21 @@ def pow(lhs, rhs):
 
     Parameters
     ----------
-    lhs : af.Array or scalar
+    lhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
-    rhs : af.Array or scalar
+    rhs : fly.Array or scalar
           Multi dimensional flare array or a scalar number.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the value of `lhs ** (rhs)`
 
     Note
     -------
-    - Atleast one of `lhs` and `rhs` needs to be af.Array.
-    - If `lhs` and `rhs` are both af.Array, they must be of same size.
+    - Atleast one of `lhs` and `rhs` needs to be fly.Array.
+    - If `lhs` and `rhs` are both fly.Array, they must be of same size.
     """
     return _arith_binary_func(lhs, rhs, backend.get().fly_pow)
 
@@ -749,12 +749,12 @@ def pow2(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array where each element is 2 raised to power of the corresponding value from `a`.
 
     Note
@@ -769,12 +769,12 @@ def sigmoid(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array where each element is outout of a sigmoid function for the corresponding value from `a`.
 
     Note
@@ -789,12 +789,12 @@ def exp(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the exponential of each value from `a`.
 
     Note
@@ -809,12 +809,12 @@ def expm1(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the exponential of each value from `a`.
 
     Note
@@ -830,12 +830,12 @@ def erf(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the error function of each value from `a`.
 
     Note
@@ -850,12 +850,12 @@ def erfc(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the complementary error function of each value from `a`.
 
     Note
@@ -870,12 +870,12 @@ def log(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the natural logarithm of each value from `a`.
 
     Note
@@ -890,12 +890,12 @@ def log1p(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the the values of `log(a) + 1`
 
     Note
@@ -911,12 +911,12 @@ def log10(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the logarithm base 10 of each value from `a`.
 
     Note
@@ -931,12 +931,12 @@ def log2(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the logarithm base 2 of each value from `a`.
 
     Note
@@ -951,12 +951,12 @@ def sqrt(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the square root of each value from `a`.
 
     Note
@@ -971,12 +971,12 @@ def rsqrt(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the inverse square root of each value from `a`.
 
     Note
@@ -991,12 +991,12 @@ def cbrt(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the cube root of each value from `a`.
 
     Note
@@ -1011,12 +1011,12 @@ def factorial(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the factorial of each value from `a`.
 
     Note
@@ -1031,12 +1031,12 @@ def tgamma(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the output of gamma function of each value from `a`.
 
     Note
@@ -1051,12 +1051,12 @@ def lgamma(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the output of logarithm of gamma function of each value from `a`.
 
     Note
@@ -1071,12 +1071,12 @@ def iszero(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the output after checking if each value of `a` is 0.
 
     Note
@@ -1091,12 +1091,12 @@ def isinf(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the output after checking if each value of `a` is inifnite.
 
     Note
@@ -1111,12 +1111,12 @@ def isnan(a):
 
     Parameters
     ----------
-    a : af.Array
+    a : fly.Array
         Multi dimensional flare array.
 
     Returns
     --------
-    out : af.Array
+    out : fly.Array
          array containing the output after checking if each value of `a` is NaN.
 
     Note

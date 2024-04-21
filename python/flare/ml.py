@@ -43,16 +43,16 @@ def convolve2GradientNN(incoming_gradient, original_signal, original_kernel, con
     Parameters
     -----------
 
-    incoming_gradient: af.Array
+    incoming_gradient: fly.Array
             - Gradients to be distributed in backwards pass
 
-    original_signal: af.Array
+    original_signal: fly.Array
             - A 2 dimensional signal or batch of 2 dimensional signals.
 
-    original_kernel: af.Array
+    original_kernel: fly.Array
             - A 2 dimensional kernel or batch of 2 dimensional kernels.
 
-    convolved_output: af.Array
+    convolved_output: fly.Array
             - output of forward pass of convolution
 
     stride: tuple of ints. default: (1, 1).
@@ -67,7 +67,7 @@ def convolve2GradientNN(incoming_gradient, original_signal, original_kernel, con
     Returns
     --------
 
-    output: af.Array
+    output: fly.Array
           - Gradient wrt/requested gradient type
 
     """

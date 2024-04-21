@@ -28,28 +28,28 @@ def matmul(lhs, rhs, lhs_opts=MATPROP.NONE, rhs_opts=MATPROP.NONE):
     Parameters
     ----------
 
-    lhs : af.Array
+    lhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
-    rhs : af.Array
+    rhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
-    lhs_opts: optional: af.MATPROP. default: af.MATPROP.NONE.
+    lhs_opts: optional: fly.MATPROP. default: fly.MATPROP.NONE.
               Can be one of
-               - af.MATPROP.NONE   - If no op should be done on `lhs`.
-               - af.MATPROP.TRANS  - If `lhs` has to be transposed before multiplying.
-               - af.MATPROP.CTRANS - If `lhs` has to be hermitian transposed before multiplying.
+               - fly.MATPROP.NONE   - If no op should be done on `lhs`.
+               - fly.MATPROP.TRANS  - If `lhs` has to be transposed before multiplying.
+               - fly.MATPROP.CTRANS - If `lhs` has to be hermitian transposed before multiplying.
 
-    rhs_opts: optional: af.MATPROP. default: af.MATPROP.NONE.
+    rhs_opts: optional: fly.MATPROP. default: fly.MATPROP.NONE.
               Can be one of
-               - af.MATPROP.NONE   - If no op should be done on `rhs`.
-               - af.MATPROP.TRANS  - If `rhs` has to be transposed before multiplying.
-               - af.MATPROP.CTRANS - If `rhs` has to be hermitian transposed before multiplying.
+               - fly.MATPROP.NONE   - If no op should be done on `rhs`.
+               - fly.MATPROP.TRANS  - If `rhs` has to be transposed before multiplying.
+               - fly.MATPROP.CTRANS - If `rhs` has to be hermitian transposed before multiplying.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Output of the matrix multiplication on `lhs` and `rhs`.
 
     Note
@@ -71,16 +71,16 @@ def matmulTN(lhs, rhs):
     Parameters
     ----------
 
-    lhs : af.Array
+    lhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
-    rhs : af.Array
+    rhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Output of the matrix multiplication on `transpose(lhs)` and `rhs`.
 
     Note
@@ -102,16 +102,16 @@ def matmulNT(lhs, rhs):
     Parameters
     ----------
 
-    lhs : af.Array
+    lhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
-    rhs : af.Array
+    rhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Output of the matrix multiplication on `lhs` and `transpose(rhs)`.
 
     Note
@@ -133,16 +133,16 @@ def matmulTT(lhs, rhs):
     Parameters
     ----------
 
-    lhs : af.Array
+    lhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
-    rhs : af.Array
+    rhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Output of the matrix multiplication on `transpose(lhs)` and `transpose(rhs)`.
 
     Note
@@ -164,20 +164,20 @@ def dot(lhs, rhs, lhs_opts=MATPROP.NONE, rhs_opts=MATPROP.NONE, return_scalar = 
     Parameters
     ----------
 
-    lhs : af.Array
+    lhs : fly.Array
           A 1 dimensional, real or complex flare array.
 
-    rhs : af.Array
+    rhs : fly.Array
           A 1 dimensional, real or complex flare array.
 
-    lhs_opts: optional: af.MATPROP. default: af.MATPROP.NONE.
+    lhs_opts: optional: fly.MATPROP. default: fly.MATPROP.NONE.
               Can be one of
-               - af.MATPROP.NONE   - If no op should be done on `lhs`.
+               - fly.MATPROP.NONE   - If no op should be done on `lhs`.
                - No other options are currently supported.
 
-    rhs_opts: optional: af.MATPROP. default: af.MATPROP.NONE.
+    rhs_opts: optional: fly.MATPROP. default: fly.MATPROP.NONE.
               Can be one of
-               - af.MATPROP.NONE   - If no op should be done on `rhs`.
+               - fly.MATPROP.NONE   - If no op should be done on `rhs`.
                - No other options are currently supported.
 
     return_scalar: optional: bool. default: False.
@@ -186,7 +186,7 @@ def dot(lhs, rhs, lhs_opts=MATPROP.NONE, rhs_opts=MATPROP.NONE, return_scalar = 
     Returns
     -------
 
-    out : af.Array or scalar
+    out : fly.Array or scalar
           Output of dot product of `lhs` and `rhs`.
 
     Note
@@ -228,32 +228,32 @@ def gemm(lhs, rhs, alpha=1.0, beta=0.0, lhs_opts=MATPROP.NONE, rhs_opts=MATPROP.
     Parameters
     ----------
 
-    lhs : af.Array
+    lhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
-    rhs : af.Array
+    rhs : fly.Array
           A 2 dimensional, real or complex flare array.
 
     alpha : scalar
 
     beta : scalar
 
-    lhs_opts: optional: af.MATPROP. default: af.MATPROP.NONE.
+    lhs_opts: optional: fly.MATPROP. default: fly.MATPROP.NONE.
               Can be one of
-               - af.MATPROP.NONE   - If no op should be done on `lhs`.
-               - af.MATPROP.TRANS  - If `lhs` has to be transposed before multiplying.
-               - af.MATPROP.CTRANS - If `lhs` has to be hermitian transposed before multiplying.
+               - fly.MATPROP.NONE   - If no op should be done on `lhs`.
+               - fly.MATPROP.TRANS  - If `lhs` has to be transposed before multiplying.
+               - fly.MATPROP.CTRANS - If `lhs` has to be hermitian transposed before multiplying.
 
-    rhs_opts: optional: af.MATPROP. default: af.MATPROP.NONE.
+    rhs_opts: optional: fly.MATPROP. default: fly.MATPROP.NONE.
               Can be one of
-               - af.MATPROP.NONE   - If no op should be done on `rhs`.
-               - af.MATPROP.TRANS  - If `rhs` has to be transposed before multiplying.
-               - af.MATPROP.CTRANS - If `rhs` has to be hermitian transposed before multiplying.
+               - fly.MATPROP.NONE   - If no op should be done on `rhs`.
+               - fly.MATPROP.TRANS  - If `rhs` has to be transposed before multiplying.
+               - fly.MATPROP.CTRANS - If `rhs` has to be hermitian transposed before multiplying.
 
     Returns
     -------
 
-    out : af.Array
+    out : fly.Array
           Output of the matrix multiplication on `lhs` and `rhs`.
 
     Note

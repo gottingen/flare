@@ -30,13 +30,13 @@ def gradient(image):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
     Returns
     ---------
-    (dx, dy) : Tuple of af.Array.
+    (dx, dy) : Tuple of fly.Array.
              - `dx` containing the horizontal gradients of `image`.
              - `dy` containing the vertical gradients of `image`.
 
@@ -60,7 +60,7 @@ def load_image(file_name, is_color=False):
 
     Returns
     -------
-    image - af.Array
+    image - fly.Array
             A 2 dimensional (1 channel) or 3 dimensional (3 channel) array containing the image.
 
     """
@@ -76,7 +76,7 @@ def save_image(image, file_name):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image.
 
     file_name: str
@@ -98,7 +98,7 @@ def load_image_native(file_name):
 
     Returns
     -------
-    image - af.Array
+    image - fly.Array
             A 2 dimensional (1 channel) or 3 dimensional (3 or 4 channel) array containing the image.
 
     """
@@ -114,7 +114,7 @@ def save_image_native(image, file_name):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 or 3 dimensional flare array representing an image.
 
     file_name: str
@@ -130,7 +130,7 @@ def resize(image, scale=None, odim0=None, odim1=None, method=INTERP.NEAREST):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -143,12 +143,12 @@ def resize(image, scale=None, odim0=None, odim1=None, method=INTERP.NEAREST):
     odim1 : optional: int. default: None.
           - Size of the second dimension of the output.
 
-    method : optional: af.INTERP. default: af.INTERP.NEAREST.
+    method : optional: fly.INTERP. default: fly.INTERP.NEAREST.
           - Interpolation method used for resizing.
 
     Returns
     ---------
-    out  : af.Array
+    out  : fly.Array
           - Output image after resizing.
 
     Note
@@ -179,11 +179,11 @@ def transform(image, trans_mat, odim0 = 0, odim1 = 0, method=INTERP.NEAREST, is_
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
-    trans_mat : af.Array
+    trans_mat : fly.Array
           - A 2 D floating point flare array of size [3, 2].
 
     odim0 : optional: int. default: 0.
@@ -192,7 +192,7 @@ def transform(image, trans_mat, odim0 = 0, odim1 = 0, method=INTERP.NEAREST, is_
     odim1 : optional: int. default: 0.
           - Size of the second dimension of the output.
 
-    method : optional: af.INTERP. default: af.INTERP.NEAREST.
+    method : optional: fly.INTERP. default: fly.INTERP.NEAREST.
           - Interpolation method used for transformation.
 
     is_inverse : optional: bool. default: True.
@@ -200,7 +200,7 @@ def transform(image, trans_mat, odim0 = 0, odim1 = 0, method=INTERP.NEAREST, is_
 
     Returns
     ---------
-    out  : af.Array
+    out  : fly.Array
           - Output image after transformation.
 
     Note
@@ -223,7 +223,7 @@ def rotate(image, theta, is_crop = True, method = INTERP.NEAREST):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -233,12 +233,12 @@ def rotate(image, theta, is_crop = True, method = INTERP.NEAREST):
     is_crop : optional: bool. default: True.
           - Specifies if the output should be cropped to the input size.
 
-    method : optional: af.INTERP. default: af.INTERP.NEAREST.
+    method : optional: fly.INTERP. default: fly.INTERP.NEAREST.
           - Interpolation method used for rotating.
 
     Returns
     ---------
-    out  : af.Array
+    out  : fly.Array
           - Output image after rotating.
     """
     output = Array()
@@ -252,7 +252,7 @@ def translate(image, trans0, trans1, odim0 = 0, odim1 = 0, method = INTERP.NEARE
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -268,12 +268,12 @@ def translate(image, trans0, trans1, odim0 = 0, odim1 = 0, method = INTERP.NEARE
     odim1 : optional: int. default: 0.
           - Size of the second dimension of the output.
 
-    method : optional: af.INTERP. default: af.INTERP.NEAREST.
+    method : optional: fly.INTERP. default: fly.INTERP.NEAREST.
           - Interpolation method used for translation.
 
     Returns
     ---------
-    out  : af.Array
+    out  : fly.Array
           - Output image after translation.
 
     Note
@@ -294,7 +294,7 @@ def scale(image, scale0, scale1, odim0 = 0, odim1 = 0, method = INTERP.NEAREST):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -310,12 +310,12 @@ def scale(image, scale0, scale1, odim0 = 0, odim1 = 0, method = INTERP.NEAREST):
     odim1 : optional: int. default: None.
           - Size of the second dimension of the output.
 
-    method : optional: af.INTERP. default: af.INTERP.NEAREST.
+    method : optional: fly.INTERP. default: fly.INTERP.NEAREST.
           - Interpolation method used for resizing.
 
     Returns
     ---------
-    out  : af.Array
+    out  : fly.Array
           - Output image after scaling.
 
     Note
@@ -336,7 +336,7 @@ def skew(image, skew0, skew1, odim0 = 0, odim1 = 0, method = INTERP.NEAREST, is_
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -352,7 +352,7 @@ def skew(image, skew0, skew1, odim0 = 0, odim1 = 0, method = INTERP.NEAREST, is_
     odim1 : optional: int. default: None.
           - Size of the second dimension of the output.
 
-    method : optional: af.INTERP. default: af.INTERP.NEAREST.
+    method : optional: fly.INTERP. default: fly.INTERP.NEAREST.
           - Interpolation method used for resizing.
 
     is_inverse : optional: bool. default: True.
@@ -360,7 +360,7 @@ def skew(image, skew0, skew1, odim0 = 0, odim1 = 0, method = INTERP.NEAREST, is_
 
     Returns
     ---------
-    out  : af.Array
+    out  : fly.Array
           - Output image after skewing.
 
     Note
@@ -383,7 +383,7 @@ def histogram(image, nbins, min_val = None, max_val = None):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -392,15 +392,15 @@ def histogram(image, nbins, min_val = None, max_val = None):
 
     min_val : optional: scalar. default: None.
           - The lower bound for the bin values.
-          - If None, `af.min(image)` is used.
+          - If None, `fly.min(image)` is used.
 
     max_val : optional: scalar. default: None.
           - The upper bound for the bin values.
-          - If None, `af.max(image)` is used.
+          - If None, `fly.max(image)` is used.
 
     Returns
     ---------
-    hist : af.Array
+    hist : fly.Array
           - Containing the histogram of the image.
 
     """
@@ -425,17 +425,17 @@ def hist_equal(image, hist):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
-    hist : af.Array
+    hist : fly.Array
           - Containing the histogram of an image.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The equalized image.
 
     """
@@ -449,18 +449,18 @@ def dilate(image, mask = None):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
-    mask  : optional: af.Array. default: None.
+    mask  : optional: fly.Array. default: None.
           - Specifies the neighborhood of a pixel.
           - When None, a [3, 3] array of all ones is used.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The dilated image.
 
     """
@@ -478,18 +478,18 @@ def dilate3(volume, mask = None):
 
     Parameters
     ----------
-    volume : af.Array
+    volume : fly.Array
           - A 3 D flare array representing a volume, or
           - A multi dimensional array representing batch of volumes.
 
-    mask  : optional: af.Array. default: None.
+    mask  : optional: fly.Array. default: None.
           - Specifies the neighborhood of a pixel.
           - When None, a [3, 3, 3] array of all ones is used.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The dilated volume.
 
     """
@@ -507,18 +507,18 @@ def erode(image, mask = None):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
-    mask  : optional: af.Array. default: None.
+    mask  : optional: fly.Array. default: None.
           - Specifies the neighborhood of a pixel.
           - When None, a [3, 3] array of all ones is used.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The eroded image.
 
     """
@@ -536,18 +536,18 @@ def erode3(volume, mask = None):
 
     Parameters
     ----------
-    volume : af.Array
+    volume : fly.Array
           - A 3 D flare array representing an volume, or
           - A multi dimensional array representing batch of volumes.
 
-    mask  : optional: af.Array. default: None.
+    mask  : optional: fly.Array. default: None.
           - Specifies the neighborhood of a pixel.
           - When None, a [3, 3, 3] array of all ones is used.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The eroded volume.
 
     """
@@ -566,7 +566,7 @@ def bilateral(image, s_sigma, c_sigma, is_color = False):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -582,7 +582,7 @@ def bilateral(image, s_sigma, c_sigma, is_color = False):
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The image after the application of the bilateral filter.
 
     """
@@ -598,7 +598,7 @@ def mean_shift(image, s_sigma, c_sigma, n_iter, is_color = False):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -617,7 +617,7 @@ def mean_shift(image, s_sigma, c_sigma, n_iter, is_color = False):
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The image after the application of the meanshift.
 
     """
@@ -633,7 +633,7 @@ def minfilt(image, w_len = 3, w_wid = 3, edge_pad = PAD.ZERO):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -643,13 +643,13 @@ def minfilt(image, w_len = 3, w_wid = 3, edge_pad = PAD.ZERO):
     w1 : optional: int. default: 3.
           - The length of the filter along the second dimension.
 
-    edge_pad : optional: af.PAD. default: af.PAD.ZERO
+    edge_pad : optional: fly.PAD. default: fly.PAD.ZERO
           - Flag specifying how the min at the edge should be treated.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The image after min filter is applied.
 
     """
@@ -665,7 +665,7 @@ def maxfilt(image, w_len = 3, w_wid = 3, edge_pad = PAD.ZERO):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -675,13 +675,13 @@ def maxfilt(image, w_len = 3, w_wid = 3, edge_pad = PAD.ZERO):
     w1 : optional: int. default: 3.
           - The length of the filter along the second dimension.
 
-    edge_pad : optional: af.PAD. default: af.PAD.ZERO
+    edge_pad : optional: fly.PAD. default: fly.PAD.ZERO
           - Flag specifying how the max at the edge should be treated.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - The image after max filter is applied.
 
     """
@@ -697,19 +697,19 @@ def regions(image, conn = CONNECTIVITY.FOUR, out_type = Dtype.f32):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image.
 
-    conn : optional: af.CONNECTIVITY. default: af.CONNECTIVITY.FOUR.
+    conn : optional: fly.CONNECTIVITY. default: fly.CONNECTIVITY.FOUR.
           - Specifies the connectivity of the pixels.
 
-    out_type : optional: af.Dtype. default: af.Dtype.f32.
+    out_type : optional: fly.Dtype. default: fly.Dtype.f32.
           - Specifies the type for the output.
 
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - An array where each pixel is labeled with its component number.
 
     """
@@ -724,14 +724,14 @@ def confidenceCC(image, seedx, seedy, radius, multiplier, iters, segmented_value
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image.
             Expects non-integral type
 
-    seedx : af.Array
+    seedx : fly.Array
           - An array with x-coordinates of seed points
 
-    seedy : af.Array
+    seedy : fly.Array
           - An array with y-coordinates of seed points
 
     radius : scalar
@@ -752,7 +752,7 @@ def confidenceCC(image, seedx, seedy, radius, multiplier, iters, segmented_value
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - Output array with resulting connected components
 
     """
@@ -767,7 +767,7 @@ def sobel_derivatives(image, w_len=3):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -777,7 +777,7 @@ def sobel_derivatives(image, w_len=3):
     Returns
     ---------
 
-    (dx, dy) : tuple of af.Arrays.
+    (dx, dy) : tuple of fly.Arrays.
            - `dx` is the sobel derivative along the horizontal direction.
            - `dy` is the sobel derivative along the vertical direction.
 
@@ -794,7 +794,7 @@ def gaussian_kernel(rows, cols, sigma_r = None, sigma_c = None):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -814,7 +814,7 @@ def gaussian_kernel(rows, cols, sigma_r = None, sigma_c = None):
 
     Returns
     -------
-    out   : af.Array
+    out   : fly.Array
           - A gaussian kernel of size (rows, cols)
     """
     out = Array()
@@ -836,7 +836,7 @@ def sobel_filter(image, w_len = 3, is_fast = False):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -849,7 +849,7 @@ def sobel_filter(image, w_len = 3, is_fast = False):
     Returns
     ---------
 
-    output : af.Array
+    output : fly.Array
            - Image containing the magnitude of the sobel derivatives.
 
     """
@@ -868,7 +868,7 @@ def rgb2gray(image, r_factor = 0.2126, g_factor = 0.7152, b_factor = 0.0722):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 3 D flare array representing an 3 channel image, or
           - A multi dimensional array representing batch of images.
 
@@ -884,7 +884,7 @@ def rgb2gray(image, r_factor = 0.2126, g_factor = 0.7152, b_factor = 0.0722):
     Returns
     --------
 
-    output : af.Array
+    output : fly.Array
           - A grayscale image.
 
     """
@@ -899,7 +899,7 @@ def gray2rgb(image, r_factor = 1.0, g_factor = 1.0, b_factor = 1.0):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
@@ -915,7 +915,7 @@ def gray2rgb(image, r_factor = 1.0, g_factor = 1.0, b_factor = 1.0):
     Returns
     --------
 
-    output : af.Array
+    output : fly.Array
           - An RGB image.
           - The channels are not coalesced, i.e. they appear along the third dimension.
 
@@ -931,14 +931,14 @@ def hsv2rgb(image):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 3 D flare array representing an 3 channel image, or
           - A multi dimensional array representing batch of images.
 
     Returns
     --------
 
-    output : af.Array
+    output : fly.Array
           - A HSV image.
 
     """
@@ -952,14 +952,14 @@ def rgb2hsv(image):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 3 D flare array representing an 3 channel image, or
           - A multi dimensional array representing batch of images.
 
     Returns
     --------
 
-    output : af.Array
+    output : fly.Array
           - A RGB image.
 
     """
@@ -973,19 +973,19 @@ def color_space(image, to_type, from_type):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A multi dimensional array representing batch of images in `from_type` color space.
 
-    to_type : af.CSPACE
+    to_type : fly.CSPACE
           - An enum for the destination color space.
 
-    from_type : af.CSPACE
+    from_type : fly.CSPACE
           - An enum for the source color space.
 
     Returns
     --------
 
-    output : af.Array
+    output : fly.Array
           - An image in the `to_type` color space.
 
     """
@@ -1001,7 +1001,7 @@ def unwrap(image, wx, wy, sx, sy, px=0, py=0, is_column=True):
     Parameters
     ----------
 
-    image  : af.Array
+    image  : fly.Array
            A multi dimensional array specifying an image or batch of images.
 
     wx     : Integer.
@@ -1028,14 +1028,14 @@ def unwrap(image, wx, wy, sx, sy, px=0, py=0, is_column=True):
     Returns
     -------
 
-    out   : af.Array
+    out   : fly.Array
           A multi dimensional array contianing the image patches along specified dimension.
 
     Examples
     --------
     >>> import flare as fly
-    >>> a = af.randu(6, 6)
-    >>> af.display(a)
+    >>> a = fly.randu(6, 6)
+    >>> fly.display(a)
 
     [6 6 1 1]
         0.4107     0.3775     0.0901     0.8060     0.0012     0.9250
@@ -1045,8 +1045,8 @@ def unwrap(image, wx, wy, sx, sy, px=0, py=0, is_column=True):
         0.4198     0.6600     0.8827     0.7270     0.3253     0.6592
         0.0081     0.0764     0.1647     0.0322     0.5081     0.4387
 
-    >>> b = af.unwrap(a, 2, 2, 2, 2)
-    >>> af.display(b)
+    >>> b = fly.unwrap(a, 2, 2, 2, 2)
+    >>> fly.display(b)
 
     [4 9 1 1]
         0.4107     0.9518     0.4198     0.0901     0.1098     0.8827     0.0012     0.5259     0.3253
@@ -1070,7 +1070,7 @@ def wrap(a, ox, oy, wx, wy, sx, sy, px=0, py=0, is_column=True):
     Parameters
     ----------
 
-    a      : af.Array
+    a      : fly.Array
            A multi dimensional array containing patches of images.
 
     wx     : Integer.
@@ -1097,15 +1097,15 @@ def wrap(a, ox, oy, wx, wy, sx, sy, px=0, py=0, is_column=True):
     Returns
     -------
 
-    out   : af.Array
+    out   : fly.Array
           A multi dimensional array contianing the images.
 
 
     Examples
     --------
     >>> import flare as fly
-    >>> a = af.randu(6, 6)
-    >>> af.display(a)
+    >>> a = fly.randu(6, 6)
+    >>> fly.display(a)
 
     [6 6 1 1]
         0.4107     0.3775     0.0901     0.8060     0.0012     0.9250
@@ -1115,8 +1115,8 @@ def wrap(a, ox, oy, wx, wy, sx, sy, px=0, py=0, is_column=True):
         0.4198     0.6600     0.8827     0.7270     0.3253     0.6592
         0.0081     0.0764     0.1647     0.0322     0.5081     0.4387
 
-    >>> b = af.unwrap(a, 2, 2, 2, 2)
-    >>> af.display(b)
+    >>> b = fly.unwrap(a, 2, 2, 2, 2)
+    >>> fly.display(b)
 
     [4 9 1 1]
         0.4107     0.9518     0.4198     0.0901     0.1098     0.8827     0.0012     0.5259     0.3253
@@ -1124,7 +1124,7 @@ def wrap(a, ox, oy, wx, wy, sx, sy, px=0, py=0, is_column=True):
         0.3775     0.6456     0.6600     0.8060     0.8395     0.7270     0.9250     0.9313     0.6592
         0.3027     0.5591     0.0764     0.5938     0.1933     0.0322     0.3063     0.8684     0.4387
 
-    >>> af.display(c)
+    >>> fly.display(c)
 
     [6 6 1 1]
         0.4107     0.3775     0.0901     0.8060     0.0012     0.9250
@@ -1152,12 +1152,12 @@ def sat(image):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           A multi dimensional array specifying image or batch of images
 
     Returns
     -------
-    out  : af.Array
+    out  : fly.Array
          A multi dimensional array containing the summed area table of input image
     """
 
@@ -1172,7 +1172,7 @@ def ycbcr2rgb(image, standard=YCC_STD.BT_601):
     Parameters
     ----------
 
-    image   : af.Array
+    image   : fly.Array
               A multi dimensional array containing an image or batch of images in YCbCr format.
 
     standard: YCC_STD. optional. default: YCC_STD.BT_601
@@ -1182,7 +1182,7 @@ def ycbcr2rgb(image, standard=YCC_STD.BT_601):
     Returns
     --------
 
-    out     : af.Array
+    out     : fly.Array
             A multi dimensional array containing an image or batch of images in RGB format
 
     """
@@ -1198,7 +1198,7 @@ def rgb2ycbcr(image, standard=YCC_STD.BT_601):
     Parameters
     ----------
 
-    image   : af.Array
+    image   : fly.Array
               A multi dimensional array containing an image or batch of images in RGB format.
 
     standard: YCC_STD. optional. default: YCC_STD.BT_601
@@ -1208,7 +1208,7 @@ def rgb2ycbcr(image, standard=YCC_STD.BT_601):
     Returns
     --------
 
-    out     : af.Array
+    out     : fly.Array
             A multi dimensional array containing an image or batch of images in YCbCr format
 
     """
@@ -1223,21 +1223,21 @@ def moments(image, moment = MOMENT.FIRST_ORDER):
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image, or
           - A multi dimensional array representing batch of images.
 
-    moment : optional: af.MOMENT. default: af.MOMENT.FIRST_ORDER.
+    moment : optional: fly.MOMENT. default: fly.MOMENT.FIRST_ORDER.
           Moment(s) to calculate. Can be one of:
-          - af.MOMENT.M00
-          - af.MOMENT.M01
-          - af.MOMENT.M10
-          - af.MOMENT.M11
-          - af.MOMENT.FIRST_ORDER
+          - fly.MOMENT.M00
+          - fly.MOMENT.M01
+          - fly.MOMENT.M10
+          - fly.MOMENT.M11
+          - fly.MOMENT.FIRST_ORDER
 
     Returns
     ---------
-    out  : af.Array
+    out  : fly.Array
           - array containing requested moment(s) of each image
     """
     output = Array()
@@ -1253,13 +1253,13 @@ def canny(image,
 
     Parameters
     ----------
-    image : af.Array
+    image : fly.Array
           - A 2 D flare array representing an image
 
-    threshold_type : optional: af.CANNY_THRESHOLD. default: af.CANNY_THRESHOLD.MANUAL.
+    threshold_type : optional: fly.CANNY_THRESHOLD. default: fly.CANNY_THRESHOLD.MANUAL.
           Can be one of:
-          - af.CANNY_THRESHOLD.MANUAL
-          - af.CANNY_THRESHOLD.AUTO_OTSU
+          - fly.CANNY_THRESHOLD.MANUAL
+          - fly.CANNY_THRESHOLD.AUTO_OTSU
 
     low_threshold :  required: float.
           Specifies the % of maximum in gradient image if threshold_type is MANUAL.
@@ -1275,7 +1275,7 @@ def canny(image,
     Returns
     --------
 
-    out : af.Array
+    out : fly.Array
         - A binary image containing the edges
 
     """
@@ -1296,7 +1296,7 @@ def anisotropic_diffusion(image, time_step, conductance, iterations, flux_functi
 
     Parameters
     ----------
-    image: af.Array
+    image: fly.Array
         The input image.
 
     time_step: scalar.
@@ -1310,17 +1310,17 @@ def anisotropic_diffusion(image, time_step, conductance, iterations, flux_functi
 
     flux_function_type:
         Type of flux function to be used. Available flux functions:
-          - Quadratic (af.FLUX.QUADRATIC)
-          - Exponential (af.FLUX.EXPONENTIAL)
+          - Quadratic (fly.FLUX.QUADRATIC)
+          - Exponential (fly.FLUX.EXPONENTIAL)
 
     diffusion_kind:
         Type of diffusion equatoin to be used. Available diffusion equations:
-          - Gradient diffusion equation (af.DIFFUSION.GRAD)
-          - Modified curvature diffusion equation (af.DIFFUSION.MCDE)
+          - Gradient diffusion equation (fly.DIFFUSION.GRAD)
+          - Modified curvature diffusion equation (fly.DIFFUSION.MCDE)
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
         Anisotropically-smoothed output image.
 
     """
@@ -1337,10 +1337,10 @@ def iterativeDeconv(image, psf, iterations, relax_factor, algo = ITERATIVE_DECON
 
     Parameters
     ----------
-    image: af.Array
+    image: fly.Array
         The blurred input image.
 
-    psf: af.Array
+    psf: fly.Array
         The kernel(point spread function) known to have caused
         the blur in the system.
 
@@ -1352,12 +1352,12 @@ def iterativeDeconv(image, psf, iterations, relax_factor, algo = ITERATIVE_DECON
         of estimate from observed image.
 
     algo:
-        takes enum value of type af.ITERATIVE_DECONV
+        takes enum value of type fly.ITERATIVE_DECONV
         indicating the iterative deconvolution algorithm to be used
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
         sharp image estimate generated from the blurred input
 
     Note
@@ -1377,10 +1377,10 @@ def inverseDeconv(image, psf, gamma, algo = ITERATIVE_DECONV.DEFAULT):
 
     Parameters
     ----------
-    image: af.Array
+    image: fly.Array
         The blurred input image.
 
-    psf: af.Array
+    psf: fly.Array
         The kernel(point spread function) known to have caused
         the blur in the system.
 
@@ -1388,12 +1388,12 @@ def inverseDeconv(image, psf, gamma, algo = ITERATIVE_DECONV.DEFAULT):
         is a user defined regularization constant
 
     algo:
-        takes enum value of type af.INVERSE_DECONV
+        takes enum value of type fly.INVERSE_DECONV
         indicating the inverse deconvolution algorithm to be used
 
     Returns
     -------
-    out: af.Array
+    out: fly.Array
         sharp image estimate generated from the blurred input
 
     """

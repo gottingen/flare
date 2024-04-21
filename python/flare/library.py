@@ -822,7 +822,7 @@ def get_backend_id(A):
 
     Parameters
     ----------
-    A    : af.Array
+    A    : fly.Array
 
     Returns
     ----------
@@ -883,7 +883,7 @@ def get_device_id(A):
 
     Parameters
     ----------
-    A    : af.Array
+    A    : fly.Array
 
     Returns
     ----------
