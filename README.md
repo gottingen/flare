@@ -25,6 +25,11 @@ flare provides software developers with a high-level abstraction of data that re
 accelerator, the `flare::tensor`object. Developers write code that performs operations on flare
 arrays, which, in turn, are automatically translated into near-optimal kernels that execute on 
 the computational device.
+
+# try online 
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/pv-kumo/pv-flare)
+
 # benchmark
 ![cpu bench](docs/source/image/benchmark_blas_cpu.png)![cuda bench](docs/source/image/benchmark_blas_cuda.png)
 # install
