@@ -1,5 +1,14 @@
-google/googletest@v1.13.0
-google/benchmark@v1.8.3 -DBENCHMARK_ENABLE_TESTING=OFF
+############
+# ea recipes
+############
+gottingen/carbin-recipes@ea
+
+#########################
+# testing tools googlegtest benchmark
+inf/boost
+testing/googletest
+testing/benchmark
 
 gottingen/collie@t_dev -DCARBIN_BUILD_TEST=OFF -DCARBIN_BUILD_EXAMPLES=OFF -DCARBIN_ENABLE_INSTALL=ON
-gottingen/theia@v0.2.8
+gottingen/theia@v1.1.9
+ea/turbo
